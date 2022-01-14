@@ -143,7 +143,7 @@ robot/build/
 robot/gradle-app.setting
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!robot/gradle-wrapper.jar
+!gradle-wrapper.jar
 
 # Cache of project
 robot/.gradletasknamecache
