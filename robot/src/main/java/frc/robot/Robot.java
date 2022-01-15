@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 /**
@@ -13,12 +14,14 @@ import edu.wpi.first.wpilibj.TimedRobot;
  * project.
  */
 public class Robot extends TimedRobot {
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
+  private Joystick primaryJoystick;
+  private Joystick secondaryJoystick;
+
   @Override
-  public void robotInit() {}
+  public void robotInit() {
+    primaryJoystick = new Joystick(0);
+    secondaryJoystick = new Joystick(1);
+  }
 
   @Override
   public void robotPeriodic() {}
