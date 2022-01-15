@@ -19,8 +19,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    primaryJoystick = new Joystick(0);
-    secondaryJoystick = new Joystick(1);
+    primaryJoystick = new Joystick(Constants.PRIMARY_JOYSTICK_PORT);
+    secondaryJoystick = new Joystick(Constants.SECONDARY_JOYSTICK_PORT);
   }
 
   @Override
