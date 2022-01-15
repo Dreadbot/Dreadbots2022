@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 
@@ -14,13 +17,31 @@ import edu.wpi.first.wpilibj.TimedRobot;
  * project.
  */
 public class Robot extends TimedRobot {
+  @SuppressWarnings("unused")
   private Joystick primaryJoystick;
+  @SuppressWarnings("unused")
   private Joystick secondaryJoystick;
 
+  @SuppressWarnings("unused")
+  private CANSparkMax leftFrontDriveMotor;
+  @SuppressWarnings("unused")
+  private CANSparkMax rightFrontDriveMotor;
+  @SuppressWarnings("unused")
+  private CANSparkMax leftBackDriveMotor;
+  @SuppressWarnings("unused")
+  private CANSparkMax rightBackDriveMotor;
+  
   @Override
   public void robotInit() {
+    // Instantiate Joysticks
     primaryJoystick = new Joystick(Constants.PRIMARY_JOYSTICK_PORT);
     secondaryJoystick = new Joystick(Constants.SECONDARY_JOYSTICK_PORT);
+
+    // Instantiate Drivetrain motors
+    leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+    rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+    leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+    rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
   }
 
   @Override
