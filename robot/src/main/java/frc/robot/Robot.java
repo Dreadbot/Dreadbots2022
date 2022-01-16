@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
+import frc.robot.subsystem.Drive;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -22,6 +23,7 @@ public class Robot extends TimedRobot {
   @SuppressWarnings("unused")
   private Joystick secondaryJoystick;
 
+  private Drive drive;
   @SuppressWarnings("unused")
   private CANSparkMax leftFrontDriveMotor;
   @SuppressWarnings("unused")
@@ -42,6 +44,8 @@ public class Robot extends TimedRobot {
     rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
     leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
     rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+
+    drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
   }
 
   @Override
