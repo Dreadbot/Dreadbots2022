@@ -23,6 +23,7 @@ public class DriveTest {
         rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
         leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
         rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+        drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
     }
 
     @After
@@ -31,5 +32,6 @@ public class DriveTest {
         rightFrontDriveMotor.close();
         leftBackDriveMotor.close();
         rightBackDriveMotor.close();
+        drive.close();
     }
 }
