@@ -1,11 +1,16 @@
-import static org.junit.Assert.*;
+package frc.robot.subsystem;
 
-import edu.wpi.first.hal.HAL;
-import frc.robot.subsystem.Drive;
-import frc.robot.Constants;
+import static org.junit.Assert.assertEquals;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import org.junit.*;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import edu.wpi.first.hal.HAL;
+import frc.robot.Constants;
 
 public class DriveTest {
     public static final double DELTA = 1e-2;
