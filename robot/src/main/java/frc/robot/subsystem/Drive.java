@@ -39,5 +39,4 @@ public class Drive {
     public CANSparkMax getLeftFrontMotor() {
         return leftFrontMotor;
     }
-    
 }

@@ -19,31 +19,19 @@ import frc.robot.subsystem.Drive;
  */
 public class Robot extends TimedRobot {
   @SuppressWarnings("unused")
-  private Joystick primaryJoystick;
+  private Joystick primaryJoystick = new Joystick(Constants.PRIMARY_JOYSTICK_PORT);
   @SuppressWarnings("unused")
-  private Joystick secondaryJoystick;
+  private Joystick secondaryJoystick = new Joystick(Constants.SECONDARY_JOYSTICK_PORT);
 
+  private CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+  private CANSparkMax rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+  private CANSparkMax leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+  private CANSparkMax rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
   @SuppressWarnings("unused")
-  private Drive drive;
-  private CANSparkMax leftFrontDriveMotor;
-  private CANSparkMax rightFrontDriveMotor;
-  private CANSparkMax leftBackDriveMotor;
-  private CANSparkMax rightBackDriveMotor;
+  private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
   
   @Override
-  public void robotInit() {
-    // Instantiate Joysticks
-    primaryJoystick = new Joystick(Constants.PRIMARY_JOYSTICK_PORT);
-    secondaryJoystick = new Joystick(Constants.SECONDARY_JOYSTICK_PORT);
-
-    // Instantiate Drivetrain motors
-    leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-    rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-    leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-    rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-
-    drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
-  }
+  public void robotInit() {}
 
   @Override
   public void robotPeriodic() {}
