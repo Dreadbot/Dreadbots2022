@@ -23,14 +23,11 @@ public class Robot extends TimedRobot {
   @SuppressWarnings("unused")
   private Joystick secondaryJoystick;
 
+  @SuppressWarnings("unused")
   private Drive drive;
-  @SuppressWarnings("unused")
   private CANSparkMax leftFrontDriveMotor;
-  @SuppressWarnings("unused")
   private CANSparkMax rightFrontDriveMotor;
-  @SuppressWarnings("unused")
   private CANSparkMax leftBackDriveMotor;
-  @SuppressWarnings("unused")
   private CANSparkMax rightBackDriveMotor;
   
   @Override
