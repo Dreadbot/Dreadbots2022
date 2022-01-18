@@ -39,10 +39,10 @@ public class Drive extends Subsystem {
 
     @Override
     protected void stopMotors() {
-        this.leftFrontMotor.stopMotor();
-        this.rightFrontMotor.stopMotor();
-        this.leftBackMotor.stopMotor();
-        this.rightBackMotor.stopMotor();
+        leftFrontMotor.stopMotor();
+        rightFrontMotor.stopMotor();
+        leftBackMotor.stopMotor();
+        rightBackMotor.stopMotor();
     }
 
     @Override
