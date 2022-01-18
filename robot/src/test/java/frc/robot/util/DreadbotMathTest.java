@@ -11,10 +11,15 @@ public class DreadbotMathTest {
 
     private double bottomValueD;
     private double topValueD;
+    private double resultValueD;
+
     private float bottomValueF;
     private float topValueF;
+    private double resultValueF;
+    
     private int bottomValueI;
     private int topValueI;
+    private int resultValueI;
 
     private boolean result;
 
@@ -25,10 +30,15 @@ public class DreadbotMathTest {
     public void shutdown() throws Exception {
         bottomValueD = 0.0d;
         topValueD = 0.0d;
+        resultValueD = 0.0d;
+
         bottomValueF = 0.0f;
         topValueF = 0.0f;
+        resultValueF = 0.0f;
+
         bottomValueI = 0;
         topValueI = 0;
+        resultValueI = 0;
 
         result = false;
     }
@@ -193,5 +203,59 @@ public class DreadbotMathTest {
         assertEquals(false, result);
         result = DreadbotMath.inRange(1.0d, bottomValueD, topValueD);
         assertEquals(true, result);
+    }
+
+    @Test
+    public void clampValueDoubleTest() {
+        bottomValueD = -1.0d;
+        topValueD = 1.0d;
+
+        // Regular Function Test (Within Range)
+        resultValueD = DreadbotMath.clampValue(0.5d, bottomValueD, topValueD);
+        assertEquals(0.5d, resultValueD, DELTA);
+        resultValueD = DreadbotMath.clampValue(-0.5d, bottomValueD, topValueD);
+        assertEquals(-0.5, resultValueD, DELTA);
+
+        // Regular Function Test (Outside Range)
+        resultValueD = DreadbotMath.clampValue(1.5d, bottomValueD, topValueD);
+        assertEquals(topValueD, resultValueD, DELTA);
+        resultValueD = DreadbotMath.clampValue(-1.5d, bottomValueD, topValueD);
+        assertEquals(bottomValueD, resultValueD, DELTA);
+    }
+
+    @Test
+    public void clampValueFloatTest() {
+        bottomValueF = -1.0f;
+        topValueF = 1.0f;
+
+        // Regular Function Test (Within Range)
+        resultValueF = DreadbotMath.clampValue(0.5f, bottomValueF, topValueF);
+        assertEquals(0.5f, resultValueF, DELTA);
+        resultValueF = DreadbotMath.clampValue(-0.5f, bottomValueF, topValueF);
+        assertEquals(-0.5f, resultValueF, DELTA);
+
+        // Regular Function Test (Outside Range)
+        resultValueF = DreadbotMath.clampValue(1.5f, bottomValueF, topValueF);
+        assertEquals(topValueF, resultValueF, DELTA);
+        resultValueF = DreadbotMath.clampValue(-1.5f, bottomValueF, topValueF);
+        assertEquals(bottomValueF, resultValueF, DELTA);
+    }
+
+    @Test
+    public void clampValueIntegerTest() {
+        bottomValueI = -2;
+        topValueI = 2;
+
+        // Regular Function Test (Within Range)
+        resultValueI = DreadbotMath.clampValue(1, bottomValueI, topValueI);
+        assertEquals(1, resultValueI, DELTA);
+        resultValueI = DreadbotMath.clampValue(-1, bottomValueI, topValueI);
+        assertEquals(-1, resultValueI, DELTA);
+
+        // Regular Function Test (Outside Range)
+        resultValueI = DreadbotMath.clampValue(3, bottomValueI, topValueI);
+        assertEquals(topValueI, resultValueI, DELTA);
+        resultValueI = DreadbotMath.clampValue(-3, bottomValueI, topValueI);
+        assertEquals(bottomValueI, resultValueI, DELTA);
     }
 }
