@@ -21,10 +21,13 @@ public abstract class DreadbotMath {
      * @param inputValue  The input value.
      * @param bottomValue The bottom value of the range.
      * @param topValue    The top value of the range.
+     * @param inclusive   Whether or not the bounds inputValue and bottomValue are included as part of the range.
      * @return Returns 'true' if the inputValue is within the constraints, 'false' otherwise.
      */
     public static <T extends Comparable<T>> boolean inRange(final T inputValue, final T bottomValue,
-                                                            final T topValue) {
+                                                            final T topValue, final boolean inclusive) {
+        if(!inclusive) 
+            return inputValue.compareTo(bottomValue) > 0 && inputValue.compareTo(topValue) < 0;
         return inputValue.compareTo(bottomValue) >= 0 && inputValue.compareTo(topValue) <= 0;
     }
 
