@@ -7,11 +7,11 @@ package frc.robot;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
 import frc.robot.subsystem.Shooter;
+import frc.robot.util.DreadbotController;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -21,9 +21,9 @@ import frc.robot.subsystem.Shooter;
  */
 public class Robot extends TimedRobot {
   @SuppressWarnings("unused")
-  private Joystick primaryJoystick = new Joystick(Constants.PRIMARY_JOYSTICK_PORT);
+  private DreadbotController primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
   @SuppressWarnings("unused")
-  private Joystick secondaryJoystick = new Joystick(Constants.SECONDARY_JOYSTICK_PORT);
+  private DreadbotController secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
 
   private CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
   private CANSparkMax rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);

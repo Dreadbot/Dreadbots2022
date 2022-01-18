@@ -6,25 +6,41 @@ package frc.robot.subsystem;
 
 import com.revrobotics.CANSparkMax;
 
-public class Intake implements AutoCloseable {
+public class Intake extends Subsystem {
     private final CANSparkMax leftIntakeMotor;
     private final CANSparkMax rightIntakeMotor;
 
     public Intake(CANSparkMax leftIntakeMotor, CANSparkMax rightIntakeMotor) {
+        super("Intake");
+        
         this.leftIntakeMotor = leftIntakeMotor;
         this.rightIntakeMotor = rightIntakeMotor;
     }
 
     public void intake() {
-        //TODO logic
+        if(!isEnabled()) {
+            stopMotors();
+            return;
+        }
+
+        leftIntakeMotor.set(1.0d);
+        rightIntakeMotor.set(1.0d);
     }
 
     public void outlet() {
-        // TODO logic
+        if(!isEnabled()) {
+            stopMotors();
+            return;
+        }
+        
+        leftIntakeMotor.set(-1.0d);
+        rightIntakeMotor.set(-1.0d);
     }
 
-    public void stop() {
-        // TODO logic
+    @Override
+    protected void stopMotors() {
+        leftIntakeMotor.stopMotor();
+        rightIntakeMotor.stopMotor();
     }
 
     @Override

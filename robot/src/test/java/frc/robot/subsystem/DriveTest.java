@@ -1,6 +1,7 @@
 package frc.robot.subsystem;
 
 import static org.junit.Assert.assertEquals;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -44,24 +45,19 @@ public class DriveTest {
     }
 
     @Test
-    public void fullForward() {
-        leftFrontDriveMotor.set(1.0d);
-        rightFrontDriveMotor.set(1.0d);
-        leftBackDriveMotor.set(1.0d);
-        rightBackDriveMotor.set(1.0d);
+    public void fullForwardDisabled() {
+        drive.disable();
+        drive.drive(1.0d, 0.0d, 0.0d);
 
-        assertEquals(1.0d, leftFrontDriveMotor.get(), DELTA);
-        assertEquals(1.0d, rightFrontDriveMotor.get(), DELTA);
-        assertEquals(1.0d, leftBackDriveMotor.get(), DELTA);
-        assertEquals(1.0d, rightBackDriveMotor.get(), DELTA);
+        assertEquals(0.0d, leftFrontDriveMotor.get(), DELTA);
+        assertEquals(0.0d, rightFrontDriveMotor.get(), DELTA);
+        assertEquals(0.0d, leftBackDriveMotor.get(), DELTA);
+        assertEquals(0.0d, rightBackDriveMotor.get(), DELTA);
     }
 
     @Test
     public void stopMotors() {
-        leftFrontDriveMotor.stopMotor();
-        rightFrontDriveMotor.stopMotor();
-        leftBackDriveMotor.stopMotor();
-        rightBackDriveMotor.stopMotor();
+        drive.stopMotors();
 
         assertEquals(0.0d, leftFrontDriveMotor.get(), 0.0d);
         assertEquals(0.0d, rightFrontDriveMotor.get(), 0.0d);
