@@ -45,7 +45,7 @@ public class DriveTest {
 
     @Test
     public void fullForward() {
-        drive.drivePolar();
+        drive.drive();
 
         assertEquals(1.0d, leftFrontDriveMotor.get(), DELTA);
         assertEquals(1.0d, rightFrontDriveMotor.get(), DELTA);
@@ -56,7 +56,7 @@ public class DriveTest {
     @Test
     public void fullForwardDisabled() {
         drive.disable();
-        drive.drivePolar();
+        drive.drive();
 
         assertEquals(0.0d, leftFrontDriveMotor.get(), DELTA);
         assertEquals(0.0d, rightFrontDriveMotor.get(), DELTA);

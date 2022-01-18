@@ -22,7 +22,7 @@ public class Drive extends Subsystem {
         this.rightBackMotor = rightBackMotor;
     }
 
-    public void drivePolar() {
+    public void drive() {
         if(!isEnabled()) {
             stopMotors();
             return;
