@@ -6,7 +6,7 @@ package frc.robot.subsystem;
 
 import com.revrobotics.CANSparkMax;
 
-public class Drive implements AutoCloseable {
+public class Drive extends Subsystem {
     private final CANSparkMax leftFrontMotor;
     private final CANSparkMax rightFrontMotor;
     private final CANSparkMax leftBackMotor;
@@ -14,6 +14,8 @@ public class Drive implements AutoCloseable {
 
     public Drive(CANSparkMax leftFrontMotor, CANSparkMax rightFrontMotor, CANSparkMax leftBackMotor,
             CANSparkMax rightBackMotor) {
+        super("Drive");
+
         this.leftFrontMotor = leftFrontMotor;
         this.rightFrontMotor = rightFrontMotor;
         this.leftBackMotor = leftBackMotor;
@@ -21,7 +23,26 @@ public class Drive implements AutoCloseable {
     }
 
     public void drivePolar() {
-        //TODO
+        if(!isEnabled()) {
+            stopMotors();
+            return;
+        }
+        
+        // TODO remove, only needed for unit tests
+        leftFrontMotor.set(1.0d);
+        rightFrontMotor.set(1.0d);
+        leftBackMotor.set(1.0d);
+        rightBackMotor.set(1.0d);
+
+        //TODO logic
+    }
+
+    @Override
+    protected void stopMotors() {
+        this.leftFrontMotor.stopMotor();
+        this.rightFrontMotor.stopMotor();
+        this.leftBackMotor.stopMotor();
+        this.rightBackMotor.stopMotor();
     }
 
     @Override
