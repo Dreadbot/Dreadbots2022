@@ -33,19 +33,26 @@ public class Drive extends Subsystem {
         this.mecanumDrive = new MecanumDrive(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
     }
 
-    public void drive() {
+    public void drive(double joystickForwardAxis, double joystickLateralAxis, double zRotation) {
         if(!isEnabled()) {
             stopMotors();
             return;
         }
         
-        // TODO remove, only needed for unit tests
-        leftFrontMotor.set(1.0d);
-        rightFrontMotor.set(1.0d);
-        leftBackMotor.set(1.0d);
-        rightBackMotor.set(1.0d);
-
-        //TODO logic
+        // For polar drive, calculate the magnitude and angle that the MecanumDrive should drive at.
+        double magnitude = Math.sqrt(Math.pow(joystickForwardAxis, 2) + Math.pow(joystickLateralAxis, 2));
+        double angle;
+        if(joystickLateralAxis == 0.0d) {
+            angle = 90.0d * Math.signum(joystickForwardAxis);
+        } else {
+            double arctangent = Math.atan(joystickForwardAxis / joystickLateralAxis);
+            arctangent *= (180.0d / Math.PI);
+            if(Math.signum(joystickForwardAxis) > 0.0d && Math.signum(arctangent) > 0.0d) {
+                angle = arctangent;
+            } else if(Math.signum(joystickForwardAxis) < 0.0d && Math.signum(arctangent) > 0.0d) {
+                angle = arctangent - 180.0d;
+            }
+        }
     }
 
     @Override
@@ -54,6 +61,8 @@ public class Drive extends Subsystem {
         rightFrontMotor.stopMotor();
         leftBackMotor.stopMotor();
         rightBackMotor.stopMotor();
+
+        mecanumDrive.stopMotor();
     }
 
     @Override
