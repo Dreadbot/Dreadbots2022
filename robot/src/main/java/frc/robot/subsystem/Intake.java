@@ -19,6 +19,14 @@ public class Intake implements AutoCloseable {
         //TODO logic
     }
 
+    public void outlet() {
+        // TODO logic
+    }
+
+    public void stopped() {
+        // TODO logic
+    }
+
     @Override
     public void close() throws Exception {
         leftIntakeMotor.close();
