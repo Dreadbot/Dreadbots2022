@@ -8,11 +8,15 @@ import math
 # define the lower and upper boundaries of the "green"
 # ball in the HSV color space, then initialize the
 # list of tracked points
-blueLower = (92, 10, 2)
-blueUpper = (118, 241, 255)
+
+# blueLower = (92, 10, 2)
+# blueUpper = (118, 241, 255)
+
+blueLower = (0, 31, 219)
+blueUpper = (26, 255, 255)
 # if a video path was not supplied, grab the reference
 # to the webcam
-vs = cv2.VideoCapture(0)
+vs = cv2.VideoCapture(1)
 # allow the camera or video file to warm up
 # keep looping
 while True:
@@ -28,9 +32,11 @@ while True:
     # construct a mask for the color "green", then perform
     # a series of dilations and erosions to remove any small
     # blobs left in the mask
-    mask = cv2.inRange(hsv, blueLower, blueLower)
-    mask = cv2.erode(mask, None, iterations=2)
-    mask = cv2.dilate(mask, None, iterations=2)
+    mask = cv2.inRange(hsv, blueLower, blueUpper)
+    mask = cv2.erode(mask, None, iterations=14)
+    mask = cv2.dilate(mask, None, iterations=14)
+
+    cv2.imshow("Mask", mask)
 
     # find contours in the mask and initialize the current
     # (x, y) center of the ball
@@ -49,37 +55,37 @@ while True:
                          color=(0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
         cv2.imshow("Cnts", image)
 
-        confirmedBalls = []
+        # confirmedBalls = []
 
-        for c in cnts:
-            dists = []
-            M = cv2.moments(c)
-            center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-            for point in c:
-                distX = point[0][0] - center[0]
-                distY = point[0][1] - center[1]
-                dist = abs(math.sqrt(pow(distX, 2) + pow(distY, 2)))
-                dists.append(dist)
+        # for c in cnts:
+        #     dists = []
+        #     M = cv2.moments(c)
+        #     center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+        #     for point in c:
+        #         distX = point[0][0] - center[0]
+        #         distY = point[0][1] - center[1]
+        #         dist = abs(math.sqrt(pow(distX, 2) + pow(distY, 2)))
+        #         dists.append(dist)
 
-            a = 0
-            for d in dists:
-                a += d
+        #     a = 0
+        #     for d in dists:
+        #         a += d
 
-            avg = a / len(dists)
+        #     avg = a / len(dists)
 
-            ball = True
-            for d in dists:
-                if not (d > avg - 10 and d < avg + 10):
-                    ball = False
-                    break
+        #     ball = True
+        #     for d in dists:
+        #         if not (d > avg - 10 and d < avg + 10):
+        #             ball = False
+        #             break
 
-            if ball:
-                confirmedBalls.append(c)
+        #     if ball:
+        #         confirmedBalls.append(c)
 
-        if len(confirmedBalls) == 0:
-            continue
+        # if len(confirmedBalls) == 0:
+        #     continue
 
-        c = max(confirmedBalls, key=cv2.contourArea)
+        c = max(cnts, key=cv2.contourArea)
 
         ((x, y), radius) = cv2.minEnclosingCircle(c)
         M = cv2.moments(c)
