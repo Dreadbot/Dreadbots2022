@@ -20,6 +20,10 @@ public class Drive extends Subsystem {
         this.rightFrontMotor = rightFrontMotor;
         this.leftBackMotor = leftBackMotor;
         this.rightBackMotor = rightBackMotor;
+        
+        // Invert right motors
+        rightFrontMotor.setInverted(true);
+        rightBackMotor.setInverted(true);
     }
 
     public void drive() {
