@@ -1,6 +1,7 @@
 package frc.robot.subsystem;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.ControlType;
 
 public class Shooter extends Subsystem {
     private final CANSparkMax flywheelMotor;
@@ -20,7 +21,9 @@ public class Shooter extends Subsystem {
     }
 
     public void shoot() {
-        //TODO
+        double rpm = 3500.0d;
+        rpm /= 2.0d;
+        flywheelMotor.getPIDController().setReference(rpm, ControlType.kVelocity);
     }
 
     @SuppressWarnings("unused")
