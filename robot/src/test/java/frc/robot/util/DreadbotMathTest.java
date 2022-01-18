@@ -170,7 +170,7 @@ public class DreadbotMathTest {
         result = DreadbotMath.inRange(-3, bottomValueI, topValueI, true);
         assertEquals(false, result);
 
-        // Bounds Tests (Exclusive implies bounds are considered part of the range)
+        // Bounds Tests (Inclusive implies bounds are considered part of the range)
         result = DreadbotMath.inRange(2, bottomValueI, topValueI, true);
         assertEquals(true, result);
         result = DreadbotMath.inRange(-2, bottomValueI, topValueI, true);
