@@ -6,11 +6,15 @@ package frc.robot.subsystem;
 
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.wpilibj.drive.MecanumDrive;
+
 public class Drive extends Subsystem {
     private final CANSparkMax leftFrontMotor;
     private final CANSparkMax rightFrontMotor;
     private final CANSparkMax leftBackMotor;
     private final CANSparkMax rightBackMotor;
+
+    private final MecanumDrive mecanumDrive;
 
     public Drive(CANSparkMax leftFrontMotor, CANSparkMax rightFrontMotor, CANSparkMax leftBackMotor,
             CANSparkMax rightBackMotor) {
@@ -20,6 +24,8 @@ public class Drive extends Subsystem {
         this.rightFrontMotor = rightFrontMotor;
         this.leftBackMotor = leftBackMotor;
         this.rightBackMotor = rightBackMotor;
+
+        this.mecanumDrive = new MecanumDrive(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
         
         // Invert right motors
         rightFrontMotor.setInverted(true);
