@@ -26,8 +26,12 @@ public abstract class DreadbotMath {
      */
     public static <T extends Comparable<T>> boolean inRange(final T inputValue, final T bottomValue,
                                                             final T topValue, final boolean inclusive) {
-        if(!inclusive) 
+        if(!inclusive) {
+            if(topValue == bottomValue) return false;
             return inputValue.compareTo(bottomValue) > 0 && inputValue.compareTo(topValue) < 0;
+        }
+        
+        if(topValue == bottomValue) return topValue == inputValue;
         return inputValue.compareTo(bottomValue) >= 0 && inputValue.compareTo(topValue) <= 0;
     }
 
