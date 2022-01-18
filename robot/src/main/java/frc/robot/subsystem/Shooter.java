@@ -2,12 +2,14 @@ package frc.robot.subsystem;
 
 import com.revrobotics.CANSparkMax;
 
-public class Shooter implements AutoCloseable {
+public class Shooter extends Subsystem {
     private final CANSparkMax flywheelMotor;
     private final CANSparkMax hoodMotor;
     private final CANSparkMax turretMotor;
     
     public Shooter(CANSparkMax flywheelMotor, CANSparkMax hoodMotor, CANSparkMax turretMotor) {
+        super("Shooter");
+        
         this.flywheelMotor = flywheelMotor;
         this.hoodMotor = hoodMotor;
         this.turretMotor = turretMotor;
@@ -29,6 +31,13 @@ public class Shooter implements AutoCloseable {
     @SuppressWarnings("unused")
     private void setFlywheelRPM(double revolutionsPerMinute) {
         //TODO
+    }
+
+    @Override
+    protected void stopMotors() {
+        flywheelMotor.stopMotor();
+        hoodMotor.stopMotor();
+        turretMotor.stopMotor();
     }
 
     @Override
