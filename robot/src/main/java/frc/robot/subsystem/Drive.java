@@ -24,12 +24,13 @@ public class Drive extends Subsystem {
         this.rightFrontMotor = rightFrontMotor;
         this.leftBackMotor = leftBackMotor;
         this.rightBackMotor = rightBackMotor;
-
-        this.mecanumDrive = new MecanumDrive(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
         
         // Invert right motors
         rightFrontMotor.setInverted(true);
         rightBackMotor.setInverted(true);
+        
+        // According to the docs, motors must be inverted before they are passed into the mecanumdrive utility.
+        this.mecanumDrive = new MecanumDrive(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
     }
 
     public void drive() {
