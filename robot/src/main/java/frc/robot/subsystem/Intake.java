@@ -23,7 +23,7 @@ public class Intake implements AutoCloseable {
         // TODO logic
     }
 
-    public void stopped() {
+    public void stop() {
         // TODO logic
     }
 
