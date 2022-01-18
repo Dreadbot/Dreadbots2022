@@ -37,8 +37,7 @@ public class IntakeTest {
 
     @Test
     public void intake() {
-        leftIntakeMotor.set(1.0d);
-        rightIntakeMotor.set(1.0d);
+        intake.intake();
 
         assertEquals(1.0d, leftIntakeMotor.get(), DELTA);
         assertEquals(1.0d, rightIntakeMotor.get(), DELTA);
@@ -46,17 +45,33 @@ public class IntakeTest {
 
     @Test
     public void outlet() {
-        leftIntakeMotor.set(-1.0d);
-        rightIntakeMotor.set(-1.0d);
+        intake.outlet();
 
         assertEquals(-1.0d, leftIntakeMotor.get(), DELTA);
         assertEquals(-1.0d, rightIntakeMotor.get(), DELTA);
     }
 
     @Test
+    public void intakeDisabled() {
+        intake.disable();
+        intake.intake();
+
+        assertEquals(0.0d, leftIntakeMotor.get(), DELTA);
+        assertEquals(0.0d, rightIntakeMotor.get(), DELTA);
+    }
+
+    @Test
+    public void outletDisabled() {
+        intake.disable();
+        intake.outlet();
+
+        assertEquals(0.0d, leftIntakeMotor.get(), DELTA);
+        assertEquals(0.0d, rightIntakeMotor.get(), DELTA);
+    }
+
+    @Test
     public void stop() {
-        leftIntakeMotor.set(0.0d);
-        rightIntakeMotor.set(0.0d);
+        intake.stopMotors();
 
         assertEquals(0.0d, leftIntakeMotor.get(), DELTA);
         assertEquals(0.0d, rightIntakeMotor.get(), DELTA);
