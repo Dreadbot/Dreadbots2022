@@ -21,11 +21,35 @@ public abstract class DreadbotMath {
      * @param inputValue  The input value.
      * @param bottomValue The bottom value of the range.
      * @param topValue    The top value of the range.
+     * @param inclusive   Whether or not the bounds inputValue and bottomValue are included as part of the range.
+     * @return Returns 'true' if the inputValue is within the constraints, 'false' otherwise.
+     */
+    public static <T extends Comparable<T>> boolean inRange(final T inputValue, final T bottomValue,
+                                                            final T topValue, final boolean inclusive) {
+        if(!inclusive) {
+            if(topValue == bottomValue) return false;
+            return inputValue.compareTo(bottomValue) > 0 && inputValue.compareTo(topValue) < 0;
+        }
+        
+        if(topValue == bottomValue) return topValue == inputValue;
+        return inputValue.compareTo(bottomValue) >= 0 && inputValue.compareTo(topValue) <= 0;
+    }
+
+    /**
+     * In-Range Function
+     * <p>
+     * The in-range function determines whether a value is 'in-between' a given minimum
+     * value and a maximum value.
+     *
+     * @param <T>         Comparable type.
+     * @param inputValue  The input value.
+     * @param bottomValue The bottom value of the range.
+     * @param topValue    The top value of the range.
      * @return Returns 'true' if the inputValue is within the constraints, 'false' otherwise.
      */
     public static <T extends Comparable<T>> boolean inRange(final T inputValue, final T bottomValue,
                                                             final T topValue) {
-        return inputValue.compareTo(bottomValue) >= 0 && inputValue.compareTo(topValue) <= 0;
+        return DreadbotMath.inRange(inputValue, bottomValue, topValue, true);
     }
 
     /**
@@ -67,7 +91,7 @@ public abstract class DreadbotMath {
      */
     public static <T extends Comparable<T>> T applyDeadbandToValue(final T inputValue, final T deadbandZoneMinimum,
                                                                    final T deadbandZoneMaximum, final T neutralValue) {
-        if(DreadbotMath.inRange(inputValue, deadbandZoneMinimum, deadbandZoneMaximum))
+        if(DreadbotMath.inRange(inputValue, deadbandZoneMinimum, deadbandZoneMaximum, false))
             return neutralValue;
 
         return inputValue;
