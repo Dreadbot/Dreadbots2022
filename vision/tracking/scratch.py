@@ -2,7 +2,6 @@ import numpy as np
 import cv2
 
 cam_id = 0
-try:
 
 
 while True:
