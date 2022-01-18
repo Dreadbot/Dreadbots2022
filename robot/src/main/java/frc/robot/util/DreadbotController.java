@@ -27,7 +27,6 @@ public final class DreadbotController {
     /**
      * @return The value of the side-to-side motion on the left joystick.
      */
-    @SuppressWarnings("unused")
     public double getXAxis() {
         return joystick.getRawAxis(0);
     }
@@ -35,7 +34,6 @@ public final class DreadbotController {
     /**
      * @return The value of the forward/backward motion on the left joystick.
      */
-    @SuppressWarnings("unused")
     public double getYAxis() {
         return joystick.getRawAxis(1);
     }
@@ -43,7 +41,6 @@ public final class DreadbotController {
     /**
      * @return The value of the side-to-side motion on the right joystick.
      */
-    @SuppressWarnings("unused")
     public double getZAxis() {
         return joystick.getRawAxis(2);
     }
@@ -51,7 +48,6 @@ public final class DreadbotController {
     /**
      * @return The value of the forward/backward motion on the right joystick.
      */
-    @SuppressWarnings("unused")
     public double getWAxis() {
         return joystick.getRawAxis(3);
     }
@@ -59,7 +55,6 @@ public final class DreadbotController {
     /**
      * @return The state of the blue 'X' button on the right side of the gamepad.
      */
-    @SuppressWarnings("unused")
     public boolean isXButtonPressed() {
         return joystick.getRawButton(1);
     }
@@ -67,7 +62,6 @@ public final class DreadbotController {
     /**
      * @return The state of the green 'A' button on the right side of the gamepad.
      */
-    @SuppressWarnings("unused")
     public boolean isAButtonPressed() {
         return joystick.getRawButton(2);
     }
@@ -75,7 +69,6 @@ public final class DreadbotController {
     /**
      * @return The state of the red 'B' button on the right side of the gamepad.
      */
-    @SuppressWarnings("unused")
     public boolean isBButtonPressed() {
         return joystick.getRawButton(3);
     }
@@ -83,7 +76,6 @@ public final class DreadbotController {
     /**
      * @return The state of the orange 'Y' button on the right side of the gamepad.
      */
-    @SuppressWarnings("unused")
     public boolean isYButtonPressed() {
         return joystick.getRawButton(4);
     }
@@ -91,7 +83,6 @@ public final class DreadbotController {
     /**
      * @return The state of the left flat button on the front face of the gamepad.
      */
-    @SuppressWarnings("unused")
     public boolean isLeftBumperPressed() {
         return joystick.getRawButton(5);
     }
@@ -99,7 +90,6 @@ public final class DreadbotController {
     /**
      * @return The state of the right flat button on the front face of the gamepad.
      */
-    @SuppressWarnings("unused")
     public boolean isRightBumperPressed() {
         return joystick.getRawButton(6);
     }
@@ -107,7 +97,6 @@ public final class DreadbotController {
     /**
      * @return The state of the left trigger on the front face of the gamepad.
      */
-    @SuppressWarnings("unused")
     public boolean isLeftTriggerPressed() {
         return joystick.getRawButton(7);
     }
@@ -115,7 +104,6 @@ public final class DreadbotController {
     /**
      * @return The state of the right trigger on the front face of the gamepad.
      */
-    @SuppressWarnings("unused")
     public boolean isRightTriggerPressed() {
         return joystick.getRawButton(8);
     }
@@ -123,7 +111,6 @@ public final class DreadbotController {
     /**
      * @return The state of the 'BACK' utility button in the center of the gamepad.
      */
-    @SuppressWarnings("unused")
     public boolean isBackButtonPressed() {
         return joystick.getRawButton(9);
     }
@@ -131,7 +118,6 @@ public final class DreadbotController {
     /**
      * @return The state of the 'START' utility button in the center of the gamepad.
      */
-    @SuppressWarnings("unused")
     public boolean isStartButtonPressed() {
         return joystick.getRawButton(10);
     }
@@ -142,7 +128,6 @@ public final class DreadbotController {
      *
      * @return The native WPI object used to construct this Facade pattern with.
      */
-    @SuppressWarnings("unused")
     public Joystick getNativeWPIJoystick() {
         return joystick;
     }
@@ -153,7 +138,6 @@ public final class DreadbotController {
      * @param button The ID of the button on the gamepad.
      * @return The state of the given button.
      */
-    @SuppressWarnings("unused")
     public boolean getRawButton(int button) {
         return joystick.getRawButton(button);
     }
@@ -164,7 +148,6 @@ public final class DreadbotController {
      * @param axis The ID of the axis on the gamepad.
      * @return The current position of the given axis.
      */
-    @SuppressWarnings("unused")
     public double getRawAxis(int axis) {
         return joystick.getRawAxis(axis);
     }
@@ -174,7 +157,6 @@ public final class DreadbotController {
      *
      * @return Whether the gamepad is connected or not.
      */
-    @SuppressWarnings("unused")
     public boolean isConnected() {
         return joystick.isConnected();
     }
@@ -184,7 +166,6 @@ public final class DreadbotController {
      *
      * @return Name of the gamepad HID.
      */
-    @SuppressWarnings("unused")
     public String getName() {
         return joystick.getName();
     }
