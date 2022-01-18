@@ -1,28 +1,19 @@
 # import the necessary packages
-from cv2 import sqrt
 import numpy as np
-import argparse
 import cv2
 import imutils
-import time
 import math
+
 # construct the argument parse and parse the arguments
-ap = argparse.ArgumentParser()
-ap.add_argument("-v", "--video",
-                help="path to the (optional) video file")
-ap.add_argument("-b", "--buffer", type=int, default=64,
-                help="max buffer size")
-args = vars(ap.parse_args())
 # define the lower and upper boundaries of the "green"
 # ball in the HSV color space, then initialize the
 # list of tracked points
-greenLower = (92, 10, 2)
-greenUpper = (118, 241, 255)
+blueLower = (92, 10, 2)
+blueUpper = (118, 241, 255)
 # if a video path was not supplied, grab the reference
 # to the webcam
 vs = cv2.VideoCapture(0)
 # allow the camera or video file to warm up
-time.sleep(2.0)
 # keep looping
 while True:
     # grab the current frame
@@ -37,7 +28,7 @@ while True:
     # construct a mask for the color "green", then perform
     # a series of dilations and erosions to remove any small
     # blobs left in the mask
-    mask = cv2.inRange(hsv, greenLower, greenUpper)
+    mask = cv2.inRange(hsv, blueLower, blueLower)
     mask = cv2.erode(mask, None, iterations=2)
     mask = cv2.dilate(mask, None, iterations=2)
 
@@ -65,9 +56,9 @@ while True:
             M = cv2.moments(c)
             center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
             for point in c:
-                distX = center[0] - point[0][0]
-                distY = center[1] - point[0][1]
-                dist = math.sqrt(pow(distX, 2) + pow(distY, 2))
+                distX = point[0][0] - center[0]
+                distY = point[0][1] - center[1]
+                dist = abs(math.sqrt(pow(distX, 2) + pow(distY, 2)))
                 dists.append(dist)
 
             a = 0
@@ -94,6 +85,7 @@ while True:
         M = cv2.moments(c)
         center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
         # print(center)
+
         # only proceed if the radius meets a minimum size
         if radius > 10:
             # draw the circle and centroid on the frame,
@@ -103,14 +95,8 @@ while True:
             cv2.circle(frame, center, 5, (0, 0, 255), -1)
     cv2.imshow("Frame", frame)
     key = cv2.waitKey(1) & 0xFF
-    # if the 'q' key is pressed, stop the loop
     if key == ord("q"):
         break
-# if we are not using a video file, stop the camera video stream
-if not args.get("video", False):
-    vs.stop()
-# otherwise, release the camera
-else:
-    vs.release()
-# close all windows
+
+vs.release()
 cv2.destroyAllWindows()
