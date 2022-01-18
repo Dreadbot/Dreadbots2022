@@ -32,6 +32,23 @@ public abstract class DreadbotMath {
     }
 
     /**
+     * In-Range Function
+     * <p>
+     * The in-range function determines whether a value is 'in-between' a given minimum
+     * value and a maximum value.
+     *
+     * @param <T>         Comparable type.
+     * @param inputValue  The input value.
+     * @param bottomValue The bottom value of the range.
+     * @param topValue    The top value of the range.
+     * @return Returns 'true' if the inputValue is within the constraints, 'false' otherwise.
+     */
+    public static <T extends Comparable<T>> boolean inRange(final T inputValue, final T bottomValue,
+                                                            final T topValue) {
+        return DreadbotMath.inRange(inputValue, bottomValue, topValue, true);
+    }
+
+    /**
      * Clamp Function
      * <p>
      * Clamp functions will 'clamp' a value between two constraints, such that
@@ -70,7 +87,7 @@ public abstract class DreadbotMath {
      */
     public static <T extends Comparable<T>> T applyDeadbandToValue(final T inputValue, final T deadbandZoneMinimum,
                                                                    final T deadbandZoneMaximum, final T neutralValue) {
-        if(DreadbotMath.inRange(inputValue, deadbandZoneMinimum, deadbandZoneMaximum))
+        if(DreadbotMath.inRange(inputValue, deadbandZoneMinimum, deadbandZoneMaximum, false))
             return neutralValue;
 
         return inputValue;
