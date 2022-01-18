@@ -62,6 +62,8 @@ public class Drive extends Subsystem {
         rightFrontMotor.close();
         leftBackMotor.close();
         rightBackMotor.close();
+
+        mecanumDrive.close();
     }
 
     public CANSparkMax getRightBackMotor() {
