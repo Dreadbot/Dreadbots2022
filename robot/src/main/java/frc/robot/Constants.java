@@ -15,4 +15,8 @@ public abstract class Constants {
 
     public static final int LEFT_INTAKE_MOTOR_PORT = 5;
     public static final int RIGHT_INTAKE_MOTOR_PORT = 6;
+
+    public static final int FLYWHEEL_MOTOR_PORT = 7;
+    public static final int HOOD_MOTOR_PORT = 8;
+    public static final int TURRET_MOTOR_PORT = 9;
 }
