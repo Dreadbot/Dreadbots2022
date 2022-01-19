@@ -47,6 +47,9 @@ public class Shooter extends Subsystem {
     }
     @Override
     protected void stopMotors() {
+        flywheelMotor.stopMotor();
+        hoodMotor.stopMotor();
+        turretMotor.stopMotor();
     }
     public CANSparkMax getFlywheelMotor() {
         return flywheelMotor;
