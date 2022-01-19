@@ -61,11 +61,9 @@ public class Shooter implements AutoCloseable {
     private double calculateArcHeight() {
         return ((0.5f * distanceToGoal) + 2.5f);
     }
-    @SuppressWarnings("unused")
     private double calculateBVoy() {
         return Math.sqrt(-2 * Constants.GRAVITY * (calculateArcHeight() - Constants.INITIAL_BALL_HEIGHT));
     }
-    @SuppressWarnings("unused")
     private double calculateTScore() {
         double bVoy = calculateBVoy();
         return (-bVoy - Math.sqrt(Math.pow(bVoy, 2) - 2 * Constants.GRAVITY * (Constants.INITIAL_BALL_HEIGHT - Constants.GOAL_HEIGHT))) / Constants.GRAVITY;
