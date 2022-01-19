@@ -5,6 +5,9 @@
 package frc.robot;
 
 public abstract class Constants {
+    /**
+     * Motor Ports
+     */
     public static final int PRIMARY_JOYSTICK_PORT = 0;
     public static final int SECONDARY_JOYSTICK_PORT = 1;
 
@@ -19,4 +22,12 @@ public abstract class Constants {
     public static final int FLYWHEEL_MOTOR_PORT = 7;
     public static final int HOOD_MOTOR_PORT = 8;
     public static final int TURRET_MOTOR_PORT = 9;
+    /**
+     * Shooter Constants
+     */
+    public static final float GRAVITY = -9.81f;
+    public static final float GOAL_HEIGHT = 2.64f;
+    public static final float INITIAL_BALL_HEIGHT = 0.6f;
+    //Please Change this based on set rpm THIS IS JUST TO START!!!!
+    public static final float BASE_RPM = 180 / 0.279f;
 }
