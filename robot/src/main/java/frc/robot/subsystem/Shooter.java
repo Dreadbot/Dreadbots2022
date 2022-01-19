@@ -8,7 +8,7 @@ public class Shooter extends Subsystem {
     private final CANSparkMax flywheelMotor;
     private final CANSparkMax hoodMotor;
     private final CANSparkMax turretMotor;
-    private double distanceToGoal = 9.2f;
+    private double distanceToGoal = 5f;
     public Shooter(CANSparkMax flywheelMotor, CANSparkMax hoodMotor, CANSparkMax turretMotor) {
         super("Shooter");
         this.flywheelMotor = flywheelMotor;
@@ -34,7 +34,7 @@ public class Shooter extends Subsystem {
         //TODO
     }
     public double getRequiredFlyWheelRPM() {
-        return Constants.BASE_RPM * Math.sqrt(Math.pow(calculateBVoy(), 2) + distanceToGoal / calculateTScore());
+        return Constants.BASE_RPM * Math.sqrt(Math.pow(calculateBVoy(), 2) + Math.pow(distanceToGoal / calculateTScore(), 2));
     }
     public double getRequiredHoodAngle() {
         return Math.atan(calculateBVoy() / (distanceToGoal / calculateTScore())) * 180 / Math.PI;
@@ -68,10 +68,10 @@ public class Shooter extends Subsystem {
     private double calculateArcHeight() {
         return ((0.5f * distanceToGoal) + 2.5f);
     }
-    private double calculateBVoy() {
+    public double calculateBVoy() {
         return Math.sqrt(-2 * Constants.GRAVITY * (calculateArcHeight() - Constants.INITIAL_BALL_HEIGHT));
     }
-    private double calculateTScore() {
+    public double calculateTScore() {
         double bVoy = calculateBVoy();
         return (-bVoy - Math.sqrt(Math.pow(bVoy, 2) - 2 * Constants.GRAVITY * (Constants.INITIAL_BALL_HEIGHT - Constants.GOAL_HEIGHT))) / Constants.GRAVITY;
     }
