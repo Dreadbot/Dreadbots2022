@@ -47,7 +47,9 @@ public class Robot extends TimedRobot {
   public void robotInit() {}
 
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    drive.drive(primaryController.getYAxis(), primaryController.getXAxis(), 0);
+  }
 
   @Override
   public void autonomousInit() {}
