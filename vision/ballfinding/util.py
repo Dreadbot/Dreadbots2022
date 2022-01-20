@@ -1,9 +1,8 @@
-from appscript import k
 import cv2
 import imutils
 import json
 
-rangesFile = "Data/ranges.json"
+rangesFile = "vision\\ballfinding\\Data\\ranges.json"
 
 def getMask(frame, lower: tuple, upper: tuple, its = 14, colorSpace: int = cv2.COLOR_BGR2HSV):
     frame = imutils.resize(frame, width=600)

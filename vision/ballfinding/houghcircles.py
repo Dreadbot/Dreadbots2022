@@ -3,8 +3,8 @@ import imutils
 import util
 import numpy as np
 
-camera = cv2.VideoCapture(0)
-rangeName = "blue"
+camera = cv2.VideoCapture(1)
+rangeName = "red"
 
 while True:
     ret, frame = camera.read()
@@ -15,9 +15,9 @@ while True:
     if not util.isLiveRange(rangeName):
         util.updateLiveRange(rangeName, (0, 0, 0), (255, 255, 255))
     
-    range = util.getLiveRange()
-    lower = range["lower"]
-    upper = range["upper"]
+    range = util.getLiveRange(rangeName)
+    lower = tuple(range["lower"])
+    upper = tuple(range["upper"])
 
     mask = util.getMask(frame, lower, upper)
     circleFrame = frame.copy()

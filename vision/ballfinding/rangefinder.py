@@ -44,7 +44,7 @@ def getModeInput(modeName, validModes):
 
 
 def main():
-    colorMode = getModeInput("Color", ["hsv", "rgb"])
+    colorMode = getModeInput("Color", ["hsv", "rgb", "hls"])
     imageMode = getModeInput("Image", ["image", "webcam"])
 
     if imageMode.lower() == "image":
@@ -63,8 +63,11 @@ def main():
 
         if colorMode.lower() == "hsv":
             frameToThresh = cv2.cvtColor(image.copy(), cv2.COLOR_BGR2HSV)
+        elif colorMode.lower() == "hls":
+            frameToThresh = cv2.cvtColor(image.copy(), cv2.COLOR_BGR2HLS)
         else:
             frameToThresh = image.copy()
+
 
         v1Min, v2Min, v3Min, v1Max, v2Max, v3Max = getSliderValues(colorMode)
 
