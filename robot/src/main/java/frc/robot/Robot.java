@@ -48,7 +48,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    drive.drive(primaryController.getYAxis(), primaryController.getXAxis(), 0);
+    
   }
 
   @Override
@@ -61,7 +61,9 @@ public class Robot extends TimedRobot {
   public void teleopInit() {}
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    drive.drive(primaryController.getYAxis(), primaryController.getXAxis(), 0);
+  }
 
   @Override
   public void disabledInit() {}

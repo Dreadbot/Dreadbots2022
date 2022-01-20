@@ -41,16 +41,18 @@ public class Drive extends Subsystem {
         
         // For polar drive, calculate the magnitude and angle that the MecanumDrive should drive at.
         double magnitude = Math.sqrt(Math.pow(joystickForwardAxis, 2) + Math.pow(joystickLateralAxis, 2));
-        double angle = Math.atan(joystickForwardAxis/joystickLateralAxis);
+        double angle = Math.atan(joystickLateralAxis/joystickForwardAxis);
         angle *= 180/Math.PI;
-        if(joystickForwardAxis == 0.0d){
+        if(joystickForwardAxis == 0.0d) {
             angle = -Math.signum(joystickLateralAxis) * 90.0d;
         }
-        else if (joystickForwardAxis > 0){
+        else if (joystickForwardAxis > 0) {
             angle -= Math.signum(joystickLateralAxis) * 180.0d;
-        }
 
-        System.out.println(angle);
+            if(joystickLateralAxis == 0.0d) {
+                angle = 180.0d;
+            }
+        }
         // double angle = 0;
         // if(joystickLateralAxis == 0.0d) {
         //     angle = 90.0d * Math.signum(joystickForwardAxis);
@@ -64,7 +66,7 @@ public class Drive extends Subsystem {
         // //     }
         // }
 
-        //mecanumDrive.drivePolar(magnitude, angle, zRotation);
+        mecanumDrive.drivePolar(magnitude, angle, zRotation);
     }
 
     @Override
