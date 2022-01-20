@@ -53,18 +53,6 @@ public class Drive extends Subsystem {
                 angle = 180.0d;
             }
         }
-        // double angle = 0;
-        // if(joystickLateralAxis == 0.0d) {
-        //     angle = 90.0d * Math.signum(joystickForwardAxis);
-        // // } else {
-        // //     double arctangent = Math.atan(joystickForwardAxis / joystickLateralAxis);
-        // //     arctangent *= (180.0d / Math.PI);
-        // //     if(Math.signum(joystickForwardAxis) > 0.0d && Math.signum(arctangent) > 0.0d) {
-        // //         angle = arctangent;
-        // //     } else if(Math.signum(joystickForwardAxis) < 0.0d && Math.signum(arctangent) > 0.0d) {
-        // //         angle = arctangent - 180.0d;
-        // //     }
-        // }
 
         mecanumDrive.drivePolar(magnitude, angle, zRotation);
     }
