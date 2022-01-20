@@ -51,7 +51,7 @@ public class Shooter extends Subsystem {
         SmartDashboard.putNumber("Feed Forward", kFF);
         SmartDashboard.putNumber("Max Output", kMaxOutput);
         SmartDashboard.putNumber("Min Output", kMinOutput);
-        SmartDashboard.putNumber("RPM", 3500);
+        SmartDashboard.putNumber("RPM", 10);
     }
 
     public void setTurretAngle(double turretAngle) {
@@ -67,24 +67,25 @@ public class Shooter extends Subsystem {
         double max = SmartDashboard.getNumber("Max Output", 0);
         double min = SmartDashboard.getNumber("Min Output", 0);
 
+        System.out.println("kP: " + kP);
+
         if((p != kP)) { pidController.setP(p); kP = p; }
         if((i != kI)) { pidController.setI(i); kI = i; }
         if((d != kD)) { pidController.setD(d); kD = d; }
         if((iz != kIz)) { pidController.setIZone(iz); kIz = iz; }
         if((ff != kFF)) { pidController.setFF(ff); kFF = ff; }
         if((max != kMaxOutput) || (min != kMinOutput)) { 
-        pidController.setOutputRange(min, max); 
-        kMinOutput = min; kMaxOutput = max; 
+            pidController.setOutputRange(min, max); 
+            kMinOutput = min; kMaxOutput = max; 
+        }
 
-        double setPoint = SmartDashboard.getNumber("RPM", 0);
-        setPoint /= 2;
+        double setPoint = SmartDashboard.getNumber("RPM", 0) / 2;
+        System.out.println("setpoint: " + setPoint);
 
         pidController.setReference(setPoint, ControlType.kVelocity);
 
         SmartDashboard.putNumber("SetPoint", setPoint);
         SmartDashboard.putNumber("ProcessVariable", encoder.getVelocity());
-    }
-        
     }
 
     @SuppressWarnings("unused")
