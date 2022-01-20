@@ -40,7 +40,9 @@ public class Drive extends Subsystem {
         }
         
         // For polar drive, calculate the magnitude and angle that the MecanumDrive should drive at.
+        @SuppressWarnings("unused")
         double magnitude = Math.sqrt(Math.pow(joystickForwardAxis, 2) + Math.pow(joystickLateralAxis, 2));
+        @SuppressWarnings("unused")
         double angle;
         if(joystickLateralAxis == 0.0d) {
             angle = 90.0d * Math.signum(joystickForwardAxis);
