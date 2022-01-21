@@ -50,25 +50,49 @@ public class DriveTest {
 
     @Test
     public void testJoystickPolarMath() {
-        // First Quadrant of the Joystick
+        // First Quadrant of the Joystick (-,+)
+        angle = Drive.getAngleDegreesFromJoystick(
+            -Math.sin(Math.PI / 3), Math.cos(Math.PI / 3));
+        assertEquals(-30.0d, angle, DELTA);
         angle = Drive.getAngleDegreesFromJoystick(
             -Math.sin(Math.PI / 4), Math.cos(Math.PI / 4));
         assertEquals(-45.0d, angle, DELTA);
+        angle = Drive.getAngleDegreesFromJoystick(
+            -Math.sin(Math.PI / 6), Math.cos(Math.PI / 6));
+        assertEquals(-60.0d, angle, DELTA);
 
-        // Second Quadrant of the Joystick
+        // Second Quadrant of the Joystick (-,-)
+        angle = Drive.getAngleDegreesFromJoystick(
+            -Math.sin(Math.PI / 3), -Math.cos(Math.PI / 3));
+        assertEquals(30.0d, angle, DELTA);
         angle = Drive.getAngleDegreesFromJoystick(
             -Math.sin(Math.PI / 4), -Math.cos(Math.PI / 4));
         assertEquals(45.0d, angle, DELTA);
+        angle = Drive.getAngleDegreesFromJoystick(
+            -Math.sin(Math.PI / 6), -Math.cos(Math.PI / 6));
+        assertEquals(60.0d, angle, DELTA);
 
-        // Third Quadrant of the Joystick
+        // Third Quadrant of the Joystick (+,-)
+        angle = Drive.getAngleDegreesFromJoystick(
+            Math.sin(Math.PI / 3), -Math.cos(Math.PI / 3));
+        assertEquals(150.0d, angle, DELTA);
         angle = Drive.getAngleDegreesFromJoystick(
             Math.sin(Math.PI / 4), -Math.cos(Math.PI / 4));
         assertEquals(135.0d, angle, DELTA);
+        angle = Drive.getAngleDegreesFromJoystick(
+            Math.sin(Math.PI / 6), -Math.cos(Math.PI / 6));
+        assertEquals(120.0d, angle, DELTA);
         
-        // Fourth Quadrant of the Joystick
+        // Fourth Quadrant of the Joystick (+, +)
+        angle = Drive.getAngleDegreesFromJoystick(
+            Math.sin(Math.PI / 3), Math.cos(Math.PI / 3));
+        assertEquals(-150.0d, angle, DELTA);
         angle = Drive.getAngleDegreesFromJoystick(
             Math.sin(Math.PI / 4), Math.cos(Math.PI / 4));
         assertEquals(-135.0d, angle, DELTA);
+        angle = Drive.getAngleDegreesFromJoystick(
+            Math.sin(Math.PI / 6), Math.cos(Math.PI / 6));
+        assertEquals(-120.0d, angle, DELTA);
     }
 
     @Test
