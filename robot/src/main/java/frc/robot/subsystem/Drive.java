@@ -24,6 +24,11 @@ public class Drive extends Subsystem {
         this.rightFrontMotor = rightFrontMotor;
         this.leftBackMotor = leftBackMotor;
         this.rightBackMotor = rightBackMotor;
+
+        leftFrontMotor.restoreFactoryDefaults();
+        rightFrontMotor.restoreFactoryDefaults();
+        leftBackMotor.restoreFactoryDefaults();
+        rightBackMotor.restoreFactoryDefaults();
         
         // Invert right motors
         rightFrontMotor.setInverted(true);
@@ -50,9 +55,9 @@ public class Drive extends Subsystem {
         
         // For polar drive, calculate the magnitude and angle that the MecanumDrive should drive at.
         double magnitude = Math.sqrt(Math.pow(joystickForwardAxis, 2) + Math.pow(joystickLateralAxis, 2));
-        double angle = Drive.getAngleDegreesFromJoystick(joystickForwardAxis, joystickLateralAxis);
+        double angle = Drive.getAngleDegreesFromJoystick(-joystickForwardAxis, joystickLateralAxis);
 
-        mecanumDrive.drivePolar(magnitude, angle, zRotation);
+        mecanumDrive.drivePolar(magnitude, angle, -zRotation);
     }
 
     public static double getAngleDegreesFromJoystick(double forwardAxis, double lateralAxis) {
