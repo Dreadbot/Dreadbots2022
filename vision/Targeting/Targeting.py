@@ -30,9 +30,9 @@ while(cap.isOpened()):
 
 # applies many filters those filters beiiing...
     hlsImg = cv2.cvtColor(inputImg, cv2.COLOR_BGR2HLS) # Converting the input to HLS color
-    h = [0, 180]       #|
-    s = [50, 255]      #|  --- these three values are the range that we use to convert to binary image
-    l = [200, 255]     #|
+    h = [60, 70]       #| 0, 180
+    s = [40, 60]      #| 50,255        --- these three values are the range that we use to convert to binary image
+    l = [200, 255]     #| 200, 255
     blurImg =  cv2.GaussianBlur(hlsImg, (7, 7), 0) # Blurs the HLS image a bit to make it easier to work with
     maskImg = cv2.inRange(blurImg, (h[0], s[0], l[0]), (h[1], s[1], l[1])) # Checks all pixels and changes the ones outside the range to black and the ones in to white
     dilateImg = cv2.dilate(maskImg, (7, 7), 20) # Dilates out all the found sections so we can get them more solid
@@ -47,7 +47,7 @@ while(cap.isOpened()):
     #cv2.imshow('Input', inputImg)
     # cv2.imshow('HLS Conversion', hlsImg)
     # cv2.imshow('Mask', maskImg)
-    #cv2.imshow('Dilated', dilateImg)
+    cv2.imshow('Dilated', dilateImg)
     cv2.imshow('Contour', contourImg)
 
     imgToPush = cv2.add(inputImg, np.array([50.]))
@@ -72,7 +72,7 @@ while(cap.isOpened()):
 
 
 # Checks the width (w) and height (h) of every contour in the frame and only puts the targets over the ones in the range
-      if w > 5 and w < 15 and h > 10 and h < 150 :
+      if w > 5 and w < 20 and h > 10 and h < 150 :   # w 5,15   h 10,150
 #Draws the target over the reflective tape on the original image
         cv2.rectangle(imgToPush, (x,y), (x+w, y+h), (0, 255, 0), 3)
         cv2.circle(imgToPush, (int(x+(w/2)), int(y+(h/2))), 5, (255, 0, 0))
