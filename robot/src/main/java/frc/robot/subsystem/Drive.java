@@ -41,18 +41,16 @@ public class Drive extends Subsystem {
         
         // For polar drive, calculate the magnitude and angle that the MecanumDrive should drive at.
         double magnitude = Math.sqrt(Math.pow(joystickForwardAxis, 2) + Math.pow(joystickLateralAxis, 2));
-        double angle;
-        if(joystickLateralAxis == 0.0d) {
-            angle = 90.0d * Math.signum(joystickForwardAxis);
-        } else {
-            double arctangent = Math.atan(joystickForwardAxis / joystickLateralAxis);
-            arctangent *= (180.0d / Math.PI);
-            if(Math.signum(joystickForwardAxis) > 0.0d && Math.signum(arctangent) > 0.0d) {
-                angle = arctangent;
-            } else if(Math.signum(joystickForwardAxis) < 0.0d && Math.signum(arctangent) > 0.0d) {
-                angle = arctangent - 180.0d;
-            }
-        }
+        double angle = Drive.getAngleDegreesFromJoystick(joystickForwardAxis, joystickLateralAxis);
+
+        mecanumDrive.drivePolar(magnitude, angle, zRotation);
+    }
+
+    public static double getAngleDegreesFromJoystick(double forwardAxis, double lateralAxis) {
+        double angleInRadians = Math.atan2(-forwardAxis, lateralAxis);
+        double angleInDegrees = angleInRadians * 180.0d / Math.PI;
+        angleInDegrees -= 90.0d;
+        return (angleInDegrees <= -180.0d) ? angleInDegrees + 360.0d : angleInDegrees;
     }
 
     @Override
