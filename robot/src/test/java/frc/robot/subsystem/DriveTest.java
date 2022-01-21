@@ -21,6 +21,8 @@ public class DriveTest {
     private CANSparkMax leftBackDriveMotor;
     private CANSparkMax rightBackDriveMotor;
 
+    private double angle;
+
     @Before
     public void setup() {
         assert HAL.initialize(500, 0);
@@ -33,6 +35,8 @@ public class DriveTest {
         rightBackDriveMotor.setInverted(true);
 
         drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
+
+        angle = 0.0d;
     }
 
     @After
@@ -42,6 +46,29 @@ public class DriveTest {
         leftBackDriveMotor.close();
         rightBackDriveMotor.close();
         drive.close();
+    }
+
+    @Test
+    public void testJoystickPolarMath() {
+        // First Quadrant of the Joystick
+        angle = Drive.getAngleDegreesFromJoystick(
+            -Math.sin(Math.PI / 4), Math.cos(Math.PI / 4));
+        assertEquals(-45.0d, angle, DELTA);
+
+        // Second Quadrant of the Joystick
+        angle = Drive.getAngleDegreesFromJoystick(
+            -Math.sin(Math.PI / 4), -Math.cos(Math.PI / 4));
+        assertEquals(45.0d, angle, DELTA);
+
+        // Third Quadrant of the Joystick
+        angle = Drive.getAngleDegreesFromJoystick(
+            Math.sin(Math.PI / 4), -Math.cos(Math.PI / 4));
+        assertEquals(135.0d, angle, DELTA);
+        
+        // Fourth Quadrant of the Joystick
+        angle = Drive.getAngleDegreesFromJoystick(
+            Math.sin(Math.PI / 4), Math.cos(Math.PI / 4));
+        assertEquals(-135.0d, angle, DELTA);
     }
 
     @Test
