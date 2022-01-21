@@ -98,7 +98,7 @@ public class DriveTest {
     @Test
     public void fullForwardDisabled() {
         drive.disable();
-        drive.drive(1.0d, 0.0d, 0.0d);
+        drive.drivePolar(1.0d, 0.0d, 0.0d);
 
         assertEquals(0.0d, leftFrontDriveMotor.get(), DELTA);
         assertEquals(0.0d, rightFrontDriveMotor.get(), DELTA);
