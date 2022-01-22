@@ -26,7 +26,7 @@ public class ShooterTest {
 
         shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
     }
-
+    
     @After
     public void shutdown() throws Exception {
         flywheelMotor.close();
