@@ -1,5 +1,4 @@
 package frc.robot.subsystem;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -15,7 +14,7 @@ public class Shooter extends Subsystem {
 
     private SparkMaxPIDController pidController;
     private RelativeEncoder encoder;
-
+    public ShootingState state;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
     private double distanceToGoal;
 
@@ -60,7 +59,7 @@ public class Shooter extends Subsystem {
         //TODO
     }
 
-    public void shoot() {
+    public void shoot(boolean speedReady, boolean hoodReady, boolean turretReady) {
         double p = SmartDashboard.getNumber("P Gain", 0);
         double i = SmartDashboard.getNumber("I Gain", 0);
         double d = SmartDashboard.getNumber("D Gain", 0);
@@ -91,8 +90,9 @@ public class Shooter extends Subsystem {
     }
 
     @SuppressWarnings("unused")
-    private void setHoodPosition(double hoodAngle) {
+    private boolean setHoodPosition(double hoodPosition) {
         //TODO
+        return false;
     }
 
     @SuppressWarnings("unused")
@@ -133,13 +133,35 @@ public class Shooter extends Subsystem {
         distanceToGoal = dist;
     }
     private double calculateArcHeight() {
-        return ((0.5f * distanceToGoal) + 2.5f);
+        return ((0.5d * distanceToGoal) + 2.5d);
     }
     public double calculateXVelocity() {
         return Math.sqrt(-2 * Constants.GRAVITY * (calculateArcHeight() - Constants.INITIAL_BALL_HEIGHT));
     }
-    public double calculateTimeToScore() {
-        double bVoy = calculateXVelocity();
-        return (-bVoy - Math.sqrt(Math.pow(bVoy, 2) - 2 * Constants.GRAVITY * (Constants.INITIAL_BALL_HEIGHT - Constants.GOAL_HEIGHT))) / Constants.GRAVITY;
+    public double calculateTimeToScore() { 
+        double xVel = calculateXVelocity();
+        return (-xVel - Math.sqrt(Math.pow(xVel, 2) - 2 * Constants.GRAVITY * (Constants.INITIAL_BALL_HEIGHT - Constants.GOAL_HEIGHT))) / Constants.GRAVITY;
+    }
+    @SuppressWarnings("unused")
+    private double hoodAngleToHoodPosition(double hoodAngle) {
+        return 0d;
+    }
+    public double[] hoodCalibration() {
+        //TODO
+        return new double[2];
+    }
+    @SuppressWarnings("unused")
+    private void speedControllerFlywheel(double rpm) {
+        //TODO
+    }
+    public enum ShootingState {
+        Shooting,
+        Aiming,
+        SpinningUp,
+        SpinningDown,
+    }
+    @SuppressWarnings("unused")
+    private void setState(ShootingState newState) {
+        state = newState;
     }
 }
