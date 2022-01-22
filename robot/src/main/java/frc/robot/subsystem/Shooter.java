@@ -6,6 +6,7 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 
 public class Shooter extends Subsystem {
     private final CANSparkMax flywheelMotor;
@@ -16,6 +17,7 @@ public class Shooter extends Subsystem {
     private RelativeEncoder encoder;
 
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
+    private double distanceToGoal;
 
     public Shooter(CANSparkMax flywheelMotor, CANSparkMax hoodMotor, CANSparkMax turretMotor) {
         super("Shooter");
@@ -97,12 +99,11 @@ public class Shooter extends Subsystem {
     private void setFlywheelRPM(double revolutionsPerMinute) {
         //TODO
     }
-    
-    @Override
-    protected void stopMotors() {
-        flywheelMotor.stopMotor();
-        hoodMotor.stopMotor();
-        turretMotor.stopMotor();
+    public double getRequiredFlyWheelRPM() {
+        return Constants.BASE_RPM * Math.sqrt(Math.pow(calculateBVoy(), 2) + Math.pow(distanceToGoal / calculateTScore(), 2));
+    }
+    public double getRequiredHoodAngle() {
+        return Math.atan(calculateBVoy() / (distanceToGoal / calculateTScore())) * 180 / Math.PI;
     }
 
     @Override
@@ -111,7 +112,12 @@ public class Shooter extends Subsystem {
         hoodMotor.close();
         turretMotor.close();
     }
-    
+    @Override
+    protected void stopMotors() {
+        flywheelMotor.stopMotor();
+        hoodMotor.stopMotor();
+        turretMotor.stopMotor();
+    }
     public CANSparkMax getFlywheelMotor() {
         return flywheelMotor;
     }
@@ -122,5 +128,18 @@ public class Shooter extends Subsystem {
 
     public CANSparkMax getTurretMotor() {
         return turretMotor;
+    }
+    public void setDistanceToGoal(float dist) {
+        distanceToGoal = dist;
+    }
+    private double calculateArcHeight() {
+        return ((0.5f * distanceToGoal) + 2.5f);
+    }
+    public double calculateBVoy() {
+        return Math.sqrt(-2 * Constants.GRAVITY * (calculateArcHeight() - Constants.INITIAL_BALL_HEIGHT));
+    }
+    public double calculateTScore() {
+        double bVoy = calculateBVoy();
+        return (-bVoy - Math.sqrt(Math.pow(bVoy, 2) - 2 * Constants.GRAVITY * (Constants.INITIAL_BALL_HEIGHT - Constants.GOAL_HEIGHT))) / Constants.GRAVITY;
     }
 }

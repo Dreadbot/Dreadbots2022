@@ -27,7 +27,7 @@ public abstract class Constants {
      */
     public static final float GRAVITY = -9.81f;
     public static final float GOAL_HEIGHT = 2.64f;
-    public static final float INITIAL_BALL_HEIGHT = 0.6f;
+    public static final float INITIAL_BALL_HEIGHT = 0.4f;
     //Change this based on RPM Value given to shooter.java, this is just a baseline calculated from Collin's desmos
-    public static final float BASE_RPM = 180 / 0.279f;
+    public static final double BASE_RPM = 2 * 60 / 0.279d;
 }
