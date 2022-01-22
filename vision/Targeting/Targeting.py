@@ -30,9 +30,9 @@ while(cap.isOpened()):
 
 # applies many filters those filters beiiing...
     hlsImg = cv2.cvtColor(inputImg, cv2.COLOR_BGR2HLS) # Converting the input to HLS color
-    h = [60, 70]       #| 0, 180
-    s = [40, 60]      #| 50,255        --- these three values are the range that we use to convert to binary image
-    l = [200, 255]     #| 200, 255
+    h = [60, 70]       #| 60,70
+    s = [40, 60]      #| 40,60    --- these three values are the range that we use to convert to binary image
+    l = [200, 255]     #| 200,255
     blurImg =  cv2.GaussianBlur(hlsImg, (7, 7), 0) # Blurs the HLS image a bit to make it easier to work with
     maskImg = cv2.inRange(blurImg, (h[0], s[0], l[0]), (h[1], s[1], l[1])) # Checks all pixels and changes the ones outside the range to black and the ones in to white
     dilateImg = cv2.dilate(maskImg, (7, 7), 20) # Dilates out all the found sections so we can get them more solid
