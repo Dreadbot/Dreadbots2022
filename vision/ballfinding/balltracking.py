@@ -2,11 +2,21 @@ import numpy as np
 import cv2
 import imutils
 import math
+import util
 
-blueLower = (49, 0, 0)
-blueUpper = (134, 255, 255)
+rangeName = input("Range: ")
+blueLower = (73, 87, 26)
+blueUpper = (161, 255, 255)
+
+if not util.isLiveRange(rangeName):
+    print("NOT RANGE")
+    util.updateLiveRange(rangeName, (0, 0, 0), (255, 255, 255))
+
+range = util.getLiveRange(rangeName)
 
 vs = cv2.VideoCapture(1)
+vs.set(cv2.CAP_PROP_EXPOSURE, -4)
+util.setupSliderWindow("hsv", "Trackbars", lower=range["lower"], upper=range["upper"])
 
 while True:
     ret, frame = vs.read()
@@ -14,13 +24,13 @@ while True:
     if not ret:
         break
 
-    frame = imutils.resize(frame, width=600)
-    blurred = cv2.GaussianBlur(frame, (11, 11), 0)
-    hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HLS)
+    hL, sL, vL, hU, sU, vU = util.getSliderValues("hsv", "Trackbars")
+    util.updateLiveRange(rangeName, (hL, sL, vL), (hU, sU, vU))
+    
+    lower = (hL, sL, vL)
+    upper = (hU, sU, vU)
 
-    mask = cv2.inRange(hsv, blueLower, blueUpper)
-    mask = cv2.erode(mask, None, iterations=14)
-    mask = cv2.dilate(mask, None, iterations=14)
+    mask = util.getMask(frame, lower, upper)
 
     cv2.imshow("Mask", mask)
 
@@ -29,47 +39,23 @@ while True:
     cnts = imutils.grab_contours(cnts)
     center = None
 
+    frame = imutils.resize(frame, width=600)
+
     if len(cnts) > 0:
         image = frame.copy()
         cv2.drawContours(image=image, contours=cnts, contourIdx=-1,
                          color=(0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
         cv2.imshow("Cnts", image)
-
-        # confirmedBalls = []
-
-        # for c in cnts:
-        #     dists = []
-        #     M = cv2.moments(c)
-        #     center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-        #     for point in c:
-        #         distX = point[0][0] - center[0]
-        #         distY = point[0][1] - center[1]
-        #         dist = abs(math.sqrt(pow(distX, 2) + pow(distY, 2)))
-        #         dists.append(dist)
-
-        #     a = 0
-        #     for d in dists:
-        #         a += d
-
-        #     avg = a / len(dists)
-
-        #     ball = True
-        #     for d in dists:
-        #         if not (d > avg - 10 and d < avg + 10):
-        #             ball = False
-        #             break
-
-        #     if ball:
-        #         confirmedBalls.append(c)
-
-        # if len(confirmedBalls) == 0:
-        #     continue
         
+        circles = frame.copy()
+
         areas = {}
         for con in cnts:
             ((x, y), radius) = cv2.minEnclosingCircle(con)
+            cv2.circle(circles, (int(x), int(y)), int(radius),
+                    (0, 0, 0), 2)
             cntArea = cv2.contourArea(con)
-            if cntArea == 0: continue
+            # if cntArea == 0 or radius <= 40: continue
             circleArea = math.pi * radius**2 # r**2 does the same thing lmao
             # print(circleArea)
             p = cntArea / circleArea
@@ -77,6 +63,8 @@ while True:
             areas[p] = con
             # print(areas[p])
 
+        cv2.imshow("Circles", circles)
+        if(len(areas) == 0): continue
 
         greatestArea = max(areas.keys())
         # print(areas)

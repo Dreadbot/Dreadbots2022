@@ -1,17 +1,19 @@
 import cv2
+import numpy as np
 import imutils
 import json
 
 rangesFile = "vision\\ballfinding\\Data\\ranges.json"
 
-def getMask(frame, lower: tuple, upper: tuple, its = 14, colorSpace: int = cv2.COLOR_BGR2HSV):
+def getMask(frame, lower: tuple, upper: tuple, eIts = 3, dIts = 7,colorSpace: int = cv2.COLOR_BGR2HSV, blurK = 3, k = 3):
     frame = imutils.resize(frame, width=600)
-    blurred = cv2.GaussianBlur(frame, (11, 11), 0)
-    hsv = cv2.cvtColor(blurred, colorSpace)
-
+    hsv = cv2.cvtColor(frame, colorSpace)
     inRange = cv2.inRange(hsv, lower, upper)
-    erode = cv2.erode(inRange, None, iterations=its)
-    dilate = cv2.dilate(erode, None, iterations=its)
+    blurred = cv2.GaussianBlur(inRange, (blurK, blurK), 0)
+
+    # kernel = np.ones((k, k), np.uint8)
+    erode = cv2.erode(blurred, None, iterations=eIts)
+    dilate = cv2.dilate(erode, None, iterations=dIts)
 
     return dilate
 
@@ -39,16 +41,24 @@ def updateLiveRange(key, lower: tuple, upper: tuple):
 
     return jsonData[key]
 
-def setupSliderWindow(mode, windowName):
+def setupSliderWindow(mode, windowName, lower: tuple = None, upper: tuple = None):
     cv2.namedWindow("Trackbars", 0)
 
     for i in ["MIN", "MAX"]:
-        if i == "MIN":
-            v = 0
-        else:
-            v = 255
+        if lower == None and upper == None:
+            if i == "MIN":
+                v = 0
+            else:
+                v = 255
 
         for c in mode:
+            if lower != None and upper != None:
+                ind = mode.index(c)
+                if i == "MIN":
+                    v = lower[ind]
+                else:
+                    v = upper[ind]
+
             cv2.createTrackbar(f"{c.upper()}_{i}",
                                windowName, v, 255, callback)
 
