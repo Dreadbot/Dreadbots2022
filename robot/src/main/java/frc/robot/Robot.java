@@ -62,7 +62,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    drive.drive(primaryController.getYAxis(), primaryController.getXAxis(), 0);
+    drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
     shooter.shoot();
     shooter.setTurretAngle(primaryController.getWAxis());
   }
