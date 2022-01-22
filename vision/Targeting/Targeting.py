@@ -9,6 +9,15 @@ import math
 #- IMPORTANT Calibrate the Height of the hw threshold to the actual target height (width already done)
 #- Probably more stuff idk right now
 
+def _drawTargets(x, y, w, h, rectangleColor, circleColor, lineColor) : 
+    cv2.rectangle(imgToPush, (x,y), (x+w, y+h), rectangleColor, 3)
+    cv2.circle(imgToPush, (int(x+(w/2)), int(y+(h/2))), 5, (255, 0, 0))
+    
+    target = [int(x+(w/2)), int(y+(h/2))]
+
+    cv2.line(imgToPush, (target[0]-10, target[1]), (target[0]+10, target[1]), (255,255,255))
+    cv2.line(imgToPush, (target[0], target[1]-10), (target[0], target[1]+10), (255,255,255))
+    return target
 
 # Create a VideoCaqpture object and read from input file
 cap = cv2.VideoCapture(1)
@@ -30,9 +39,9 @@ while(cap.isOpened()):
 
 # applies many filters those filters beiiing...
     hlsImg = cv2.cvtColor(inputImg, cv2.COLOR_BGR2HLS) # Converting the input to HLS color
-    h = [60, 70]       #| 60,70
-    s = [40, 60]      #| 40,60    --- these three values are the range that we use to convert to binary image
-    l = [200, 255]     #| 200,255
+    h = [60, 70]
+    s = [40, 60]   #- find the HSL values for different environments/lights in the README.md
+    l = [200, 255]
     blurImg =  cv2.GaussianBlur(hlsImg, (7, 7), 0) # Blurs the HLS image a bit to make it easier to work with
     maskImg = cv2.inRange(blurImg, (h[0], s[0], l[0]), (h[1], s[1], l[1])) # Checks all pixels and changes the ones outside the range to black and the ones in to white
     dilateImg = cv2.dilate(maskImg, (7, 7), 20) # Dilates out all the found sections so we can get them more solid
@@ -72,16 +81,9 @@ while(cap.isOpened()):
 
 
 # Checks the width (w) and height (h) of every contour in the frame and only puts the targets over the ones in the range
-      if w > 5 and w < 20 and h > 25 and h < 40 :   # w 5,15   h 10,150
+      if w > 3 and w < 20 and h > 20 and h < 30 :   # w 5,20   h 25,40
 #Draws the target over the reflective tape on the original image
-        cv2.rectangle(imgToPush, (x,y), (x+w, y+h), (0, 255, 0), 3)
-        cv2.circle(imgToPush, (int(x+(w/2)), int(y+(h/2))), 5, (255, 0, 0))
-        
-        target = [int(x+(w/2)), int(y+(h/2))]
-
-        cv2.line(imgToPush, (target[0]-10, target[1]), (target[0]+10, target[1]), (255,255,255))
-        cv2.line(imgToPush, (target[0], target[1]-10), (target[0], target[1]+10), (255,255,255))
-
+        target = _drawTargets(x, y, w, h, (0,255,0), (255,0,0), (255,255,255))
 # Calculate angle to turn to
         fin_angle_hori = ((math.atan((target[0]-(img_w/2))/flength)))*(180/math.pi)
         
@@ -90,7 +92,6 @@ while(cap.isOpened()):
         fin_angle_deg = math.degrees(fin_angle_raw_rad) + camOffset
         fin_angle_rad = math.radians(fin_angle_deg)
         distance = targetHeight / math.tan(fin_angle_rad)
-        target_found = True
 
         fin_angle_hori = ((math.atan((target[0]-(img_w/2))/flength)))*(180/math.pi)
 
@@ -98,8 +99,6 @@ while(cap.isOpened()):
         fin_angle_deg = math.degrees(fin_angle_raw_rad) + camOffset
         fin_angle_rad = math.radians(fin_angle_deg)
         distance = targetHeight / math.tan(fin_angle_rad)
-        
-        target_found = True
 
         #print('yesadfdfgdfg')
         cv2.imshow('pushed image', imgToPush) # Show final image on your computer with targets shown
