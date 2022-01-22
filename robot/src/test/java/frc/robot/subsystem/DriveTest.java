@@ -7,6 +7,8 @@ import static org.mockito.Mockito.*;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +53,7 @@ public class DriveTest {
     public void fullForwardDisabled() {
         drive.disable();
         drive.drive(1.0d, 0.0d, 0.0d);
-        
+
         assertEquals(0.0d, leftFrontDriveMotor.get(), DELTA);
         assertEquals(0.0d, rightFrontDriveMotor.get(), DELTA);
         assertEquals(0.0d, leftBackDriveMotor.get(), DELTA);
@@ -109,6 +111,19 @@ public class DriveTest {
         CANSparkMax rightFrontMockMotor = Mockito.mock(CANSparkMax.class);
         CANSparkMax leftBackMockMotor = Mockito.mock(CANSparkMax.class);
         CANSparkMax rightBackMockMotor = Mockito.mock(CANSparkMax.class);
+
+        // Not needed for this test, but examples of using "when()" to have mock objects return specific values
+        SparkMaxPIDController pidController = Mockito.mock(SparkMaxPIDController.class);
+        // most common way to specify the return value of a method on a mock - when(mock.method).thenReturn(return values)
+        when(leftBackMockMotor.getPIDController()).thenReturn(pidController);
+        RelativeEncoder relativeEncoder = mock(RelativeEncoder.class);
+        // alternate way to spedify the return value of a method - doReturn(...).when().method()
+        doReturn(relativeEncoder).when(leftBackMockMotor).getEncoder();
+
+        // you can specify multiple return values, and they will be used for sequential calls
+        when(relativeEncoder.getPosition()).thenReturn(100.0, 200.0, 300.0, 400.0);
+
+
 
         // create drive object with mock motors
         Drive drive = new Drive(leftFrontMockMotor, rightFrontMockMotor, leftBackMockMotor, rightBackMockMotor);
