@@ -57,8 +57,8 @@ public class Shooter extends Subsystem {
         SmartDashboard.putNumber("RPM", 10);
     }
 
-    public void setTurretAngle(double turretAngle) {
-        //TODO
+    public void setTurretAngle(double speed) {
+        turretMotor.set(speed);
     }
 
     public void shoot() {
