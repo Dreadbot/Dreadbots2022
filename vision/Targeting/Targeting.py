@@ -72,7 +72,7 @@ while(cap.isOpened()):
 
 
 # Checks the width (w) and height (h) of every contour in the frame and only puts the targets over the ones in the range
-      if w > 5 and w < 20 and h > 10 and h < 150 :   # w 5,15   h 10,150
+      if w > 5 and w < 20 and h > 25 and h < 40 :   # w 5,15   h 10,150
 #Draws the target over the reflective tape on the original image
         cv2.rectangle(imgToPush, (x,y), (x+w, y+h), (0, 255, 0), 3)
         cv2.circle(imgToPush, (int(x+(w/2)), int(y+(h/2))), 5, (255, 0, 0))
