@@ -3,6 +3,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -26,13 +27,14 @@ public class Shooter extends Subsystem {
         this.turretMotor = turretMotor;
 
         flywheelMotor.restoreFactoryDefaults();
+        flywheelMotor.setIdleMode(IdleMode.kCoast);
         pidController = flywheelMotor.getPIDController();
         encoder = flywheelMotor.getEncoder();
 
-        kP = 6e-5; 
-        kI = 0;
+        kP = 7e-4; 
+        kI = 1e-6;
         kD = 0; 
-        kIz = 0; 
+        kIz = 200; 
         kFF = 0.000015; 
         kMaxOutput = 1; 
         kMinOutput = -1;
@@ -59,7 +61,7 @@ public class Shooter extends Subsystem {
         //TODO
     }
 
-    public void shoot(boolean speedReady, boolean hoodReady, boolean turretReady) {
+    public void shoot() {
         double p = SmartDashboard.getNumber("P Gain", 0);
         double i = SmartDashboard.getNumber("I Gain", 0);
         double d = SmartDashboard.getNumber("D Gain", 0);
@@ -80,7 +82,7 @@ public class Shooter extends Subsystem {
             kMinOutput = min; kMaxOutput = max; 
         }
 
-        double setPoint = SmartDashboard.getNumber("RPM", 0) / 2;
+        double setPoint = SmartDashboard.getNumber("RPM", 0);
         System.out.println("setpoint: " + setPoint);
 
         pidController.setReference(setPoint, ControlType.kVelocity);

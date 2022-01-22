@@ -30,13 +30,7 @@ public class ShooterTest {
 
         shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
     }
-    @Test
-    public void testMath() {
-        assertEquals(9.50010d, shooter.calculateXVelocity(), DELTA);
-        assertEquals(1.66205d, shooter.calculateTimeToScore(), DELTA);
-        assertEquals(4286.0387d, shooter.getRequiredFlyWheelRPM(), DELTA);
-        assertEquals(72.4289d, shooter.getRequiredHoodAngle(), DELTA);
-    }
+    
     @After
     public void shutdown() throws Exception {
         flywheelMotor.close();
