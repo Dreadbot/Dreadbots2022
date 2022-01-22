@@ -164,4 +164,8 @@ public class Shooter extends Subsystem {
     private void setState(ShootingState newState) {
         state = newState;
     }
+    @SuppressWarnings("unused")
+    private ShootingState getState() {
+        return state;
+    }
 }
