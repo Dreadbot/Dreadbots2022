@@ -100,10 +100,10 @@ public class Shooter extends Subsystem {
         //TODO
     }
     public double getRequiredFlyWheelRPM() {
-        return Constants.BASE_RPM * Math.sqrt(Math.pow(calculateBVoy(), 2) + Math.pow(distanceToGoal / calculateTScore(), 2));
+        return Constants.BASE_RPM * Math.sqrt(Math.pow(calculateXVelocity(), 2) + Math.pow(distanceToGoal / calculateTimeToScore(), 2));
     }
     public double getRequiredHoodAngle() {
-        return Math.atan(calculateBVoy() / (distanceToGoal / calculateTScore())) * 180 / Math.PI;
+        return Math.atan(calculateXVelocity() / (distanceToGoal / calculateTimeToScore())) * 180 / Math.PI;
     }
 
     @Override
@@ -135,11 +135,11 @@ public class Shooter extends Subsystem {
     private double calculateArcHeight() {
         return ((0.5f * distanceToGoal) + 2.5f);
     }
-    public double calculateBVoy() {
+    public double calculateXVelocity() {
         return Math.sqrt(-2 * Constants.GRAVITY * (calculateArcHeight() - Constants.INITIAL_BALL_HEIGHT));
     }
-    public double calculateTScore() {
-        double bVoy = calculateBVoy();
+    public double calculateTimeToScore() {
+        double bVoy = calculateXVelocity();
         return (-bVoy - Math.sqrt(Math.pow(bVoy, 2) - 2 * Constants.GRAVITY * (Constants.INITIAL_BALL_HEIGHT - Constants.GOAL_HEIGHT))) / Constants.GRAVITY;
     }
 }

@@ -32,8 +32,8 @@ public class ShooterTest {
     }
     @Test
     public void testMath() {
-        assertEquals(9.50010d, shooter.calculateBVoy(), DELTA);
-        assertEquals(1.66205d, shooter.calculateTScore(), DELTA);
+        assertEquals(9.50010d, shooter.calculateXVelocity(), DELTA);
+        assertEquals(1.66205d, shooter.calculateTimeToScore(), DELTA);
         assertEquals(4286.0387d, shooter.getRequiredFlyWheelRPM(), DELTA);
         assertEquals(72.4289d, shooter.getRequiredHoodAngle(), DELTA);
     }
