@@ -1,49 +1,60 @@
 import cv2
 import numpy as np
+import dreadbot_fisheye
 
-cap = cv2.VideoCapture(1)
+#True for camera, False for image
+src = False
 
-test_point = (50, 50)
+if src:
+    cap = cv2.VideoCapture(1)
+else:
+    img = cv2.imread('0.png')
 
-DIM=(640, 480)
-K=np.array([[231.12849686105233, 0.0, 324.3670902176044], [0.0, 231.26214350748688, 268.85024970872524], [0.0, 0.0, 1.0]])
-D=np.array([[-0.04246758993225627], [0.0012586698587831295], [-0.004301518520494384], [0.0008646618193537325]])  
+f_0_cam = dreadbot_fisheye.Fisheye(0)
 
-map1, map2 = cv2.fisheye.initUndistortRectifyMap(K, D, np.eye(3), K, DIM, cv2.CV_16SC2)
+scale = 3
+DIM = list(f_0_cam.DIM)
+DIM_flip = DIM[::-1]
 
-rvec = np.array([[[0., 0., 0.]]])
-tvec = np.array([[[0., 0., 0.]]])
+dim1 = DIM
+dim2 = DIM
+dim3 = DIM
 
-# objp = np.array([[[(1595-new_K[0, 2])/new_K[0, 0], (922-new_K[1, 2])/new_K[1, 1], 0.]]])
+K = f_0_cam.K
+D = f_0_cam.D
 
-focal_x = K[0,0]
-focal_y = K[1,1]
+K_scaled = K * dim1[0] / DIM[0]
+K_scaled[2,2] = 1.0
 
-offset_x = K[0, 2]
-offset_y = K[1, 2]
+assert dim1[0]/dim1[1] == DIM[0]/DIM[1], "Image to undistort needs to have same aspect ratio as the ones used in calibration"
 
-test_objp = np.array([[[(test_point[0] - offset_x)/focal_x, (test_point[1] - offset_y)/focal_y, 0]]])
+fish_K = cv2.fisheye.estimateNewCameraMatrixForUndistortRectify(K_scaled, D, dim2, np.eye(3))
+optimal_K = cv2.getOptimalNewCameraMatrix(K, D, dim2, 0.0)[0]
+
+
+map1, map2 = cv2.fisheye.initUndistortRectifyMap(K, D, np.eye(3), optimal_K, dim3, cv2.CV_16SC2)
+
+# print("Original K: {0}".format(K))
+# print("Scaled K: {0}".format(K_scaled))
+# print("Estimated K: {0}".format(new_K))
+'''
+Step 1 - Scale K by target/original   Make sure to reset K[2, 2] to 1 as it should always be 1
+Step 2 - run an estimageNewK on newly scaled, inputting balance
+'''
+
 
 while True:
-    ret, img = cap.read()
-
+    if src:
+        ret, img = cap.read()
+    
     undistorted_img = cv2.remap(img, map1, map2, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
 
-    cv2.circle(undistorted_img, test_point, 3, (0,0,255))
-
-    rev_pts, rev_jac = cv2.fisheye.projectPoints(test_objp, rvec, tvec, K, D)
-    rev_euc = (int(rev_pts[0, 0, 0]), int(rev_pts[0, 0, 1]))
-
-    cv2.circle(img, rev_euc, 3, (0, 0, 255))
-
     cv2.imshow('fix', undistorted_img)
-    cv2.imshow('raw', img)
-
-
 
     key = cv2.waitKey(1)
     if key & 0xFF == ord('q'):
         break
 
-cap.release()
+if src:
+    cap.release()
 cv2.destroyAllWindows()
