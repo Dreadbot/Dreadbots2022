@@ -6,7 +6,7 @@ import math
 ### TO DO ###
 #- Convert filtering to a pipeline
 #- Convert contour stuff to pipeline
-#- IMPORTANT Calibrate the Height of the hw threshold to the actual target height (width already done)
+#- Make the output 
 #- Probably more stuff idk right now
 
 def _drawTargets(x, y, w, h, rectangleColor, circleColor, lineColor) : 
@@ -39,8 +39,8 @@ while(cap.isOpened()):
 
 # applies many filters those filters beiiing...
     hlsImg = cv2.cvtColor(inputImg, cv2.COLOR_BGR2HLS) # Converting the input to HLS color
-    h = [60, 70]
-    s = [40, 60]   #- find the HSL values for different environments/lights in the README.md
+    h = [50, 75]
+    s = [30, 60]   #- find the HSL values for different environments/lights in the README.md
     l = [200, 255]
     blurImg =  cv2.GaussianBlur(hlsImg, (7, 7), 0) # Blurs the HLS image a bit to make it easier to work with
     maskImg = cv2.inRange(blurImg, (h[0], s[0], l[0]), (h[1], s[1], l[1])) # Checks all pixels and changes the ones outside the range to black and the ones in to white
