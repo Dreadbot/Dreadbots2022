@@ -3,7 +3,7 @@ import numpy as np
 import dreadbot_fisheye
 
 #True for camera, False for image
-src = False
+src = True
 
 if src:
     cap = cv2.VideoCapture(1)
@@ -32,7 +32,7 @@ fish_K = cv2.fisheye.estimateNewCameraMatrixForUndistortRectify(K_scaled, D, dim
 optimal_K = cv2.getOptimalNewCameraMatrix(K, D, dim2, 0.0)[0]
 
 
-map1, map2 = cv2.fisheye.initUndistortRectifyMap(K, D, np.eye(3), optimal_K, dim3, cv2.CV_16SC2)
+map1, map2 = cv2.fisheye.initUndistortRectifyMap(K, D, np.eye(3), K, dim3, cv2.CV_16SC2)
 
 # print("Original K: {0}".format(K))
 # print("Scaled K: {0}".format(K_scaled))
