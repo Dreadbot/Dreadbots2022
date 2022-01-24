@@ -4,85 +4,98 @@ import imutils
 import math
 import util
 
-rangeName = input("Range: ")
-blueLower = (73, 87, 26)
-blueUpper = (161, 255, 255)
 
-if not util.isLiveRange(rangeName):
-    print("NOT RANGE")
-    util.updateLiveRange(rangeName, (0, 0, 0), (255, 255, 255))
+def main():
+    rangeName = input("Range: ")
 
-range = util.getLiveRange(rangeName)
+    if not util.isLiveRange(rangeName):
+        # print("NOT RANGE")
+        util.updateLiveRange(rangeName, (0, 0, 0), (255, 255, 255))
 
-vs = cv2.VideoCapture(1)
-vs.set(cv2.CAP_PROP_EXPOSURE, -4)
-util.setupSliderWindow("hsv", "Trackbars", lower=range["lower"], upper=range["upper"])
+    range = util.getLiveRange(rangeName)
+    manip = util.getManipulation()
 
-while True:
-    ret, frame = vs.read()
+    vs = cv2.VideoCapture(0)
+    vs.set(cv2.CAP_PROP_EXPOSURE, -4)
+    util.setupSliderWindow(
+        "hsv", "Trackbars", range["lower"], range["upper"], manip["erode"], manip["dilate"], manip["blur"])
 
-    if not ret:
-        break
+    while True:
+        ret, frame = vs.read()
 
-    hL, sL, vL, hU, sU, vU = util.getSliderValues("hsv", "Trackbars")
-    util.updateLiveRange(rangeName, (hL, sL, vL), (hU, sU, vU))
-    
-    lower = (hL, sL, vL)
-    upper = (hU, sU, vU)
+        if not ret:
+            break
 
-    mask = util.getMask(frame, lower, upper)
+        hL, sL, vL, hU, sU, vU, erode, dilate, blur = util.getSliderValues(
+            "hsv", "Trackbars")
 
-    cv2.imshow("Mask", mask)
+        lower = (hL, sL, vL)
+        upper = (hU, sU, vU)
 
-    cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
-                            cv2.CHAIN_APPROX_SIMPLE)
-    cnts = imutils.grab_contours(cnts)
-    center = None
+        mask = util.getMask(frame, lower, upper, erode, dilate, blur)
 
-    frame = imutils.resize(frame, width=600)
+        cv2.imshow("Mask", mask)
 
-    if len(cnts) > 0:
-        image = frame.copy()
-        cv2.drawContours(image=image, contours=cnts, contourIdx=-1,
-                         color=(0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
-        cv2.imshow("Cnts", image)
-        
-        circles = frame.copy()
+        cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
+                                cv2.CHAIN_APPROX_SIMPLE)
+        cnts = imutils.grab_contours(cnts)
+        center = None
 
-        areas = {}
-        for con in cnts:
-            ((x, y), radius) = cv2.minEnclosingCircle(con)
-            cv2.circle(circles, (int(x), int(y)), int(radius),
-                    (0, 0, 0), 2)
-            cntArea = cv2.contourArea(con)
-            # if cntArea == 0 or radius <= 40: continue
-            circleArea = math.pi * radius**2 # r**2 does the same thing lmao
-            # print(circleArea)
-            p = cntArea / circleArea
-            print(p)
-            areas[p] = con
-            # print(areas[p])
+        frame = imutils.resize(frame, width=600)
 
-        cv2.imshow("Circles", circles)
-        if(len(areas) == 0): continue
+        if len(cnts) > 0:
+            image = frame.copy()
+            cv2.drawContours(image=image, contours=cnts, contourIdx=-1,
+                             color=(0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
+            cv2.imshow("Cnts", image)
 
-        greatestArea = max(areas.keys())
-        # print(areas)
-        # print(int(greatestArea))
-        c = areas[greatestArea]
+            circles = frame.copy()
 
-        ((x, y), radius) = cv2.minEnclosingCircle(c)
-        M = cv2.moments(c)
-        center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-        # print(center)
+            areas = {}
+            for con in cnts:
+                ((x, y), radius) = cv2.minEnclosingCircle(con)
+                cv2.circle(circles, (int(x), int(y)), int(radius),
+                           (0, 0, 0), 2)
+                cntArea = cv2.contourArea(con)
+                # if cntArea == 0 or radius <= 40: continue
+                circleArea = math.pi * radius**2  # r**2 does the same thing lmao
+                # print(circleArea)
+                p = cntArea / circleArea
+                print(p)
+                areas[p] = con
+                # print(areas[p])
 
-        cv2.circle(frame, (int(x), int(y)), int(radius),
-                    (0, 255, 255), 2)
-        cv2.circle(frame, center, 5, (0, 0, 255), -1)
-    cv2.imshow("Frame", frame)
-    key = cv2.waitKey(1) & 0xFF
-    if key == ord("q"):
-        break
+            cv2.imshow("Circles", circles)
+            if(len(areas) == 0):
+                continue
 
-vs.release()
-cv2.destroyAllWindows()
+            greatestArea = max(areas.keys())
+            # print(areas)
+            # print(int(greatestArea))
+            c = areas[greatestArea]
+
+            ((x, y), radius) = cv2.minEnclosingCircle(c)
+            M = cv2.moments(c)
+            center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+            # print(center)
+
+            cv2.circle(frame, (int(x), int(y)), int(radius),
+                       (0, 255, 255), 2)
+            cv2.circle(frame, center, 5, (0, 0, 255), -1)
+        cv2.imshow("Frame", frame)
+
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            util.updateLiveRange(rangeName, (hL, sL, vL), (hU, sU, vU))
+
+            util.setManipulation("erode", erode)
+            util.setManipulation("dilate", dilate)
+            util.setManipulation("blur", blur)
+
+            break
+
+    vs.release()
+    cv2.destroyAllWindows()
+
+
+if __name__ == '__main__':
+    main()
