@@ -21,11 +21,41 @@ def _drawTargets(x, y, w, h, rectangleColor, circleColor, lineColor) :
 
 # Create a VideoCaqpture object and read from input file
 cap = cv2.VideoCapture(1)
-
+# Create varibles for trackbars
+high_H, high_S, high_L, low_H, low_S, low_L = 0, 0, 0, 0, 0, 0
+upper_hight, lower_height, upper_width, lower_width = 0, 0, 0, 0
+HIGH_VAL_HSL = 255
+HIGH_H = 360 // 2
+HIGH_VAL_BOUNDING_BOX = 50
 # Set the exposure of the camera to help with finding the target
 cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)
 cap.set(cv2.CAP_PROP_EXPOSURE, -15)
-
+#create function for trackbars
+def ontrackbar(val):
+    pass
+# Add window for trackbars and create trackbars
+cv2.namedWindow('Trackbars')
+cv2.resizeWindow('Trackbars', 500, 450)
+cv2.createTrackbar('High H', 'Trackbars', high_H, HIGH_H, ontrackbar)
+cv2.createTrackbar('Low H', 'Trackbars', low_H, HIGH_H, ontrackbar)
+cv2.createTrackbar('High S', 'Trackbars', high_S, HIGH_VAL_HSL, ontrackbar)
+cv2.createTrackbar('Low S', 'Trackbars', low_S, HIGH_VAL_HSL, ontrackbar)
+cv2.createTrackbar('High L', 'Trackbars', high_L, HIGH_VAL_HSL, ontrackbar)
+cv2.createTrackbar('Low L', 'Trackbars', low_L, HIGH_VAL_HSL, ontrackbar)
+cv2.createTrackbar('Upper Height', 'Trackbars', upper_hight, HIGH_VAL_BOUNDING_BOX, ontrackbar)
+cv2.createTrackbar('Lower Height', 'Trackbars', lower_height, HIGH_VAL_BOUNDING_BOX, ontrackbar)
+cv2.createTrackbar('Upper Width', 'Trackbars', upper_width, HIGH_VAL_BOUNDING_BOX, ontrackbar)
+cv2.createTrackbar('Lower Width', 'Trackbars', lower_width, HIGH_VAL_BOUNDING_BOX, ontrackbar)
+cv2.setTrackbarPos('High H', 'Trackbars', 70)
+cv2.setTrackbarPos('Low H', 'Trackbars', 60)
+cv2.setTrackbarPos('High S', 'Trackbars', 60)
+cv2.setTrackbarPos('Low S', 'Trackbars', 40)
+cv2.setTrackbarPos('High L', 'Trackbars', 255)
+cv2.setTrackbarPos('Low L', 'Trackbars', 200)
+cv2.setTrackbarPos('Upper Height', 'Trackbars', 30)
+cv2.setTrackbarPos('Lower Height', 'Trackbars', 20)
+cv2.setTrackbarPos('Upper Width', 'Trackbars', 20)
+cv2.setTrackbarPos('Lower Width', 'Trackbars', 3)
 # Check if camera opened successfully
 if (cap.isOpened()== False): 
     print("Error opening video  file")
@@ -36,12 +66,12 @@ while(cap.isOpened()):
 # Capture frame-by-frame
   ret, inputImg = cap.read()
   if ret == True:
-
 # applies many filters those filters beiiing...
     hlsImg = cv2.cvtColor(inputImg, cv2.COLOR_BGR2HLS) # Converting the input to HLS color
-    h = [50, 75]
-    s = [30, 60]   #- find the HSL values for different environments/lights in the README.md
-    l = [200, 255]
+    # add hsl values
+    h = [cv2.getTrackbarPos('Low H', 'Trackbars'), cv2.getTrackbarPos('High H', 'Trackbars')]
+    s = [cv2.getTrackbarPos('Low S', 'Trackbars'), cv2.getTrackbarPos('High S', 'Trackbars')]   #- find the HSL values for different environments/lights in the README.md
+    l = [cv2.getTrackbarPos('Low L', 'Trackbars'), cv2.getTrackbarPos('High L', 'Trackbars')]
     blurImg =  cv2.GaussianBlur(hlsImg, (7, 7), 0) # Blurs the HLS image a bit to make it easier to work with
     maskImg = cv2.inRange(blurImg, (h[0], s[0], l[0]), (h[1], s[1], l[1])) # Checks all pixels and changes the ones outside the range to black and the ones in to white
     dilateImg = cv2.dilate(maskImg, (7, 7), 20) # Dilates out all the found sections so we can get them more solid
@@ -81,7 +111,7 @@ while(cap.isOpened()):
 
 
 # Checks the width (w) and height (h) of every contour in the frame and only puts the targets over the ones in the range
-      if w > 3 and w < 20 and h > 20 and h < 30 :   # w 5,20   h 25,40
+      if w > cv2.getTrackbarPos('Lower Width', 'Trackbars') and w < cv2.getTrackbarPos('Upper Width', 'Trackbars') and h > cv2.getTrackbarPos('Lower Height', 'Trackbars') and h < cv2.getTrackbarPos('Upper Height', 'Trackbars') :   # w 5,20   h 25,40
 #Draws the target over the reflective tape on the original image
         target = _drawTargets(x, y, w, h, (0,255,0), (255,0,0), (255,255,255))
 # Calculate angle to turn to
@@ -99,9 +129,13 @@ while(cap.isOpened()):
         fin_angle_deg = math.degrees(fin_angle_raw_rad) + camOffset
         fin_angle_rad = math.radians(fin_angle_deg)
         distance = targetHeight / math.tan(fin_angle_rad)
-
         #print('yesadfdfgdfg')
-        cv2.imshow('pushed image', imgToPush) # Show final image on your computer with targets shown
+        # scale image
+        width = int(imgToPush.shape[1] * 160 / 100)
+        height = int(imgToPush.shape[0] * 160 / 100)
+        dim = (width, height)
+        resized = cv2.resize(imgToPush, dim)
+        cv2.imshow('pushed image', resized) # Show final image on your computer with targets shown
 
 # Press Q on keyboard to  exit
     if cv2.waitKey(1) & 0xFF == ord('q'):
