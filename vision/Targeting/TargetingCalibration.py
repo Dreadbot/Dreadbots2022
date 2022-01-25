@@ -16,7 +16,6 @@ import json
 
 # Create functions to handle profiles
 profiles = {}
-values = {}
 def createBlankProfile(name):
     profiles[name] = {
         'High H' : 70,
