@@ -30,4 +30,8 @@ public abstract class Constants {
     public static final float INITIAL_BALL_HEIGHT = 0.4f;
     //Change this based on RPM Value given to shooter.java, this is just a baseline calculated from Collin's desmos
     public static final double BASE_RPM = 4 * 60 / 0.279d;
+
+    //Climber constants
+    public static final int LEFT_CLIMBER_MOTOR = 9;
+    public static final int RIGHT_CLIMBER_MOTOR = 8;
 }

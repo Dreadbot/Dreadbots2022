@@ -7,7 +7,10 @@ package frc.robot;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
+import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
 import frc.robot.subsystem.Shooter;
@@ -42,6 +45,12 @@ public class Robot extends TimedRobot {
   private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
   @SuppressWarnings("unused")
   private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
+
+  private final Solenoid shortClimberSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
+  private final Solenoid longClimberSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 2);
+  private final CANSparkMax leftClimberMotor = new CANSparkMax(Constants.LEFT_CLIMBER_MOTOR, MotorType.kBrushless);
+  private final CANSparkMax rightClimberMotor = new CANSparkMax(Constants.RIGHT_CLIMBER_MOTOR, MotorType.kBrushless);
+  private Climber climber = new Climber(shortClimberSolenoid, longClimberSolenoid, leftClimberMotor, rightClimberMotor);
   
   @Override
   public void robotInit() {}
