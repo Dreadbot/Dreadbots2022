@@ -6,7 +6,7 @@ import json
 
 ### WHAT IS THIS ###
 # This is a version of targeting.py that allows for rapid calibration of the camera
-#This should NOT be used in place as targeting.py, as this might be behind
+# This should NOT be used in place as targeting.py, as this might be behind
 
 ### TO DO ###
 #- Convert filtering to a pipeline
