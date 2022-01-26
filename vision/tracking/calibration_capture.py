@@ -5,7 +5,7 @@ import os
 import json
 import shutil
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(3)
 
 # Folder convention - images in f_calib_<n>
 
