@@ -2,17 +2,22 @@ import cv2
 import numpy as np
 import json
 
+
 def detect(img, draw=False):
-    img = cv2.imread(img, cv2.IMREAD_GRAYSCALE)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    out_img = img.copy()
     descriptor = cv2.SIFT_create()
 
     key_pts, features = descriptor.detectAndCompute(img, None)
 
     if draw:
-        cv2.drawKeypoints(img, undist_0_kps, undistorted_img_0)
-        return key_pts, features, img
+        cv2.drawKeypoints(img, key_pts, out_img)
+        out_img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+        return (key_pts, features, out_img.copy())
+
     else:
-        return key_pts, features
+        return (key_pts, features)
+
 
 class Fisheye:
     def __init__(self, capture_id, fisheye_id):
@@ -37,6 +42,7 @@ class Fisheye:
         self.map1, self.map2 = cv2.fisheye.initUndistortRectifyMap(self.K, self.D, np.eye(3), self.K, self.DIM, cv2.CV_16SC2)
 
         self.cap = cv2.VideoCapture(capture_id)
+        self.cap.set(cv2.CAP_PROP_EXPOSURE, 70)
 
     def ret_raw(self):
         ret, img = self.cap.read()

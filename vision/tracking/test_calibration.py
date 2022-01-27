@@ -19,15 +19,15 @@ class FunctionMode(Enum):
     TAKE_IMG = 3
 
 ####################################################    MODE SET #######################################
-camera_mode = CameraMode.DUAL_FISHEYE
-function_mode = FunctionMode.CAT_FISHEYE
+camera_mode = CameraMode.IMAGE
+function_mode = FunctionMode.HOMOGRAPHY_SHOW
 ########################################################################################################
 
 
 if camera_mode == CameraMode.SINGLE_FISHEYE or camera_mode == CameraMode.DUAL_FISHEYE:
-    fisheye_0 = dreadbot_fisheye.Fisheye(2, 0)
+    fisheye_1 = dreadbot_fisheye.Fisheye(1, 1)
 if camera_mode == CameraMode.DUAL_FISHEYE:
-    fisheye_1 = dreadbot_fisheye.Fisheye(4, 1)
+    fisheye_0 = dreadbot_fisheye.Fisheye(3, 0)
 if camera_mode == CameraMode.IMAGE:
     img = cv2.imread('0.png')
 
@@ -66,11 +66,33 @@ while function_mode == FunctionMode.CAT_FISHEYE:
                   TEST HOMOGRAPHY
 '''
 while function_mode == FunctionMode.HOMOGRAPHY_SHOW:
-    pass
+    if camera_mode == CameraMode.IMAGE:
+        undistorted_img_0 = cv2.imread('stitch_backup/undistorted_img0.png')
+        undistorted_img_1 = cv2.imread('stitch_backup/undistorted_img1.png')
+    else:
+        undistorted_img_0 = fisheye_0.ret_undist()
+        undistorted_img_1 = fisheye_1.ret_undist()
 
+    kp0, dps0 = dreadbot_fisheye.detect(undistorted_img_0)
+    kp1, dps1 = dreadbot_fisheye.detect(undistorted_img_1)
+
+    cv2.drawKeypoints(undistorted_img_0, kp0, undistorted_img_0)
+    cv2.drawKeypoints(undistorted_img_1, kp1, undistorted_img_1)
+
+    homography_comparison = np.concatenate((undistorted_img_0, undistorted_img_1), axis=1)
+
+    cv2.imshow('frame', homography_comparison)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+'''
+                  TAKE IMAGE
+'''
 while function_mode == FunctionMode.TAKE_IMG:
-    pass
-
+    cv2.imwrite("stitch_backup/undistorted_img0.png", fisheye_0.ret_undist())
+    cv2.imwrite("stitch_backup/undistorted_img1.png", fisheye_1.ret_undist())
+    break
 
 
 
