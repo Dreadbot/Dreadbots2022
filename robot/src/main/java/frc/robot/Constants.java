@@ -32,6 +32,12 @@ public abstract class Constants {
     public static final double BASE_RPM = 4 * 60 / 0.279d;
 
     //Climber constants
+    public static final int SHORT_CLIMBER_SOLENOID = 0;
+    public static final int LONG_CLIMBER_SOLENOID = 1;
     public static final int LEFT_CLIMBER_MOTOR = 9;
     public static final int RIGHT_CLIMBER_MOTOR = 8;
+    public static final int SHORT_CLIMBER_DSOLENOID_FORWARD = 0;
+    public static final int SHORT_CLIMBER_DSOLENOID_BACKWARD = 1;
+    public static final int LONG_CLIMBER_DSOLENOID_FORWARD = 2;
+    public static final int LONG_CLIMBER_DSOLENOID_BACKWARD = 3;
 }
