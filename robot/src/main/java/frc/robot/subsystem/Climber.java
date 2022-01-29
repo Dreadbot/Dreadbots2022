@@ -24,6 +24,7 @@ public class Climber {
      DreadbotController secondaryController){
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
+        rightMotor.setInverted(true);
         this.shortHookSolenoid = shortHookSolenoid;
         this.longHookSolenoid = longHookSolenoid;
         // this.shortHookDSolenoid = shortHookDSolenoid;
