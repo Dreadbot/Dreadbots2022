@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
 import frc.robot.subsystem.Shooter;
+import frc.robot.testingRoutines.MotorTest;
 import frc.robot.util.DreadbotController;
 
 /**
@@ -42,6 +43,12 @@ public class Robot extends TimedRobot {
   private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
   @SuppressWarnings("unused")
   private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
+
+  private final CANSparkMax testMotor1 = new CANSparkMax(1, MotorType.kBrushless);
+  private final CANSparkMax testMotor2 = new CANSparkMax(2, MotorType.kBrushless);
+  private final CANSparkMax testMotor3 = new CANSparkMax(3, MotorType.kBrushless);
+  @SuppressWarnings("unused")
+  private MotorTest test = new MotorTest(testMotor1, testMotor2, testMotor3);
   
   @Override
   public void robotInit() {}
