@@ -69,11 +69,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    System.out.println("Hello");
     drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
     //shooter.shoot();
     //shooter.setTurretAngle(primaryController.getWAxis());
-    dreadbotColorSensor.printColor();
+    //dreadbotColorSensor.printColor();
+    dreadbotColorSensor.printBallColor(); // printed in smart dash
   }
 
   @Override

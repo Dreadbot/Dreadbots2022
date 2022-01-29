@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.revrobotics.ColorMatch;
+
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 
@@ -36,6 +38,6 @@ public abstract class Constants {
 
     //Color Sensor
     public static final I2C.Port I2C_PORT = I2C.Port.kOnboard;
-    public static final Color COLOR_BLUE = new Color(27, 40, 63); // May need to be tweaked later
-    public static final Color COLOR_RED = new Color(135, 13, 68);
+    public static final Color COLOR_BLUE =  new Color(.17, .42, .41); // May need to be tweaked later
+    public static final Color COLOR_RED = new Color(.58, .33, .09);
 }
