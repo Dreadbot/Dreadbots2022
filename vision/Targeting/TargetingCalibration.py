@@ -145,7 +145,7 @@ while(cap.isOpened()):
 # Prep stuff, do not touch until we are calibrating to this years bot, right now its based on 2020 bot
       totPixels = w * h
       filledPixels = 0
-      checkedPixels = 0
+      checkedPixels = 0 
       img_h = inputImg.shape[0]
       img_w = inputImg.shape[1]
       target_found = False
