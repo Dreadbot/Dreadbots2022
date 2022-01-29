@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.util.Color;
 
 public abstract class Constants {
     /**
@@ -21,9 +22,9 @@ public abstract class Constants {
     public static final int LEFT_INTAKE_MOTOR_PORT = 5;
     public static final int RIGHT_INTAKE_MOTOR_PORT = 6;
 
-    public static final int FLYWHEEL_MOTOR_PORT = 1;
-    public static final int HOOD_MOTOR_PORT = 3;
-    public static final int TURRET_MOTOR_PORT = 2;
+    //public static final int FLYWHEEL_MOTOR_PORT = 1;
+    //public static final int HOOD_MOTOR_PORT = 3;
+    //public static final int TURRET_MOTOR_PORT = 2;
     /**
      * Shooter Constants
      */
@@ -33,5 +34,8 @@ public abstract class Constants {
     //Change this based on RPM Value given to shooter.java, this is just a baseline calculated from Collin's desmos
     public static final double BASE_RPM = 4 * 60 / 0.279d;
 
+    //Color Sensor
     public static final I2C.Port I2C_PORT = I2C.Port.kOnboard;
+    public static final Color COLOR_BLUE = new Color(27, 40, 63); // May need to be tweaked later
+    public static final Color COLOR_RED = new Color(135, 13, 68);
 }

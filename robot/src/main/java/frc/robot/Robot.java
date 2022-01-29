@@ -10,6 +10,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystem.ColorSensor;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
 import frc.robot.subsystem.Shooter;
@@ -39,13 +41,14 @@ public class Robot extends TimedRobot {
   @SuppressWarnings("unused")
   private Intake intake = new Intake(leftIntakeMotor, rightIntakeMotor);
 
-  private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
-  private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
-  private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
+  //private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
+  //private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
+  //private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
   @SuppressWarnings("unused")
-  private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
+  //private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 
   private ColorSensorV3 colorSensor = new ColorSensorV3(Constants.I2C_PORT);
+  private ColorSensor dreadbotColorSensor = new ColorSensor(colorSensor);
   
   @Override
   public void robotInit() {}
@@ -66,9 +69,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+    System.out.println("Hello");
     drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
-    shooter.shoot();
-    shooter.setTurretAngle(primaryController.getWAxis());
+    //shooter.shoot();
+    //shooter.setTurretAngle(primaryController.getWAxis());
+    dreadbotColorSensor.printColor();
   }
 
   @Override
