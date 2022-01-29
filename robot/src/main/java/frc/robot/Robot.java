@@ -26,23 +26,23 @@ public class Robot extends TimedRobot {
   @SuppressWarnings("unused")
   private DreadbotController secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
 
-  private CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-  @SuppressWarnings("unused")
-  private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
+  // private CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+  // private CANSparkMax rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+  // private CANSparkMax leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+  // private CANSparkMax rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+  // @SuppressWarnings("unused")
+  // private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
-  private CANSparkMax leftIntakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax rightIntakeMotor = new CANSparkMax(Constants.RIGHT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
-  @SuppressWarnings("unused")
-  private Intake intake = new Intake(leftIntakeMotor, rightIntakeMotor);
+  // private CANSparkMax leftIntakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
+  // private CANSparkMax rightIntakeMotor = new CANSparkMax(Constants.RIGHT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
+  // @SuppressWarnings("unused")
+  // private Intake intake = new Intake(leftIntakeMotor, rightIntakeMotor);
 
-  private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
-  private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
-  private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
-  @SuppressWarnings("unused")
-  private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
+  //private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
+  //private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
+  //private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
+  //@SuppressWarnings("unused")
+  //private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 
   private final CANSparkMax testMotor1 = new CANSparkMax(1, MotorType.kBrushless);
   private final CANSparkMax testMotor2 = new CANSparkMax(2, MotorType.kBrushless);
@@ -67,12 +67,12 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {}
 
-  @Override
-  public void teleopPeriodic() {
-    drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
-    shooter.shoot();
-    shooter.setTurretAngle(primaryController.getWAxis());
-  }
+  // @Override
+  // public void teleopPeriodic() {
+  //   drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
+  //   shooter.shoot();
+  //   shooter.setTurretAngle(primaryController.getWAxis());
+  // }
 
   @Override
   public void disabledInit() {}
@@ -84,5 +84,7 @@ public class Robot extends TimedRobot {
   public void testInit() {}
 
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    test.testMotor(primaryController.getYAxis());
+  }
 }

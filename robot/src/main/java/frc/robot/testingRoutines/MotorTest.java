@@ -13,4 +13,9 @@ public class MotorTest {
     this.motor2 = motor2;
     this.motor3 = motor3;
    }
+
+    public void testMotor(double yAxis) {
+        motor1.set(yAxis);
+    }
+
 }
