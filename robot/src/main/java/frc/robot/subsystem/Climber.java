@@ -13,22 +13,23 @@ public class Climber {
     private final Solenoid longHookSolenoid;
     private final CANSparkMax leftMotor;
     private final CANSparkMax rightMotor;
-    private final DoubleSolenoid shortHookDSolenoid;
-    private final DoubleSolenoid longHookDSolenoid;
+    // private final DoubleSolenoid shortHookDSolenoid;
+    // private final DoubleSolenoid longHookDSolenoid;
     private final DreadbotController secondaryController;
+
 
     public Climber( Solenoid shortHookSolenoid, Solenoid longHookSolenoid,
      CANSparkMax leftMotor, CANSparkMax rightMotor,
-     DoubleSolenoid shortHookDSolenoid, DoubleSolenoid longHookDSolenoid,
+     //DoubleSolenoid shortHookDSolenoid, DoubleSolenoid longHookDSolenoid,
      DreadbotController secondaryController){
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
         this.shortHookSolenoid = shortHookSolenoid;
         this.longHookSolenoid = longHookSolenoid;
-        this.shortHookDSolenoid = shortHookDSolenoid;
-        this.longHookDSolenoid = longHookDSolenoid;
-        shortHookDSolenoid.set(Value.kForward);
-        longHookDSolenoid.set(Value.kForward);
+        // this.shortHookDSolenoid = shortHookDSolenoid;
+        // this.longHookDSolenoid = longHookDSolenoid;
+        // shortHookDSolenoid.set(Value.kForward);
+        // longHookDSolenoid.set(Value.kForward);
         this.secondaryController = secondaryController;
     }
 
@@ -56,16 +57,31 @@ public class Climber {
         }
     }
 
-    public void toggleDoubleHooks()
-    {
-        if(secondaryController.isAButtonPressed())
-        {
-            shortHookDSolenoid.toggle();   
-        }
+    // public void toggleDoubleHooks()
+    // {
+    //     if(secondaryController.isAButtonPressed())
+    //     {
+    //         shortHookDSolenoid.toggle();   
+    //     }
         
-        if(secondaryController.isBButtonPressed())
+    //     if(secondaryController.isBButtonPressed())
+    //     {
+    //         longHookDSolenoid.toggle();
+    //     }
+    // }
+
+    public void raiseRobot()
+    {
+        if(secondaryController.isRightBumperPressed())
         {
-            longHookDSolenoid.toggle();
+            leftMotor.set(.1);
+            rightMotor.set(.1);
+        }
+        else
+        {
+            leftMotor.set(0);
+            rightMotor.set(0);
         }
     }
+    
 }

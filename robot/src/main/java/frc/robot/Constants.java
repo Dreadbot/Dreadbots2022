@@ -19,9 +19,9 @@ public abstract class Constants {
     public static final int LEFT_INTAKE_MOTOR_PORT = 5;
     public static final int RIGHT_INTAKE_MOTOR_PORT = 6;
 
-    public static final int FLYWHEEL_MOTOR_PORT = 1;
-    public static final int HOOD_MOTOR_PORT = 3;
-    public static final int TURRET_MOTOR_PORT = 2;
+    //public static final int FLYWHEEL_MOTOR_PORT = 1;
+    //public static final int HOOD_MOTOR_PORT = 3;
+    //public static final int TURRET_MOTOR_PORT = 2;
     /**
      * Shooter Constants
      */
@@ -36,8 +36,8 @@ public abstract class Constants {
     public static final int LONG_CLIMBER_SOLENOID = 1;
     public static final int LEFT_CLIMBER_MOTOR = 9;
     public static final int RIGHT_CLIMBER_MOTOR = 8;
-    public static final int SHORT_CLIMBER_DSOLENOID_FORWARD = 0;
-    public static final int SHORT_CLIMBER_DSOLENOID_BACKWARD = 1;
+    public static final int SHORT_CLIMBER_DSOLENOID_FORWARD = 4;//change short climber double solenoid ports
+    public static final int SHORT_CLIMBER_DSOLENOID_BACKWARD = 5;
     public static final int LONG_CLIMBER_DSOLENOID_FORWARD = 2;
     public static final int LONG_CLIMBER_DSOLENOID_BACKWARD = 3;
 }
