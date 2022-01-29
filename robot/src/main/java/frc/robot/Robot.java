@@ -54,7 +54,9 @@ public class Robot extends TimedRobot {
   public void robotInit() {}
 
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    
+  }
 
   @Override
   public void autonomousInit() {}
@@ -66,7 +68,11 @@ public class Robot extends TimedRobot {
   public void teleopInit() {}
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
+    shooter.shoot();
+    shooter.setTurretAngle(primaryController.getWAxis());
+  }
 
   @Override
   public void disabledInit() {}
