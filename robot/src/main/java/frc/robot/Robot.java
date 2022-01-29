@@ -5,8 +5,10 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ColorSensorV3;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
@@ -42,6 +44,8 @@ public class Robot extends TimedRobot {
   private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
   @SuppressWarnings("unused")
   private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
+
+  private ColorSensorV3 colorSensor = new ColorSensorV3(Constants.I2C_PORT);
   
   @Override
   public void robotInit() {}
