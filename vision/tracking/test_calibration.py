@@ -62,7 +62,7 @@ while function_mode == FunctionMode.CAT_FISHEYE:
     undistorted_img_0 = fisheye_0.ret_undist()
     undistorted_img_1 = fisheye_0.ret_dist()
 
-    p_undist = (250,320)I
+    p_undist = (250,320)
     p_x, p_y = p_undist
 
     cv2.circle(undistorted_img_0, p_undist, 5, (0,0,255), thickness=-1)
