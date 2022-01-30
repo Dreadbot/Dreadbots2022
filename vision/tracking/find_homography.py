@@ -35,13 +35,14 @@ good_matches = []
 for i, (m,n) in enumerate(matches):
     if m.distance < 0.75*n.distance:
         matches_mask[i] = [1,0]
-        good_matches.append((m[0].trainIdx, m[0].queryIdx))
+        good_matches.append((m.trainIdx, m.queryIdx))
 
-print(good_matches)
-
+# print(good_matches)
+print([kp0[i] for (_,i) in matches_mask])
 if len(matches) > 4:
-    pts0 = np.float32([kp0[i] for (_,i) in good_matches])
-    pts1 = np.float32([kp1[i] for (i,_) in good_matches])
+    pts0 = np.float32([kp0[i] for (_,i) in matches_mask])
+    pts1 = np.float32([kp1[i] for (i,_) in matches_mask])
+    
 
     H, status = cv2.findHomography(pts0, pts1, cv2.RANSAC, 0.995)
 

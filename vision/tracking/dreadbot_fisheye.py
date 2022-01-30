@@ -20,7 +20,7 @@ def detect(img, draw=False):
 
 
 class Fisheye:
-    def __init__(self, capture_id, fisheye_id):
+    def __init__(self, capture_id, fisheye_id, adj_exposure=None):
         self.cam_id = str(fisheye_id)
         
         with open('calibrations.json', 'r') as f:
@@ -42,7 +42,11 @@ class Fisheye:
         self.map1, self.map2 = cv2.fisheye.initUndistortRectifyMap(self.K, self.D, np.eye(3), self.K, self.DIM, cv2.CV_16SC2)
 
         self.cap = cv2.VideoCapture(capture_id)
-        self.cap.set(cv2.CAP_PROP_EXPOSURE, 70)
+
+        if not adj_exposure:
+            self.cap.set(cv2.CAP_PROP_EXPOSURE, adj_exposure)
+        else:
+            self.cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.75)
 
     def ret_raw(self):
         ret, img = self.cap.read()
