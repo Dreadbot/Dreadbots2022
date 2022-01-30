@@ -25,7 +25,7 @@ GLOBAL_Y = 480
 
 ####################################################    MODE SET #######################################
 camera_mode = CameraMode.DUAL_FISHEYE
-function_mode = FunctionMode.HOMOGRAPHY_SHOW
+function_mode = FunctionMode.CAT_FISHEYE
 ########################################################################################################
 
 
@@ -60,7 +60,16 @@ while function_mode == FunctionMode.SINGLE_FISHEYE:
 '''
 while function_mode == FunctionMode.CAT_FISHEYE:
     undistorted_img_0 = fisheye_0.ret_undist()
-    undistorted_img_1 = fisheye_1.ret_undist()
+    undistorted_img_1 = fisheye_0.ret_dist()
+
+    p_undist = (250,320)I
+    p_x, p_y = p_undist
+
+    cv2.circle(undistorted_img_0, p_undist, 5, (0,0,255), thickness=-1)
+
+    fixed_pts = fisheye_0.reverse_project_point(p_x, p_y)
+
+    cv2.circle(undistorted_img_1, fixed_pts, 5, (0,0,255), thickness=-1)
 
     cat_img = np.concatenate((undistorted_img_0, undistorted_img_1), axis=1)
 
@@ -74,49 +83,6 @@ while function_mode == FunctionMode.CAT_FISHEYE:
                   TEST HOMOGRAPHY
 '''
 
-if function_mode == FunctionMode.HOMOGRAPHY_SHOW: 
-    x_high_offset_0 = 0 #Do not reset
-    x_low_offset_0 = -35
-
-    x_high_offset_1 = 23 #Do not reset
-    x_low_offset_1 = 38
-
-    left_overlap_top = (GLOBAL_X - (GLOBAL_X//9) + x_high_offset_0, 0)
-    left_overlap_bottom = (GLOBAL_X - (GLOBAL_X//9) + x_low_offset_0, GLOBAL_Y)
-
-    left_overlap_avg_x = (left_overlap_top[0] + left_overlap_bottom[0]) // 2
-
-    left_overlap_straight_top = (left_overlap_avg_x, 0)
-    left_overlap_straight_bottom = (left_overlap_avg_x, GLOBAL_Y)
-
-    left_overlap_width = GLOBAL_X - left_overlap_avg_x
-
-    right_overlap_top = (GLOBAL_X//8 + x_high_offset_1, 0)
-    right_overlap_bottom = (GLOBAL_X//8 + x_low_offset_1, GLOBAL_Y)
-
-    right_overlap_avg_x = (right_overlap_top[0] + right_overlap_bottom[0]) // 2
-
-    right_overlap_straight_top = (right_overlap_avg_x, 0)
-    right_overlap_straight_bottom = (right_overlap_avg_x, GLOBAL_Y)
-
-    right_overlap_width = right_overlap_avg_x
-
-    overlaps = [left_overlap_width, right_overlap_width]
-
-    # max_overlap_width = max(overlaps)
-    max_overlap_width = 75
-
-
-
-    # mixed_img_w = (GLOBAL_X-max_overlap_width) + max_overlap_width + (GLOBAL_X-max_overlap_width)
-    mixed_img_w = 2* GLOBAL_X - max_overlap_width
-    mixed_img_h = GLOBAL_Y
-
-    transparency_step = 1/max_overlap_width
-
-    mixed_img = np.zeros([mixed_img_h, mixed_img_w, 3], dtype=np.uint8)
-    # mixed_img.fill(255)
-
 while function_mode == FunctionMode.HOMOGRAPHY_SHOW:
     if camera_mode == CameraMode.IMAGE:
         undistorted_img_0 = cv2.imread('stitch_backup/undistorted_img0.png')
@@ -125,56 +91,10 @@ while function_mode == FunctionMode.HOMOGRAPHY_SHOW:
         undistorted_img_1 = fisheye_0.ret_undist()
         undistorted_img_0 = fisheye_1.ret_undist()
 
-    # undistorted_img_0 = cv2.cvtColor(undistorted_img_0, cv2.COLOR_BGR2BGRA)
-    # undistorted_img_1 = cv2.cvtColor(undistorted_img_1, cv2.COLOR_BGR2BGRA)
-
-    # mixed_img = cv2.cvtColor(mixed_img, cv2.COLOR_BGR2BGRA)
-
-
-    mixed_img[0:GLOBAL_Y, 0:GLOBAL_X-max_overlap_width] = undistorted_img_0[0:GLOBAL_Y, 0:GLOBAL_X-max_overlap_width]
-    mixed_img[0:GLOBAL_Y, GLOBAL_X:mixed_img_w] = undistorted_img_1[0:GLOBAL_Y, max_overlap_width:GLOBAL_X]
-
+    mixed_img = dreadbot_fisheye.image_blend(undistorted_img_0, undistorted_img_1, 50)
     
-    left_input = undistorted_img_0[0:GLOBAL_Y, GLOBAL_X-max_overlap_width:GLOBAL_X]
-    right_input = undistorted_img_1[0:GLOBAL_Y, 0:max_overlap_width]
-
-    # overlapped = undistorted_img_0[0:GLOBAL_Y, GLOBAL_X-max_overlap_width:GLOBAL_X] + undistorted_img_1[0:GLOBAL_Y, 0:max_overlap_width]
-    final_overlap = np.zeros([GLOBAL_Y, max_overlap_width, 3], dtype=np.uint8)
-
-    cur_transparency = 1
-
-    for col in range(max_overlap_width):
-        left_strip = left_input[0:GLOBAL_Y, col:col+1]
-        right_strip = right_input[0:GLOBAL_Y, col:col+1]
-
-        if not left_strip.any():
-            left_strip = np.zeros([GLOBAL_Y, 1, 3])
-
-        if not right_strip.any():
-            right_strip = np.zeros([GLOBAL_Y, 1, 3])
-
-        final_overlap[0:GLOBAL_Y, col:col+1] = cv2.addWeighted(left_strip, cur_transparency, right_strip, 1-cur_transparency, 0)
-
-        cur_transparency -= transparency_step
-
-
-    # final_overlap[::] = [255,0,0]
-    # print(final_overlap.shape)
-    mixed_img[0:GLOBAL_Y, GLOBAL_X-(max_overlap_width):GLOBAL_X] = final_overlap
-
-    
-
-
-    '''
-    WHERE I LEFT OFF:
-    Sliced in left image into mixed image, need to stitch in right with respect to overlap and then insert overlap
-    Think about handling for overlap zones that aren't even
-    '''
-
-    # full_img = np.concatenate((undistorted_img_0, undistorted_img_1), axis=1)
 
     cv2.imshow('frame', mixed_img)
-    # cv2.imshow('frame', undistorted_img_0)
     
     # cv2.waitKey(0)
     if cv2.waitKey(1) & 0xFF == ord('q'):
