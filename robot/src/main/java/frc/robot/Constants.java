@@ -32,12 +32,12 @@ public abstract class Constants {
     public static final double BASE_RPM = 4 * 60 / 0.279d;
 
     //Climber constants
-    public static final int SHORT_CLIMBER_SOLENOID = 0;
-    public static final int LONG_CLIMBER_SOLENOID = 1;
-    public static final int LEFT_CLIMBER_MOTOR = 9;
-    public static final int RIGHT_CLIMBER_MOTOR = 8;
-    public static final int SHORT_CLIMBER_DSOLENOID_FORWARD = 4;//change short climber double solenoid ports
-    public static final int SHORT_CLIMBER_DSOLENOID_BACKWARD = 5;
-    public static final int LONG_CLIMBER_DSOLENOID_FORWARD = 2;
-    public static final int LONG_CLIMBER_DSOLENOID_BACKWARD = 3;
+    public static final int LEFT_WINCH_MOTOR_PORT = 1;
+    public static final int RIGHT_WINCH_MOTOR_PORT = 2;
+
+    public static final int LEFT_NEUTRAL_HOOK_ACTUATOR = 4;//change short climber double solenoid ports
+    public static final int RIGHT_NEUTRAL_HOOK_ACTUATOR = 5;
+
+    public static final int LEFT_CLIMBING_HOOK_ACTUATOR = 2;
+    public static final int RIGHT_CLIMBING_HOOK_ACTUATOR = 3;
 }

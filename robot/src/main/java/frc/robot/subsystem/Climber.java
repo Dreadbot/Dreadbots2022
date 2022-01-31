@@ -1,88 +1,35 @@
 package frc.robot.subsystem;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import frc.robot.util.DreadbotController;
 
 public class Climber {
-    private final Solenoid shortHookSolenoid;
-    private final Solenoid longHookSolenoid;
-    private final CANSparkMax leftMotor;
-    private final CANSparkMax rightMotor;
-    // private final DoubleSolenoid shortHookDSolenoid;
-    // private final DoubleSolenoid longHookDSolenoid;
-    private final DreadbotController secondaryController;
+    private final Solenoid leftNeutralHookActuator;
+    private final Solenoid rightNeutralHookActuator;
 
+    private final Solenoid leftClimbingHookActuator;
+    private final Solenoid rightClimbingHookActuator;
 
-    public Climber( Solenoid shortHookSolenoid, Solenoid longHookSolenoid,
-     CANSparkMax leftMotor, CANSparkMax rightMotor,
-     //DoubleSolenoid shortHookDSolenoid, DoubleSolenoid longHookDSolenoid,
-     DreadbotController secondaryController){
-        this.leftMotor = leftMotor;
-        this.rightMotor = rightMotor;
-        rightMotor.setInverted(true);
-        this.shortHookSolenoid = shortHookSolenoid;
-        this.longHookSolenoid = longHookSolenoid;
-        // this.shortHookDSolenoid = shortHookDSolenoid;
-        // this.longHookDSolenoid = longHookDSolenoid;
-        // shortHookDSolenoid.set(Value.kForward);
-        // longHookDSolenoid.set(Value.kForward);
-        this.secondaryController = secondaryController;
-    }
+    private final CANSparkMax leftWinchMotor;
+    private final CANSparkMax rightWinchMotor;
 
-    public void setShortHook()
-    {
-         if(secondaryController.isAButtonPressed())
-         {
-            shortHookSolenoid.set(true);
-         }
-         else if (secondaryController.isBButtonPressed())
-         {
-            shortHookSolenoid.set(false);
-         }
-    }
-
-    public void setLongHook()
-    {
-        if(secondaryController.isXButtonPressed())
-        {
-            longHookSolenoid.set(true);
-        }
-        else if(secondaryController.isYButtonPressed())
-        {
-            longHookSolenoid.set(false);
-        }
-    }
-
-    // public void toggleDoubleHooks()
-    // {
-    //     if(secondaryController.isAButtonPressed())
-    //     {
-    //         shortHookDSolenoid.toggle();   
-    //     }
+    public Climber(Solenoid leftNeutralHookActuator, Solenoid rightNeutralHookActuator,
+            Solenoid leftClimbingHookActuator, Solenoid rightClimbingHookActuator, CANSparkMax leftWinchMotor,
+            CANSparkMax rightWinchMotor) {
+        this.leftNeutralHookActuator = leftNeutralHookActuator;
+        this.rightNeutralHookActuator = rightNeutralHookActuator;
+        this.leftClimbingHookActuator = leftClimbingHookActuator;
+        this.rightClimbingHookActuator = rightClimbingHookActuator;
+        this.leftWinchMotor = leftWinchMotor;
+        this.rightWinchMotor = rightWinchMotor;
         
-    //     if(secondaryController.isBButtonPressed())
-    //     {
-    //         longHookDSolenoid.toggle();
-    //     }
-    // }
-
-    public void raiseRobot()
-    {
-        if(secondaryController.isRightBumperPressed())
-        {
-            leftMotor.set(.1);
-            rightMotor.set(.1);
-        }
-        else
-        {
-            leftMotor.set(0);
-            rightMotor.set(0);
-        }
+        leftWinchMotor.restoreFactoryDefaults();
+        leftWinchMotor.setIdleMode(IdleMode.kBrake);
+        
+        rightWinchMotor.restoreFactoryDefaults();
+        rightWinchMotor.setIdleMode(IdleMode.kBrake);
+        rightWinchMotor.setInverted(true);
     }
-    
 }
