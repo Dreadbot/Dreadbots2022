@@ -7,10 +7,12 @@ package frc.robot;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
 import frc.robot.subsystem.Shooter;
+import frc.robot.subsystem.Turret;
 import frc.robot.util.DreadbotController;
 
 /**
@@ -42,7 +44,10 @@ public class Robot extends TimedRobot {
   private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
   @SuppressWarnings("unused")
   private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
-  
+  private final DigitalInput leftSwitchDigitalInput = new DigitalInput(1); // add to constants later
+  private final DigitalInput rightSwitchDigitalInput = new DigitalInput(2);
+  @SuppressWarnings("unused")
+  private final Turret turret = new Turret(leftSwitchDigitalInput, rightSwitchDigitalInput);
   @Override
   public void robotInit() {}
 
@@ -60,8 +65,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+    turret.switchDebug();
     shooter.shoot();
     shooter.setTurretAngle(primaryController.getWAxis());
+    
   }
 
   @Override
