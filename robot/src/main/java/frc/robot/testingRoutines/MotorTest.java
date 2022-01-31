@@ -14,8 +14,13 @@ public class MotorTest {
     this.motor3 = motor3;
    }
 
-    public void testMotor(double yAxis) {
-        motor1.set(yAxis);
+    public void testMotor1(double speed) {
+        motor1.set(speed);
     }
-
+    public void testMotor2(double speed) {
+        motor2.set(speed);
+    }
+    public void testMotor3(double speed) {
+        motor3.set(speed);
+    }
 }

@@ -85,6 +85,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {
-    test.testMotor(primaryController.getYAxis());
+    test.testMotor1(primaryController.getYAxis());
+    test.testMotor2(primaryController.getWAxis());
+    test.testMotor3(secondaryController.getYAxis());
   }
 }
