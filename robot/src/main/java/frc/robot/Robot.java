@@ -42,11 +42,11 @@ public class Robot extends TimedRobot {
   @SuppressWarnings("unused")
   private Intake intake = new Intake(leftIntakeMotor, rightIntakeMotor);
 
-  /*private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
+  private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
   private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
   private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
   @SuppressWarnings("unused")
-  private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);*/
+  private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 
   private final Solenoid leftNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.LEFT_NEUTRAL_HOOK_ACTUATOR);
   private final Solenoid rightNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.RIGHT_NEUTRAL_HOOK_ACTUATOR);
@@ -56,8 +56,6 @@ public class Robot extends TimedRobot {
 
   private final CANSparkMax leftWinchMotor = new CANSparkMax(Constants.LEFT_WINCH_MOTOR_PORT, MotorType.kBrushless);
   private final CANSparkMax rightWinchMotor = new CANSparkMax(Constants.RIGHT_WINCH_MOTOR_PORT, MotorType.kBrushless);
-  //private final DoubleSolenoid shortClimberDSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, Constants.SHORT_CLIMBER_DSOLENOID_FORWARD, Constants.SHORT_CLIMBER_DSOLENOID_BACKWARD);
-  //private final DoubleSolenoid longClimberDSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, Constants.SHORT_CLIMBER_DSOLENOID_FORWARD,Constants.LONG_CLIMBER_DSOLENOID_BACKWARD);
   @SuppressWarnings("unused")
   private Climber climber = new Climber(leftNeutralHookActuator, rightNeutralHookActuator, leftClimbingHookActuator, rightClimbingHookActuator, leftWinchMotor, rightWinchMotor);
   
@@ -65,9 +63,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {}
 
   @Override
-  public void robotPeriodic() {
-    
-  }
+  public void robotPeriodic() {}
 
   @Override
   public void autonomousInit() {}
@@ -81,16 +77,17 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
-    //shooter.shoot();
-    //shooter.setTurretAngle(primaryController.getWAxis());
-  }
 
+    shooter.shoot();
+    shooter.setTurretAngle(primaryController.getWAxis());
+  }
 
   @Override
   public void disabledInit() {}
 
   @Override
   public void disabledPeriodic() {}
+
   @Override
   public void testInit() {}
 

@@ -102,7 +102,7 @@ public class Shooter extends Subsystem {
         //TODO
     }
     public double getRequiredFlyWheelRPM() {
-        return Constants.BASE_RPM * Math.sqrt(Math.pow(calculateXVelocity(), 2) + Math.pow(distanceToGoal / calculateTimeToScore(), 2));
+        return Constants.TO_RPM * Math.sqrt(Math.pow(calculateXVelocity(), 2) + Math.pow(distanceToGoal / calculateTimeToScore(), 2));
     }
     public double getRequiredHoodAngle() {
         return Math.atan(calculateXVelocity() / (distanceToGoal / calculateTimeToScore())) * 180 / Math.PI;

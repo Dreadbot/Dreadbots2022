@@ -41,4 +41,6 @@ public abstract class Constants {
     public static final float GRAVITY = -9.81f;
     public static final float GOAL_HEIGHT = 2.64f;
     public static final float INITIAL_BALL_HEIGHT = 0.4f;
+
+    public static final double TO_RPM = 4 * 60 / 0.279d;
 }

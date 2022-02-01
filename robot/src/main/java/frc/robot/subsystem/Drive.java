@@ -7,6 +7,7 @@ package frc.robot.subsystem;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import frc.robot.Constants;
 
 public class Drive extends Subsystem {
     private final CANSparkMax leftFrontMotor;
@@ -24,6 +25,9 @@ public class Drive extends Subsystem {
         this.rightFrontMotor = rightFrontMotor;
         this.leftBackMotor = leftBackMotor;
         this.rightBackMotor = rightBackMotor;
+        
+        // Prevent SparkMax crashes.
+        if(!Constants.DRIVE_ENABLED) return;
 
         leftFrontMotor.restoreFactoryDefaults();
         rightFrontMotor.restoreFactoryDefaults();
@@ -39,6 +43,8 @@ public class Drive extends Subsystem {
     }
 
     public void driveCartesian(double joystickForwardAxis, double joystickLateralAxis, double zRotation) {
+        if(!Constants.DRIVE_ENABLED) return;
+        
         if(!isEnabled()) {
             stopMotors();
             return;
@@ -48,6 +54,8 @@ public class Drive extends Subsystem {
     }
 
     public void drivePolar(double joystickForwardAxis, double joystickLateralAxis, double zRotation) {
+        if(!Constants.DRIVE_ENABLED) return;
+
         if(!isEnabled()) {
             stopMotors();
             return;
