@@ -26,6 +26,8 @@ public class Shooter extends Subsystem {
         this.hoodMotor = hoodMotor;
         this.turretMotor = turretMotor;
 
+        if(!Constants.SHOOTER_ENABLED) return;
+
         flywheelMotor.restoreFactoryDefaults();
         flywheelMotor.setIdleMode(IdleMode.kCoast);
         pidController = flywheelMotor.getPIDController();
@@ -58,10 +60,14 @@ public class Shooter extends Subsystem {
     }
 
     public void setTurretAngle(double speed) {
+        if(!Constants.SHOOTER_ENABLED) return;
+
         turretMotor.set(speed);
     }
 
     public void shoot() {
+        if(!Constants.SHOOTER_ENABLED) return;
+
         double p = SmartDashboard.getNumber("P Gain", 0);
         double i = SmartDashboard.getNumber("I Gain", 0);
         double d = SmartDashboard.getNumber("D Gain", 0);
@@ -92,13 +98,16 @@ public class Shooter extends Subsystem {
     }
 
     @SuppressWarnings("unused")
-    private boolean setHoodPosition(double hoodPosition) {
+    private void setHoodPosition(double hoodPosition) {
+        if(!Constants.SHOOTER_ENABLED) return;
+
         //TODO
-        return false;
     }
 
     @SuppressWarnings("unused")
     private void setFlywheelRPM(double revolutionsPerMinute) {
+        if(!Constants.SHOOTER_ENABLED) return;
+
         //TODO
     }
     public double getRequiredFlyWheelRPM() {
@@ -110,12 +119,16 @@ public class Shooter extends Subsystem {
 
     @Override
     public void close() throws Exception {
+        if(!Constants.SHOOTER_ENABLED) return;
+
         flywheelMotor.close();
         hoodMotor.close();
         turretMotor.close();
     }
     @Override
     protected void stopMotors() {
+        if(!Constants.SHOOTER_ENABLED) return;
+        
         flywheelMotor.stopMotor();
         hoodMotor.stopMotor();
         turretMotor.stopMotor();
