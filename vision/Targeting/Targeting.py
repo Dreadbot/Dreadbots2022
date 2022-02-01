@@ -23,7 +23,7 @@ def _drawTargets(x, y, w, h, rectangleColor, circleColor, lineColor) :
 cap = cv2.VideoCapture(1)
 # Create varibles for trackbars
 high_H, high_S, high_L, low_H, low_S, low_L = 0, 0, 0, 0, 0, 0
-upper_hight, lower_height, upper_width, lower_width = 0, 0, 0, 0
+upper_height, lower_height, upper_width, lower_width = 0, 0, 0, 0
 HIGH_VAL_HSL = 255
 HIGH_H = 360 // 2
 HIGH_VAL_BOUNDING_BOX = 50
@@ -42,20 +42,20 @@ cv2.createTrackbar('High S', 'Trackbars', high_S, HIGH_VAL_HSL, ontrackbar)
 cv2.createTrackbar('Low S', 'Trackbars', low_S, HIGH_VAL_HSL, ontrackbar)
 cv2.createTrackbar('High L', 'Trackbars', high_L, HIGH_VAL_HSL, ontrackbar)
 cv2.createTrackbar('Low L', 'Trackbars', low_L, HIGH_VAL_HSL, ontrackbar)
-cv2.createTrackbar('Upper Height', 'Trackbars', upper_hight, HIGH_VAL_BOUNDING_BOX, ontrackbar)
+cv2.createTrackbar('Upper Height', 'Trackbars', upper_height, HIGH_VAL_BOUNDING_BOX, ontrackbar)
 cv2.createTrackbar('Lower Height', 'Trackbars', lower_height, HIGH_VAL_BOUNDING_BOX, ontrackbar)
 cv2.createTrackbar('Upper Width', 'Trackbars', upper_width, HIGH_VAL_BOUNDING_BOX, ontrackbar)
 cv2.createTrackbar('Lower Width', 'Trackbars', lower_width, HIGH_VAL_BOUNDING_BOX, ontrackbar)
-cv2.setTrackbarPos('High H', 'Trackbars', 70)
+cv2.setTrackbarPos('High H', 'Trackbars', 90)
 cv2.setTrackbarPos('Low H', 'Trackbars', 60)
-cv2.setTrackbarPos('High S', 'Trackbars', 60)
-cv2.setTrackbarPos('Low S', 'Trackbars', 40)
+cv2.setTrackbarPos('High S', 'Trackbars', 70)
+cv2.setTrackbarPos('Low S', 'Trackbars', 30)
 cv2.setTrackbarPos('High L', 'Trackbars', 255)
 cv2.setTrackbarPos('Low L', 'Trackbars', 200)
-cv2.setTrackbarPos('Upper Height', 'Trackbars', 30)
-cv2.setTrackbarPos('Lower Height', 'Trackbars', 20)
-cv2.setTrackbarPos('Upper Width', 'Trackbars', 20)
-cv2.setTrackbarPos('Lower Width', 'Trackbars', 3)
+cv2.setTrackbarPos('Upper Height', 'Trackbars', 20)
+cv2.setTrackbarPos('Lower Height', 'Trackbars', 5)
+cv2.setTrackbarPos('Upper Width', 'Trackbars', 40)
+cv2.setTrackbarPos('Lower Width', 'Trackbars', 20)
 # Check if camera opened successfully
 if (cap.isOpened()== False): 
     print("Error opening video  file")
@@ -84,8 +84,8 @@ while(cap.isOpened()):
 
 # For testing, shows the video feed in different states in windows on your computer
     #cv2.imshow('Input', inputImg)
-    # cv2.imshow('HLS Conversion', hlsImg)
-    # cv2.imshow('Mask', maskImg)
+    #cv2.imshow('HLS Conversion', hlsImg)
+    #cv2.imshow('Mask', maskImg)
     cv2.imshow('Dilated', dilateImg)
     cv2.imshow('Contour', contourImg)
 
@@ -106,8 +106,10 @@ while(cap.isOpened()):
       img_w = inputImg.shape[1]
       target_found = False
       flength = 544
-      camOffset = 22
-      targetHeight = 72
+      camOffsetDegree = 25.5
+      targetHeight = 39
+      cx = int(img_w/2)
+      cy = int(img_h/2)
 
 
 # Checks the width (w) and height (h) of every contour in the frame and only puts the targets over the ones in the range
@@ -118,18 +120,12 @@ while(cap.isOpened()):
         fin_angle_hori = ((math.atan((target[0]-(img_w/2))/flength)))*(180/math.pi)
         
 #Calculate vertical angle for distance calculations (LOTS of fancy math cole did)
-        fin_angle_raw_rad = math.atan((240 - target[1])/flength)
-        fin_angle_deg = math.degrees(fin_angle_raw_rad) + camOffset
+        fin_angle_raw_rad = math.atan((cy - target[1])/flength)
+        fin_angle_deg = math.degrees(fin_angle_raw_rad) + camOffsetDegree
         fin_angle_rad = math.radians(fin_angle_deg)
         distance = targetHeight / math.tan(fin_angle_rad)
 
-        fin_angle_hori = ((math.atan((target[0]-(img_w/2))/flength)))*(180/math.pi)
-
-        fin_angle_raw_rad = math.atan((240 - target[1])/flength)
-        fin_angle_deg = math.degrees(fin_angle_raw_rad) + camOffset
-        fin_angle_rad = math.radians(fin_angle_deg)
-        distance = targetHeight / math.tan(fin_angle_rad)
-        #print('yesadfdfgdfg')
+        print(distance)
         # scale image
         width = int(imgToPush.shape[1] * 160 / 100)
         height = int(imgToPush.shape[0] * 160 / 100)
@@ -138,7 +134,7 @@ while(cap.isOpened()):
         cv2.imshow('pushed image', resized) # Show final image on your computer with targets shown
 
 # Press Q on keyboard to  exit
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord('\b'):
       break
    
 # Break the loop
