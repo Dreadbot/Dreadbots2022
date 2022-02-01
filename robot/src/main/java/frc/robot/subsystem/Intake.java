@@ -6,6 +6,8 @@ package frc.robot.subsystem;
 
 import com.revrobotics.CANSparkMax;
 
+import frc.robot.Constants;
+
 public class Intake extends Subsystem {
     private final CANSparkMax leftIntakeMotor;
     private final CANSparkMax rightIntakeMotor;
@@ -18,6 +20,8 @@ public class Intake extends Subsystem {
     }
 
     public void intake() {
+        if(!Constants.INTAKE_ENABLED) return;
+        
         if(!isEnabled()) {
             stopMotors();
             return;
@@ -28,6 +32,8 @@ public class Intake extends Subsystem {
     }
 
     public void outlet() {
+        if(!Constants.INTAKE_ENABLED) return;
+
         if(!isEnabled()) {
             stopMotors();
             return;
@@ -39,12 +45,16 @@ public class Intake extends Subsystem {
 
     @Override
     protected void stopMotors() {
+        if(!Constants.INTAKE_ENABLED) return;
+
         leftIntakeMotor.stopMotor();
         rightIntakeMotor.stopMotor();
     }
 
     @Override
     public void close() throws Exception {
+        if(!Constants.INTAKE_ENABLED) return;
+
         leftIntakeMotor.close();
         rightIntakeMotor.close();
     }

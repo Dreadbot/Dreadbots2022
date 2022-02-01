@@ -77,6 +77,8 @@ public class Drive extends Subsystem {
 
     @Override
     protected void stopMotors() {
+        if(!Constants.DRIVE_ENABLED) return;
+
         leftFrontMotor.stopMotor();
         rightFrontMotor.stopMotor();
         leftBackMotor.stopMotor();
@@ -87,6 +89,8 @@ public class Drive extends Subsystem {
 
     @Override
     public void close() throws Exception {
+        if(!Constants.DRIVE_ENABLED) return;
+
         leftFrontMotor.close();
         rightFrontMotor.close();
         leftBackMotor.close();
