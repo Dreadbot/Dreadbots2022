@@ -16,8 +16,10 @@ public class Shooter extends Subsystem {
     private SparkMaxPIDController pidController;
     private RelativeEncoder encoder;
     public ShootingState state;
-    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
+    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, kSetPoint;
     private double distanceToGoal;
+    private boolean flag=true;
+
 
     public Shooter(CANSparkMax flywheelMotor, CANSparkMax hoodMotor, CANSparkMax turretMotor) {
         super("Shooter");
@@ -33,11 +35,11 @@ public class Shooter extends Subsystem {
         pidController = flywheelMotor.getPIDController();
         encoder = flywheelMotor.getEncoder();
 
-        kP = 7e-4; 
-        kI = 1e-6;
+        kP = 1e-4; 
+        kI = 0;
         kD = 0; 
-        kIz = 200; 
-        kFF = 0.000015; 
+        kIz = 2; 
+        kFF = 0.0002; 
         kMaxOutput = 1; 
         kMinOutput = -1;
         maxRPM = 5700;
@@ -75,8 +77,7 @@ public class Shooter extends Subsystem {
         double ff = SmartDashboard.getNumber("Feed Forward", 0);
         double max = SmartDashboard.getNumber("Max Output", 0);
         double min = SmartDashboard.getNumber("Min Output", 0);
-
-        System.out.println("kP: " + kP);
+        double setPoint = SmartDashboard.getNumber("RPM", 0);
 
         if((p != kP)) { pidController.setP(p); kP = p; }
         if((i != kI)) { pidController.setI(i); kI = i; }
@@ -87,13 +88,12 @@ public class Shooter extends Subsystem {
             pidController.setOutputRange(min, max); 
             kMinOutput = min; kMaxOutput = max; 
         }
+        if(setPoint != kSetPoint) {
+            pidController.setReference(setPoint, ControlType.kVelocity);
+            kSetPoint = setPoint;
+            SmartDashboard.putNumber("SetPoint", setPoint);
+        }
 
-        double setPoint = SmartDashboard.getNumber("RPM", 0);
-        System.out.println("setpoint: " + setPoint);
-
-        pidController.setReference(setPoint, ControlType.kVelocity);
-
-        SmartDashboard.putNumber("SetPoint", setPoint);
         SmartDashboard.putNumber("ProcessVariable", encoder.getVelocity());
     }
 

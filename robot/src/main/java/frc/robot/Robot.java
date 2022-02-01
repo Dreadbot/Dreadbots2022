@@ -42,9 +42,9 @@ public class Robot extends TimedRobot {
   @SuppressWarnings("unused")
   private Intake intake = new Intake(leftIntakeMotor, rightIntakeMotor);
 
-  private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
-  private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
-  private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
+  private final CANSparkMax flywheelMotor = new CANSparkMax(1, MotorType.kBrushless);
+  private final CANSparkMax hoodMotor = new CANSparkMax(2, MotorType.kBrushless);
+  private final CANSparkMax turretMotor = new CANSparkMax(3, MotorType.kBrushless);
   @SuppressWarnings("unused")
   private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 
@@ -60,7 +60,36 @@ public class Robot extends TimedRobot {
   private Climber climber = new Climber(leftNeutralHookActuator, rightNeutralHookActuator, leftClimbingHookActuator, rightClimbingHookActuator, leftWinchMotor, rightWinchMotor);
   
   @Override
-  public void robotInit() {}
+  public void robotInit() {
+    if(!Constants.DRIVE_ENABLED) {
+      leftFrontDriveMotor.close();
+      rightFrontDriveMotor.close();
+      leftBackDriveMotor.close();
+      rightBackDriveMotor.close();
+    }
+
+    if(!Constants.INTAKE_ENABLED) {
+      leftIntakeMotor.close();
+      rightIntakeMotor.close();
+    }
+
+    if(!Constants.SHOOTER_ENABLED) {
+      flywheelMotor.close();
+      hoodMotor.close();
+      turretMotor.close();
+    }
+
+    if(!Constants.CLIMB_ENABLED) {
+      leftNeutralHookActuator.close();
+      rightNeutralHookActuator.close();
+
+      leftClimbingHookActuator.close();
+      rightClimbingHookActuator.close();
+
+      leftWinchMotor.close();
+      rightWinchMotor.close();
+    }
+  }
 
   @Override
   public void robotPeriodic() {}

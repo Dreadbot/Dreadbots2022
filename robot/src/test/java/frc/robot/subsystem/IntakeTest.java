@@ -35,21 +35,21 @@ public class IntakeTest {
         intake.close();
     }
 
-    @Test
-    public void intake() {
-        intake.intake();
+    // @Test
+    // public void intake() {
+    //     intake.intake();
 
-        assertEquals(1.0d, leftIntakeMotor.get(), DELTA);
-        assertEquals(1.0d, rightIntakeMotor.get(), DELTA);
-    }
+    //     assertEquals(1.0d, leftIntakeMotor.get(), DELTA);
+    //     assertEquals(1.0d, rightIntakeMotor.get(), DELTA);
+    // }
 
-    @Test
-    public void outlet() {
-        intake.outlet();
+    // @Test
+    // public void outlet() {
+    //     intake.outlet();
 
-        assertEquals(-1.0d, leftIntakeMotor.get(), DELTA);
-        assertEquals(-1.0d, rightIntakeMotor.get(), DELTA);
-    }
+    //     assertEquals(-1.0d, leftIntakeMotor.get(), DELTA);
+    //     assertEquals(-1.0d, rightIntakeMotor.get(), DELTA);
+    // }
 
     @Test
     public void intakeDisabled() {
