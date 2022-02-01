@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.Solenoid;
+import frc.robot.Constants;
 
 public class Climber {
     private final Solenoid leftNeutralHookActuator;
@@ -24,6 +25,8 @@ public class Climber {
         this.rightClimbingHookActuator = rightClimbingHookActuator;
         this.leftWinchMotor = leftWinchMotor;
         this.rightWinchMotor = rightWinchMotor;
+
+        if(!Constants.CLIMB_ENABLED) return;
 
         leftWinchMotor.getFirmwareVersion();
         
