@@ -24,6 +24,8 @@ public class Climber {
         this.rightClimbingHookActuator = rightClimbingHookActuator;
         this.leftWinchMotor = leftWinchMotor;
         this.rightWinchMotor = rightWinchMotor;
+
+        leftWinchMotor.getFirmwareVersion();
         
         leftWinchMotor.restoreFactoryDefaults();
         leftWinchMotor.setIdleMode(IdleMode.kBrake);

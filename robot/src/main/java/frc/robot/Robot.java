@@ -48,14 +48,18 @@ public class Robot extends TimedRobot {
   @SuppressWarnings("unused")
   private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);*/
 
-  private final Solenoid shortClimberSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.SHORT_CLIMBER_SOLENOID);
-  private final Solenoid longClimberSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.LONG_CLIMBER_SOLENOID);
-  private final CANSparkMax leftClimberMotor = new CANSparkMax(Constants.LEFT_CLIMBER_MOTOR, MotorType.kBrushless);
-  private final CANSparkMax rightClimberMotor = new CANSparkMax(Constants.RIGHT_CLIMBER_MOTOR, MotorType.kBrushless);
+  private final Solenoid leftNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.LEFT_NEUTRAL_HOOK_ACTUATOR);
+  private final Solenoid rightNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.RIGHT_NEUTRAL_HOOK_ACTUATOR);
+
+  private final Solenoid leftClimbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.LEFT_CLIMBING_HOOK_ACTUATOR);
+  private final Solenoid rightClimbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.RIGHT_CLIMBING_HOOK_ACTUATOR);
+
+  private final CANSparkMax leftWinchMotor = new CANSparkMax(Constants.LEFT_WINCH_MOTOR_PORT, MotorType.kBrushless);
+  private final CANSparkMax rightWinchMotor = new CANSparkMax(Constants.RIGHT_WINCH_MOTOR_PORT, MotorType.kBrushless);
   //private final DoubleSolenoid shortClimberDSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, Constants.SHORT_CLIMBER_DSOLENOID_FORWARD, Constants.SHORT_CLIMBER_DSOLENOID_BACKWARD);
   //private final DoubleSolenoid longClimberDSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, Constants.SHORT_CLIMBER_DSOLENOID_FORWARD,Constants.LONG_CLIMBER_DSOLENOID_BACKWARD);
   @SuppressWarnings("unused")
-  private Climber climber = new Climber(shortClimberSolenoid, longClimberSolenoid, leftClimberMotor, rightClimberMotor, /*shortClimberDSolenoid, longClimberDSolenoid,*/ secondaryController);
+  private Climber climber = new Climber(leftNeutralHookActuator, rightNeutralHookActuator, leftClimbingHookActuator, rightClimbingHookActuator, leftWinchMotor, rightWinchMotor);
   
   @Override
   public void robotInit() {}
@@ -79,11 +83,6 @@ public class Robot extends TimedRobot {
     drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
     //shooter.shoot();
     //shooter.setTurretAngle(primaryController.getWAxis());
-    //Leaving climber methods for both solenoids for testing
-    climber.setShortHook();
-    climber.setLongHook();
-    //climber.toggleDoubleHooks();
-    climber.raiseRobot();
   }
 
 
