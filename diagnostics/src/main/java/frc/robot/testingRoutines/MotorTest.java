@@ -1,6 +1,10 @@
 package frc.robot.testingRoutines;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkMaxPIDController;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
 
 public class MotorTest {
 
@@ -22,5 +26,9 @@ public class MotorTest {
     }
     public void testMotor3(double speed) {
         motor3.set(speed);
+    }
+    public void testMotor1() {
+        SparkMaxPIDController CalibratePIDController = motor1.getPIDController();
+        CalibratePIDController.setP(0);
     }
 }
