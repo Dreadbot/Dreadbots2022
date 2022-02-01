@@ -49,7 +49,7 @@ public class Shooter extends Subsystem {
         pidController.setD(kD);
         pidController.setIZone(kIz);
         pidController.setFF(kFF);
-        pidController.setOutputRange(kMinOutput, kMaxOutput);
+        pidController.setOutputRange(kMinOutput, kMaxOutput); 
 
         SmartDashboard.putNumber("P Gain", kP);
         SmartDashboard.putNumber("I Gain", kI);
