@@ -17,7 +17,7 @@ public class Shooter extends Subsystem {
     private SparkMaxPIDController pidController;
     private RelativeEncoder encoder;
     public ShootingState state;
-    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, kSetPoint;
+    public double lastSetPoint;
     private double distanceToGoal;
 
     private SlewRateLimiter filter = new SlewRateLimiter(2000); // 2000 RPM/s
@@ -42,30 +42,14 @@ public class Shooter extends Subsystem {
         pidController = flywheelMotor.getPIDController();
         encoder = flywheelMotor.getEncoder();
 
-        kP = 1e-4; 
-        kI = 0;
-        kD = 0; 
-        kIz = 2; 
-        kFF = 0.0002; 
-        kMaxOutput = 1; 
-        kMinOutput = -1;
-        maxRPM = 5700;
+        pidController.setP(Constants.FLYWHEEL_P_GAIN);
+        pidController.setI(Constants.FLYWHEEL_I_GAIN);
+        pidController.setD(Constants.FLYWHEEL_D_GAIN);
+        pidController.setIZone(Constants.FLYWHEEL_I_ZONE);
+        pidController.setFF(Constants.FLYWHEEL_FF_GAIN);
+        pidController.setOutputRange(Constants.FLYWHEEL_MIN_OUTPUT, Constants.FLYWHEEL_MAX_OUTPUT); 
 
-        pidController.setP(kP);
-        pidController.setI(kI);
-        pidController.setD(kD);
-        pidController.setIZone(kIz);
-        pidController.setFF(kFF);
-        pidController.setOutputRange(kMinOutput, kMaxOutput); 
-
-        SmartDashboard.putNumber("P Gain", kP);
-        SmartDashboard.putNumber("I Gain", kI);
-        SmartDashboard.putNumber("D Gain", kD);
-        SmartDashboard.putNumber("I Zone", kIz);
-        SmartDashboard.putNumber("Feed Forward", kFF);
-        SmartDashboard.putNumber("Max Output", kMaxOutput);
-        SmartDashboard.putNumber("Min Output", kMinOutput);
-        SmartDashboard.putNumber("RPM", 10);
+        SmartDashboard.putNumber("Flywheel Velocity (RPM)", 0.0d);
     }
 
     public void setTurretAngle(double speed) {
@@ -77,38 +61,26 @@ public class Shooter extends Subsystem {
     public void shoot() {
         if(!Constants.SHOOTER_ENABLED) return;
 
-        double p = SmartDashboard.getNumber("P Gain", 0);
-        double i = SmartDashboard.getNumber("I Gain", 0);
-        double d = SmartDashboard.getNumber("D Gain", 0);
-        double iz = SmartDashboard.getNumber("I Zone", 0);
-        double ff = SmartDashboard.getNumber("Feed Forward", 0);
-        double max = SmartDashboard.getNumber("Max Output", 0);
-        double min = SmartDashboard.getNumber("Min Output", 0);
         double setPoint = SmartDashboard.getNumber("RPM", 0);
+        if(setPoint != lastSetPoint) {
+            // Prevents the motor from going beyond 5700RPM
+            setPoint = Math.min(setPoint, Constants.FLYWHEEL_MAX_RPM);
 
-        if((p != kP)) { pidController.setP(p); kP = p; }
-        if((i != kI)) { pidController.setI(i); kI = i; }
-        if((d != kD)) { pidController.setD(d); kD = d; }
-        if((iz != kIz)) { pidController.setIZone(iz); kIz = iz; }
-        if((ff != kFF)) { pidController.setFF(ff); kFF = ff; }
-        if((max != kMaxOutput) || (min != kMinOutput)) { 
-            pidController.setOutputRange(min, max); 
-            kMinOutput = min; kMaxOutput = max; 
-        }
-        if(setPoint != kSetPoint) {
-            setPoint = Math.min(setPoint, maxRPM);
+            // Commands the motor to approach the requested angular speed.
             pidController.setReference(setPoint, ControlType.kVelocity);
-            kSetPoint = setPoint;
             
+            // This sets the value of the initial RPM for when the flywheel ramps down.
             filter.reset(setPoint);
+            
             SmartDashboard.putNumber("SetPoint", setPoint);
+            lastSetPoint = setPoint;
         }
 
-        SmartDashboard.putNumber("ProcessVariable", encoder.getVelocity());
+        SmartDashboard.putNumber("Flywheel Velocity (RPM)", encoder.getVelocity());
     }
 
     public void idle() {
-        // Forces the shooter to ramp-down instead of falling immediately to zero.
+        // Commands the motor to ramp down linearly (slew) to the requested 0RPM.
         pidController.setReference(filter.calculate(0), ControlType.kVelocity);
     }
 
