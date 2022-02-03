@@ -73,14 +73,6 @@ public class Robot extends TimedRobot {
       hoodMotor.close();
       turretMotor.close();
     }
-
-    if(!Constants.CLIMB_ENABLED) {
-      leftNeutralHookActuator.close();
-      rightNeutralHookActuator.close();
-      climbingHookActuator.close();
-
-      winchMotor.close();
-    }
   }
 
   @Override

@@ -6,6 +6,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.wpilibj.Solenoid;
+import frc.robot.Constants;
 
 public class Climber extends Subsystem {
     private final Solenoid leftNeutralHookActuator;
@@ -13,9 +14,9 @@ public class Climber extends Subsystem {
     private final Solenoid climbingHookActuator;
 
     private final CANSparkMax winchMotor;
-    private final SparkMaxPIDController winchPid;
+    private SparkMaxPIDController winchPid;
     @SuppressWarnings("unused")
-    private final RelativeEncoder winchEncoder;
+    private RelativeEncoder winchEncoder;
 
     public Climber(Solenoid leftNeutralHookActuator, Solenoid rightNeutralHookActuator, Solenoid climbingHookActuator,
             CANSparkMax winchMotor) {
@@ -26,6 +27,17 @@ public class Climber extends Subsystem {
         this.climbingHookActuator = climbingHookActuator;
 
         this.winchMotor = winchMotor;
+
+        if(!Constants.CLIMB_ENABLED) {
+            leftNeutralHookActuator.close();
+            rightNeutralHookActuator.close();
+            climbingHookActuator.close();
+      
+            winchMotor.close();
+
+            return;
+        }
+
         this.winchPid = winchMotor.getPIDController();
         this.winchEncoder = winchMotor.getEncoder();
 
@@ -42,6 +54,8 @@ public class Climber extends Subsystem {
 
     @Override
     public void close() throws Exception {
+        if(!Constants.CLIMB_ENABLED) return;
+
         leftNeutralHookActuator.close();
         rightNeutralHookActuator.close();
         climbingHookActuator.close();
@@ -52,29 +66,41 @@ public class Climber extends Subsystem {
 
     @Override
     protected void stopMotors() {
+        if(!Constants.CLIMB_ENABLED) return;
+
         winchMotor.stopMotor();
         winchMotor.stopMotor();
     }
 
     public void rotateClimbingHookVertical() {
+        if(!Constants.CLIMB_ENABLED) return;
+
         climbingHookActuator.set(true);
     }
 
     public void rotateClimbingHookDown() {
+        if(!Constants.CLIMB_ENABLED) return;
+
         climbingHookActuator.set(false);
     }
 
     public void rotateNeutralHooksVertical() {
+        if(!Constants.CLIMB_ENABLED) return;
+
         leftNeutralHookActuator.set(true);
         rightNeutralHookActuator.set(true);
     }
 
     public void rotateNeutralHooksDown() {
+        if(!Constants.CLIMB_ENABLED) return;
+
         leftNeutralHookActuator.set(false);
         rightNeutralHookActuator.set(false);
     }
 
     public void extendArm(double distance) {
+        if(!Constants.CLIMB_ENABLED) return;
+        
         winchPid.setReference(distance, ControlType.kPosition);
     }
 }
