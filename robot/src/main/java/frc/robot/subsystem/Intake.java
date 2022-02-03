@@ -48,7 +48,7 @@ public class Intake extends Subsystem {
         internalMotor.set(-1.0d);
     }
 
-    public void neutral() {
+    public void idle() {
         if(!Constants.INTAKE_ENABLED) return;
 
         if(!isEnabled()) {

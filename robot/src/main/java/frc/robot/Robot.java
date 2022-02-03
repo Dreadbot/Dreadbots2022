@@ -98,10 +98,12 @@ public class Robot extends TimedRobot {
     shooter.shoot();
     shooter.setTurretAngle(primaryController.getWAxis());
 
-    if(secondaryController.isAButtonPressed()) intake.intake();
-    if(secondaryController.isXButtonPressed()) intake.outlet();
+    if(secondaryController.isAButtonPressed()) 
+      intake.intake();
+    if(secondaryController.isXButtonPressed()) 
+      intake.outlet();
     if(secondaryController.isAButtonPressed() == secondaryController.isXButtonPressed()) 
-      intake.neutral();
+      intake.idle();
   }
 
   @Override
