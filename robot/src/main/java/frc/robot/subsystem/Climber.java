@@ -98,9 +98,15 @@ public class Climber extends Subsystem {
         rightNeutralHookActuator.set(false);
     }
 
+    public void setWinch(double factor) {
+        if(!Constants.CLIMB_ENABLED) return;
+
+        winchMotor.set(factor);
+    }
+
     public void extendArm(double distance) {
         if(!Constants.CLIMB_ENABLED) return;
-        
+
         winchPid.setReference(distance, ControlType.kPosition);
     }
 }

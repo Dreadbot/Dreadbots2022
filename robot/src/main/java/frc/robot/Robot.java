@@ -90,6 +90,12 @@ public class Robot extends TimedRobot {
 
     shooter.shoot();
     shooter.setTurretAngle(primaryController.getWAxis());
+
+    if(primaryController.isXButtonPressed()) climber.rotateClimbingHookVertical();
+    if(primaryController.isYButtonPressed()) climber.rotateClimbingHookDown();
+    if(primaryController.isAButtonPressed()) climber.rotateNeutralHooksVertical();
+    if(primaryController.isBButtonPressed()) climber.rotateNeutralHooksDown();
+    climber.setWinch(primaryController.getWAxis());
   }
 
   @Override
