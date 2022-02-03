@@ -23,7 +23,6 @@ import frc.robot.util.DreadbotController;
  * project.
  */
 public class Robot extends TimedRobot {
-  @SuppressWarnings("unused")
   private DreadbotController primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
   @SuppressWarnings("unused")
   private DreadbotController secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
@@ -43,7 +42,7 @@ public class Robot extends TimedRobot {
   private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
   private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
   private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
-  @SuppressWarnings("unused")
+
   private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 
   private final Solenoid leftNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.LEFT_NEUTRAL_HOOK_ACTUATOR);
