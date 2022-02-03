@@ -17,8 +17,6 @@ public class Flywheel extends Subsystem {
 
     public double lastVelocity;
 
-    private SlewRateLimiter filter = new SlewRateLimiter(2000); // 2000 RPM/s
-
     public Flywheel(CANSparkMax motor) {
         super("Flywheel");
 
@@ -54,9 +52,6 @@ public class Flywheel extends Subsystem {
             // Commands the motor to approach the requested angular speed.
             pidController.setReference(velocity, ControlType.kVelocity);
             
-            // This sets the value of the initial RPM for when the flywheel ramps down.
-            filter.reset(velocity);
-            
             lastVelocity = velocity;
         }
     }
@@ -64,8 +59,9 @@ public class Flywheel extends Subsystem {
     public void idle() {
         if(!Constants.SHOOTER_ENABLED) return;
 
-        // Commands the motor to ramp down linearly (slew) to the requested 0RPM.
-        pidController.setReference(filter.calculate(0), ControlType.kVelocity);
+        lastVelocity = 0.0d;
+        
+        motor.set(0.0d);
     }
 
     @Override
