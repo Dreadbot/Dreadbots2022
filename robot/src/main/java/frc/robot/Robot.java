@@ -101,7 +101,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
 
-    shooter.shoot();
+    if(secondaryController.isBButtonPressed()) shooter.shoot();
     shooter.setTurretAngle(primaryController.getWAxis());
   }
 
