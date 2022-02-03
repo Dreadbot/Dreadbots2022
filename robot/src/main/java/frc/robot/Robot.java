@@ -65,11 +65,6 @@ public class Robot extends TimedRobot {
       rightBackDriveMotor.close();
     }
 
-    if(!Constants.INTAKE_ENABLED) {
-      externalIntakeMotor.close();
-      internalIntakeMotor.close();
-    }
-
     if(!Constants.SHOOTER_ENABLED) {
       flywheelMotor.close();
       hoodMotor.close();
