@@ -1,3 +1,4 @@
+from cgitb import text
 import cv2
 import numpy as np
 import math
@@ -106,7 +107,7 @@ while(cap.isOpened()):
       img_w = inputImg.shape[1]
       target_found = False
       flength = 544
-      camOffsetDegree = 25.5
+      camOffsetDegree = 7
       targetHeight = 39
       cx = int(img_w/2)
       cy = int(img_h/2)
@@ -115,13 +116,13 @@ while(cap.isOpened()):
 # Checks the width (w) and height (h) of every contour in the frame and only puts the targets over the ones in the range
       if w > cv2.getTrackbarPos('Lower Width', 'Trackbars') and w < cv2.getTrackbarPos('Upper Width', 'Trackbars') and h > cv2.getTrackbarPos('Lower Height', 'Trackbars') and h < cv2.getTrackbarPos('Upper Height', 'Trackbars') :   # w 5,20   h 25,40
 #Draws the target over the reflective tape on the original image
-        target = _drawTargets(x, y, w, h, (0,255,0), (255,0,0), (255,255,255))
+        target = _drawTargets(x, y, w, h, (0, 255, 0), (255, 0, 0), (255, 255, 255))
 # Calculate angle to turn to
-        fin_angle_hori = ((math.atan((target[0]-(img_w/2))/flength)))*(180/math.pi)
+        fin_angle_hori = ((math.atan((x - (img_w / 2)) / flength))) * (180 / math.pi)
         
 #Calculate vertical angle for distance calculations (LOTS of fancy math cole did)
-        fin_angle_raw_rad = math.atan((cy - target[1])/flength)
-        fin_angle_deg = math.degrees(fin_angle_raw_rad) + camOffsetDegree
+        fin_angle_raw_rad = math.atan((cx - x) / flength)
+        fin_angle_deg = math.degrees(fin_angle_raw_rad)# + camOffsetDegree
         fin_angle_rad = math.radians(fin_angle_deg)
         distance = targetHeight / math.tan(fin_angle_rad)
 
@@ -131,6 +132,9 @@ while(cap.isOpened()):
         height = int(imgToPush.shape[0] * 160 / 100)
         dim = (width, height)
         resized = cv2.resize(imgToPush, dim)
+        cv2.line(resized, (cx+200, 0), (cx+200, 800), (255,0,0))
+        resized = cv2.putText(resized, str(distance), (25,80),cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,0), 2, cv2.LINE_AA)
+        resized = cv2.putText(resized, str(fin_angle_deg), (25,200),cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,0), 2, cv2.LINE_AA)
         cv2.imshow('pushed image', resized) # Show final image on your computer with targets shown
 
 # Press Q on keyboard to  exit
