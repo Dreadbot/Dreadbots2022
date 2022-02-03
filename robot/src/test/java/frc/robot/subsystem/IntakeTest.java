@@ -35,45 +35,55 @@ public class IntakeTest {
         intake.close();
     }
 
-    // @Test
-    // public void intake() {
-    //     intake.intake();
+    @Test
+    public void intake() {
+        if(!Constants.INTAKE_ENABLED) return;
 
-    //     assertEquals(1.0d, leftIntakeMotor.get(), DELTA);
-    //     assertEquals(1.0d, rightIntakeMotor.get(), DELTA);
-    // }
+        intake.intake();
 
-    // @Test
-    // public void outlet() {
-    //     intake.outlet();
+        assertEquals(1.0d, externalIntakeMotor.get(), DELTA);
+        assertEquals(1.0d, internalIntakeMotor.get(), DELTA);
+    }
 
-    //     assertEquals(-1.0d, leftIntakeMotor.get(), DELTA);
-    //     assertEquals(-1.0d, rightIntakeMotor.get(), DELTA);
-    // }
+    @Test
+    public void outlet() {
+        if(!Constants.INTAKE_ENABLED) return;
 
-    // @Test
-    // public void intakeDisabled() {
-    //     intake.disable();
-    //     intake.intake();
+        intake.outlet();
 
-    //     assertEquals(0.0d, externalIntakeMotor.get(), DELTA);
-    //     assertEquals(0.0d, internalIntakeMotor.get(), DELTA);
-    // }
+        assertEquals(-1.0d, externalIntakeMotor.get(), DELTA);
+        assertEquals(-1.0d, internalIntakeMotor.get(), DELTA);
+    }
 
-    // @Test
-    // public void outletDisabled() {
-    //     intake.disable();
-    //     intake.outlet();
+    @Test
+    public void intakeDisabled() {
+        if(!Constants.INTAKE_ENABLED) return;
 
-    //     assertEquals(0.0d, externalIntakeMotor.get(), DELTA);
-    //     assertEquals(0.0d, internalIntakeMotor.get(), DELTA);
-    // }
+        intake.disable();
+        intake.intake();
 
-    // @Test
-    // public void stop() {
-    //     intake.stopMotors();
+        assertEquals(0.0d, externalIntakeMotor.get(), DELTA);
+        assertEquals(0.0d, internalIntakeMotor.get(), DELTA);
+    }
 
-    //     assertEquals(0.0d, externalIntakeMotor.get(), DELTA);
-    //     assertEquals(0.0d, internalIntakeMotor.get(), DELTA);
-    // }
+    @Test
+    public void outletDisabled() {
+        if(!Constants.INTAKE_ENABLED) return;
+
+        intake.disable();
+        intake.outlet();
+
+        assertEquals(0.0d, externalIntakeMotor.get(), DELTA);
+        assertEquals(0.0d, internalIntakeMotor.get(), DELTA);
+    }
+
+    @Test
+    public void stop() {
+        if(!Constants.INTAKE_ENABLED) return;
+        
+        intake.stopMotors();
+
+        assertEquals(0.0d, externalIntakeMotor.get(), DELTA);
+        assertEquals(0.0d, internalIntakeMotor.get(), DELTA);
+    }
 }
