@@ -33,7 +33,7 @@ public abstract class Constants {
     public static final double FLYWHEEL_I_GAIN = 0.0d;
     public static final double FLYWHEEL_D_GAIN = 0.0d;
     public static final double FLYWHEEL_I_ZONE = 2.0d;
-    public static final double FLYWHEEL_FF_GAIN = 2e-4d;
+    public static final double FLYWHEEL_FF_GAIN = 1.9e-4d;
     public static final double FLYWHEEL_MAX_OUTPUT = 1.0d;
     public static final double FLYWHEEL_MIN_OUTPUT = -1.0d;
     public static final double FLYWHEEL_MAX_RPM = 5700.0d;
