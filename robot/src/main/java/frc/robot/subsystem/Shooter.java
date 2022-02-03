@@ -5,6 +5,7 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
@@ -18,6 +19,8 @@ public class Shooter extends Subsystem {
     public ShootingState state;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, kSetPoint;
     private double distanceToGoal;
+
+    private SlewRateLimiter filter = new SlewRateLimiter(2000); // 2000 RPM/s
     
     public Shooter(CANSparkMax flywheelMotor, CANSparkMax hoodMotor, CANSparkMax turretMotor) {
         super("Shooter");
@@ -88,11 +91,18 @@ public class Shooter extends Subsystem {
         }
         if(setPoint != kSetPoint) {
             pidController.setReference(setPoint, ControlType.kVelocity);
+            filter.reset(setPoint);
+
             kSetPoint = setPoint;
             SmartDashboard.putNumber("SetPoint", setPoint);
         }
 
         SmartDashboard.putNumber("ProcessVariable", encoder.getVelocity());
+    }
+
+    public void idle() {
+        // Forces the shooter to ramp-down instead of falling immediately to zero.
+        pidController.setReference(filter.calculate(0), ControlType.kVelocity);
     }
 
     @SuppressWarnings("unused")
