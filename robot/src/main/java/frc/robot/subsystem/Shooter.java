@@ -18,9 +18,7 @@ public class Shooter extends Subsystem {
     public ShootingState state;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, kSetPoint;
     private double distanceToGoal;
-    private boolean flag=true;
-
-
+    
     public Shooter(CANSparkMax flywheelMotor, CANSparkMax hoodMotor, CANSparkMax turretMotor) {
         super("Shooter");
         

@@ -7,11 +7,9 @@ package frc.robot;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
@@ -34,7 +32,7 @@ public class Robot extends TimedRobot {
   private CANSparkMax rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
   private CANSparkMax leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
   private CANSparkMax rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-  @SuppressWarnings("unused")
+
   private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
   private CANSparkMax leftIntakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
@@ -92,9 +90,6 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void robotPeriodic() {}
-
-  @Override
   public void autonomousInit() {}
 
   @Override
@@ -112,14 +107,17 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void disabledInit() {}
-
-  @Override
-  public void disabledPeriodic() {}
-
-  @Override
   public void testInit() {}
 
   @Override
   public void testPeriodic() {}
+
+  @Override
+  public void robotPeriodic() {}
+
+  @Override
+  public void disabledInit() {}
+
+  @Override
+  public void disabledPeriodic() {}
 }
