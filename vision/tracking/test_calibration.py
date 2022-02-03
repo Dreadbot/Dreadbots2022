@@ -1,9 +1,8 @@
-from pickle import GLOBAL
 import cv2
-from cv2 import MIXED_CLONE
 import numpy as np
 import dreadbot_fisheye
 from enum import Enum
+
 
 #True for camera, False for image
 src = True
@@ -31,11 +30,11 @@ function_mode = FunctionMode.CAT_FISHEYE
 
 if camera_mode == CameraMode.SINGLE_FISHEYE or camera_mode == CameraMode.DUAL_FISHEYE:
     print("Fisheye ID 1 Enabled")
-    fisheye_0 = dreadbot_fisheye.Fisheye(1, 0, adj_exposure=0.01)
+    fisheye_0 = dreadbot_fisheye.Fisheye(1, 0)
     
 if camera_mode == CameraMode.DUAL_FISHEYE:
     print("Fisheye ID 2 Enabled")
-    fisheye_1 = dreadbot_fisheye.Fisheye(2, 1, adj_exposure=0.01)
+    fisheye_1 = dreadbot_fisheye.Fisheye(2, 1)
     
 if camera_mode == CameraMode.IMAGE:
     print("Image loaded")
@@ -59,17 +58,41 @@ while function_mode == FunctionMode.SINGLE_FISHEYE:
                   CONCAT DUAL FISHEYE
 '''
 while function_mode == FunctionMode.CAT_FISHEYE:
-    undistorted_img_0 = fisheye_0.ret_undist()
-    undistorted_img_1 = fisheye_0.ret_dist()
+    if camera_mode == CameraMode.DUAL_FISHEYE or camera_mode == CameraMode.SINGLE_FISHEYE:
+        undistorted_img_0 = fisheye_0.ret_undist()
+        undistorted_img_1 = fisheye_0.ret_dist()
+    else:
+        undistorted_img_0 = cv2.imread('undistorted.png')
+        undistorted_img_1 = cv2.imread('distorted.png')
 
-    p_undist = (250,320)
-    p_x, p_y = p_undist
+    calibrated_point = (87,255)
+    testing_point = (207,255)
 
-    cv2.circle(undistorted_img_0, p_undist, 5, (0,0,255), thickness=-1)
+    c_x, c_y = calibrated_point
+    t_x , t_y = testing_point
 
-    fixed_pts = fisheye_0.reverse_project_point(p_x, p_y)
+    _cx, _cy = (320,240)
 
-    cv2.circle(undistorted_img_1, fixed_pts, 5, (0,0,255), thickness=-1)
+    f_c_x, f_c_y = fisheye_0.reverse_project_point(c_x, c_y)
+    f_t_x, f_t_y = fisheye_0.reverse_project_point(t_x, t_y)
+    _f_cx, _f_cy = fisheye_0.reverse_project_point(_cx, _cy)
+    print("Fixed Center: ({0}, {1})".format(_f_cx, _f_cy))
+    print("Fixed Calibration: ({0}, {1})\nFixed Test: ({2}, {3})".format(f_c_x, f_c_y, f_t_x, f_t_y))
+    
+    print("Calculated Angle: {0} degrees".format(fisheye_0.calculate_angle(t_x, t_y)))
+    break
+    
+    cv2.line(undistorted_img_0, (0,240), (640, 240), (0,0,255)) #CX LINE
+    cv2.line(undistorted_img_0, (320,0), (320, 480), (0,0,255)) #CX LINE
+
+    cv2.line(undistorted_img_0, (c_x, 0), (c_x,480), (0,255,0)) #X Calibrated Line up
+    cv2.line(undistorted_img_0, (t_x, 0), (t_x,480), (0,255,0)) #X Calibrated Line up
+
+    cv2.line(undistorted_img_0, (0, c_y), (640, c_y), (0,255,0)) #Y Line up
+
+    cv2.circle(undistorted_img_0, calibrated_point, 3, (0,255,0), thickness=-1)
+    cv2.circle(undistorted_img_0, testing_point, 3, (0,255,0), thickness=-1)
+
 
     cat_img = np.concatenate((undistorted_img_0, undistorted_img_1), axis=1)
 
@@ -83,15 +106,17 @@ while function_mode == FunctionMode.CAT_FISHEYE:
                   TEST HOMOGRAPHY
 '''
 
+flip = True
+
 while function_mode == FunctionMode.HOMOGRAPHY_SHOW:
-    if camera_mode == CameraMode.IMAGE:
-        undistorted_img_0 = cv2.imread('stitch_backup/undistorted_img0.png')
-        undistorted_img_1 = cv2.imread('stitch_backup/undistorted_img1.png')
+    if flip:
+        undistorted_img_0 = fisheye_0.ret_undist()
+        undistorted_img_1 = fisheye_1.ret_undist()
     else:
         undistorted_img_1 = fisheye_0.ret_undist()
         undistorted_img_0 = fisheye_1.ret_undist()
 
-    mixed_img = dreadbot_fisheye.image_blend(undistorted_img_0, undistorted_img_1, 50)
+    mixed_img = dreadbot_fisheye.image_blend(undistorted_img_0, undistorted_img_1, 25, blend_mode=dreadbot_fisheye.LINEAR)
     
 
     cv2.imshow('frame', mixed_img)
@@ -104,8 +129,8 @@ while function_mode == FunctionMode.HOMOGRAPHY_SHOW:
                   TAKE IMAGE
 '''
 while function_mode == FunctionMode.TAKE_IMG:
-    cv2.imwrite("stitch_backup/undistorted_img0.png", fisheye_0.ret_undist())
-    cv2.imwrite("stitch_backup/undistorted_img1.png", fisheye_1.ret_undist())
+    cv2.imwrite("undistorted.png", fisheye_0.ret_undist())
+    cv2.imwrite("distorted.png", fisheye_0.ret_dist())
     break
 
 
