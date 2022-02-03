@@ -8,7 +8,12 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
 import frc.robot.subsystem.Shooter;
@@ -39,17 +44,58 @@ public class Robot extends TimedRobot {
   @SuppressWarnings("unused")
   private Intake intake = new Intake(leftIntakeMotor, rightIntakeMotor);
 
-  private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
-  private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
-  private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
+  private final CANSparkMax flywheelMotor = new CANSparkMax(1, MotorType.kBrushless);
+  private final CANSparkMax hoodMotor = new CANSparkMax(2, MotorType.kBrushless);
+  private final CANSparkMax turretMotor = new CANSparkMax(3, MotorType.kBrushless);
   @SuppressWarnings("unused")
   private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
   private final DigitalInput leftSwitchDigitalInput = new DigitalInput(1); // add to constants later
   private final DigitalInput rightSwitchDigitalInput = new DigitalInput(2);
   @SuppressWarnings("unused")
   private final Turret turret = new Turret(leftSwitchDigitalInput, rightSwitchDigitalInput);
+
+  private final Solenoid leftNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.LEFT_NEUTRAL_HOOK_ACTUATOR);
+  private final Solenoid rightNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.RIGHT_NEUTRAL_HOOK_ACTUATOR);
+
+  private final Solenoid leftClimbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.LEFT_CLIMBING_HOOK_ACTUATOR);
+  private final Solenoid rightClimbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.RIGHT_CLIMBING_HOOK_ACTUATOR);
+
+  private final CANSparkMax leftWinchMotor = new CANSparkMax(Constants.LEFT_WINCH_MOTOR_PORT, MotorType.kBrushless);
+  private final CANSparkMax rightWinchMotor = new CANSparkMax(Constants.RIGHT_WINCH_MOTOR_PORT, MotorType.kBrushless);
+  @SuppressWarnings("unused")
+  private Climber climber = new Climber(leftNeutralHookActuator, rightNeutralHookActuator, leftClimbingHookActuator, rightClimbingHookActuator, leftWinchMotor, rightWinchMotor);
+  
   @Override
-  public void robotInit() {}
+  public void robotInit() {
+    if(!Constants.DRIVE_ENABLED) {
+      leftFrontDriveMotor.close();
+      rightFrontDriveMotor.close();
+      leftBackDriveMotor.close();
+      rightBackDriveMotor.close();
+    }
+
+    if(!Constants.INTAKE_ENABLED) {
+      leftIntakeMotor.close();
+      rightIntakeMotor.close();
+    }
+
+    if(!Constants.SHOOTER_ENABLED) {
+      flywheelMotor.close();
+      hoodMotor.close();
+      turretMotor.close();
+    }
+
+    if(!Constants.CLIMB_ENABLED) {
+      leftNeutralHookActuator.close();
+      rightNeutralHookActuator.close();
+
+      leftClimbingHookActuator.close();
+      rightClimbingHookActuator.close();
+
+      leftWinchMotor.close();
+      rightWinchMotor.close();
+    }
+  }
 
   @Override
   public void robotPeriodic() {}
@@ -66,9 +112,10 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     turret.switchDebug();
+    drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
+
     shooter.shoot();
     shooter.setTurretAngle(primaryController.getWAxis());
-    
   }
 
   @Override

@@ -5,29 +5,43 @@
 package frc.robot;
 
 public abstract class Constants {
-    /**
-     * Motor Ports
-     */
+    public static final boolean DRIVE_ENABLED = false;
+    public static final boolean INTAKE_ENABLED = false;
+    public static final boolean SHOOTER_ENABLED = false;
+    public static final boolean CLIMB_ENABLED = false;
+
+    // Joysticks
     public static final int PRIMARY_JOYSTICK_PORT = 0;
     public static final int SECONDARY_JOYSTICK_PORT = 1;
 
-    public static final int LEFT_FRONT_DRIVE_MOTOR_PORT = 1;
-    public static final int RIGHT_FRONT_DRIVE_MOTOR_PORT = 2;
-    public static final int LEFT_BACK_DRIVE_MOTOR_PORT = 3;
-    public static final int RIGHT_BACK_DRIVE_MOTOR_PORT = 4;
+    // Drive Ports
+    public static final int LEFT_FRONT_DRIVE_MOTOR_PORT = 10;
+    public static final int RIGHT_FRONT_DRIVE_MOTOR_PORT = 11;
+    public static final int LEFT_BACK_DRIVE_MOTOR_PORT = 12;
+    public static final int RIGHT_BACK_DRIVE_MOTOR_PORT = 13;
 
-    public static final int LEFT_INTAKE_MOTOR_PORT = 5;
-    public static final int RIGHT_INTAKE_MOTOR_PORT = 6;
+    // Intake Ports
+    public static final int LEFT_INTAKE_MOTOR_PORT = 14;
+    public static final int RIGHT_INTAKE_MOTOR_PORT = 15;
 
-    public static final int FLYWHEEL_MOTOR_PORT = 1;
-    public static final int HOOD_MOTOR_PORT = 3;
-    public static final int TURRET_MOTOR_PORT = 2;
-    /**
-     * Shooter Constants
-     */
+    // Shooter Ports
+    public static final int FLYWHEEL_MOTOR_PORT = 16;
+    public static final int HOOD_MOTOR_PORT = 17;
+    public static final int TURRET_MOTOR_PORT = 18;
+
+    // Climber constants
+    public static final int LEFT_WINCH_MOTOR_PORT = 19;
+    public static final int RIGHT_WINCH_MOTOR_PORT = 20;
+
+    public static final int LEFT_NEUTRAL_HOOK_ACTUATOR = 1;
+    public static final int RIGHT_NEUTRAL_HOOK_ACTUATOR = 2;
+    public static final int LEFT_CLIMBING_HOOK_ACTUATOR = 3;
+    public static final int RIGHT_CLIMBING_HOOK_ACTUATOR = 4;
+
+    // Robot Constants
     public static final float GRAVITY = -9.81f;
     public static final float GOAL_HEIGHT = 2.64f;
     public static final float INITIAL_BALL_HEIGHT = 0.4f;
-    //Change this based on RPM Value given to shooter.java, this is just a baseline calculated from Collin's desmos
-    public static final double BASE_RPM = 4 * 60 / 0.279d;
+
+    public static final double TO_RPM = 4 * 60 / 0.279d;
 }

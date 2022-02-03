@@ -16,8 +16,10 @@ public class Shooter extends Subsystem {
     private SparkMaxPIDController pidController;
     private RelativeEncoder encoder;
     public ShootingState state;
-    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
+    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, kSetPoint;
     private double distanceToGoal;
+    private boolean flag=true;
+
 
     public Shooter(CANSparkMax flywheelMotor, CANSparkMax hoodMotor, CANSparkMax turretMotor) {
         super("Shooter");
@@ -26,16 +28,18 @@ public class Shooter extends Subsystem {
         this.hoodMotor = hoodMotor;
         this.turretMotor = turretMotor;
 
+        if(!Constants.SHOOTER_ENABLED) return;
+
         flywheelMotor.restoreFactoryDefaults();
         flywheelMotor.setIdleMode(IdleMode.kCoast);
         pidController = flywheelMotor.getPIDController();
         encoder = flywheelMotor.getEncoder();
 
-        kP = 7e-4; 
-        kI = 1e-6;
+        kP = 1e-4; 
+        kI = 0;
         kD = 0; 
-        kIz = 200; 
-        kFF = 0.000015; 
+        kIz = 2; 
+        kFF = 0.0002; 
         kMaxOutput = 1; 
         kMinOutput = -1;
         maxRPM = 5700;
@@ -58,10 +62,14 @@ public class Shooter extends Subsystem {
     }
 
     public void setTurretAngle(double speed) {
+        if(!Constants.SHOOTER_ENABLED) return;
+
         turretMotor.set(speed);
     }
 
     public void shoot() {
+        if(!Constants.SHOOTER_ENABLED) return;
+
         double p = SmartDashboard.getNumber("P Gain", 0);
         double i = SmartDashboard.getNumber("I Gain", 0);
         double d = SmartDashboard.getNumber("D Gain", 0);
@@ -69,8 +77,7 @@ public class Shooter extends Subsystem {
         double ff = SmartDashboard.getNumber("Feed Forward", 0);
         double max = SmartDashboard.getNumber("Max Output", 0);
         double min = SmartDashboard.getNumber("Min Output", 0);
-
-        System.out.println("kP: " + kP);
+        double setPoint = SmartDashboard.getNumber("RPM", 0);
 
         if((p != kP)) { pidController.setP(p); kP = p; }
         if((i != kI)) { pidController.setI(i); kI = i; }
@@ -81,28 +88,30 @@ public class Shooter extends Subsystem {
             pidController.setOutputRange(min, max); 
             kMinOutput = min; kMaxOutput = max; 
         }
+        if(setPoint != kSetPoint) {
+            pidController.setReference(setPoint, ControlType.kVelocity);
+            kSetPoint = setPoint;
+            SmartDashboard.putNumber("SetPoint", setPoint);
+        }
 
-        double setPoint = SmartDashboard.getNumber("RPM", 0);
-        System.out.println("setpoint: " + setPoint);
-
-        pidController.setReference(setPoint, ControlType.kVelocity);
-
-        SmartDashboard.putNumber("SetPoint", setPoint);
         SmartDashboard.putNumber("ProcessVariable", encoder.getVelocity());
     }
 
     @SuppressWarnings("unused")
-    private boolean setHoodPosition(double hoodPosition) {
+    private void setHoodPosition(double hoodPosition) {
+        if(!Constants.SHOOTER_ENABLED) return;
+
         //TODO
-        return false;
     }
 
     @SuppressWarnings("unused")
     private void setFlywheelRPM(double revolutionsPerMinute) {
+        if(!Constants.SHOOTER_ENABLED) return;
+
         //TODO
     }
     public double getRequiredFlyWheelRPM() {
-        return Constants.BASE_RPM * Math.sqrt(Math.pow(calculateXVelocity(), 2) + Math.pow(distanceToGoal / calculateTimeToScore(), 2));
+        return Constants.TO_RPM * Math.sqrt(Math.pow(calculateXVelocity(), 2) + Math.pow(distanceToGoal / calculateTimeToScore(), 2));
     }
     public double getRequiredHoodAngle() {
         return Math.atan(calculateXVelocity() / (distanceToGoal / calculateTimeToScore())) * 180 / Math.PI;
@@ -110,12 +119,16 @@ public class Shooter extends Subsystem {
 
     @Override
     public void close() throws Exception {
+        if(!Constants.SHOOTER_ENABLED) return;
+
         flywheelMotor.close();
         hoodMotor.close();
         turretMotor.close();
     }
     @Override
     protected void stopMotors() {
+        if(!Constants.SHOOTER_ENABLED) return;
+        
         flywheelMotor.stopMotor();
         hoodMotor.stopMotor();
         turretMotor.stopMotor();

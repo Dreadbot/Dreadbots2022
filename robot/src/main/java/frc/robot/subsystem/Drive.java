@@ -7,6 +7,7 @@ package frc.robot.subsystem;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import frc.robot.Constants;
 
 public class Drive extends Subsystem {
     private final CANSparkMax leftFrontMotor;
@@ -14,7 +15,7 @@ public class Drive extends Subsystem {
     private final CANSparkMax leftBackMotor;
     private final CANSparkMax rightBackMotor;
 
-    private final MecanumDrive mecanumDrive;
+    private MecanumDrive mecanumDrive;
 
     public Drive(CANSparkMax leftFrontMotor, CANSparkMax rightFrontMotor, CANSparkMax leftBackMotor,
             CANSparkMax rightBackMotor) {
@@ -25,40 +26,59 @@ public class Drive extends Subsystem {
         this.leftBackMotor = leftBackMotor;
         this.rightBackMotor = rightBackMotor;
         
+        // Prevent SparkMax crashes.
+        if(!Constants.DRIVE_ENABLED) return;
+
+        leftFrontMotor.restoreFactoryDefaults();
+        rightFrontMotor.restoreFactoryDefaults();
+        leftBackMotor.restoreFactoryDefaults();
+        rightBackMotor.restoreFactoryDefaults();
+        
         // Invert right motors
         rightFrontMotor.setInverted(true);
         rightBackMotor.setInverted(true);
-        
+
         // According to the docs, motors must be inverted before they are passed into the mecanumdrive utility.
         this.mecanumDrive = new MecanumDrive(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
     }
 
-    public void drive(double joystickForwardAxis, double joystickLateralAxis, double zRotation) {
+    public void driveCartesian(double joystickForwardAxis, double joystickLateralAxis, double zRotation) {
+        if(!Constants.DRIVE_ENABLED) return;
+        
+        if(!isEnabled()) {
+            stopMotors();
+            return;
+        }
+
+        mecanumDrive.driveCartesian(joystickForwardAxis, joystickLateralAxis, zRotation);
+    }
+
+    public void drivePolar(double joystickForwardAxis, double joystickLateralAxis, double zRotation) {
+        if(!Constants.DRIVE_ENABLED) return;
+
         if(!isEnabled()) {
             stopMotors();
             return;
         }
         
         // For polar drive, calculate the magnitude and angle that the MecanumDrive should drive at.
-        @SuppressWarnings("unused")
         double magnitude = Math.sqrt(Math.pow(joystickForwardAxis, 2) + Math.pow(joystickLateralAxis, 2));
-        @SuppressWarnings("unused")
-        double angle;
-        if(joystickLateralAxis == 0.0d) {
-            angle = 90.0d * Math.signum(joystickForwardAxis);
-        } else {
-            double arctangent = Math.atan(joystickForwardAxis / joystickLateralAxis);
-            arctangent *= (180.0d / Math.PI);
-            if(Math.signum(joystickForwardAxis) > 0.0d && Math.signum(arctangent) > 0.0d) {
-                angle = arctangent;
-            } else if(Math.signum(joystickForwardAxis) < 0.0d && Math.signum(arctangent) > 0.0d) {
-                angle = arctangent - 180.0d;
-            }
-        }
+        double angle = Drive.getAngleDegreesFromJoystick(-joystickForwardAxis, joystickLateralAxis);
+
+        mecanumDrive.drivePolar(magnitude, angle, -zRotation);
+    }
+
+    public static double getAngleDegreesFromJoystick(double forwardAxis, double lateralAxis) {
+        double angleInRadians = Math.atan2(-forwardAxis, lateralAxis);
+        double angleInDegrees = angleInRadians * 180.0d / Math.PI;
+        angleInDegrees -= 90.0d;
+        return (angleInDegrees <= -180.0d) ? angleInDegrees + 360.0d : angleInDegrees;
     }
 
     @Override
     protected void stopMotors() {
+        if(!Constants.DRIVE_ENABLED) return;
+
         leftFrontMotor.stopMotor();
         rightFrontMotor.stopMotor();
         leftBackMotor.stopMotor();
@@ -69,6 +89,8 @@ public class Drive extends Subsystem {
 
     @Override
     public void close() throws Exception {
+        if(!Constants.DRIVE_ENABLED) return;
+
         leftFrontMotor.close();
         rightFrontMotor.close();
         leftBackMotor.close();
