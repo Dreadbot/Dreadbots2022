@@ -1,4 +1,4 @@
-package frc.robot.subsystem;
+package frc.robot.subsystem.shooter;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.subsystem.Subsystem;
 
 public class Shooter extends Subsystem {
     private final CANSparkMax flywheelMotor;
