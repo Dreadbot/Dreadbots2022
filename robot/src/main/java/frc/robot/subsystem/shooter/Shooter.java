@@ -30,7 +30,7 @@ public class Shooter extends Subsystem {
             return;
         }
         
-        SmartDashboard.putNumber("Flywheel Velocity (RPM)", 0.0d);
+        SmartDashboard.putNumber("RPM", 0.0d);
     }
 
     public void setTurretAngle(double speed) {
@@ -53,6 +53,8 @@ public class Shooter extends Subsystem {
         if(!Constants.SHOOTER_ENABLED) return;
 
         flywheel.idle();
+
+        SmartDashboard.putNumber("Flywheel Velocity (RPM)", flywheel.getVelocity());
     }
 
     @SuppressWarnings("unused")

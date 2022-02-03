@@ -64,6 +64,8 @@ public class Flywheel extends Subsystem {
     public void idle() {
         if(!Constants.SHOOTER_ENABLED) return;
 
+        lastVelocity = 0.0d;
+
         // Commands the motor to ramp down linearly (slew) to the requested 0RPM.
         pidController.setReference(filter.calculate(0), ControlType.kVelocity);
     }
