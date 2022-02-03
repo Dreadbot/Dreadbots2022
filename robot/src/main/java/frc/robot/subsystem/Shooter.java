@@ -96,10 +96,11 @@ public class Shooter extends Subsystem {
             kMinOutput = min; kMaxOutput = max; 
         }
         if(setPoint != kSetPoint) {
+            setPoint = Math.min(setPoint, maxRPM);
             pidController.setReference(setPoint, ControlType.kVelocity);
-            filter.reset(setPoint);
-
             kSetPoint = setPoint;
+            
+            filter.reset(setPoint);
             SmartDashboard.putNumber("SetPoint", setPoint);
         }
 
