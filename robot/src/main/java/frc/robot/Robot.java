@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
-import frc.robot.subsystem.Shooter;
+import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.util.DreadbotController;
 
 /**
