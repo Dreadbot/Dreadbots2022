@@ -6,7 +6,6 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import frc.robot.Constants;
 import frc.robot.subsystem.Subsystem;
 
