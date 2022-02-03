@@ -36,7 +36,6 @@ public class Robot extends TimedRobot {
 
   private CANSparkMax externalIntakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
   private CANSparkMax internalIntakeMotor = new CANSparkMax(Constants.RIGHT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
-  @SuppressWarnings("unused")
   private Intake intake = new Intake(externalIntakeMotor, internalIntakeMotor);
 
   private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
@@ -98,6 +97,11 @@ public class Robot extends TimedRobot {
 
     shooter.shoot();
     shooter.setTurretAngle(primaryController.getWAxis());
+
+    if(secondaryController.isAButtonPressed()) intake.intake();
+    if(secondaryController.isXButtonPressed()) intake.outlet();
+    if(secondaryController.isAButtonPressed() == secondaryController.isXButtonPressed()) 
+      intake.neutral();
   }
 
   @Override

@@ -48,6 +48,18 @@ public class Intake extends Subsystem {
         internalMotor.set(-1.0d);
     }
 
+    public void neutral() {
+        if(!Constants.INTAKE_ENABLED) return;
+
+        if(!isEnabled()) {
+            stopMotors();
+            return;
+        }
+        
+        externalMotor.set(0.0d);
+        internalMotor.set(0.0d);
+    }
+
     @Override
     protected void stopMotors() {
         if(!Constants.INTAKE_ENABLED) return;
