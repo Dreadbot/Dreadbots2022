@@ -3,13 +3,12 @@ import numpy as np
 import imutils
 import json
 
-dataDir = "Dreadbots2022\\vision\\ballfinding\\Data"
+dataDir = "vision\\ballfinding\\Data"
 rangesFile = dataDir + "\\ranges.json"
 manipFile = dataDir + "\\manipulation.json"
 
 
 def getMask(frame, lower: tuple, upper: tuple, eIts: int, dIts: int, blurK: int, colorSpace: int = cv2.COLOR_BGR2HSV):
-    frame = imutils.resize(frame, width=600)
     hsv = cv2.cvtColor(frame, colorSpace)
     inRange = cv2.inRange(hsv, lower, upper)
     blurred = cv2.blur(inRange, (blurK, blurK), 0)
@@ -36,6 +35,14 @@ def setManipulation(key, value: int):
         json.dump(data, outfile)
 
     return data[key]
+
+
+def setAllManipulation(erode, dilate, blur, minArea, minCirc):
+    setManipulation("erode", erode)
+    setManipulation("dilate", dilate)
+    setManipulation("blur", blur)
+    setManipulation("area", minArea)
+    setManipulation("circ", minCirc)
 
 
 def isLiveRange(key):
@@ -65,7 +72,18 @@ def updateLiveRange(key, lower: tuple, upper: tuple):
     return jsonData[key]
 
 
-def setupSliderWindow(mode, windowName, lower: tuple = (0, 0, 0), upper: tuple = (255, 255, 255), erode=0, dilate=0, blur=0):
+def setupDefaultSliderWindow(mode, windowName, rangeName):
+    if not isLiveRange(rangeName):
+        updateLiveRange(rangeName, (0, 0, 0), (255, 255, 255))
+
+    range = getLiveRange(rangeName)
+    manip = getManipulation()
+
+    setupSliderWindow(
+        mode, windowName, range["lower"], range["upper"], manip["erode"], manip["dilate"], manip["blur"], manip["area"], manip["circ"])
+
+
+def setupSliderWindow(mode, windowName, lower: tuple = (0, 0, 0), upper: tuple = (255, 255, 255), erode=0, dilate=0, blur=0, area=1, circ=1):
     cv2.namedWindow("Trackbars", 0)
 
     for i in ["MIN", "MAX"]:
@@ -86,7 +104,14 @@ def setupSliderWindow(mode, windowName, lower: tuple = (0, 0, 0), upper: tuple =
             v = dilate
         cv2.createTrackbar(f"{it}_Iterations", windowName, v, 30, callback)
 
-    cv2.createTrackbar("Blur_Kernel", windowName, blur, 10, callback)
+    cv2.createTrackbar("Blur_Kernel", windowName, blur, 30, callback)
+    cv2.setTrackbarMin("Blur_Kernel", windowName, 1)
+
+    cv2.createTrackbar("Min_Area", windowName, area, 1000, callback)
+    cv2.setTrackbarMin("Min_Area", windowName, 1)
+
+    cv2.createTrackbar("Min_Circ", windowName, circ, 100, callback)
+    cv2.setTrackbarMin("Min_Circ", windowName, 1)
 
 
 def getSliderValues(mode, windowName):
@@ -100,6 +125,9 @@ def getSliderValues(mode, windowName):
         values.append(cv2.getTrackbarPos(f"{it}_Iterations", windowName))
 
     values.append(cv2.getTrackbarPos("Blur_Kernel", windowName))
+
+    for m in ["Area", "Circ"]:
+        values.append(cv2.getTrackbarPos(f"Min_{m}", windowName))
 
     return values
 

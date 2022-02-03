@@ -8,19 +8,11 @@ import util
 def main():
     rangeName = input("Range: ")
 
-    if not util.isLiveRange(rangeName):
-        # print("NOT RANGE")
-        util.updateLiveRange(rangeName, (0, 0, 0), (255, 255, 255))
-
-    range = util.getLiveRange(rangeName)
-    manip = util.getManipulation()
+    util.setupDefaultSliderWindow("hsv", "Trackbars", rangeName)
 
     vs = cv2.VideoCapture(1)
     vs.set(cv2.CAP_PROP_EXPOSURE, -4)
     
-    util.setupSliderWindow(
-        "hsv", "Trackbars", range["lower"], range["upper"], manip["erode"], manip["dilate"], manip["blur"])
-
     while True:
         ret, frame = vs.read()
 
@@ -29,8 +21,11 @@ def main():
 
         frame = imutils.resize(frame, width=600)
 
-        hL, sL, vL, hU, sU, vU, erode, dilate, blur = util.getSliderValues(
+        hL, sL, vL, hU, sU, vU, erode, dilate, blur, minArea, minCirc = util.getSliderValues(
             "hsv", "Trackbars")
+
+        minCirc /= 100
+        print(minCirc)
 
         lower = (hL, sL, vL)
         upper = (hU, sU, vU)
@@ -49,28 +44,29 @@ def main():
                              color=(0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
             cv2.imshow("Cnts", image)
 
-            circles = frame.copy()
+            circlesFrame = frame.copy()
 
-            areas = {}
+            circles = []
             for con in cnts:
-                ((x, y), radius) = cv2.minEnclosingCircle(con)
-                cv2.circle(circles, (int(x), int(y)), int(radius),
-                           (0, 0, 0), 2)
-                cntArea = cv2.contourArea(con)
-                # if cntArea == 0 or radius <= 40: continue
-                circleArea = math.pi * radius**2
-                # print(circleArea)
-                p = cntArea / circleArea
-                areas[p] = con
+                perimeter = cv2.arcLength(con, True)
+                area = cv2.contourArea(con)
+                if perimeter == 0 or int(area) < minArea:
+                    continue
 
-            cv2.imshow("Circles", circles)
-            if(len(areas) == 0):
+                circularity = (4*math.pi*area)/(perimeter**2)
+                if minCirc < circularity <= 1.00:
+                    circles.append(con)
+                    ((x, y), radius) = cv2.minEnclosingCircle(con)
+                    cv2.circle(circlesFrame, (int(x), int(y)), int(radius), (0, 0, 0), 2)
+                    cv2.putText(circlesFrame, str(circularity), (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
+
+            cv2.imshow("Circles", circlesFrame)
+            if(len(circles) == 0):
                 continue
 
-            greatestArea = max(areas.keys())
             # print(areas)
             # print(int(greatestArea))
-            c = areas[greatestArea]
+            c = max(circles, key=cv2.contourArea)
 
             ((x, y), radius) = cv2.minEnclosingCircle(c)
             # M = cv2.moments(c)
@@ -85,10 +81,7 @@ def main():
         if cv2.waitKey(1) & 0xFF == ord("q"):
             util.updateLiveRange(rangeName, (hL, sL, vL), (hU, sU, vU))
 
-            util.setManipulation("erode", erode)
-            util.setManipulation("dilate", dilate)
-            util.setManipulation("blur", blur)
-
+            util.setAllManipulation(erode, dilate, blur, minArea, minCirc)
             break
 
     vs.release()

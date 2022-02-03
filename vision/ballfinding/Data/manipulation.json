@@ -1,1 +1,1 @@
-{"erode": 5, "dilate": 10, "blur": 3}
+{"erode": 7, "dilate": 15, "blur": 3, "area": 83, "circ": 0.74}
