@@ -70,12 +70,6 @@ public class Robot extends TimedRobot {
       rightIntakeMotor.close();
     }
 
-    if(!Constants.SHOOTER_ENABLED) {
-      flywheelMotor.close();
-      hoodMotor.close();
-      turretMotor.close();
-    }
-
     if(!Constants.CLIMB_ENABLED) {
       leftNeutralHookActuator.close();
       rightNeutralHookActuator.close();

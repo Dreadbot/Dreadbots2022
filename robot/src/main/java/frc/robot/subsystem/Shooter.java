@@ -29,7 +29,13 @@ public class Shooter extends Subsystem {
         this.hoodMotor = hoodMotor;
         this.turretMotor = turretMotor;
 
-        if(!Constants.SHOOTER_ENABLED) return;
+        if(!Constants.SHOOTER_ENABLED) {
+            flywheelMotor.close();
+            hoodMotor.close();
+            turretMotor.close();
+            
+            return;
+        }
 
         flywheelMotor.restoreFactoryDefaults();
         flywheelMotor.setIdleMode(IdleMode.kCoast);
