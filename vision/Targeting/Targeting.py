@@ -125,7 +125,7 @@ while(cap.isOpened()):
         fin_angle_deg = math.degrees(fin_angle_raw_rad)# + camOffsetDegree
         fin_angle_rad = math.radians(fin_angle_deg)
         distance = targetHeight / math.tan(fin_angle_rad)
-
+#
         print(distance)
         # scale image
         width = int(imgToPush.shape[1] * 160 / 100)
