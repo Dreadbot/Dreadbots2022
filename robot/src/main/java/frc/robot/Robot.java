@@ -34,10 +34,10 @@ public class Robot extends TimedRobot {
 
   private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
-  private CANSparkMax leftIntakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax rightIntakeMotor = new CANSparkMax(Constants.RIGHT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
+  private CANSparkMax externalIntakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
+  private CANSparkMax internalIntakeMotor = new CANSparkMax(Constants.RIGHT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
   @SuppressWarnings("unused")
-  private Intake intake = new Intake(leftIntakeMotor, rightIntakeMotor);
+  private Intake intake = new Intake(externalIntakeMotor, internalIntakeMotor);
 
   private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
   private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
@@ -66,8 +66,8 @@ public class Robot extends TimedRobot {
     }
 
     if(!Constants.INTAKE_ENABLED) {
-      leftIntakeMotor.close();
-      rightIntakeMotor.close();
+      externalIntakeMotor.close();
+      internalIntakeMotor.close();
     }
 
     if(!Constants.SHOOTER_ENABLED) {
