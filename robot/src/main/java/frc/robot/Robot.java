@@ -42,9 +42,9 @@ public class Robot extends TimedRobot {
   @SuppressWarnings("unused")
   private Intake intake = new Intake(leftIntakeMotor, rightIntakeMotor);
 
-  private final CANSparkMax flywheelMotor = new CANSparkMax(1, MotorType.kBrushless);
-  private final CANSparkMax hoodMotor = new CANSparkMax(2, MotorType.kBrushless);
-  private final CANSparkMax turretMotor = new CANSparkMax(3, MotorType.kBrushless);
+  private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
+  private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
+  private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
   @SuppressWarnings("unused")
   private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 
