@@ -20,7 +20,7 @@ public class Shooter extends Subsystem {
     public double lastSetPoint;
     private double distanceToGoal;
 
-    private SlewRateLimiter filter = new SlewRateLimiter(2000); // 2000 RPM/s
+    private SlewRateLimiter filter = new SlewRateLimiter(500); // 2000 RPM/s
     
     public Shooter(CANSparkMax flywheelMotor, CANSparkMax hoodMotor, CANSparkMax turretMotor) {
         super("Shooter");
@@ -49,7 +49,7 @@ public class Shooter extends Subsystem {
         pidController.setFF(Constants.FLYWHEEL_FF_GAIN);
         pidController.setOutputRange(Constants.FLYWHEEL_MIN_OUTPUT, Constants.FLYWHEEL_MAX_OUTPUT); 
 
-        SmartDashboard.putNumber("Flywheel Velocity (RPM)", 0.0d);
+        SmartDashboard.putNumber("RPM", 0.0d);
     }
 
     public void setTurretAngle(double speed) {
@@ -72,7 +72,7 @@ public class Shooter extends Subsystem {
             // This sets the value of the initial RPM for when the flywheel ramps down.
             filter.reset(setPoint);
             
-            SmartDashboard.putNumber("SetPoint", setPoint);
+            SmartDashboard.putNumber("RPM", setPoint);
             lastSetPoint = setPoint;
         }
 
@@ -82,6 +82,10 @@ public class Shooter extends Subsystem {
     public void idle() {
         // Commands the motor to ramp down linearly (slew) to the requested 0RPM.
         pidController.setReference(filter.calculate(0), ControlType.kVelocity);
+
+        lastSetPoint = 0;
+
+        SmartDashboard.putNumber("Flywheel Velocity (RPM)", encoder.getVelocity());
     }
 
     @SuppressWarnings("unused")
