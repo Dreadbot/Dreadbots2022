@@ -8,16 +8,14 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
-import frc.robot.subsystem.Shooter;
 import frc.robot.subsystem.Turret;
+import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.util.DreadbotController;
 
 /**
@@ -27,7 +25,6 @@ import frc.robot.util.DreadbotController;
  * project.
  */
 public class Robot extends TimedRobot {
-  @SuppressWarnings("unused")
   private DreadbotController primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
   @SuppressWarnings("unused")
   private DreadbotController secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
@@ -36,7 +33,7 @@ public class Robot extends TimedRobot {
   private CANSparkMax rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
   private CANSparkMax leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
   private CANSparkMax rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-  @SuppressWarnings("unused")
+
   private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
   private CANSparkMax leftIntakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
@@ -53,6 +50,8 @@ public class Robot extends TimedRobot {
   private final DigitalInput rightSwitchDigitalInput = new DigitalInput(2);
   @SuppressWarnings("unused")
   private final Turret turret = new Turret(leftSwitchDigitalInput, rightSwitchDigitalInput, flywheelMotor); // temporary for board
+
+  private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 
   private final Solenoid leftNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.LEFT_NEUTRAL_HOOK_ACTUATOR);
   private final Solenoid rightNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.RIGHT_NEUTRAL_HOOK_ACTUATOR);
@@ -79,12 +78,6 @@ public class Robot extends TimedRobot {
       rightIntakeMotor.close();
     }
 
-    if(!Constants.SHOOTER_ENABLED) {
-      flywheelMotor.close();
-      hoodMotor.close();
-      turretMotor.close();
-    }
-
     if(!Constants.CLIMB_ENABLED) {
       leftNeutralHookActuator.close();
       rightNeutralHookActuator.close();
@@ -96,9 +89,6 @@ public class Robot extends TimedRobot {
       rightWinchMotor.close();
     }
   }
-
-  @Override
-  public void robotPeriodic() {}
 
   @Override
   public void autonomousInit() {}
@@ -113,22 +103,28 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     turret.switchDebug();
     drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
-
-    //shooter.shoot();
-    //shooter.setTurretAngle(primaryController.getWAxis());
-
     turret.calibrateTurret();
+    if(secondaryController.isBButtonPressed()) {
+      shooter.shoot();
+    }
+    else 
+      shooter.idle();
+
+    shooter.setTurretAngle(primaryController.getWAxis());
   }
-
-  @Override
-  public void disabledInit() {}
-
-  @Override
-  public void disabledPeriodic() {}
 
   @Override
   public void testInit() {}
 
   @Override
   public void testPeriodic() {}
+
+  @Override
+  public void robotPeriodic() {}
+
+  @Override
+  public void disabledInit() {}
+
+  @Override
+  public void disabledPeriodic() {}
 }
