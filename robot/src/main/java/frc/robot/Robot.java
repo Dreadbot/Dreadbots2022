@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
-import frc.robot.subsystem.Shooter;
+import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.util.DreadbotController;
 
 /**
@@ -39,9 +39,9 @@ public class Robot extends TimedRobot {
   @SuppressWarnings("unused")
   private Intake intake = new Intake(leftIntakeMotor, rightIntakeMotor);
 
-  private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
-  private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
-  private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
+  private final CANSparkMax flywheelMotor = new CANSparkMax(1, MotorType.kBrushless);
+  private final CANSparkMax hoodMotor = new CANSparkMax(2, MotorType.kBrushless);
+  private final CANSparkMax turretMotor = new CANSparkMax(3, MotorType.kBrushless);
 
   private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 
@@ -73,6 +73,12 @@ public class Robot extends TimedRobot {
       hoodMotor.close();
       turretMotor.close();
     }
+    if(!Constants.CLIMB_ENABLED) {
+      leftNeutralHookActuator.close();
+      rightNeutralHookActuator.close();
+
+      winchMotor.close();
+    }
   }
 
   @Override
@@ -88,7 +94,12 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
 
-    shooter.shoot();
+    if(secondaryController.isBButtonPressed()) {
+      shooter.shoot();
+    }
+    else 
+      shooter.idle();
+
     shooter.setTurretAngle(primaryController.getWAxis());
 
     if(primaryController.isXButtonPressed()) climber.rotateClimbingHookVertical();
