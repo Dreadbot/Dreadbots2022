@@ -48,11 +48,11 @@ public class Robot extends TimedRobot {
   private final CANSparkMax hoodMotor = new CANSparkMax(2, MotorType.kBrushless);
   private final CANSparkMax turretMotor = new CANSparkMax(3, MotorType.kBrushless);
   @SuppressWarnings("unused")
-  private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
+  //private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
   private final DigitalInput leftSwitchDigitalInput = new DigitalInput(1); // add to constants later
   private final DigitalInput rightSwitchDigitalInput = new DigitalInput(2);
   @SuppressWarnings("unused")
-  private final Turret turret = new Turret(leftSwitchDigitalInput, rightSwitchDigitalInput);
+  private final Turret turret = new Turret(leftSwitchDigitalInput, rightSwitchDigitalInput, flywheelMotor); // temporary for board
 
   private final Solenoid leftNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.LEFT_NEUTRAL_HOOK_ACTUATOR);
   private final Solenoid rightNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.RIGHT_NEUTRAL_HOOK_ACTUATOR);
@@ -114,8 +114,10 @@ public class Robot extends TimedRobot {
     turret.switchDebug();
     drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
 
-    shooter.shoot();
-    shooter.setTurretAngle(primaryController.getWAxis());
+    //shooter.shoot();
+    //shooter.setTurretAngle(primaryController.getWAxis());
+
+    turret.calibrateTurret();
   }
 
   @Override
