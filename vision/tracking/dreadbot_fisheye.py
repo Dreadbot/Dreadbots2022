@@ -153,10 +153,14 @@ class Fisheye:
         # Calculate the horizontal and vertical angle to the given point with respect to the optical axis
         horizontal_angle = (horizontal_calibrated_angle/calibrated_dx) * found_dx
         vertical_angle = (vertical_calibrated_angle/calibrated_dy) * found_dy
-        # The relationship used above is defined as angle_1 / pixel_distance_1   =   angle_2 / pixel_distance_2
-        # The defined calibrated points are points where angle and pixel distances are knowns, and we can find the pixel distances to
-        # the inputted point, so we rearrange the relationship to calculate angle_1 such that
-        # angle_1 = (angle_2 / pixel_distance_2) * pixel_distance_1
+
+        '''
+        The relationship used above is defined as angle_1 / pixel_distance_1   =   angle_2 / pixel_distance_2
+        The defined calibrated points are points where angle and pixel distances are knowns, and we can find the pixel distances to
+        the inputted point, so we rearrange the relationship to calculate angle_1 such that
+        angle_1 = (angle_2 / pixel_distance_2) * pixel_distance_1
+        '''
+
         
         # Output calculated angles
         return horizontal_angle, vertical_angle
