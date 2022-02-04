@@ -16,22 +16,19 @@ public class IntakeTest {
     public static final double DELTA = 1e-2;
 
     private Intake intake;
-    private CANSparkMax externalIntakeMotor;
-    private CANSparkMax internalIntakeMotor;
+    private CANSparkMax intakeMotor;
 
     @Before
     public void setup() {
         assert HAL.initialize(500, 0);
-        externalIntakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
-        internalIntakeMotor = new CANSparkMax(Constants.RIGHT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
+        intakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
 
-        intake = new Intake(externalIntakeMotor, internalIntakeMotor);
+        intake = new Intake(intakeMotor);
     }
 
     @After
     public void shutdown() throws Exception {
-        externalIntakeMotor.close();
-        internalIntakeMotor.close();
+        intakeMotor.close();
         intake.close();
     }
 
@@ -41,8 +38,7 @@ public class IntakeTest {
 
         intake.intake();
 
-        assertEquals(1.0d, externalIntakeMotor.get(), DELTA);
-        assertEquals(1.0d, internalIntakeMotor.get(), DELTA);
+        assertEquals(1.0d, intakeMotor.get(), DELTA);
     }
 
     @Test
@@ -51,8 +47,7 @@ public class IntakeTest {
 
         intake.outlet();
 
-        assertEquals(-1.0d, externalIntakeMotor.get(), DELTA);
-        assertEquals(-1.0d, internalIntakeMotor.get(), DELTA);
+        assertEquals(-1.0d, intakeMotor.get(), DELTA);
     }
 
     @Test
@@ -62,8 +57,6 @@ public class IntakeTest {
         intake.disable();
         intake.intake();
 
-        assertEquals(0.0d, externalIntakeMotor.get(), DELTA);
-        assertEquals(0.0d, internalIntakeMotor.get(), DELTA);
     }
 
     @Test
@@ -73,8 +66,7 @@ public class IntakeTest {
         intake.disable();
         intake.outlet();
 
-        assertEquals(0.0d, externalIntakeMotor.get(), DELTA);
-        assertEquals(0.0d, internalIntakeMotor.get(), DELTA);
+        assertEquals(0.0d, intakeMotor.get(), DELTA);
     }
 
     @Test
@@ -83,7 +75,6 @@ public class IntakeTest {
         
         intake.stopMotors();
 
-        assertEquals(0.0d, externalIntakeMotor.get(), DELTA);
-        assertEquals(0.0d, internalIntakeMotor.get(), DELTA);
+        assertEquals(0.0d, intakeMotor.get(), DELTA);
     }
 }

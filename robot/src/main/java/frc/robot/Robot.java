@@ -34,13 +34,12 @@ public class Robot extends TimedRobot {
 
   private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
-  private CANSparkMax externalIntakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax internalIntakeMotor = new CANSparkMax(Constants.RIGHT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
-  private Intake intake = new Intake(externalIntakeMotor, internalIntakeMotor);
+  private CANSparkMax intakeMotor = new CANSparkMax(1, MotorType.kBrushless);
+  private Intake intake = new Intake(intakeMotor);
 
-  private final CANSparkMax flywheelMotor = new CANSparkMax(1, MotorType.kBrushless);
-  private final CANSparkMax hoodMotor = new CANSparkMax(2, MotorType.kBrushless);
-  private final CANSparkMax turretMotor = new CANSparkMax(3, MotorType.kBrushless);
+  private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
+  private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
+  private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
 
   private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 
@@ -62,11 +61,6 @@ public class Robot extends TimedRobot {
       rightFrontDriveMotor.close();
       leftBackDriveMotor.close();
       rightBackDriveMotor.close();
-    }
-
-    if(!Constants.INTAKE_ENABLED) {
-      externalIntakeMotor.close();
-      internalIntakeMotor.close();
     }
 
     if(!Constants.CLIMB_ENABLED) {
@@ -94,13 +88,10 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
 
-    if(secondaryController.isBButtonPressed()) {
+    if(secondaryController.isBButtonPressed())
       shooter.shoot();
-    }
     else 
       shooter.idle();
-
-    shooter.setTurretAngle(primaryController.getWAxis());
 
     if(secondaryController.isAButtonPressed()) 
       intake.intake();
