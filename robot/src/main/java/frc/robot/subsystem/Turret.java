@@ -5,15 +5,23 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Turret extends Subsystem {
+    enum TurretCalibrationState {
+        NotCalibrated,
+        CalibratedLeft,
+        CalibratedRight,
+        Done
+    }
+
     private DigitalInput leftSwitch;
     private DigitalInput rightSwitch;
     private CANSparkMax turretMotor;
-
+    private TurretCalibrationState calibrationState;
     public Turret(DigitalInput leftSwitch, DigitalInput rightSwitch, CANSparkMax turretMotor) {
         super("Turret");
         this.leftSwitch = leftSwitch;
         this.rightSwitch = rightSwitch;
         this.turretMotor = turretMotor;
+        this.calibrationState = TurretCalibrationState.NotCalibrated;
         SmartDashboard.putBoolean("left", getLeftLimitSwitch());
         SmartDashboard.putBoolean("right", getRightLimitSwitch());
     }
@@ -41,8 +49,13 @@ public class Turret extends Subsystem {
     }
 
     public void calibrateTurret() {
-        if(!getRightLimitSwitch()) {
-            turretMotor.set(0.1);
+        if(calibrationState == TurretCalibrationState.NotCalibrated) {
+            if(!getRightLimitSwitch()){
+                turretMotor.set(.1);
+            }
+            else{
+                calibrationState = TurretCalibrationState.CalibratedLeft;
+            }
         }
     }
 }
