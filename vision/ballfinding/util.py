@@ -7,6 +7,8 @@ dataDir = "vision\\ballfinding\\Data"
 rangesFile = dataDir + "\\ranges.json"
 manipFile = dataDir + "\\manipulation.json"
 
+ballDiameter = 0.24 # In Meters
+focalLength = 544 # In Pixels
 
 def getMask(frame, lower: tuple, upper: tuple, eIts: int, dIts: int, blurK: int, colorSpace: int = cv2.COLOR_BGR2HSV):
     hsv = cv2.cvtColor(frame, colorSpace)
@@ -107,7 +109,7 @@ def setupSliderWindow(mode, windowName, lower: tuple = (0, 0, 0), upper: tuple =
     cv2.createTrackbar("Blur_Kernel", windowName, blur, 30, callback)
     cv2.setTrackbarMin("Blur_Kernel", windowName, 1)
 
-    cv2.createTrackbar("Min_Area", windowName, area, 1000, callback)
+    cv2.createTrackbar("Min_Area", windowName, area, 100000, callback)
     cv2.setTrackbarMin("Min_Area", windowName, 1)
 
     cv2.createTrackbar("Min_Circ", windowName, circ, 100, callback)

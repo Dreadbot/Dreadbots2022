@@ -4,7 +4,6 @@ import imutils
 import math
 import util
 
-
 def main():
     rangeName = input("Range: ")
 
@@ -21,11 +20,11 @@ def main():
 
         frame = imutils.resize(frame, width=600)
 
-        hL, sL, vL, hU, sU, vU, erode, dilate, blur, minArea, minCirc = util.getSliderValues(
+        hL, sL, vL, hU, sU, vU, erode, dilate, blur, minArea, circ = util.getSliderValues(
             "hsv", "Trackbars")
 
-        minCirc /= 100
-        print(minCirc)
+        minCirc = circ / 100
+        # print(minCirc)
 
         lower = (hL, sL, vL)
         upper = (hU, sU, vU)
@@ -50,6 +49,7 @@ def main():
             for con in cnts:
                 perimeter = cv2.arcLength(con, True)
                 area = cv2.contourArea(con)
+                print(int(area))
                 if perimeter == 0 or int(area) < minArea:
                     continue
 
@@ -67,21 +67,35 @@ def main():
             # print(areas)
             # print(int(greatestArea))
             c = max(circles, key=cv2.contourArea)
+            M = cv2.moments(c)
+            center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+            halfWidth = (frame.shape[1])/2
+            if center[0] > halfWidth:
+                dFromY = center[0] - halfWidth
+            else:
+                dFromY = halfWidth - center[0]
 
             ((x, y), radius) = cv2.minEnclosingCircle(c)
-            # M = cv2.moments(c)
-            # center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+            diameter = radius * 2
+            dX = (util.focalLength * util.ballDiameter) / diameter
+            dY = (dX * dFromY) / util.focalLength
+            angle = round(math.degrees(math.atan(dY / dX)), 2)
+            distance = round(math.sqrt((dX**2) + (dY**2)), 2)
+            distanceI = distance * 39.4
+            
             # print(center)
 
             cv2.circle(frame, (int(x), int(y)), int(radius),
                        (0, 255, 255), 2)
+            cv2.putText(frame, f"d: {distanceI}", (0, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            cv2.putText(frame, f"0: {angle}", (0, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
             # cv2.circle(frame, center, 5, (0, 0, 255), -1)
         cv2.imshow("Frame", frame)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             util.updateLiveRange(rangeName, (hL, sL, vL), (hU, sU, vU))
 
-            util.setAllManipulation(erode, dilate, blur, minArea, minCirc)
+            util.setAllManipulation(erode, dilate, blur, minArea, circ)
             break
 
     vs.release()
