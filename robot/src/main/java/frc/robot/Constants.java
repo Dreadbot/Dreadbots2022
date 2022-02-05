@@ -6,7 +6,7 @@ package frc.robot;
 
 public abstract class Constants {
     public static final boolean DRIVE_ENABLED = false;
-    public static final boolean INTAKE_ENABLED = true;
+    public static final boolean INTAKE_ENABLED = false;
     public static final boolean SHOOTER_ENABLED = false;
     public static final boolean CLIMB_ENABLED = false;
 
@@ -21,13 +21,12 @@ public abstract class Constants {
     public static final int RIGHT_BACK_DRIVE_MOTOR_PORT = 13;
 
     // Intake Ports
-    public static final int LEFT_INTAKE_MOTOR_PORT = 14;
-    public static final int RIGHT_INTAKE_MOTOR_PORT = 15;
+    public static final int INTAKE_MOTOR_PORT = 14;
 
     // Shooter Ports
-    public static final int FLYWHEEL_MOTOR_PORT = 16;
-    public static final int HOOD_MOTOR_PORT = 17;
-    public static final int TURRET_MOTOR_PORT = 18;
+    public static final int FLYWHEEL_MOTOR_PORT = 15;
+    public static final int HOOD_MOTOR_PORT = 16;
+    public static final int TURRET_MOTOR_PORT = 17;
 
     public static final double FLYWHEEL_P_GAIN = 1e-4d;
     public static final double FLYWHEEL_I_GAIN = 0.0d;

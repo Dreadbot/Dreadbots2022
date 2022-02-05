@@ -21,7 +21,7 @@ public class IntakeTest {
     @Before
     public void setup() {
         assert HAL.initialize(500, 0);
-        intakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
+        intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
 
         intake = new Intake(intakeMotor);
     }

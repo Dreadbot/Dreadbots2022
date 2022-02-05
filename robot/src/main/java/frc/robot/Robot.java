@@ -34,7 +34,7 @@ public class Robot extends TimedRobot {
 
   private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
-  private CANSparkMax intakeMotor = new CANSparkMax(1, MotorType.kBrushless);
+  private CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
   private Intake intake = new Intake(intakeMotor);
 
   private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
