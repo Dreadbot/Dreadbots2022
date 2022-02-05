@@ -34,14 +34,12 @@ public class Robot extends TimedRobot {
 
   private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
-  private CANSparkMax leftIntakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax rightIntakeMotor = new CANSparkMax(Constants.RIGHT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
-  @SuppressWarnings("unused")
-  private Intake intake = new Intake(leftIntakeMotor, rightIntakeMotor);
+  private CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
+  private Intake intake = new Intake(intakeMotor);
 
-  private final CANSparkMax flywheelMotor = new CANSparkMax(1, MotorType.kBrushless);
-  private final CANSparkMax hoodMotor = new CANSparkMax(2, MotorType.kBrushless);
-  private final CANSparkMax turretMotor = new CANSparkMax(3, MotorType.kBrushless);
+  private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
+  private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
+  private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
 
   private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 
@@ -63,16 +61,6 @@ public class Robot extends TimedRobot {
       rightBackDriveMotor.close();
     }
 
-    if(!Constants.INTAKE_ENABLED) {
-      leftIntakeMotor.close();
-      rightIntakeMotor.close();
-    }
-
-    if(!Constants.SHOOTER_ENABLED) {
-      flywheelMotor.close();
-      hoodMotor.close();
-      turretMotor.close();
-    }
     if(!Constants.CLIMB_ENABLED) {
       leftNeutralHookActuator.close();
       rightNeutralHookActuator.close();
@@ -94,21 +82,22 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
 
-    if(secondaryController.isBButtonPressed()) {
+    if(secondaryController.isBButtonPressed())
       shooter.shoot();
-    }
     else 
       shooter.idle();
 
-    shooter.setTurretAngle(primaryController.getWAxis());
-
-    if(primaryController.isXButtonPressed()) climber.rotateClimbingHookVertical();
-    if(primaryController.isYButtonPressed()) climber.rotateClimbingHookDown();
-    if(primaryController.isAButtonPressed()) climber.rotateNeutralHooksVertical();
-    if(primaryController.isBButtonPressed()) climber.rotateNeutralHooksDown();
-    climber.setWinch(primaryController.getWAxis());
+    if(secondaryController.isAButtonPressed()) 
+      intake.intake();
+    if(secondaryController.isXButtonPressed()) 
+      intake.outlet();
+    if(secondaryController.isAButtonPressed() == secondaryController.isXButtonPressed()) 
+      intake.idle();
+    if(secondaryController.isAButtonPressed())
+      climber.rotateClimbingHookVertical();
+    if(secondaryController.isBButtonPressed())
+      climber.rotateClimbingHookDown();
   }
-
   @Override
   public void testInit() {}
 
