@@ -39,14 +39,14 @@ public class Robot extends TimedRobot {
   private CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
   private Intake intake = new Intake(intakeMotor);
 
-  private final CANSparkMax flywheelMotor = new CANSparkMax(1, MotorType.kBrushless);
+  private final CANSparkMax flywheelMotor = new CANSparkMax(3, MotorType.kBrushless);
   private final CANSparkMax hoodMotor = new CANSparkMax(2, MotorType.kBrushless);
-  private final CANSparkMax turretMotor = new CANSparkMax(3, MotorType.kBrushless);
+  private final CANSparkMax turretMotor = new CANSparkMax(1, MotorType.kBrushless);
   @SuppressWarnings("unused")
   private final DigitalInput leftSwitchDigitalInput = new DigitalInput(1); // add to constants later
   private final DigitalInput rightSwitchDigitalInput = new DigitalInput(2);
   @SuppressWarnings("unused")
-  private final Turret turret = new Turret(leftSwitchDigitalInput, rightSwitchDigitalInput, flywheelMotor); // temporary for board
+  private final Turret turret = new Turret(leftSwitchDigitalInput, rightSwitchDigitalInput, turretMotor); // temporary for board
 
   private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 

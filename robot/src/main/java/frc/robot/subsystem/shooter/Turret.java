@@ -9,6 +9,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystem.Subsystem;
+import frc.robot.util.DreadbotMath;
 
 public class Turret extends Subsystem {
     enum TurretCalibrationState {
@@ -21,26 +22,29 @@ public class Turret extends Subsystem {
     private DigitalInput leftSwitch;
     private DigitalInput rightSwitch;
     private CANSparkMax turretMotor;
-    private TurretCalibrationState calibrationState;
     private RelativeEncoder turretEncoder;
     private SparkMaxPIDController turretPIDController;
+
+    private TurretCalibrationState calibrationState;
     private double motorLowerLimit = 0.0;
     private double motorUpperLimit = 0.0;
+    private double turretRange = 0.0;
+
     public Turret(DigitalInput leftSwitch, DigitalInput rightSwitch, CANSparkMax turretMotor) {
         super("Turret");
         this.leftSwitch = leftSwitch;
         this.rightSwitch = rightSwitch;
         this.turretMotor = turretMotor;
-        turretMotor.setIdleMode(IdleMode.kCoast);
+        turretMotor.setIdleMode(IdleMode.kBrake);
         turretEncoder = turretMotor.getEncoder();
         turretPIDController = turretMotor.getPIDController();
         
         turretPIDController.setP(0.1);
-        turretPIDController.setI(0);
+        turretPIDController.setI(0.0);
         turretPIDController.setD(0);
         turretPIDController.setIZone(0);
         turretPIDController.setFF(0.000015);
-        turretPIDController.setOutputRange(-.5, .5);
+        turretPIDController.setOutputRange(-.1, .1);
         this.calibrationState = TurretCalibrationState.NotCalibrated;
         SmartDashboard.putBoolean("left", getLeftLimitSwitch());
         SmartDashboard.putBoolean("right", getRightLimitSwitch());
@@ -66,6 +70,11 @@ public class Turret extends Subsystem {
     protected void stopMotors() {
         // TODO Auto-generated method stub
         
+    }
+
+    public void turnToRotation(double rotations) {
+        rotations = DreadbotMath.clampValue(rotations, motorLowerLimit, motorUpperLimit);
+        turretPIDController.setReference(rotations, CANSparkMax.ControlType.kPosition);
     }
 
     public void calibrateTurret() {
@@ -101,6 +110,7 @@ public class Turret extends Subsystem {
         else if (calibrationState == TurretCalibrationState.CalibratedRight){
             System.out.println("Done");
             turretPIDController.setReference(targetPosition, CANSparkMax.ControlType.kPosition);
+            turretRange = motorUpperLimit - motorLowerLimit;
             calibrationState = TurretCalibrationState.Done;
         }
     }
