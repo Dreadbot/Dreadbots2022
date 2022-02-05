@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
-import frc.robot.subsystem.Turret;
 import frc.robot.subsystem.shooter.Shooter;
+import frc.robot.subsystem.shooter.Turret;
 import frc.robot.util.DreadbotController;
 
 /**
@@ -36,10 +36,8 @@ public class Robot extends TimedRobot {
 
   private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
-  private CANSparkMax leftIntakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax rightIntakeMotor = new CANSparkMax(Constants.RIGHT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
-  @SuppressWarnings("unused")
-  private Intake intake = new Intake(leftIntakeMotor, rightIntakeMotor);
+  private CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
+  private Intake intake = new Intake(intakeMotor);
 
   private final CANSparkMax flywheelMotor = new CANSparkMax(1, MotorType.kBrushless);
   private final CANSparkMax hoodMotor = new CANSparkMax(2, MotorType.kBrushless);
@@ -50,7 +48,7 @@ public class Robot extends TimedRobot {
   @SuppressWarnings("unused")
   private final Turret turret = new Turret(leftSwitchDigitalInput, rightSwitchDigitalInput, flywheelMotor); // temporary for board
 
-  //private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
+  private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 
   private final Solenoid leftNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.LEFT_NEUTRAL_HOOK_ACTUATOR);
   private final Solenoid rightNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.RIGHT_NEUTRAL_HOOK_ACTUATOR);
@@ -70,11 +68,6 @@ public class Robot extends TimedRobot {
       rightFrontDriveMotor.close();
       leftBackDriveMotor.close();
       rightBackDriveMotor.close();
-    }
-
-    if(!Constants.INTAKE_ENABLED) {
-      leftIntakeMotor.close();
-      rightIntakeMotor.close();
     }
 
     if(!Constants.CLIMB_ENABLED) {
@@ -103,13 +96,18 @@ public class Robot extends TimedRobot {
     turret.switchDebug();
     drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
     turret.calibrateTurret();
-    // if(secondaryController.isBButtonPressed()) {
-    //   shooter.shoot();
-    // }
-    // else 
-    //   shooter.idle();
 
-    // shooter.setTurretAngle(primaryController.getWAxis());
+    if(secondaryController.isBButtonPressed())
+      shooter.shoot();
+    else 
+      shooter.idle();
+
+    if(secondaryController.isAButtonPressed()) 
+      intake.intake();
+    if(secondaryController.isXButtonPressed()) 
+      intake.outlet();
+    if(secondaryController.isAButtonPressed() == secondaryController.isXButtonPressed()) 
+      intake.idle();
   }
 
   @Override

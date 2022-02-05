@@ -9,14 +9,16 @@ import com.revrobotics.CANSparkMax;
 import frc.robot.Constants;
 
 public class Intake extends Subsystem {
-    private final CANSparkMax leftIntakeMotor;
-    private final CANSparkMax rightIntakeMotor;
+    private final CANSparkMax motor;
 
-    public Intake(CANSparkMax leftIntakeMotor, CANSparkMax rightIntakeMotor) {
+    public Intake(CANSparkMax motor) {
         super("Intake");
         
-        this.leftIntakeMotor = leftIntakeMotor;
-        this.rightIntakeMotor = rightIntakeMotor;
+        this.motor = motor;
+
+        if(!Constants.INTAKE_ENABLED) {
+            motor.close();
+        }
     }
 
     public void intake() {
@@ -27,8 +29,7 @@ public class Intake extends Subsystem {
             return;
         }
 
-        leftIntakeMotor.set(1.0d);
-        rightIntakeMotor.set(1.0d);
+        motor.set(1.0d);
     }
 
     public void outlet() {
@@ -39,31 +40,35 @@ public class Intake extends Subsystem {
             return;
         }
         
-        leftIntakeMotor.set(-1.0d);
-        rightIntakeMotor.set(-1.0d);
+        motor.set(-1.0d);
+    }
+
+    public void idle() {
+        if(!Constants.INTAKE_ENABLED) return;
+
+        if(!isEnabled()) {
+            stopMotors();
+            return;
+        }
+        
+        motor.set(0.0d);
     }
 
     @Override
     protected void stopMotors() {
         if(!Constants.INTAKE_ENABLED) return;
 
-        leftIntakeMotor.stopMotor();
-        rightIntakeMotor.stopMotor();
+        motor.stopMotor();
     }
 
     @Override
     public void close() throws Exception {
         if(!Constants.INTAKE_ENABLED) return;
 
-        leftIntakeMotor.close();
-        rightIntakeMotor.close();
+        motor.close();
     }
 
-    public CANSparkMax getLeftIntakeMotor() {
-        return leftIntakeMotor;
-    }
-
-    public CANSparkMax getRightIntakeMotor() {
-        return rightIntakeMotor;
+    public CANSparkMax getMotor() {
+        return motor;
     }
 }
