@@ -22,6 +22,7 @@ public abstract class Constants {
 
     // Intake Ports
     public static final int INTAKE_MOTOR_PORT = 14;
+    public static final double INTAKE_MOTOR_RATIO = 1/12;
 
     // Shooter Ports
     public static final int FLYWHEEL_MOTOR_PORT = 15;
