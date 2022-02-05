@@ -43,14 +43,14 @@ public class Robot extends TimedRobot {
 
   private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 
-  private final Solenoid leftNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.LEFT_NEUTRAL_HOOK_ACTUATOR);
-  private final Solenoid rightNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.RIGHT_NEUTRAL_HOOK_ACTUATOR);
-  private final Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.CLIMBING_HOOK_ACTUATOR);
+  private final Solenoid leftNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
+  //private final Solenoid rightNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.RIGHT_NEUTRAL_HOOK_ACTUATOR);
+  private final Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
 
   private final CANSparkMax winchMotor = new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless);
 
   @SuppressWarnings("unused")
-  private Climber climber = new Climber(leftNeutralHookActuator, rightNeutralHookActuator, climbingHookActuator, winchMotor);
+  private Climber climber = new Climber(leftNeutralHookActuator/*, rightNeutralHookActuator*/, climbingHookActuator, winchMotor);
   
   @Override
   public void robotInit() {
@@ -63,7 +63,7 @@ public class Robot extends TimedRobot {
 
     if(!Constants.CLIMB_ENABLED) {
       leftNeutralHookActuator.close();
-      rightNeutralHookActuator.close();
+      // rightNeutralHookActuator.close();
 
       winchMotor.close();
     }

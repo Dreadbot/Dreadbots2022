@@ -10,7 +10,7 @@ import frc.robot.Constants;
 
 public class Climber extends Subsystem {
     private final Solenoid leftNeutralHookActuator;
-    private final Solenoid rightNeutralHookActuator;
+    // private final Solenoid rightNeutralHookActuator;
     private final Solenoid climbingHookActuator;
 
     private final CANSparkMax winchMotor;
@@ -18,19 +18,16 @@ public class Climber extends Subsystem {
     @SuppressWarnings("unused")
     private RelativeEncoder winchEncoder;
 
-    public Climber(Solenoid leftNeutralHookActuator, Solenoid rightNeutralHookActuator, Solenoid climbingHookActuator,
-            CANSparkMax winchMotor) {
+    public Climber(Solenoid leftNeutralHookActuator, Solenoid climbingHookActuator, CANSparkMax winchMotor) {
         super("Climber");
 
         this.leftNeutralHookActuator = leftNeutralHookActuator;
-        this.rightNeutralHookActuator = rightNeutralHookActuator;
         this.climbingHookActuator = climbingHookActuator;
-
         this.winchMotor = winchMotor;
 
         if(!Constants.CLIMB_ENABLED) {
             leftNeutralHookActuator.close();
-            rightNeutralHookActuator.close();
+            // rightNeutralHookActuator.close();
             climbingHookActuator.close();
       
             winchMotor.close();
@@ -57,7 +54,7 @@ public class Climber extends Subsystem {
         if(!Constants.CLIMB_ENABLED) return;
 
         leftNeutralHookActuator.close();
-        rightNeutralHookActuator.close();
+        // rightNeutralHookActuator.close();
         climbingHookActuator.close();
 
         winchMotor.close();
@@ -88,14 +85,14 @@ public class Climber extends Subsystem {
         if(!Constants.CLIMB_ENABLED) return;
 
         leftNeutralHookActuator.set(true);
-        rightNeutralHookActuator.set(true);
+        // rightNeutralHookActuator.set(true);
     }
 
     public void rotateNeutralHooksDown() {
         if(!Constants.CLIMB_ENABLED) return;
 
         leftNeutralHookActuator.set(false);
-        rightNeutralHookActuator.set(false);
+        // rightNeutralHookActuator.set(false);
     }
 
     public void setWinch(double factor) {
