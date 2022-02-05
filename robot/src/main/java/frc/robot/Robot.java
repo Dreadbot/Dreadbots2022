@@ -4,12 +4,15 @@
 
 package frc.robot;
 
+import java.io.Console;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
@@ -80,22 +83,37 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
-
+   
+    if(primaryController.isRightTriggerPressed()) {
+      climber.extendArm();
+      System.out.println(winchMotor.getEncoder().getPosition());
+    }
+    if(primaryController.isRightBumperPressed()) {
+      climber.halfExtendArm();
+      System.out.println(winchMotor.getEncoder().getPosition());
+    }
+    if(primaryController.isLeftTriggerPressed()){
+      climber.retractArm();
+      System.out.println(winchMotor.getEncoder().getPosition());
+    }
+    //drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
     if(secondaryController.isBButtonPressed())
       shooter.shoot();
     else 
       shooter.idle();
-
     if(secondaryController.isAButtonPressed()) 
       intake.intake();
     if(secondaryController.isXButtonPressed()) 
       intake.outlet();
     if(secondaryController.isAButtonPressed() == secondaryController.isXButtonPressed()) 
       intake.idle();
-    if(secondaryController.isAButtonPressed())
+    if(primaryController.isAButtonPressed())
+      climber.rotateNeutralHooksVertical();
+    if(primaryController.isBButtonPressed())
+      climber.rotateNeutralHooksDown();
+    if(primaryController.isXButtonPressed())
       climber.rotateClimbingHookVertical();
-    if(secondaryController.isBButtonPressed())
+    if(primaryController.isYButtonPressed())
       climber.rotateClimbingHookDown();
   }
   @Override
