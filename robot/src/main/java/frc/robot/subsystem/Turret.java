@@ -1,6 +1,11 @@
 package frc.robot.subsystem;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -16,11 +21,25 @@ public class Turret extends Subsystem {
     private DigitalInput rightSwitch;
     private CANSparkMax turretMotor;
     private TurretCalibrationState calibrationState;
+    private RelativeEncoder turretEncoder;
+    private SparkMaxPIDController turretPIDController;
+    private double motorLowerLimit = 0.0;
+    private double motorUpperLimit = 0.0;
     public Turret(DigitalInput leftSwitch, DigitalInput rightSwitch, CANSparkMax turretMotor) {
         super("Turret");
         this.leftSwitch = leftSwitch;
         this.rightSwitch = rightSwitch;
         this.turretMotor = turretMotor;
+        turretMotor.setIdleMode(IdleMode.kCoast);
+        turretEncoder = turretMotor.getEncoder();
+        turretPIDController = turretMotor.getPIDController();
+        
+        turretPIDController.setP(0.1);
+        turretPIDController.setI(0);
+        turretPIDController.setD(0);
+        turretPIDController.setIZone(0);
+        turretPIDController.setFF(0.000015);
+        turretPIDController.setOutputRange(-.5, .5);
         this.calibrationState = TurretCalibrationState.NotCalibrated;
         SmartDashboard.putBoolean("left", getLeftLimitSwitch());
         SmartDashboard.putBoolean("right", getRightLimitSwitch());
@@ -49,13 +68,39 @@ public class Turret extends Subsystem {
     }
 
     public void calibrateTurret() {
+        double targetPosition = ((motorUpperLimit - motorLowerLimit)/2) + motorLowerLimit;
+        if(calibrationState == TurretCalibrationState.Done){
+            SmartDashboard.putNumber("Target Position", targetPosition);
+            SmartDashboard.putNumber("Actual position", turretEncoder.getPosition());
+            return;
+        }
+
+        SmartDashboard.putNumber("LowerLimit", motorLowerLimit);
+        SmartDashboard.putNumber("UpperLimit", motorUpperLimit);
         if(calibrationState == TurretCalibrationState.NotCalibrated) {
             if(!getRightLimitSwitch()){
+                turretMotor.set(-.1);
+            }
+            else{
+                turretMotor.set(0);
+                motorLowerLimit = turretEncoder.getPosition();
+                calibrationState = TurretCalibrationState.CalibratedLeft;
+            }
+        }
+        else if(calibrationState == TurretCalibrationState.CalibratedLeft){
+            if(!getLeftLimitSwitch()){
                 turretMotor.set(.1);
             }
             else{
-                calibrationState = TurretCalibrationState.CalibratedLeft;
+                turretMotor.set(0);
+                motorUpperLimit = turretEncoder.getPosition();
+                calibrationState = TurretCalibrationState.CalibratedRight;
             }
+        }
+        else if (calibrationState == TurretCalibrationState.CalibratedRight){
+            System.out.println("Done");
+            turretPIDController.setReference(targetPosition, CANSparkMax.ControlType.kPosition);
+            calibrationState = TurretCalibrationState.Done;
         }
     }
 }
