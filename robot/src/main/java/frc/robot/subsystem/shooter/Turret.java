@@ -1,11 +1,9 @@
 package frc.robot.subsystem.shooter;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMax.IdleMode;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystem.Subsystem;
@@ -28,7 +26,6 @@ public class Turret extends Subsystem {
     private TurretCalibrationState calibrationState;
     private double motorLowerLimit = 0.0;
     private double motorUpperLimit = 0.0;
-    private double turretRange = 0.0;
 
     public Turret(DigitalInput leftSwitch, DigitalInput rightSwitch, CANSparkMax turretMotor) {
         super("Turret");
@@ -110,7 +107,6 @@ public class Turret extends Subsystem {
         else if (calibrationState == TurretCalibrationState.CalibratedRight){
             System.out.println("Done");
             turretPIDController.setReference(targetPosition, CANSparkMax.ControlType.kPosition);
-            turretRange = motorUpperLimit - motorLowerLimit;
             calibrationState = TurretCalibrationState.Done;
         }
     }
