@@ -1,13 +1,56 @@
+from sys import getsizeof
 import cv2
 import numpy as np
 import math
+import json
 
+### WHAT IS THIS ###
+# This is a version of targeting.py that allows for rapid calibration of the camera
+# This should NOT be used in place as targeting.py, as this might be behind
 
 ### TO DO ###
 #- Convert filtering to a pipeline
 #- Convert contour stuff to pipeline
 #- Make the output 
 #- Probably more stuff idk right now
+
+# Create functions to handle profiles
+profiles = {}
+def createBlankProfile(name):
+    profiles[name] = {
+        'High H' : 70,
+        'Low H' : 60,
+        'High S' : 60,
+        'Low S' : 40,
+        'High L' : 255,
+        'Low L' : 200,
+        'Upper Height' : 30,
+        'Lower Height' : 20,
+        'Upper Width' : 30,
+        'Lower Width' : 3
+    }
+def loadProfile(profile):
+    cv2.setTrackbarPos('High H', 'Trackbars', profiles[profile]['High H'])
+    cv2.setTrackbarPos('Low H', 'Trackbars', profiles[profile]['Low H'])
+    cv2.setTrackbarPos('High S', 'Trackbars', profiles[profile]['High S'])
+    cv2.setTrackbarPos('Low S', 'Trackbars', profiles[profile]['Low S'])
+    cv2.setTrackbarPos('High L', 'Trackbars', profiles[profile]['High L'])
+    cv2.setTrackbarPos('Low L', 'Trackbars', profiles[profile]['Low L'])
+    cv2.setTrackbarPos('Upper Height', 'Trackbars', profiles[profile]['Upper Height'])
+    cv2.setTrackbarPos('Lower Height', 'Trackbars', profiles[profile]['Lower Height'])
+    cv2.setTrackbarPos('Upper Width', 'Trackbars', profiles[profile]['Upper Width'])
+    cv2.setTrackbarPos('Lower Width', 'Trackbars', profiles[profile]['Lower Width'])
+def saveProfile(profile):
+    profiles[profile]['High H'] = cv2.getTrackbarPos('High H', 'Trackbars')
+    profiles[profile]['Low H'] = cv2.getTrackbarPos('Low H', 'Trackbars')
+    profiles[profile]['High S'] = cv2.getTrackbarPos('High S', 'Trackbars')
+    profiles[profile]['Low S'] = cv2.getTrackbarPos('Low S', 'Trackbars')
+    profiles[profile]['High L'] = cv2.getTrackbarPos('High L', 'Trackbars')
+    profiles[profile]['Low L'] = cv2.getTrackbarPos('Low L', 'Trackbars')
+    profiles[profile]['Upper Height'] = cv2.getTrackbarPos('Upper Height', 'Trackbars')
+    profiles[profile]['Lower Height'] = cv2.getTrackbarPos('Lower Height', 'Trackbars')
+    profiles[profile]['Upper Width'] = cv2.getTrackbarPos('Upper Width', 'Trackbars')
+    profiles[profile]['Lower Width'] = cv2.getTrackbarPos('Lower Width', 'Trackbars')
 
 def _drawTargets(x, y, w, h, rectangleColor, circleColor, lineColor) : 
     cv2.rectangle(imgToPush, (x,y), (x+w, y+h), rectangleColor, 3)
@@ -22,6 +65,11 @@ def _drawTargets(x, y, w, h, rectangleColor, circleColor, lineColor) :
 # Create a VideoCaqpture object and read from input file
 cap = cv2.VideoCapture(1)
 # Create varibles for trackbars
+file = open('targetingCal.json')
+profiles = json.load(file)
+file.close()
+if len(profiles) == 0:
+    createBlankProfile('Default')
 high_H, high_S, high_L, low_H, low_S, low_L = 0, 0, 0, 0, 0, 0
 upper_hight, lower_height, upper_width, lower_width = 0, 0, 0, 0
 HIGH_VAL_HSL = 255
@@ -46,16 +94,12 @@ cv2.createTrackbar('Upper Height', 'Trackbars', upper_hight, HIGH_VAL_BOUNDING_B
 cv2.createTrackbar('Lower Height', 'Trackbars', lower_height, HIGH_VAL_BOUNDING_BOX, ontrackbar)
 cv2.createTrackbar('Upper Width', 'Trackbars', upper_width, HIGH_VAL_BOUNDING_BOX, ontrackbar)
 cv2.createTrackbar('Lower Width', 'Trackbars', lower_width, HIGH_VAL_BOUNDING_BOX, ontrackbar)
-cv2.setTrackbarPos('High H', 'Trackbars', 70)
-cv2.setTrackbarPos('Low H', 'Trackbars', 60)
-cv2.setTrackbarPos('High S', 'Trackbars', 60)
-cv2.setTrackbarPos('Low S', 'Trackbars', 40)
-cv2.setTrackbarPos('High L', 'Trackbars', 255)
-cv2.setTrackbarPos('Low L', 'Trackbars', 200)
-cv2.setTrackbarPos('Upper Height', 'Trackbars', 30)
-cv2.setTrackbarPos('Lower Height', 'Trackbars', 20)
-cv2.setTrackbarPos('Upper Width', 'Trackbars', 20)
-cv2.setTrackbarPos('Lower Width', 'Trackbars', 3)
+profile = input('Profile?:\n')
+if profile in profiles:
+    loadProfile(profile)
+else:
+    createBlankProfile(profile)
+    loadProfile(profile)
 # Check if camera opened successfully
 if (cap.isOpened()== False): 
     print("Error opening video  file")
@@ -139,12 +183,15 @@ while(cap.isOpened()):
 
 # Press Q on keyboard to  exit
     if cv2.waitKey(1) & 0xFF == ord('q'):
+      saveProfile(profile)
       break
    
 # Break the loop
   else: 
     break
-   
+# Save to json
+with open('targetingCal.json', 'w') as file:
+    json.dump(profiles, file)
 # When everything done, release the video capture object and close any open windows that show video feeds
 cap.release()
 cv2.destroyAllWindows()
