@@ -1,4 +1,4 @@
-package frc.robot.subsystem;
+package frc.robot.subsystem.shooter;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -23,7 +23,6 @@ public class ShooterTest {
         flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
         hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
         turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
-
         shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
     }
     

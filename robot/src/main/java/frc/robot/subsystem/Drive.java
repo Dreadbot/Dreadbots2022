@@ -7,6 +7,7 @@ package frc.robot.subsystem;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import frc.robot.Constants;
 
 public class Drive extends Subsystem {
     private final CANSparkMax leftFrontMotor;
@@ -14,7 +15,7 @@ public class Drive extends Subsystem {
     private final CANSparkMax leftBackMotor;
     private final CANSparkMax rightBackMotor;
 
-    private final MecanumDrive mecanumDrive;
+    private MecanumDrive mecanumDrive;
 
     public Drive(CANSparkMax leftFrontMotor, CANSparkMax rightFrontMotor, CANSparkMax leftBackMotor,
             CANSparkMax rightBackMotor) {
@@ -24,6 +25,9 @@ public class Drive extends Subsystem {
         this.rightFrontMotor = rightFrontMotor;
         this.leftBackMotor = leftBackMotor;
         this.rightBackMotor = rightBackMotor;
+        
+        // Prevent SparkMax crashes.
+        if(!Constants.DRIVE_ENABLED) return;
 
         leftFrontMotor.restoreFactoryDefaults();
         rightFrontMotor.restoreFactoryDefaults();
@@ -33,12 +37,14 @@ public class Drive extends Subsystem {
         // Invert right motors
         rightFrontMotor.setInverted(true);
         rightBackMotor.setInverted(true);
-        
+
         // According to the docs, motors must be inverted before they are passed into the mecanumdrive utility.
         this.mecanumDrive = new MecanumDrive(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
     }
 
     public void driveCartesian(double joystickForwardAxis, double joystickLateralAxis, double zRotation) {
+        if(!Constants.DRIVE_ENABLED) return;
+        
         if(!isEnabled()) {
             stopMotors();
             return;
@@ -48,6 +54,8 @@ public class Drive extends Subsystem {
     }
 
     public void drivePolar(double joystickForwardAxis, double joystickLateralAxis, double zRotation) {
+        if(!Constants.DRIVE_ENABLED) return;
+
         if(!isEnabled()) {
             stopMotors();
             return;
@@ -69,6 +77,8 @@ public class Drive extends Subsystem {
 
     @Override
     protected void stopMotors() {
+        if(!Constants.DRIVE_ENABLED) return;
+
         leftFrontMotor.stopMotor();
         rightFrontMotor.stopMotor();
         leftBackMotor.stopMotor();
@@ -79,6 +89,8 @@ public class Drive extends Subsystem {
 
     @Override
     public void close() throws Exception {
+        if(!Constants.DRIVE_ENABLED) return;
+
         leftFrontMotor.close();
         rightFrontMotor.close();
         leftBackMotor.close();
