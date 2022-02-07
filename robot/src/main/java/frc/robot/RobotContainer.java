@@ -67,8 +67,10 @@ public class RobotContainer {
         }
 
         intake.setDefaultCommand(new IntakeDefaultCommand(intake));
+
         JoystickButton aButton = new JoystickButton(secondaryController.getNativeWPIJoystick(), 2);
         aButton.whileHeld(new OuttakeCommand(intake));
+        
         JoystickButton xButton = new JoystickButton(secondaryController.getNativeWPIJoystick(), 1);
         xButton.whileHeld(new IntakeCommand(intake));
         

@@ -15,6 +15,5 @@ public class IntakeDefaultCommand extends CommandBase {
     @Override
     public void initialize() {
         intake.idle();
-        System.out.println("idle");
     }
 }
