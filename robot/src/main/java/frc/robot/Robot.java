@@ -46,12 +46,11 @@ public class Robot extends TimedRobot {
 
   private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 
-  private final Solenoid leftNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
+  private final Solenoid leftNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
   //private final Solenoid rightNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.RIGHT_NEUTRAL_HOOK_ACTUATOR);
-  private final Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
+  private final Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
 
   private final CANSparkMax winchMotor = new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless);
-  private boolean hasTriggered = false;
   @SuppressWarnings("unused")
   private Climber climber = new Climber(leftNeutralHookActuator/*, rightNeutralHookActuator*/, climbingHookActuator, winchMotor);
   
@@ -85,12 +84,13 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
    
     if(primaryController.isRightTriggerPressed()) {
-      if(!hasTriggered){
-        hasTriggered = true;
-      }
+      climber.extendArm();
     }
-    if(hasTriggered) {
-      climber.climbAutonomous();
+    if(primaryController.isRightBumperPressed()) {
+      climber.halfExtendArm();
+    }
+    if(primaryController.isLeftTriggerPressed()){
+      climber.retractArm();
     }
     //drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
     if(secondaryController.isBButtonPressed())

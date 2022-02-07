@@ -111,11 +111,11 @@ public class Climber extends Subsystem {
         winchMotor.set(factor);
     }
 
-    public void extendArm() {
+    public void retractArm() {
         if(!Constants.CLIMB_ENABLED) return;
         winchPid.setReference(Constants.MAX_ARM_DISTANCE - retractedPosition, ControlType.kPosition);
     }
-    public void retractArm() {
+    public void extendArm() {
         if(!Constants.CLIMB_ENABLED) return;
         winchPid.setReference(retractedPosition, ControlType.kPosition);
     }
