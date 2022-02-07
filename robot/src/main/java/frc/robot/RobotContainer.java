@@ -5,6 +5,10 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.command.IntakeCommand;
+import frc.robot.command.IntakeDefaultCommand;
+import frc.robot.command.OuttakeCommand;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
@@ -23,7 +27,7 @@ public class RobotContainer {
 
     private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
-    private CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
+    private CANSparkMax intakeMotor = new CANSparkMax(1, MotorType.kBrushless);
     private Intake intake = new Intake(intakeMotor);
 
     private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
@@ -61,6 +65,13 @@ public class RobotContainer {
             leftWinchMotor.close();
             rightWinchMotor.close();
         }
+
+        intake.setDefaultCommand(new IntakeDefaultCommand(intake));
+        JoystickButton aButton = new JoystickButton(secondaryController.getNativeWPIJoystick(), 2);
+        aButton.whileHeld(new OuttakeCommand(intake));
+        JoystickButton xButton = new JoystickButton(secondaryController.getNativeWPIJoystick(), 1);
+        xButton.whileHeld(new IntakeCommand(intake));
+        
     }
 
     public void periodic() {
@@ -70,12 +81,5 @@ public class RobotContainer {
             shooter.shoot();
         else 
             shooter.idle();
-
-        if(secondaryController.isAButtonPressed()) 
-            intake.intake();
-        if(secondaryController.isXButtonPressed()) 
-            intake.outlet();
-        if(secondaryController.isAButtonPressed() == secondaryController.isXButtonPressed()) 
-            intake.idle();
     }
 }
