@@ -10,12 +10,25 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class Climber extends Subsystem {
+    public enum ClimberState {
+        Idle,
+        ArmUp,
+        ReachBarStart,
+        RetractArm,
+        HookUp,
+        ExtendHalfway,
+        ArmBack,
+        ReachBarEnd,
+        RetractHalfway,
+        ArmUpBarEnd
+    }
     private final Solenoid leftNeutralHookActuator;
     // private final Solenoid rightNeutralHookActuator;
     private final Solenoid climbingHookActuator;
     private final CANSparkMax winchMotor;
     private double retractedPosition;
     private SparkMaxPIDController winchPid;
+    private ClimberState state;
     @SuppressWarnings("unused")
     private RelativeEncoder winchEncoder;
 
@@ -24,7 +37,7 @@ public class Climber extends Subsystem {
         this.leftNeutralHookActuator = leftNeutralHookActuator;
         this.climbingHookActuator = climbingHookActuator;
         this.winchMotor = winchMotor;
-
+        this.state = ClimberState.Idle;
         if(!Constants.CLIMB_ENABLED) {
             leftNeutralHookActuator.close();
             // rightNeutralHookActuator.close();
@@ -68,29 +81,27 @@ public class Climber extends Subsystem {
         winchMotor.stopMotor();
         winchMotor.stopMotor();
     }
-
+    private void setState(ClimberState state) {
+        this.state = state;
+    }
     public void rotateClimbingHookVertical() {
         if(!Constants.CLIMB_ENABLED) return;
-
         climbingHookActuator.set(true);
     }
 
     public void rotateClimbingHookDown() {
         if(!Constants.CLIMB_ENABLED) return;
-
         climbingHookActuator.set(false);
     }
 
     public void rotateNeutralHooksVertical() {
         if(!Constants.CLIMB_ENABLED) return;
-
         leftNeutralHookActuator.set(true);
         // rightNeutralHookActuator.set(true);
     }
 
     public void rotateNeutralHooksDown() {
         if(!Constants.CLIMB_ENABLED) return;
-
         leftNeutralHookActuator.set(false);
         // rightNeutralHookActuator.set(false);
     }
@@ -111,5 +122,46 @@ public class Climber extends Subsystem {
     public void halfExtendArm() {
         if(!Constants.CLIMB_ENABLED) return;
         winchPid.setReference((Constants.MAX_ARM_DISTANCE - retractedPosition) * 0.5, ControlType.kPosition);
+    }
+    public void climbAutonomous(){
+        if(!Constants.CLIMB_ENABLED) return;
+        if(state == ClimberState.Idle) {
+            rotateClimbingHookVertical();
+            setState(ClimberState.ArmUp);
+        } else if(state == ClimberState.ArmUp && climbingHookActuator.get()) {
+            setState(ClimberState.ReachBarStart);
+            extendArm();
+        } else if(state == ClimberState.ReachBarStart) {
+            if(Math.abs(Constants.MAX_ARM_DISTANCE - winchEncoder.getPosition()) <= 0.2) {
+                setState(ClimberState.RetractArm);
+                retractArm();
+            }
+        } else if(state == ClimberState.RetractArm) {
+            if(Math.abs(retractedPosition - winchEncoder.getPosition()) <= 0.2) {
+                setState(ClimberState.HookUp);
+                rotateNeutralHooksVertical();
+            }
+        } else if(state == ClimberState.HookUp) {
+            setState(ClimberState.ExtendHalfway);
+            halfExtendArm();
+        } else if(state == ClimberState.ExtendHalfway) {
+            if(Math.abs(((Constants.MAX_ARM_DISTANCE - retractedPosition) * 0.5) - winchEncoder.getPosition()) <= 0.2) {
+                setState(ClimberState.ArmBack);
+                rotateClimbingHookDown();
+            }
+        } else if(state == ClimberState.ArmBack) {
+            setState(ClimberState.ReachBarEnd);
+            extendArm();
+        } else if(state == ClimberState.ReachBarEnd) {
+            if(Math.abs(Constants.MAX_ARM_DISTANCE - winchEncoder.getPosition()) <= 0.2) {
+                setState(ClimberState.RetractHalfway);
+                halfExtendArm();
+            }
+        } else if(state == ClimberState.RetractHalfway) {
+            if((Math.abs(((Constants.MAX_ARM_DISTANCE - retractedPosition) * 0.5) - winchEncoder.getPosition()) <= 0.2)) {
+                setState(ClimberState.ArmUpBarEnd);
+                rotateClimbingHookVertical();
+            }
+        }
     }
 }

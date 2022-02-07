@@ -51,7 +51,7 @@ public class Robot extends TimedRobot {
   private final Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
 
   private final CANSparkMax winchMotor = new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless);
-
+  private boolean hasTriggered = false;
   @SuppressWarnings("unused")
   private Climber climber = new Climber(leftNeutralHookActuator/*, rightNeutralHookActuator*/, climbingHookActuator, winchMotor);
   
@@ -85,16 +85,12 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
    
     if(primaryController.isRightTriggerPressed()) {
-      climber.extendArm();
-      System.out.println(winchMotor.getEncoder().getPosition());
+      if(!hasTriggered){
+        hasTriggered = true;
+      }
     }
-    if(primaryController.isRightBumperPressed()) {
-      climber.halfExtendArm();
-      System.out.println(winchMotor.getEncoder().getPosition());
-    }
-    if(primaryController.isLeftTriggerPressed()){
-      climber.retractArm();
-      System.out.println(winchMotor.getEncoder().getPosition());
+    if(hasTriggered) {
+      climber.climbAutonomous();
     }
     //drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
     if(secondaryController.isBButtonPressed())
