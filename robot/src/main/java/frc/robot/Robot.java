@@ -9,6 +9,7 @@ import java.io.Console;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -17,6 +18,7 @@ import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
 import frc.robot.subsystem.shooter.Shooter;
+import frc.robot.subsystem.shooter.Turret;
 import frc.robot.util.DreadbotController;
 
 /**
@@ -40,9 +42,14 @@ public class Robot extends TimedRobot {
   private CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
   private Intake intake = new Intake(intakeMotor);
 
-  private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
-  private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
-  private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
+  private final CANSparkMax flywheelMotor = new CANSparkMax(3, MotorType.kBrushless);
+  private final CANSparkMax hoodMotor = new CANSparkMax(2, MotorType.kBrushless);
+  private final CANSparkMax turretMotor = new CANSparkMax(1, MotorType.kBrushless);
+  @SuppressWarnings("unused")
+  private final DigitalInput leftSwitchDigitalInput = new DigitalInput(1); // add to constants later
+  private final DigitalInput rightSwitchDigitalInput = new DigitalInput(2);
+  @SuppressWarnings("unused")
+  private final Turret turret = new Turret(leftSwitchDigitalInput, rightSwitchDigitalInput, turretMotor); // temporary for board
 
   private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 
@@ -93,6 +100,10 @@ public class Robot extends TimedRobot {
       climber.retractArm();
     }
     //drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
+    turret.switchDebug();
+    drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
+    turret.calibrateTurret();
+
     if(secondaryController.isBButtonPressed())
       shooter.shoot();
     else 
