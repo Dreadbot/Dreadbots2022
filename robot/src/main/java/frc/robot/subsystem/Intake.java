@@ -6,54 +6,69 @@ package frc.robot.subsystem;
 
 import com.revrobotics.CANSparkMax;
 
-public class Intake extends Subsystem {
-    private final CANSparkMax leftIntakeMotor;
-    private final CANSparkMax rightIntakeMotor;
+import frc.robot.Constants;
 
-    public Intake(CANSparkMax leftIntakeMotor, CANSparkMax rightIntakeMotor) {
+public class Intake extends Subsystem {
+    private final CANSparkMax motor;
+
+    public Intake(CANSparkMax motor) {
         super("Intake");
         
-        this.leftIntakeMotor = leftIntakeMotor;
-        this.rightIntakeMotor = rightIntakeMotor;
+        this.motor = motor;
+
+        if(!Constants.INTAKE_ENABLED) {
+            motor.close();
+        }
     }
 
     public void intake() {
+        if(!Constants.INTAKE_ENABLED) return;
+        
         if(!isEnabled()) {
             stopMotors();
             return;
         }
 
-        leftIntakeMotor.set(1.0d);
-        rightIntakeMotor.set(1.0d);
+        motor.set(1.0d);
     }
 
     public void outlet() {
+        if(!Constants.INTAKE_ENABLED) return;
+
         if(!isEnabled()) {
             stopMotors();
             return;
         }
         
-        leftIntakeMotor.set(-1.0d);
-        rightIntakeMotor.set(-1.0d);
+        motor.set(-1.0d);
+    }
+
+    public void idle() {
+        if(!Constants.INTAKE_ENABLED) return;
+
+        if(!isEnabled()) {
+            stopMotors();
+            return;
+        }
+        
+        motor.set(0.0d);
     }
 
     @Override
     protected void stopMotors() {
-        leftIntakeMotor.stopMotor();
-        rightIntakeMotor.stopMotor();
+        if(!Constants.INTAKE_ENABLED) return;
+
+        motor.stopMotor();
     }
 
     @Override
     public void close() throws Exception {
-        leftIntakeMotor.close();
-        rightIntakeMotor.close();
+        if(!Constants.INTAKE_ENABLED) return;
+
+        motor.close();
     }
 
-    public CANSparkMax getLeftIntakeMotor() {
-        return leftIntakeMotor;
-    }
-
-    public CANSparkMax getRightIntakeMotor() {
-        return rightIntakeMotor;
+    public CANSparkMax getMotor() {
+        return motor;
     }
 }

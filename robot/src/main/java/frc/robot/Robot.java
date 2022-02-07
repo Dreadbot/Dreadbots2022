@@ -4,13 +4,19 @@
 
 package frc.robot;
 
+import java.io.Console;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
-import frc.robot.subsystem.Shooter;
+import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.util.DreadbotController;
 
 /**
@@ -20,7 +26,6 @@ import frc.robot.util.DreadbotController;
  * project.
  */
 public class Robot extends TimedRobot {
-  @SuppressWarnings("unused")
   private DreadbotController primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
   @SuppressWarnings("unused")
   private DreadbotController secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
@@ -29,25 +34,43 @@ public class Robot extends TimedRobot {
   private CANSparkMax rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
   private CANSparkMax leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
   private CANSparkMax rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-  @SuppressWarnings("unused")
+
   private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
-  private CANSparkMax leftIntakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax rightIntakeMotor = new CANSparkMax(Constants.RIGHT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
-  @SuppressWarnings("unused")
-  private Intake intake = new Intake(leftIntakeMotor, rightIntakeMotor);
+  private CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
+  private Intake intake = new Intake(intakeMotor);
 
   private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
   private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
   private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
-  @SuppressWarnings("unused")
+
   private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
+
+  private final Solenoid leftNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
+  //private final Solenoid rightNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.RIGHT_NEUTRAL_HOOK_ACTUATOR);
+  private final Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
+
+  private final CANSparkMax winchMotor = new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless);
+  private boolean hasTriggered = false;
+  @SuppressWarnings("unused")
+  private Climber climber = new Climber(leftNeutralHookActuator/*, rightNeutralHookActuator*/, climbingHookActuator, winchMotor);
   
   @Override
-  public void robotInit() {}
+  public void robotInit() {
+    if(!Constants.DRIVE_ENABLED) {
+      leftFrontDriveMotor.close();
+      rightFrontDriveMotor.close();
+      leftBackDriveMotor.close();
+      rightBackDriveMotor.close();
+    }
 
-  @Override
-  public void robotPeriodic() {}
+    if(!Constants.CLIMB_ENABLED) {
+      leftNeutralHookActuator.close();
+      // rightNeutralHookActuator.close();
+
+      winchMotor.close();
+    }
+  }
 
   @Override
   public void autonomousInit() {}
@@ -59,17 +82,48 @@ public class Robot extends TimedRobot {
   public void teleopInit() {}
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+   
+    if(primaryController.isRightTriggerPressed()) {
+      if(!hasTriggered){
+        hasTriggered = true;
+      }
+    }
+    if(hasTriggered) {
+      climber.climbAutonomous();
+    }
+    //drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
+    if(secondaryController.isBButtonPressed())
+      shooter.shoot();
+    else 
+      shooter.idle();
+    if(secondaryController.isAButtonPressed()) 
+      intake.intake();
+    if(secondaryController.isXButtonPressed()) 
+      intake.outlet();
+    if(secondaryController.isAButtonPressed() == secondaryController.isXButtonPressed()) 
+      intake.idle();
+    if(primaryController.isAButtonPressed())
+      climber.rotateNeutralHooksVertical();
+    if(primaryController.isBButtonPressed())
+      climber.rotateNeutralHooksDown();
+    if(primaryController.isXButtonPressed())
+      climber.rotateClimbingHookVertical();
+    if(primaryController.isYButtonPressed())
+      climber.rotateClimbingHookDown();
+  }
+  @Override
+  public void testInit() {}
+
+  @Override
+  public void testPeriodic() {}
+
+  @Override
+  public void robotPeriodic() {}
 
   @Override
   public void disabledInit() {}
 
   @Override
   public void disabledPeriodic() {}
-
-  @Override
-  public void testInit() {}
-
-  @Override
-  public void testPeriodic() {}
 }
