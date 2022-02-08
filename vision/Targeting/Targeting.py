@@ -9,7 +9,7 @@ import os
 # - Make the output
 # - Probably more stuff idk right now
 
-conPositionList = []
+
 
 def _drawTargets(x, y, w, h, rectangleColor, circleColor, lineColor):
 	cv2.rectangle(imgToPush, (x, y), (x+w, y+h), rectangleColor, 3)
@@ -71,8 +71,8 @@ found_contours = 0
 
 # Read until video is completed
 while(cap.isOpened()):
-	XconPositionList = [0,0]
-	YconPositionList = [0,0]
+	XconPositionList = [0,0,0,0,0,0,0,0,0,0]
+	YconPositionList = [0,0,0,0,0,0,0,0,0,0]
 	found_contours = 0
 	# Capture frame-by-frame
 	ret, inputImg = cap.read()
@@ -127,6 +127,15 @@ while(cap.isOpened()):
 			distance = 0
 			target1pos = 0
 			target2pos = 0
+
+			_ = XconPositionList.count(0)
+			for _ in XconPositionList :
+				XconPositionList.remove(0)
+			
+			_ = YconPositionList.count(0)
+			for _ in YconPositionList :
+				YconPositionList.remove(0)
+			
 			avgXpos = sum(XconPositionList) / len(XconPositionList)
 			avgYpos = sum(YconPositionList) / len(YconPositionList)
 			print(loopCounterCon)
