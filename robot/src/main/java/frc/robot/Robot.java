@@ -4,27 +4,8 @@
 
 package frc.robot;
 
-<<<<<<< HEAD
-import java.io.Console;
-
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystem.Climber;
-import frc.robot.subsystem.Drive;
-import frc.robot.subsystem.Intake;
-import frc.robot.subsystem.shooter.Shooter;
-import frc.robot.util.DreadbotController;
-=======
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
->>>>>>> dev
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to

@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.command.climber.RotateNeutralHookDownCommand;
+import frc.robot.command.climber.RotateNeutralHookVerticalCommand;
 import frc.robot.command.drive.DriveCommand;
 import frc.robot.command.intake.IntakeCommand;
 import frc.robot.command.intake.OuttakeCommand;
@@ -35,18 +37,18 @@ public class RobotContainer {
     private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
     private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 
-    private final Solenoid leftNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
+    private final Solenoid neutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
     private final Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
-    private final CANSparkMax winchMotor = new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless);
+    private final CANSparkMax winchMotor = new CANSparkMax(1, MotorType.kBrushless);
     private final DigitalInput bottomLimitSwitch = new DigitalInput(0);
     private final DigitalInput topLimitSwitch = new DigitalInput(1);
-    private Climber climber = new Climber(leftNeutralHookActuator, climbingHookActuator, winchMotor, bottomLimitSwitch, topLimitSwitch);
+    private Climber climber = new Climber(neutralHookActuator, climbingHookActuator, winchMotor, bottomLimitSwitch, topLimitSwitch);
     
     public RobotContainer() {    
+        climber.setDefaultCommand(new RunCommand(climber::idle, climber));
         intake.setDefaultCommand(new RunCommand(intake::idle, intake));
-        secondaryController.getAButton().whileHeld(new OuttakeCommand(intake));
-        secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
-
+        primaryController.getAButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
+        primaryController.getBButton().whenPressed(new RotateNeutralHookDownCommand(climber));
         drive.setDefaultCommand(new DriveCommand(drive, 
             primaryController::getYAxis, 
             primaryController::getXAxis,

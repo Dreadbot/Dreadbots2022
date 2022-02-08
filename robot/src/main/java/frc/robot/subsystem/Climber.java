@@ -36,15 +36,15 @@ public class Climber extends SubsystemBase {
     private DigitalInput bottomLimitSwitch;
     private DigitalInput topLimitSwitch;
 
-    public Climber(Solenoid leftNeutralHookActuator, Solenoid climbingHookActuator, CANSparkMax winchMotor, DigitalInput bottomLimitSwitch, DigitalInput topLimitSwitch) {
-        this.leftNeutralHookActuator = leftNeutralHookActuator;
+    public Climber(Solenoid neutralHookActuator, Solenoid climbingHookActuator, CANSparkMax winchMotor, DigitalInput bottomLimitSwitch, DigitalInput topLimitSwitch) {
+        this.leftNeutralHookActuator = neutralHookActuator;
         this.climbingHookActuator = climbingHookActuator;
         this.winchMotor = winchMotor;
         this.bottomLimitSwitch = bottomLimitSwitch;
         this.topLimitSwitch = topLimitSwitch;
         this.state = ClimberState.Idle;
         if(!Constants.CLIMB_ENABLED) {
-            leftNeutralHookActuator.close();
+            neutralHookActuator.close();
             // rightNeutralHookActuator.close();
             climbingHookActuator.close();
       
