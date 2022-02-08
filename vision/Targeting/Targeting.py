@@ -127,10 +127,8 @@ while(cap.isOpened()):
 			distance = 0
 			target1pos = 0
 			target2pos = 0
-			sumXpos = XconPositionList[0] + XconPositionList[1]
-			sumYpos = YconPositionList[0] + YconPositionList[1]
-			avgXpos = sumXpos /2
-			avgYpos = sumYpos /2
+			avgXpos = sum(XconPositionList) / len(XconPositionList)
+			avgYpos = sum(YconPositionList) / len(YconPositionList)
 			print(loopCounterCon)
 			XconPositionList[loopCounterCon]=(conCX)
 			YconPositionList[loopCounterCon]=(conCY)
