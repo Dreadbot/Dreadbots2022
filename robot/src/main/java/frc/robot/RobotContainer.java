@@ -5,7 +5,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.command.IntakeCommand;
 import frc.robot.command.IntakeDefaultCommand;
 import frc.robot.command.OuttakeCommand;
@@ -20,14 +19,14 @@ public class RobotContainer {
     @SuppressWarnings("unused")
     private DreadbotController secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
 
-    private CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-    private CANSparkMax rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-    private CANSparkMax leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-    private CANSparkMax rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+    private CANSparkMax leftFrontDriveMotor = new CANSparkMax(10, MotorType.kBrushless);
+    private CANSparkMax rightFrontDriveMotor = new CANSparkMax(6, MotorType.kBrushless);
+    private CANSparkMax leftBackDriveMotor = new CANSparkMax(8, MotorType.kBrushless);
+    private CANSparkMax rightBackDriveMotor = new CANSparkMax(5, MotorType.kBrushless);
 
     private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
-    private CANSparkMax intakeMotor = new CANSparkMax(1, MotorType.kBrushless);
+    private CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
     private Intake intake = new Intake(intakeMotor);
 
     private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
@@ -67,17 +66,13 @@ public class RobotContainer {
         }
 
         intake.setDefaultCommand(new IntakeDefaultCommand(intake));
-
-        JoystickButton aButton = new JoystickButton(secondaryController.getNativeWPIJoystick(), 2);
-        aButton.whileHeld(new OuttakeCommand(intake));
-        
-        JoystickButton xButton = new JoystickButton(secondaryController.getNativeWPIJoystick(), 1);
-        xButton.whileHeld(new IntakeCommand(intake));
+        secondaryController.getAButton().whileHeld(new OuttakeCommand(intake));
+        secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
         
     }
 
     public void periodic() {
-        drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
+        drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), primaryController.getZAxis());
 
         if(secondaryController.isBButtonPressed())
             shooter.shoot();
