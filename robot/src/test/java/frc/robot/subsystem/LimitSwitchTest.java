@@ -2,8 +2,6 @@ package frc.robot.subsystem;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class LimitSwitchTest {

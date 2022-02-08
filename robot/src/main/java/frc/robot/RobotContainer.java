@@ -5,8 +5,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.command.IntakeCommand;
-import frc.robot.command.IntakeDefaultCommand;
 import frc.robot.command.OuttakeCommand;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
@@ -40,7 +40,7 @@ public class RobotContainer {
     private Climber climber = new Climber(leftNeutralHookActuator, climbingHookActuator, winchMotor);
     
     public RobotContainer() {    
-        intake.setDefaultCommand(new IntakeDefaultCommand(intake));
+        intake.setDefaultCommand(new RunCommand(intake::idle, intake));
         secondaryController.getAButton().whileHeld(new OuttakeCommand(intake));
         secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
     }
