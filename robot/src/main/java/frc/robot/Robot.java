@@ -28,7 +28,6 @@ import frc.robot.util.DreadbotController;
  */
 public class Robot extends TimedRobot {
   private DreadbotController primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
-  @SuppressWarnings("unused")
   private DreadbotController secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
 
   private CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);

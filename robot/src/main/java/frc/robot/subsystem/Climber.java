@@ -9,9 +9,10 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class Climber extends Subsystem {
+public class Climber extends SubsystemBase {
     public enum ClimberState {
         Idle,
         ArmUp,
@@ -36,7 +37,6 @@ public class Climber extends Subsystem {
     private DigitalInput topLimitSwitch;
 
     public Climber(Solenoid leftNeutralHookActuator, Solenoid climbingHookActuator, CANSparkMax winchMotor, DigitalInput bottomLimitSwitch, DigitalInput topLimitSwitch) {
-        super("Climber");
         this.leftNeutralHookActuator = leftNeutralHookActuator;
         this.climbingHookActuator = climbingHookActuator;
         this.winchMotor = winchMotor;
@@ -66,10 +66,8 @@ public class Climber extends Subsystem {
         winchMotor.setIdleMode(IdleMode.kBrake);
         this.retractedPosition = winchEncoder.getPosition();
     }
-
-    @Override
     public void close() throws Exception {
-        if(!Constants.CLIMB_ENABLED) return;
+        if(!Constants.CLIMB_ENABLED) return; 
 
         leftNeutralHookActuator.close();
         // rightNeutralHookActuator.close();
@@ -79,7 +77,6 @@ public class Climber extends Subsystem {
         winchMotor.close();
     }
 
-    @Override
     protected void stopMotors() {
         if(!Constants.CLIMB_ENABLED) return;
 
