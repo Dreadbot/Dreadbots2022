@@ -5,10 +5,10 @@
 package frc.robot;
 
 public abstract class Constants {
-    public static final boolean DRIVE_ENABLED = false;
-    public static final boolean INTAKE_ENABLED = false;
+    public static final boolean DRIVE_ENABLED = true;
+    public static final boolean INTAKE_ENABLED = true;
     public static final boolean SHOOTER_ENABLED = false;
-    public static final boolean CLIMB_ENABLED = true;
+    public static final boolean CLIMB_ENABLED = false;
 
     // Joysticks
     public static final int PRIMARY_JOYSTICK_PORT = 0;
@@ -39,11 +39,11 @@ public abstract class Constants {
     public static final double FLYWHEEL_MAX_RPM = 5700.0d;
     
     // Climber constants
-    public static final int WINCH_MOTOR_PORT = 1;
-    public static final int LEFT_NEUTRAL_HOOK_ACTUATOR = 18;
-    public static final int RIGHT_NEUTRAL_HOOK_ACTUATOR = 19;
-    public static final int CLIMBING_HOOK_ACTUATOR = 20;
-    public static final double MAX_ARM_DISTANCE = 20; //Later change this to phyisical distance
+    public static final int WINCH_MOTOR_PORT = 15;
+    public static final int LEFT_NEUTRAL_HOOK_ACTUATOR = 1;
+    public static final int RIGHT_NEUTRAL_HOOK_ACTUATOR = 2;
+    public static final int CLIMBING_HOOK_ACTUATOR = 3;
+    public static final double MAX_ARM_DISTANCE = 100; //Later change this to phyisical distance
     // Robot Constants
     public static final float GRAVITY = -9.81f;
     public static final float GOAL_HEIGHT = 2.64f;

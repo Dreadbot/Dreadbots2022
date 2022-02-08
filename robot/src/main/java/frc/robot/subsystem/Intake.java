@@ -6,62 +6,60 @@ package frc.robot.subsystem;
 
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class Intake extends Subsystem {
+public class Intake extends SubsystemBase {
     private final CANSparkMax motor;
 
     public Intake(CANSparkMax motor) {
-        super("Intake");
-        
         this.motor = motor;
-
+        
         if(!Constants.INTAKE_ENABLED) {
             motor.close();
+
+            return;
         }
+
+        motor.setInverted(true);
     }
 
     public void intake() {
         if(!Constants.INTAKE_ENABLED) return;
-        
-        if(!isEnabled()) {
-            stopMotors();
-            return;
-        }
 
         motor.set(1.0d);
     }
 
-    public void outlet() {
+    public void outtake() {
         if(!Constants.INTAKE_ENABLED) return;
 
-        if(!isEnabled()) {
-            stopMotors();
-            return;
-        }
-        
         motor.set(-1.0d);
+    }
+
+    public boolean isIntaking() {
+        if(!Constants.INTAKE_ENABLED) return false;
+
+        return motor.get() > 0.0d;
+    }
+
+    public boolean isOuttaking() {
+        if(!Constants.INTAKE_ENABLED) return false;
+
+        return motor.get() < 0.0d;
     }
 
     public void idle() {
         if(!Constants.INTAKE_ENABLED) return;
-
-        if(!isEnabled()) {
-            stopMotors();
-            return;
-        }
         
         motor.set(0.0d);
     }
 
-    @Override
     protected void stopMotors() {
         if(!Constants.INTAKE_ENABLED) return;
 
         motor.stopMotor();
     }
 
-    @Override
     public void close() throws Exception {
         if(!Constants.INTAKE_ENABLED) return;
 

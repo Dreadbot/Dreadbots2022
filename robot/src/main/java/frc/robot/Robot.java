@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+<<<<<<< HEAD
 import java.io.Console;
 
 import com.revrobotics.CANSparkMax;
@@ -20,6 +21,10 @@ import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
 import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.util.DreadbotController;
+=======
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+>>>>>>> dev
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -29,34 +34,6 @@ import frc.robot.util.DreadbotController;
  */
 public class Robot extends TimedRobot {
   private RobotContainer robotContainer;
-  private DreadbotController primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
-  private DreadbotController secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
-
-  private CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-
-  private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
-
-  private CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
-  private Intake intake = new Intake(intakeMotor);
-
-  private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
-  private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
-  private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
-
-  private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
-
-  private final Solenoid leftNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
-  //private final Solenoid rightNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.RIGHT_NEUTRAL_HOOK_ACTUATOR);
-  private final Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
-
-  private final CANSparkMax winchMotor = new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless);
-  private DigitalInput leftSwitchDigitalInput = new DigitalInput(0);
-  private DigitalInput rightSwitchDigitalInput = new DigitalInput(1);
-  @SuppressWarnings("unused")
-  private Climber climber = new Climber(leftNeutralHookActuator, climbingHookActuator, winchMotor, leftSwitchDigitalInput, rightSwitchDigitalInput);
   
   @Override
   public void robotInit() {
@@ -75,35 +52,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     robotContainer.periodic();
-    if(primaryController.isRightTriggerPressed()) {
-      climber.extendArm();
-    }
-    if(primaryController.isRightBumperPressed()) {
-      climber.halfExtendArm();
-    }
-    if(primaryController.isLeftTriggerPressed()){
-      climber.retractArm();
-    }
-    //drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
-    if(secondaryController.isBButtonPressed())
-      shooter.shoot();
-    else 
-      shooter.idle();
-    if(secondaryController.isAButtonPressed()) 
-      intake.intake();
-    if(secondaryController.isXButtonPressed()) 
-      intake.outlet();
-    if(secondaryController.isAButtonPressed() == secondaryController.isXButtonPressed()) 
-      intake.idle();
-    if(primaryController.isAButtonPressed())
-      climber.rotateNeutralHookVertical();
-    if(primaryController.isBButtonPressed())
-      climber.rotateNeutralHookDown();
-    if(primaryController.isXButtonPressed())
-      climber.rotateClimbingHookVertical();
-    if(primaryController.isYButtonPressed())
-      climber.rotateClimbingHookDown();
   }
+
   @Override
   public void testInit() {}
 
