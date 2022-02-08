@@ -96,13 +96,13 @@ public class Climber extends SubsystemBase {
         climbingHookActuator.set(false);
     }
 
-    public void rotateNeutralHooksVertical() {
+    public void rotateNeutralHookVertical() {
         if(!Constants.CLIMB_ENABLED) return;
         leftNeutralHookActuator.set(true);
         // rightNeutralHookActuator.set(true);
     }
 
-    public void rotateNeutralHooksDown() {
+    public void rotateNeutralHookDown() {
         if(!Constants.CLIMB_ENABLED) return;
         leftNeutralHookActuator.set(false);
         // rightNeutralHookActuator.set(false);
@@ -148,7 +148,7 @@ public class Climber extends SubsystemBase {
         } else if(state == ClimberState.RetractArm) {
             if(Math.abs(retractedPosition - winchEncoder.getPosition()) <= 0.2) {
                 setState(ClimberState.HookUp);
-                rotateNeutralHooksVertical();
+                rotateNeutralHookVertical();
             }
         } else if(state == ClimberState.HookUp) {
             setState(ClimberState.ExtendHalfway);
@@ -172,5 +172,8 @@ public class Climber extends SubsystemBase {
                 rotateClimbingHookVertical();
             }
         }
+    }
+    public void idle(){
+        if(!Constants.CLIMB_ENABLED) return;
     }
 }

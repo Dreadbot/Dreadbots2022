@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystem.Climber;
 import frc.robot.util.DreadbotController;
 
@@ -18,4 +19,7 @@ public class RobotContainer {
     private DigitalInput leftSwitchDigitalInput = new DigitalInput(0);
     private DigitalInput rightSwitchDigitalInput = new DigitalInput(1);
     private Climber climber = new Climber(leftNeutralHookActuator, climbingHookActuator, winchMotor, leftSwitchDigitalInput, rightSwitchDigitalInput);
+    public RobotContainer() {
+        climber.setDefaultCommand(new RunCommand(climber::idle, climber));
+    }
 }

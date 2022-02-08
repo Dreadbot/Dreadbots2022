@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
@@ -27,6 +28,7 @@ import frc.robot.util.DreadbotController;
  * project.
  */
 public class Robot extends TimedRobot {
+  private RobotContainer robotContainer;
   private DreadbotController primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
   private DreadbotController secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
 
@@ -58,19 +60,7 @@ public class Robot extends TimedRobot {
   
   @Override
   public void robotInit() {
-    if(!Constants.DRIVE_ENABLED) {
-      leftFrontDriveMotor.close();
-      rightFrontDriveMotor.close();
-      leftBackDriveMotor.close();
-      rightBackDriveMotor.close();
-    }
-
-    if(!Constants.CLIMB_ENABLED) {
-      leftNeutralHookActuator.close();
-      // rightNeutralHookActuator.close();
-
-      winchMotor.close();
-    }
+    robotContainer = new RobotContainer();
   }
 
   @Override
@@ -84,7 +74,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-   
+    robotContainer.periodic();
     if(primaryController.isRightTriggerPressed()) {
       climber.extendArm();
     }
@@ -106,9 +96,9 @@ public class Robot extends TimedRobot {
     if(secondaryController.isAButtonPressed() == secondaryController.isXButtonPressed()) 
       intake.idle();
     if(primaryController.isAButtonPressed())
-      climber.rotateNeutralHooksVertical();
+      climber.rotateNeutralHookVertical();
     if(primaryController.isBButtonPressed())
-      climber.rotateNeutralHooksDown();
+      climber.rotateNeutralHookDown();
     if(primaryController.isXButtonPressed())
       climber.rotateClimbingHookVertical();
     if(primaryController.isYButtonPressed())
@@ -121,7 +111,9 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {}
 
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    CommandScheduler.getInstance().run();
+  }
 
   @Override
   public void disabledInit() {}
