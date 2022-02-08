@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.command.drive.DriveCommand;
 import frc.robot.command.intake.IntakeCommand;
@@ -12,6 +13,7 @@ import frc.robot.command.intake.OuttakeCommand;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
+import frc.robot.subsystem.shooter.Feeder;
 import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.util.DreadbotController;
 
@@ -34,6 +36,9 @@ public class RobotContainer {
     private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
     private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 
+    private final CANSparkMax feederMotor = new CANSparkMax(6, MotorType.kBrushless);
+    private final Feeder feeder = new Feeder(feederMotor);
+
     private final Solenoid leftNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
     private final Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
     private final CANSparkMax winchMotor = new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless);
@@ -44,6 +49,9 @@ public class RobotContainer {
         intake.setDefaultCommand(new RunCommand(intake::idle, intake));
         secondaryController.getAButton().whileHeld(new OuttakeCommand(intake));
         secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
+
+        feeder.setDefaultCommand(new RunCommand(feeder::idle, feeder));
+        secondaryController.getBButton().whileHeld(new InstantCommand(feeder::feed, feeder));
 
         drive.setDefaultCommand(new DriveCommand(drive, 
             primaryController::getYAxis, 
