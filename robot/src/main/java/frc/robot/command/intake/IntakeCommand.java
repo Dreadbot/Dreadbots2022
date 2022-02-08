@@ -1,12 +1,12 @@
-package frc.robot.command;
+package frc.robot.command.intake;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystem.Intake;
 
-public class OuttakeCommand extends CommandBase{
+public class IntakeCommand extends CommandBase {
     private final Intake intake;
 
-    public OuttakeCommand(Intake intake) {
+    public IntakeCommand(Intake intake) {
         this.intake = intake;
 
         addRequirements(intake);
@@ -14,9 +14,8 @@ public class OuttakeCommand extends CommandBase{
 
     @Override
     public void initialize() {
-        if(intake.isIntaking()) return;
+        if(intake.isOuttaking()) return;
         
-        intake.outtake();
+        intake.intake();
     }
-
 }

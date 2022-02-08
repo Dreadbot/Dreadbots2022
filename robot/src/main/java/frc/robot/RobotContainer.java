@@ -6,8 +6,9 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.robot.command.IntakeCommand;
-import frc.robot.command.OuttakeCommand;
+import frc.robot.command.drive.DriveCommand;
+import frc.robot.command.intake.IntakeCommand;
+import frc.robot.command.intake.OuttakeCommand;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
@@ -43,11 +44,14 @@ public class RobotContainer {
         intake.setDefaultCommand(new RunCommand(intake::idle, intake));
         secondaryController.getAButton().whileHeld(new OuttakeCommand(intake));
         secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
+
+        drive.setDefaultCommand(new DriveCommand(drive, 
+            primaryController::getYAxis, 
+            primaryController::getXAxis,
+            primaryController::getZAxis));
     }
 
     public void periodic() {
-        drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), primaryController.getZAxis());
-
         if(secondaryController.isBButtonPressed())
             shooter.shoot();
         else 

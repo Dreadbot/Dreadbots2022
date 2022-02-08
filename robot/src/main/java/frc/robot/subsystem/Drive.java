@@ -7,9 +7,10 @@ package frc.robot.subsystem;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class Drive extends Subsystem {
+public class Drive extends SubsystemBase {
     private final CANSparkMax leftFrontMotor;
     private final CANSparkMax rightFrontMotor;
     private final CANSparkMax leftBackMotor;
@@ -19,8 +20,6 @@ public class Drive extends Subsystem {
 
     public Drive(CANSparkMax leftFrontMotor, CANSparkMax rightFrontMotor, CANSparkMax leftBackMotor,
             CANSparkMax rightBackMotor) {
-        super("Drive");
-
         this.leftFrontMotor = leftFrontMotor;
         this.rightFrontMotor = rightFrontMotor;
         this.leftBackMotor = leftBackMotor;
@@ -49,22 +48,12 @@ public class Drive extends Subsystem {
 
     public void driveCartesian(double joystickForwardAxis, double joystickLateralAxis, double zRotation) {
         if(!Constants.DRIVE_ENABLED) return;
-        
-        if(!isEnabled()) {
-            stopMotors();
-            return;
-        }
 
         mecanumDrive.driveCartesian(joystickForwardAxis, joystickLateralAxis, zRotation);
     }
 
     public void drivePolar(double joystickForwardAxis, double joystickLateralAxis, double zRotation) {
         if(!Constants.DRIVE_ENABLED) return;
-
-        if(!isEnabled()) {
-            stopMotors();
-            return;
-        }
         
         // For polar drive, calculate the magnitude and angle that the MecanumDrive should drive at.
         double magnitude = Math.sqrt(Math.pow(joystickForwardAxis, 2) + Math.pow(joystickLateralAxis, 2));
@@ -80,7 +69,6 @@ public class Drive extends Subsystem {
         return (angleInDegrees <= -180.0d) ? angleInDegrees + 360.0d : angleInDegrees;
     }
 
-    @Override
     protected void stopMotors() {
         if(!Constants.DRIVE_ENABLED) return;
 
@@ -92,7 +80,6 @@ public class Drive extends Subsystem {
         mecanumDrive.stopMotor();
     }
 
-    @Override
     public void close() throws Exception {
         if(!Constants.DRIVE_ENABLED) return;
 
