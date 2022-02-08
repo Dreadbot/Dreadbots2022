@@ -5,6 +5,8 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.IdleMode;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -29,14 +31,17 @@ public class Climber extends Subsystem {
     private double retractedPosition;
     private SparkMaxPIDController winchPid;
     private ClimberState state;
-    @SuppressWarnings("unused")
     private RelativeEncoder winchEncoder;
+    private DigitalInput bottomLimitSwitch;
+    private DigitalInput topLimitSwitch;
 
-    public Climber(Solenoid leftNeutralHookActuator, Solenoid climbingHookActuator, CANSparkMax winchMotor) {
+    public Climber(Solenoid leftNeutralHookActuator, Solenoid climbingHookActuator, CANSparkMax winchMotor, DigitalInput bottomLimitSwitch, DigitalInput topLimitSwitch) {
         super("Climber");
         this.leftNeutralHookActuator = leftNeutralHookActuator;
         this.climbingHookActuator = climbingHookActuator;
         this.winchMotor = winchMotor;
+        this.bottomLimitSwitch = bottomLimitSwitch;
+        this.topLimitSwitch = topLimitSwitch;
         this.state = ClimberState.Idle;
         if(!Constants.CLIMB_ENABLED) {
             leftNeutralHookActuator.close();
@@ -110,7 +115,12 @@ public class Climber extends Subsystem {
         if(!Constants.CLIMB_ENABLED) return;
         winchMotor.set(factor);
     }
-
+    public boolean getBottomLimitSwitch() {
+        return !bottomLimitSwitch.get();
+    }
+    public boolean getTopLimitSwitch() {
+        return !topLimitSwitch.get();
+    }
     public void retractArm() {
         if(!Constants.CLIMB_ENABLED) return;
         winchPid.setReference(Constants.MAX_ARM_DISTANCE - retractedPosition, ControlType.kPosition);
@@ -130,11 +140,13 @@ public class Climber extends Subsystem {
             setState(ClimberState.ArmUp);
         } else if(state == ClimberState.ArmUp && climbingHookActuator.get()) {
             setState(ClimberState.ReachBarStart);
-            extendArm();
+            if(!getTopLimitSwitch()) 
+                extendArm();
         } else if(state == ClimberState.ReachBarStart) {
             if(Math.abs(Constants.MAX_ARM_DISTANCE - winchEncoder.getPosition()) <= 0.2) {
+                if(!getBottomLimitSwitch())
+                    retractArm();
                 setState(ClimberState.RetractArm);
-                retractArm();
             }
         } else if(state == ClimberState.RetractArm) {
             if(Math.abs(retractedPosition - winchEncoder.getPosition()) <= 0.2) {

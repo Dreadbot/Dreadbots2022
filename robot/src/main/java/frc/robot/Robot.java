@@ -9,6 +9,7 @@ import java.io.Console;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -51,8 +52,10 @@ public class Robot extends TimedRobot {
   private final Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
 
   private final CANSparkMax winchMotor = new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless);
+  private DigitalInput leftSwitchDigitalInput = new DigitalInput(0);
+  private DigitalInput rightSwitchDigitalInput = new DigitalInput(1);
   @SuppressWarnings("unused")
-  private Climber climber = new Climber(leftNeutralHookActuator/*, rightNeutralHookActuator*/, climbingHookActuator, winchMotor);
+  private Climber climber = new Climber(leftNeutralHookActuator, climbingHookActuator, winchMotor, leftSwitchDigitalInput, rightSwitchDigitalInput);
   
   @Override
   public void robotInit() {
