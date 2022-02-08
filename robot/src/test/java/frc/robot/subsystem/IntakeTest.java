@@ -45,7 +45,7 @@ public class IntakeTest {
     public void outlet() {
         if(!Constants.INTAKE_ENABLED) return;
 
-        intake.outlet();
+        intake.outtake();
 
         assertEquals(-1.0d, intakeMotor.get(), DELTA);
     }
@@ -62,7 +62,7 @@ public class IntakeTest {
     public void outletDisabled() {
         if(!Constants.INTAKE_ENABLED) return;
 
-        intake.outlet();
+        intake.outtake();
 
         assertEquals(0.0d, intakeMotor.get(), DELTA);
     }

@@ -27,7 +27,12 @@ public class Drive extends Subsystem {
         this.rightBackMotor = rightBackMotor;
         
         // Prevent SparkMax crashes.
-        if(!Constants.DRIVE_ENABLED) return;
+        if(!Constants.DRIVE_ENABLED) {
+            leftFrontMotor.close();
+            rightFrontMotor.close();
+            leftBackMotor.close();
+            rightBackMotor.close();
+        }
 
         leftFrontMotor.restoreFactoryDefaults();
         rightFrontMotor.restoreFactoryDefaults();

@@ -19,13 +19,13 @@ public class RobotContainer {
     @SuppressWarnings("unused")
     private DreadbotController secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
 
-    private CANSparkMax leftFrontDriveMotor = new CANSparkMax(10, MotorType.kBrushless);
-    private CANSparkMax rightFrontDriveMotor = new CANSparkMax(6, MotorType.kBrushless);
-    private CANSparkMax leftBackDriveMotor = new CANSparkMax(8, MotorType.kBrushless);
-    private CANSparkMax rightBackDriveMotor = new CANSparkMax(5, MotorType.kBrushless);
+    private CANSparkMax leftFrontDriveMotor = new CANSparkMax(1, MotorType.kBrushless);
+    private CANSparkMax rightFrontDriveMotor = new CANSparkMax(2, MotorType.kBrushless);
+    private CANSparkMax leftBackDriveMotor = new CANSparkMax(3, MotorType.kBrushless);
+    private CANSparkMax rightBackDriveMotor = new CANSparkMax(4, MotorType.kBrushless);
     private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
-    private CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
+    private CANSparkMax intakeMotor = new CANSparkMax(5, MotorType.kBrushless);
     private Intake intake = new Intake(intakeMotor);
 
     private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
@@ -39,24 +39,10 @@ public class RobotContainer {
 
     private Climber climber = new Climber(leftNeutralHookActuator, climbingHookActuator, winchMotor);
     
-    public RobotContainer() {
-        if(!Constants.DRIVE_ENABLED) {
-            leftFrontDriveMotor.close();
-            rightFrontDriveMotor.close();
-            leftBackDriveMotor.close();
-            rightBackDriveMotor.close();
-        }
-        
-        if(!Constants.CLIMB_ENABLED) {
-            leftNeutralHookActuator.close();
-      
-            winchMotor.close();
-        }
-
+    public RobotContainer() {    
         intake.setDefaultCommand(new IntakeDefaultCommand(intake));
         secondaryController.getAButton().whileHeld(new OuttakeCommand(intake));
         secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
-        
     }
 
     public void periodic() {

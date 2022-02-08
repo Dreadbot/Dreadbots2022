@@ -78,7 +78,7 @@ public final class DreadbotController {
      * @return The joystick button reference to the green 'A' button on the right hand side of the gamepad.
      */
     public JoystickButton getAButton() {
-        return new JoystickButton(joystick, 1);
+        return new JoystickButton(joystick, 2);
     }
 
     /**

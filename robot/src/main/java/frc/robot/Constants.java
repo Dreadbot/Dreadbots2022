@@ -6,7 +6,7 @@ package frc.robot;
 
 public abstract class Constants {
     public static final boolean DRIVE_ENABLED = true;
-    public static final boolean INTAKE_ENABLED = false;
+    public static final boolean INTAKE_ENABLED = true;
     public static final boolean SHOOTER_ENABLED = false;
     public static final boolean CLIMB_ENABLED = false;
 
@@ -39,7 +39,7 @@ public abstract class Constants {
     public static final double FLYWHEEL_MAX_RPM = 5700.0d;
     
     // Climber constants
-    public static final int WINCH_MOTOR_PORT = 1;
+    public static final int WINCH_MOTOR_PORT = 15;
     public static final int LEFT_NEUTRAL_HOOK_ACTUATOR = 1;
     public static final int RIGHT_NEUTRAL_HOOK_ACTUATOR = 2;
     public static final int CLIMBING_HOOK_ACTUATOR = 3;

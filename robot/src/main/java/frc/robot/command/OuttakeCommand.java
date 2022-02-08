@@ -16,7 +16,7 @@ public class OuttakeCommand extends CommandBase{
     public void initialize() {
         if(intake.isIntaking()) return;
         
-        intake.outlet();
+        intake.outtake();
     }
 
 }

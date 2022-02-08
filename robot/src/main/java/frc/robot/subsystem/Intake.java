@@ -14,7 +14,7 @@ public class Intake extends SubsystemBase {
 
     public Intake(CANSparkMax motor) {
         this.motor = motor;
-
+        
         if(!Constants.INTAKE_ENABLED) {
             motor.close();
 
@@ -30,16 +30,10 @@ public class Intake extends SubsystemBase {
         motor.set(1.0d);
     }
 
-    public void outlet() {
+    public void outtake() {
         if(!Constants.INTAKE_ENABLED) return;
 
         motor.set(-1.0d);
-    }
-
-    public void idle() {
-        if(!Constants.INTAKE_ENABLED) return;
-        
-        motor.set(0.0d);
     }
 
     public boolean isIntaking() {
@@ -52,6 +46,12 @@ public class Intake extends SubsystemBase {
         if(!Constants.INTAKE_ENABLED) return false;
 
         return motor.get() < 0.0d;
+    }
+
+    public void idle() {
+        if(!Constants.INTAKE_ENABLED) return;
+        
+        motor.set(0.0d);
     }
 
     protected void stopMotors() {
