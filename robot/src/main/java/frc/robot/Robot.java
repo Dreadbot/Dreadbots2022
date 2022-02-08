@@ -4,24 +4,8 @@
 
 package frc.robot;
 
-<<<<<<< HEAD
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-=======
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.TimedRobot;
-import frc.robot.subsystem.Climber;
-import frc.robot.subsystem.Drive;
-import frc.robot.subsystem.Intake;
-import frc.robot.subsystem.shooter.Shooter;
-import frc.robot.subsystem.shooter.Turret;
-import frc.robot.util.DreadbotController;
->>>>>>> dev
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -30,45 +14,7 @@ import frc.robot.util.DreadbotController;
  * project.
  */
 public class Robot extends TimedRobot {
-<<<<<<< HEAD
   private RobotContainer robotContainer;
-=======
-  private DreadbotController primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
-  @SuppressWarnings("unused")
-  private DreadbotController secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
-
-  private CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-
-  private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
-
-  private CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
-  private Intake intake = new Intake(intakeMotor);
-
-  private final CANSparkMax flywheelMotor = new CANSparkMax(3, MotorType.kBrushless);
-  private final CANSparkMax hoodMotor = new CANSparkMax(2, MotorType.kBrushless);
-  private final CANSparkMax turretMotor = new CANSparkMax(1, MotorType.kBrushless);
-  @SuppressWarnings("unused")
-  private final DigitalInput leftSwitchDigitalInput = new DigitalInput(1); // add to constants later
-  private final DigitalInput rightSwitchDigitalInput = new DigitalInput(2);
-  @SuppressWarnings("unused")
-  private final Turret turret = new Turret(leftSwitchDigitalInput, rightSwitchDigitalInput, turretMotor); // temporary for board
-
-  private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
-
-  private final Solenoid leftNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.LEFT_NEUTRAL_HOOK_ACTUATOR);
-  private final Solenoid rightNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.RIGHT_NEUTRAL_HOOK_ACTUATOR);
-
-  private final Solenoid leftClimbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.LEFT_CLIMBING_HOOK_ACTUATOR);
-  private final Solenoid rightClimbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.RIGHT_CLIMBING_HOOK_ACTUATOR);
-
-  private final CANSparkMax leftWinchMotor = new CANSparkMax(Constants.LEFT_WINCH_MOTOR_PORT, MotorType.kBrushless);
-  private final CANSparkMax rightWinchMotor = new CANSparkMax(Constants.RIGHT_WINCH_MOTOR_PORT, MotorType.kBrushless);
-  @SuppressWarnings("unused")
-  private Climber climber = new Climber(leftNeutralHookActuator, rightNeutralHookActuator, leftClimbingHookActuator, rightClimbingHookActuator, leftWinchMotor, rightWinchMotor);
->>>>>>> dev
   
   @Override
   public void robotInit() {
@@ -86,25 +32,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-<<<<<<< HEAD
     robotContainer.periodic();
-=======
-    turret.switchDebug();
-    drive.driveCartesian(primaryController.getYAxis(), primaryController.getXAxis(), 0);
-    turret.calibrateTurret();
-
-    if(secondaryController.isBButtonPressed())
-      shooter.shoot();
-    else 
-      shooter.idle();
-
-    if(secondaryController.isAButtonPressed()) 
-      intake.intake();
-    if(secondaryController.isXButtonPressed()) 
-      intake.outlet();
-    if(secondaryController.isAButtonPressed() == secondaryController.isXButtonPressed()) 
-      intake.idle();
->>>>>>> dev
   }
 
   @Override

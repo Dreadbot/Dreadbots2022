@@ -23,7 +23,6 @@ public class RobotContainer {
     private CANSparkMax rightFrontDriveMotor = new CANSparkMax(6, MotorType.kBrushless);
     private CANSparkMax leftBackDriveMotor = new CANSparkMax(8, MotorType.kBrushless);
     private CANSparkMax rightBackDriveMotor = new CANSparkMax(5, MotorType.kBrushless);
-
     private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
     private CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
@@ -32,19 +31,13 @@ public class RobotContainer {
     private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
     private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
     private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
-
     private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 
-    private final Solenoid leftNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.LEFT_NEUTRAL_HOOK_ACTUATOR);
-    private final Solenoid rightNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.RIGHT_NEUTRAL_HOOK_ACTUATOR);
+    private final Solenoid leftNeutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
+    private final Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
+    private final CANSparkMax winchMotor = new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless);
 
-    private final Solenoid leftClimbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.LEFT_CLIMBING_HOOK_ACTUATOR);
-    private final Solenoid rightClimbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.RIGHT_CLIMBING_HOOK_ACTUATOR);
-
-    private final CANSparkMax leftWinchMotor = new CANSparkMax(Constants.LEFT_WINCH_MOTOR_PORT, MotorType.kBrushless);
-    private final CANSparkMax rightWinchMotor = new CANSparkMax(Constants.RIGHT_WINCH_MOTOR_PORT, MotorType.kBrushless);
-    @SuppressWarnings("unused")
-    private Climber climber = new Climber(leftNeutralHookActuator, rightNeutralHookActuator, leftClimbingHookActuator, rightClimbingHookActuator, leftWinchMotor, rightWinchMotor);
+    private Climber climber = new Climber(leftNeutralHookActuator, climbingHookActuator, winchMotor);
     
     public RobotContainer() {
         if(!Constants.DRIVE_ENABLED) {
@@ -56,13 +49,8 @@ public class RobotContainer {
         
         if(!Constants.CLIMB_ENABLED) {
             leftNeutralHookActuator.close();
-            rightNeutralHookActuator.close();
-        
-            leftClimbingHookActuator.close();
-            rightClimbingHookActuator.close();
-        
-            leftWinchMotor.close();
-            rightWinchMotor.close();
+      
+            winchMotor.close();
         }
 
         intake.setDefaultCommand(new IntakeDefaultCommand(intake));
@@ -78,5 +66,24 @@ public class RobotContainer {
             shooter.shoot();
         else 
             shooter.idle();
+        
+        if(primaryController.isRightTriggerPressed()) {
+            climber.extendArm();
+        }
+        if(primaryController.isRightBumperPressed()) {
+            climber.halfExtendArm();
+        }
+        if(primaryController.isLeftTriggerPressed()){
+            climber.retractArm();
+        }
+        
+        if(primaryController.isAButtonPressed())
+            climber.rotateNeutralHooksVertical();
+        if(primaryController.isBButtonPressed())
+            climber.rotateNeutralHooksDown();
+        if(primaryController.isXButtonPressed())
+            climber.rotateClimbingHookVertical();
+        if(primaryController.isYButtonPressed())
+            climber.rotateClimbingHookDown();
     }
 }
