@@ -11,6 +11,10 @@ def main():
     util.setupDefaultSliderWindow("hsv", "Trackbars", rangeName)
 
     vs = cv2.VideoCapture(1)
+
+    print(int(vs.get(cv2.CAP_PROP_FRAME_WIDTH)))
+    print(int(vs.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+
     vs.set(cv2.CAP_PROP_EXPOSURE, -4)
 
     while True:
@@ -36,12 +40,15 @@ def main():
                                 cv2.CHAIN_APPROX_SIMPLE)
         cnts = imutils.grab_contours(cnts)
 
+        image = frame.copy()
+        circlesFrame = frame.copy()
+
+        frames = [(frame, "Original"), (mask, "Binary"),
+                  (image, "Contours"), (circlesFrame, "Circles")]
+
         if len(cnts) > 0:
-            image = frame.copy()
             cv2.drawContours(image=image, contours=cnts, contourIdx=-1,
                              color=(0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
-
-            circlesFrame = frame.copy()
 
             circles = []
             for con in cnts:
@@ -61,6 +68,7 @@ def main():
                         y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
 
             if(len(circles) == 0):
+                util.showFrames(frames)
                 continue
 
             # print(areas)
@@ -68,14 +76,14 @@ def main():
             c = max(circles, key=cv2.contourArea)
             M = cv2.moments(c)
             center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-            halfWidth = (frame.shape[1])/2
-            dFromY = abs(halfWidth - center[0])
+            halfWidth = int(vs.get(cv2.CAP_PROP_FRAME_WIDTH))/2
+            dFromY = abs(center[0] - halfWidth)
 
             ((x, y), radius) = cv2.minEnclosingCircle(c)
             diameter = radius * 2
             dX = (util.focalLength * util.ballDiameter) / diameter
             dY = (dX * dFromY) / util.focalLength
-            angle = round(math.degrees(math.atan(dY / dX)), 2)
+            angle = round(math.atan(dY / dX) * (180 / math.pi), 2)
             distance = round(math.sqrt((dX**2) + (dY**2)), 2)
             distanceI = distance * 39.4
 
@@ -89,10 +97,7 @@ def main():
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
             # cv2.circle(frame, center, 5, (0, 0, 255), -1)
 
-        cv2.imshow("Frame", frame)
-        cv2.imshow("Cnts", image)
-        cv2.imshow("Mask", mask)
-        cv2.imshow("Circles", circlesFrame)
+        util.showFrames(frames)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             util.updateLiveRange(rangeName, (hL, sL, vL), (hU, sU, vU))

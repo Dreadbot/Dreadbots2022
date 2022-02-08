@@ -8,6 +8,7 @@ rangesFile = dataDir + "\\ranges.json"
 manipFile = dataDir + "\\manipulation.json"
 
 ballDiameter = 0.24  # In Meters
+cameraHight = 0.58  # In Meters
 focalLength = 544  # In Pixels
 
 
@@ -133,6 +134,14 @@ def getSliderValues(mode, windowName):
         values.append(cv2.getTrackbarPos(f"Min_{m}", windowName))
 
     return values
+
+
+def showFrames(frames):
+    if not frames:
+        return
+
+    for frame in frames:
+        cv2.imshow(frame[1], frame[0])
 
 
 def callback(value):
