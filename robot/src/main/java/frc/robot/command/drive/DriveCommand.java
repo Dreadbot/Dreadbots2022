@@ -23,16 +23,12 @@ public class DriveCommand extends CommandBase {
     }
 
     @Override
-    public void initialize() {
-        drive.driveCartesian(joystickForwardAxis.getAsDouble(), 
-            joystickLateralAxis.getAsDouble(),
-            joystickRotationalAxis.getAsDouble());
-    }
+    public void initialize() {}
 
     @Override
     public void execute() {
         drive.driveCartesian(joystickForwardAxis.getAsDouble(), 
             joystickLateralAxis.getAsDouble(),
-            joystickRotationalAxis.getAsDouble());
+            -joystickRotationalAxis.getAsDouble());
     }
 }
