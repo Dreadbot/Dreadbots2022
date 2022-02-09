@@ -97,6 +97,15 @@ def main():
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
             # cv2.circle(frame, center, 5, (0, 0, 255), -1)
 
+            # TEMP FOR FOCAL LENGTH
+
+            knownDistance = 51.5  # In Inches
+
+            focalLength = util.getFocalLength(
+                knownDistance, util.ballDiameterI, diameter)
+            cv2.putText(frame, f"F: {focalLength}", (0, 90),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+
         util.showFrames(frames)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):

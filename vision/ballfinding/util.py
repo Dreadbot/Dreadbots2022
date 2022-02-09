@@ -8,8 +8,9 @@ rangesFile = dataDir + "\\ranges.json"
 manipFile = dataDir + "\\manipulation.json"
 
 ballDiameter = 0.24  # In Meters
+ballDiameterI = 9.5  # In Inches
 cameraHight = 0.58  # In Meters
-focalLength = 544  # In Pixels
+focalLength = 690  # In Pixels
 
 
 def getMask(frame, lower: tuple, upper: tuple, eIts: int, dIts: int, blurK: int, colorSpace: int = cv2.COLOR_BGR2HSV):
@@ -110,12 +111,15 @@ def setupSliderWindow(mode, windowName, lower: tuple = (0, 0, 0), upper: tuple =
 
     cv2.createTrackbar("Blur_Kernel", windowName, blur, 30, callback)
     cv2.setTrackbarMin("Blur_Kernel", windowName, 1)
+    # cv2.setTrackbarMax("Blur_Kernel", windowName, 30)
 
     cv2.createTrackbar("Min_Area", windowName, area, 100000, callback)
     cv2.setTrackbarMin("Min_Area", windowName, 1)
+    # cv2.setTrackbarMax("Min_Area", windowName, 100000)
 
     cv2.createTrackbar("Min_Circ", windowName, circ, 100, callback)
     cv2.setTrackbarMin("Min_Circ", windowName, 1)
+    # cv2.setTrackbarMax("Min_Circ", windowName, 100)
 
 
 def getSliderValues(mode, windowName):
@@ -142,6 +146,10 @@ def showFrames(frames):
 
     for frame in frames:
         cv2.imshow(frame[1], frame[0])
+
+
+def getFocalLength(kDistance, width, pixels):
+    return (kDistance * pixels) / width
 
 
 def callback(value):
