@@ -19,7 +19,6 @@ import frc.robot.util.DreadbotController;
 
 public class RobotContainer {
     private DreadbotController primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
-    @SuppressWarnings("unused")
     private DreadbotController secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
 
     private CANSparkMax leftFrontDriveMotor = new CANSparkMax(1, MotorType.kBrushless);

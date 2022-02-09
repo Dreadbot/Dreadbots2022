@@ -29,7 +29,6 @@ public class Climber extends Subsystem {
     private double retractedPosition;
     private SparkMaxPIDController winchPid;
     private ClimberState state;
-    @SuppressWarnings("unused")
     private RelativeEncoder winchEncoder;
 
     public Climber(Solenoid leftNeutralHookActuator, Solenoid climbingHookActuator, CANSparkMax winchMotor) {
