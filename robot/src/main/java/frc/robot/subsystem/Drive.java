@@ -31,6 +31,8 @@ public class Drive extends SubsystemBase {
             rightFrontMotor.close();
             leftBackMotor.close();
             rightBackMotor.close();
+
+            return;
         }
 
         leftFrontMotor.restoreFactoryDefaults();

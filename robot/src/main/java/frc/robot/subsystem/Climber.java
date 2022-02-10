@@ -61,9 +61,10 @@ public class Climber extends SubsystemBase {
         winchPid.setD(0);
         winchPid.setIZone(0);
         winchPid.setFF(0.000015);
-        winchPid.setOutputRange(-1.0, 1.0);
+        winchPid.setOutputRange(-0.1, 0.1);
         winchMotor.getFirmwareVersion();
         winchMotor.setIdleMode(IdleMode.kBrake);
+        winchMotor.setInverted(true);
         this.retractedPosition = winchEncoder.getPosition();
     }
     public void close() throws Exception {
@@ -86,12 +87,12 @@ public class Climber extends SubsystemBase {
     private void setState(ClimberState state) {
         this.state = state;
     }
-    public void rotateClimbingHookVertical() {
+    public void rotateClimbingHookDown() {
         if(!Constants.CLIMB_ENABLED) return;
         climbingHookActuator.set(true);
     }
 
-    public void rotateClimbingHookDown() {
+    public void rotateClimbingHookVertical() {
         if(!Constants.CLIMB_ENABLED) return;
         climbingHookActuator.set(false);
     }
@@ -120,11 +121,13 @@ public class Climber extends SubsystemBase {
     }
     public void retractArm() {
         if(!Constants.CLIMB_ENABLED) return;
-        winchPid.setReference(Constants.MAX_ARM_DISTANCE - retractedPosition, ControlType.kPosition);
+        //winchPid.setReference(Constants.MAX_ARM_DISTANCE - retractedPosition, ControlType.kPosition);
+        winchMotor.set(-0.1);
     }
     public void extendArm() {
         if(!Constants.CLIMB_ENABLED) return;
-        winchPid.setReference(retractedPosition, ControlType.kPosition);
+        //winchPid.setReference(retractedPosition, ControlType.kPosition);
+        winchMotor.set(0.1);
     }
     public void halfExtendArm() {
         if(!Constants.CLIMB_ENABLED) return;
@@ -175,5 +178,6 @@ public class Climber extends SubsystemBase {
     }
     public void idle(){
         if(!Constants.CLIMB_ENABLED) return;
+        winchMotor.stopMotor();
     }
 }

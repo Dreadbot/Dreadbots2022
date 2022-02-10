@@ -26,21 +26,22 @@ public class DriveTest {
     @Before
     public void setup() {
         assert HAL.initialize(500, 0);
-        leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-        rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-        leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-        rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+        // leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+        // rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+        // leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+        // rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
 
-        rightFrontDriveMotor.setInverted(true);
-        rightBackDriveMotor.setInverted(true);
+        // rightFrontDriveMotor.setInverted(true);
+        // rightBackDriveMotor.setInverted(true);
 
-        drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
+        // drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
-        angle = 0.0d;
+        // angle = 0.0d;
     }
 
     @After
     public void shutdown() throws Exception {
+        if(!Constants.DRIVE_ENABLED) return;
         leftFrontDriveMotor.close();
         rightFrontDriveMotor.close();
         leftBackDriveMotor.close();
@@ -50,6 +51,7 @@ public class DriveTest {
 
     @Test
     public void testJoystickPolarMath() {
+        if(!Constants.DRIVE_ENABLED) return;
         // First Quadrant of the Joystick (-,+)
         angle = Drive.getAngleDegreesFromJoystick(
             -Math.sin(Math.PI / 3), Math.cos(Math.PI / 3));
@@ -97,6 +99,7 @@ public class DriveTest {
 
     @Test
     public void fullForwardDisabled() {
+        if(!Constants.DRIVE_ENABLED) return;
         drive.drivePolar(1.0d, 0.0d, 0.0d);
 
         assertEquals(0.0d, leftFrontDriveMotor.get(), DELTA);
@@ -107,6 +110,7 @@ public class DriveTest {
 
     @Test
     public void stopMotors() {
+        if(!Constants.DRIVE_ENABLED) return;
         drive.stopMotors();
 
         assertEquals(0.0d, leftFrontDriveMotor.get(), 0.0d);
