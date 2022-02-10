@@ -10,15 +10,15 @@ def main():
 
     util.setupDefaultSliderWindow("hsv", "Trackbars", rangeName)
 
-    vs = cv2.VideoCapture(1)
+    vc = cv2.VideoCapture(1)
 
-    print(int(vs.get(cv2.CAP_PROP_FRAME_WIDTH)))
-    print(int(vs.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+    print(int(vc.get(cv2.CAP_PROP_FRAME_WIDTH)))
+    print(int(vc.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
-    vs.set(cv2.CAP_PROP_EXPOSURE, -4)
+    vc.set(cv2.CAP_PROP_EXPOSURE, -4)
 
     while True:
-        ret, frame = vs.read()
+        ret, frame = vc.read()
 
         if not ret:
             break
@@ -76,7 +76,7 @@ def main():
             c = max(circles, key=cv2.contourArea)
             M = cv2.moments(c)
             center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-            halfWidth = int(vs.get(cv2.CAP_PROP_FRAME_WIDTH))/2
+            halfWidth = int(vc.get(cv2.CAP_PROP_FRAME_WIDTH))/2
             dFromY = abs(center[0] - halfWidth)
 
             ((x, y), radius) = cv2.minEnclosingCircle(c)
@@ -114,7 +114,7 @@ def main():
             util.setAllManipulation(erode, dilate, blur, minArea, circ)
             break
 
-    vs.release()
+    vc.release()
     cv2.destroyAllWindows()
 
 
