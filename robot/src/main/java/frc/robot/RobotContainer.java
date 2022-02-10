@@ -20,7 +20,6 @@ import frc.robot.command.intake.OuttakeCommand;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
-import frc.robot.subsystem.Climber.ClimberState;
 import frc.robot.subsystem.shooter.Feeder;
 import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.util.DreadbotController;
@@ -55,6 +54,8 @@ public class RobotContainer {
     
     public RobotContainer() {    
         intake.setDefaultCommand(new RunCommand(intake::idle, intake));
+        secondaryController.getAButton().whileHeld(new OuttakeCommand(intake));
+        secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
 
         climber.setDefaultCommand(new RunCommand(climber::idle, climber));
         primaryController.getAButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));

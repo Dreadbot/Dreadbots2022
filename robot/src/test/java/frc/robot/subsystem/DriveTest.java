@@ -3,8 +3,6 @@ package frc.robot.subsystem;
 import static org.junit.Assert.assertEquals;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
