@@ -40,14 +40,14 @@ def main():
                                 cv2.CHAIN_APPROX_SIMPLE)
         cnts = imutils.grab_contours(cnts)
 
-        image = frame.copy()
+        cntsFrame = frame.copy()
         circlesFrame = frame.copy()
 
         frames = [(frame, "Original"), (mask, "Binary"),
-                  (image, "Contours"), (circlesFrame, "Circles")]
+                  (cntsFrame, "Contours"), (circlesFrame, "Circles")]
 
         if len(cnts) > 0:
-            cv2.drawContours(image=image, contours=cnts, contourIdx=-1,
+            cv2.drawContours(image=cntsFrame, contours=cnts, contourIdx=-1,
                              color=(0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
 
             circles = []
@@ -85,7 +85,12 @@ def main():
             dY = (dX * dFromY) / util.focalLength
             angle = round(math.atan(dY / dX) * (180 / math.pi), 2)
             distance = round(math.sqrt((dX**2) + (dY**2)), 2)
-            distanceI = distance * 39.4
+
+            dIX = (util.focalLength * util.ballDiameterI) / diameter
+            distanceI = round(math.sqrt((dIX**2) + (dY**2)))
+
+            comparisonError = round(
+                int(cv2.contourArea(c)) / (math.pi * (radius**2)) * 100, 2)
 
             # print(center)
 
@@ -95,16 +100,23 @@ def main():
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
             cv2.putText(frame, f"0: {angle}", (0, 60),
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+
+            cv2.putText(cntsFrame, f"Error: {comparisonError}", (0, 30),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            cv2.putText(cntsFrame, f"Draw A: {round(math.pi * (radius**2), 2)}", (0, 60),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            cv2.putText(cntsFrame, f"Cnt A: {round(int(cv2.contourArea(c)), 2)}", (
+                0, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
             # cv2.circle(frame, center, 5, (0, 0, 255), -1)
 
             # TEMP FOR FOCAL LENGTH
 
-            knownDistance = 51.5  # In Inches
+            # knownDistance = 72  # In Inches
 
-            focalLength = util.getFocalLength(
-                knownDistance, util.ballDiameterI, diameter)
-            cv2.putText(frame, f"F: {focalLength}", (0, 90),
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            # focalLength = util.getFocalLength(
+            #     knownDistance, util.ballDiameterI, diameter)
+            # cv2.putText(frame, f"F: {focalLength}", (0, 90),
+            #             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
 
         util.showFrames(frames)
 

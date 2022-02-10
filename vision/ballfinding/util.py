@@ -10,7 +10,7 @@ manipFile = dataDir + "\\manipulation.json"
 ballDiameter = 0.24  # In Meters
 ballDiameterI = 9.5  # In Inches
 cameraHight = 0.58  # In Meters
-focalLength = 690  # In Pixels
+focalLength = 674  # In Pixels
 
 
 def getMask(frame, lower: tuple, upper: tuple, eIts: int, dIts: int, blurK: int, colorSpace: int = cv2.COLOR_BGR2HSV):
