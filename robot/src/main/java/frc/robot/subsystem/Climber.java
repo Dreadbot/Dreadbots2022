@@ -122,12 +122,12 @@ public class Climber extends SubsystemBase {
     public void retractArm() {
         if(!Constants.CLIMB_ENABLED) return;
         //winchPid.setReference(Constants.MAX_ARM_DISTANCE - retractedPosition, ControlType.kPosition);
-        winchMotor.set(-0.1);
+        winchMotor.set(-0.2);
     }
     public void extendArm() {
         if(!Constants.CLIMB_ENABLED) return;
         //winchPid.setReference(retractedPosition, ControlType.kPosition);
-        winchMotor.set(0.1);
+        winchMotor.set(0.3);
     }
     public void halfExtendArm() {
         if(!Constants.CLIMB_ENABLED) return;
