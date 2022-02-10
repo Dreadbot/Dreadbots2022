@@ -9,7 +9,6 @@ public class LimitSwitchTest {
     public DigitalInput leftSwitch;
     public DigitalInput rightSwitch;
 
-    @SuppressWarnings("unused")
     @Before
     public void setup() {
         leftSwitch = new DigitalInput(1);

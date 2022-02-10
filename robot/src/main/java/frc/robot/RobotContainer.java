@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.command.climber.RotateClimbingHookVerticalCommand;
 import frc.robot.command.climber.ExtendArmCommand;
@@ -20,12 +21,12 @@ import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
 import frc.robot.subsystem.Climber.ClimberState;
+import frc.robot.subsystem.shooter.Feeder;
 import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.util.DreadbotController;
 
 public class RobotContainer {
     private DreadbotController primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
-    @SuppressWarnings("unused")
     private DreadbotController secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
 
     private CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
@@ -43,6 +44,9 @@ public class RobotContainer {
     private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
 
     private final Solenoid neutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
+    private final CANSparkMax feederMotor = new CANSparkMax(6, MotorType.kBrushless);
+    private final Feeder feeder = new Feeder(feederMotor);
+
     private final Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
     private final CANSparkMax winchMotor = new CANSparkMax(1, MotorType.kBrushless);
     private final DigitalInput bottomLimitSwitch = new DigitalInput(1);
@@ -59,6 +63,9 @@ public class RobotContainer {
         primaryController.getYButton().whenPressed(new RotateClimbingHookDownCommand(climber));
         primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber));
         primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
+
+        feeder.setDefaultCommand(new RunCommand(feeder::idle, feeder));
+        secondaryController.getBButton().whileHeld(new InstantCommand(feeder::feed, feeder));
 
         drive.setDefaultCommand(new DriveCommand(drive, 
             primaryController::getYAxis, 
