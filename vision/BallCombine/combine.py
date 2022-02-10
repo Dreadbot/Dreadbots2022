@@ -1,5 +1,5 @@
-import copy;
-
+# Ball class has properties for x, y and radius
+# and constants for the margin of error on the x/y axis, and for the radius
 class Ball:
     margin_xy = 10 # margin of error on x,y
     margin_r = 10 # margin of error on radius
@@ -9,14 +9,15 @@ class Ball:
         self.y = y
         self.radius = radius
 
+# util function checks if number is between lower and upper values
 def within_range(num, lower, upper):
     return num < upper and num > lower
 
 # takes a two lists of balls and returns a single list of balls that seem to match each other within the margin
 # of error defined in the Ball class
 def get_valid_balls(balls1, balls2):
-    balls1 = copy.copy(balls1)
-    balls2 = copy.copy(balls2)
+    balls1 = balls1.copy()
+    balls2 = balls2.copy()
     
     valid_balls = []
     nocheck1 = []
