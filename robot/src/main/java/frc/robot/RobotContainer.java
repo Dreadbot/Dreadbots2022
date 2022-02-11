@@ -79,15 +79,5 @@ public class RobotContainer {
             shooter.shoot();
         else 
             shooter.idle();
-        
-        if(primaryController.isRightTriggerPressed()) {
-            climber.extendArm();
-        }
-        if(primaryController.isRightBumperPressed()) {
-            climber.halfExtendArm();
-        }
-        if(primaryController.isLeftTriggerPressed()){
-            climber.retractArm();
-        }
     }
 }
