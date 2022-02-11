@@ -56,19 +56,19 @@ public class RobotContainer {
     private final DigitalInput upperHoodLimitSwitch = new DigitalInput(3);
     private final Hood hood = new Hood(hoodMotor, lowerHoodLimitSwitch, upperHoodLimitSwitch);
 
-    private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
-    private final DigitalInput lowerTurretLimitSwitch = new DigitalInput(4);
-    private final DigitalInput upperTurretLimitSwitch = new DigitalInput(5);
+    private final CANSparkMax turretMotor = new CANSparkMax(7, MotorType.kBrushless);
+    private final DigitalInput lowerTurretLimitSwitch = new DigitalInput(0);
+    private final DigitalInput upperTurretLimitSwitch = new DigitalInput(1);
     private final Turret turret = new Turret(turretMotor, lowerTurretLimitSwitch, upperTurretLimitSwitch);
     
     private Shooter shooter = new Shooter(feeder, flywheel, hood, turret);
 
-    private final Solenoid neutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
+    private final Solenoid neutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 4);
 
-    private final Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
+    private final Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 5);
     private final CANSparkMax winchMotor = new CANSparkMax(1, MotorType.kBrushless);
-    private final DigitalInput bottomLimitSwitch = new DigitalInput(1);
-    private final DigitalInput topLimitSwitch = new DigitalInput(0);
+    private final DigitalInput bottomLimitSwitch = new DigitalInput(6);
+    private final DigitalInput topLimitSwitch = new DigitalInput(7);
     private Climber climber = new Climber(neutralHookActuator, climbingHookActuator, winchMotor, bottomLimitSwitch, topLimitSwitch);
     
     public RobotContainer() {   
@@ -84,7 +84,12 @@ public class RobotContainer {
         feeder.setDefaultCommand(new RunCommand(feeder::idle, feeder));
         flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel)
             .andThen(new InstantCommand(() -> {SmartDashboard.putNumber("Flywheel Velocity (RPM)", flywheel.getVelocity());})));
-
+        
+        SmartDashboard.putNumber("TURRET", 0);
+        turret.setDefaultCommand(new RunCommand(() -> {
+            turret.setAngle(SmartDashboard.getNumber("TURRET", -50));
+        }, turret));
+        
         // TODO remove
         SmartDashboard.putNumber("RPM", 0.0d);
         secondaryController.getBButton().whileActiveOnce(new ShootCommand(shooter));

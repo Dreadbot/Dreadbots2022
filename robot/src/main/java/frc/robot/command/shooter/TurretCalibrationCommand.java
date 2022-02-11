@@ -1,5 +1,6 @@
 package frc.robot.command.shooter;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystem.shooter.Turret;
@@ -30,8 +31,9 @@ class TurretCalibrationRightCommand extends CommandBase {
             return;
         }
 
-        turret.setSpeed(-0.1);
+        turret.setSpeed(-0.3);
         turret.setRightMotorLimit(turret.getPosition());
+        SmartDashboard.putNumber("Turret Upper", turret.getPosition());
     }
 
     @Override
@@ -56,8 +58,9 @@ class TurretCalibrationLeftCommand extends CommandBase {
             return;
         }
 
-        turret.setSpeed(0.1);
+        turret.setSpeed(0.3);
         turret.setLeftMotorLimit(turret.getPosition());
+        SmartDashboard.putNumber("Turret Lower", turret.getPosition());
     }
 
     @Override
