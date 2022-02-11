@@ -87,6 +87,16 @@ public class Hood extends SubsystemBase implements AutoCloseable, MotorSafeSyste
         return !lowerSwitch.get();
     }
 
+    public double getAngle() {
+        if(!Constants.HOOD_ENABLED) return 0.0d;
+
+        double rotations = hoodEncoder.getPosition();
+
+        double angle = rotations;
+
+        return angle;
+    }
+
     public void calibrateHood() {
         if(!Constants.HOOD_ENABLED) return;
 

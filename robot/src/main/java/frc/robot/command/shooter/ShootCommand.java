@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants;
 import frc.robot.subsystem.shooter.Shooter;
 
 public class ShootCommand extends SequentialCommandGroup {
@@ -14,7 +15,7 @@ public class ShootCommand extends SequentialCommandGroup {
                 new FlywheelVelocityCommand(shooter),
                 new TurretAngleCommand(shooter),
                 new HoodAngleCommand(shooter)
-            ).withTimeout(1),
+            ),
 
             // Feed the ball, and shoot continuously.
             new FeedBallCommand(shooter)
@@ -40,10 +41,22 @@ class FlywheelVelocityCommand extends CommandBase {
         
         SmartDashboard.putNumber("Flywheel Velocity (RPM)", shooter.getFlywheelVelocity());
     }
+
+    @Override
+    public boolean isFinished() {
+        double setPoint = SmartDashboard.getNumber("RPM", 0);
+        double actual = shooter.getFlywheelVelocity();
+
+        return Math.abs(setPoint - actual) <= 15.0;
+    }
 }
 
 class TurretAngleCommand extends CommandBase {
     private final Shooter shooter;
+
+    private double turretActualTarget;
+
+    private double lastVisionRelativeTarget;
 
     public TurretAngleCommand(Shooter shooter) {
         this.shooter = shooter;
@@ -54,14 +67,31 @@ class TurretAngleCommand extends CommandBase {
     @Override
     public void execute() {
         // TODO remove SmartDashboard settings, use vision/distance input
-        double angle = SmartDashboard.getNumber("Turret Angle", 0);
+        double turretPosition = shooter.getTurretAngle();
+        double relative = SmartDashboard.getNumber("Turret Angle", 0);
+        if(lastVisionRelativeTarget != relative) {
+            turretActualTarget = turretPosition + relative;
 
-        shooter.setTurretAngle(angle);
+            lastVisionRelativeTarget = relative;
+        }
+
+        shooter.setTurretAngle(turretActualTarget);
+    }
+
+    @Override
+    public boolean isFinished() {
+        double turretPosition = shooter.getTurretAngle();
+
+        return Math.abs(turretActualTarget - turretPosition) <= 10.0d;
     }
 }
 
 class HoodAngleCommand extends CommandBase {
     private final Shooter shooter;
+
+    private double hoodActualTarget;
+
+    private double lastVisionRelativeTarget;
 
     public HoodAngleCommand(Shooter shooter) {
         this.shooter = shooter;
@@ -71,10 +101,22 @@ class HoodAngleCommand extends CommandBase {
 
     @Override
     public void execute() {
-        // TODO remove SmartDashboard settings, use vision/distance input
-        double angle = SmartDashboard.getNumber("Hood Angle", 0);
+        double hoodPosition = shooter.getHoodAngle();
+        double relative = SmartDashboard.getNumber("Turret Angle", 0);
+        if(lastVisionRelativeTarget != relative) {
+            hoodActualTarget = hoodPosition + relative;
 
-        shooter.setHoodAngle(angle);
+            lastVisionRelativeTarget = relative;
+        }
+
+        shooter.setTurretAngle(hoodActualTarget);
+    }
+
+    @Override
+    public boolean isFinished() {
+        double turretPosition = shooter.getTurretAngle();
+
+        return Math.abs(hoodActualTarget - turretPosition) <= 10.0d;
     }
 }
 

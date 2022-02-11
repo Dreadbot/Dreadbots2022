@@ -45,6 +45,18 @@ public class Shooter implements AutoCloseable, MotorSafeSystem {
         return flywheel.getVelocity();
     }
 
+    public double getHoodAngle() {
+        if(!Constants.SHOOTER_ENABLED) return 0.0d;
+
+        return hood.getAngle();
+    }
+
+    public double getTurretAngle() {
+        if(!Constants.SHOOTER_ENABLED) return 0.0d;
+
+        return turret.getAngle();
+    }
+
     @Override
     public void close() throws Exception {
         feeder.close();

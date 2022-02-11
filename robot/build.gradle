@@ -3,6 +3,7 @@ import edu.wpi.first.gradlerio.deploy.roborio.RoboRIO
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2022.2.1"
+    id "org.sonarqube" version "3.3"
 }
 
 sourceCompatibility = JavaVersion.VERSION_11

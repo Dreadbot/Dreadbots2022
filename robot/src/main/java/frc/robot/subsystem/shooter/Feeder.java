@@ -47,8 +47,4 @@ public class Feeder extends SubsystemBase implements AutoCloseable, MotorSafeSys
 
         motor.stopMotor();
     }
-
-    public CANSparkMax getMotor() {
-        return motor;
-    }
 }

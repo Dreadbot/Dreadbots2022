@@ -86,6 +86,16 @@ public class Turret extends SubsystemBase implements AutoCloseable, MotorSafeSys
         return !rightSwitch.get();
     }
 
+    public double getAngle() {
+        if(!Constants.TURRET_ENABLED) return 0.0d;
+
+        double rotations = turretEncoder.getPosition();
+
+        double angle = rotations;
+
+        return angle;
+    }
+
     public void switchDebug() {
         if(!Constants.TURRET_ENABLED) return; 
 
