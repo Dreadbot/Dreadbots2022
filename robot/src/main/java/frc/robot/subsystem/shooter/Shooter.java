@@ -30,7 +30,7 @@ public class Shooter implements AutoCloseable, MotorSafeSystem {
     public void setHoodAngle(double angle) {
         if(!Constants.SHOOTER_ENABLED) return;
 
-        hood.turnToAngle(angle);
+        hood.setAngle(angle);
     }
 
     public void setTurretAngle(double angle) {

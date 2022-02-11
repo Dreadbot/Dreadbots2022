@@ -19,6 +19,7 @@ import frc.robot.command.climber.RotateNeutralHookVerticalCommand;
 import frc.robot.command.drive.DriveCommand;
 import frc.robot.command.intake.IntakeCommand;
 import frc.robot.command.intake.OuttakeCommand;
+import frc.robot.command.shooter.HoodCalibrationCommand;
 import frc.robot.command.shooter.ShootCommand;
 import frc.robot.command.shooter.TurretCalibrationCommand;
 import frc.robot.subsystem.Climber;
@@ -100,5 +101,6 @@ public class RobotContainer {
 
     public void calibrate() {
         CommandScheduler.getInstance().schedule(new TurretCalibrationCommand(turret));
+        CommandScheduler.getInstance().schedule(new HoodCalibrationCommand(hood));
     }
 }

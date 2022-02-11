@@ -58,7 +58,7 @@ public class Hood extends SubsystemBase implements AutoCloseable, MotorSafeSyste
         SmartDashboard.putBoolean("upper", getUpperLimitSwitch());
     }
 
-    public void turnToAngle(double angle) {
+    public void setAngle(double angle) {
         if(!Constants.HOOD_ENABLED) return; 
 
         // TODO Add conversion from angle to rotations
@@ -68,13 +68,20 @@ public class Hood extends SubsystemBase implements AutoCloseable, MotorSafeSyste
         hoodPIDController.setReference(rotations, CANSparkMax.ControlType.kPosition);
     }
 
-    private boolean getUpperLimitSwitch() {
+    public void setSpeed(double speed) {
+        if(!Constants.HOOD_ENABLED) return;
+
+        speed = DreadbotMath.clampValue(speed, -0.1, 0.1);
+        hoodMotor.set(speed);
+    }
+
+    public boolean getUpperLimitSwitch() {
         if(!Constants.HOOD_ENABLED) return false;
 
         return !upperSwitch.get();
     }
 
-    private boolean getLowerLimitSwitch() {
+    public boolean getLowerLimitSwitch() {
         if(!Constants.HOOD_ENABLED) return false;
 
         return !lowerSwitch.get();
