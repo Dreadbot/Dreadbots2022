@@ -6,10 +6,11 @@ import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystem.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.util.DreadbotMath;
 
-public class Turret extends Subsystem {
+public class Turret extends SubsystemBase {
     enum TurretCalibrationState {
         NotCalibrated,
         CalibratedLeft,
@@ -17,9 +18,9 @@ public class Turret extends Subsystem {
         Done
     }
 
-    private DigitalInput leftSwitch;
-    private DigitalInput rightSwitch;
-    private CANSparkMax turretMotor;
+    private final DigitalInput leftSwitch;
+    private final DigitalInput rightSwitch;
+    private final CANSparkMax turretMotor;
     private RelativeEncoder turretEncoder;
     private SparkMaxPIDController turretPIDController;
 
@@ -28,10 +29,18 @@ public class Turret extends Subsystem {
     private double motorUpperLimit = 0.0;
 
     public Turret(DigitalInput leftSwitch, DigitalInput rightSwitch, CANSparkMax turretMotor) {
-        super("Turret");
         this.leftSwitch = leftSwitch;
         this.rightSwitch = rightSwitch;
         this.turretMotor = turretMotor;
+
+        if(!Constants.TURRET_ENABLED) {
+            leftSwitch.close();
+            rightSwitch.close();
+            turretMotor.close();
+
+            return;
+        }
+
         turretMotor.setIdleMode(IdleMode.kBrake);
         turretEncoder = turretMotor.getEncoder();
         turretPIDController = turretMotor.getPIDController();
@@ -47,34 +56,46 @@ public class Turret extends Subsystem {
         SmartDashboard.putBoolean("right", getRightLimitSwitch());
     }
 
-    @Override
     public void close() throws Exception {
         leftSwitch.close();
         rightSwitch.close();
     }
+
     public boolean getLeftLimitSwitch() {
+        if(!Constants.TURRET_ENABLED) return false;
+
         return !leftSwitch.get();
     }
 
     public boolean getRightLimitSwitch() {
+        if(!Constants.TURRET_ENABLED) return false;
+
         return !rightSwitch.get();
     }
+
     public void switchDebug() {
+        if(!Constants.TURRET_ENABLED) return; 
+
         SmartDashboard.putBoolean("left", getLeftLimitSwitch());
         SmartDashboard.putBoolean("right", getRightLimitSwitch());
     }
-    @Override
+
     protected void stopMotors() {
-        // TODO Auto-generated method stub
-        
+        if(!Constants.TURRET_ENABLED) return; 
+
+        turretMotor.stopMotor();
     }
 
     public void turnToRotation(double rotations) {
+        if(!Constants.TURRET_ENABLED) return; 
+
         rotations = DreadbotMath.clampValue(rotations, motorLowerLimit, motorUpperLimit);
         turretPIDController.setReference(rotations, CANSparkMax.ControlType.kPosition);
     }
 
     public void calibrateTurret() {
+        if(!Constants.TURRET_ENABLED) return; 
+
         double targetPosition = ((motorUpperLimit - motorLowerLimit)/2) + motorLowerLimit;
         if(calibrationState == TurretCalibrationState.Done){
             SmartDashboard.putNumber("Target Position", targetPosition);
