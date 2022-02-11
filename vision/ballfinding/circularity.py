@@ -24,6 +24,7 @@ def main():
             break
 
         # frame = imutils.resize(frame, width=600)
+        # frame = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
 
         hL, sL, vL, hU, sU, vU, erode, dilate, blur, minArea, circ = util.getSliderValues(
             "hsv", "Trackbars")
@@ -74,12 +75,11 @@ def main():
             # print(areas)
             # print(int(greatestArea))
             c = max(circles, key=cv2.contourArea)
-            M = cv2.moments(c)
-            center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-            halfWidth = int(vc.get(cv2.CAP_PROP_FRAME_WIDTH))/2
-            dFromY = abs(center[0] - halfWidth)
-
             ((x, y), radius) = cv2.minEnclosingCircle(c)
+
+            halfWidth = int(frame.shape[1])/2
+            dFromY = abs(x - halfWidth)
+
             diameter = radius * 2
             dY = (util.focalLength * util.ballDiameter) / diameter
             dX = (dY * dFromY) / util.focalLength
@@ -131,5 +131,33 @@ def main():
     cv2.destroyAllWindows()
 
 
-if __name__ == '__main__':
+def getBall(src, minCirc, minArea):
+    cnts = cv2.findContours(src, cv2.RETR_EXTERNAL,
+                            cv2.CHAIN_APPROX_SIMPLE)
+    cnts = imutils.grab_contours(cnts)
+
+    if len(cnts) > 0:
+        circles = []
+        for con in cnts:
+            perimeter = cv2.arcLength(con, True)
+            area = cv2.contourArea(con)
+
+            if perimeter == 0 or int(area) < minArea:
+                continue
+
+            circularity = (4*math.pi*area)/(perimeter**2)
+            if minCirc < circularity <= 1.00:
+                circles.append(con)
+
+        if(len(circles) == 0):
+            return None
+
+        c = max(circles, key=cv2.contourArea)
+        ((x, y), radius) = cv2.minEnclosingCircle(c)
+        return x, y, radius
+    else:
+        return None
+
+
+if __name__ == "__main__":
     main()

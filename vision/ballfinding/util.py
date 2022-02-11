@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import imutils
 import json
+import math
 
 dataDir = "vision\\ballfinding\\Data"
 rangesFile = dataDir + "\\ranges.json"
@@ -150,6 +151,16 @@ def showFrames(frames):
 
 def getFocalLength(kDistance, width, pixels):
     return (kDistance * pixels) / width
+
+
+def getDistance(src, x, radius, focalLength, ballDiameter):
+    dFromY = abs(x - (int(src.shape[1])/2))
+    diameter = radius * 2
+    dY = (focalLength * ballDiameter) / diameter
+    dX = (dY * dFromY) / focalLength
+    angle = round(math.atan(dX / dY) * (180 / math.pi), 2)
+    distance = round(math.sqrt((dY**2) + (dX**2)), 2)
+    return distance, angle
 
 
 def callback(value):
