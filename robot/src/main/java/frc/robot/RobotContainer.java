@@ -54,7 +54,7 @@ public class RobotContainer {
     private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
     private final DigitalInput lowerTurretLimitSwitch = new DigitalInput(4);
     private final DigitalInput upperTurretLimitSwitch = new DigitalInput(5);
-    private final Turret turret = new Turret(turretMotor, lowerTurretLimitSwitch, upperHoodLimitSwitch);
+    private final Turret turret = new Turret(turretMotor, lowerTurretLimitSwitch, upperTurretLimitSwitch);
     
     private Shooter shooter = new Shooter(feeder, flywheel, hood, turret);
 
