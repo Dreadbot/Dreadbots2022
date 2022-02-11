@@ -89,6 +89,11 @@ public class RobotContainer {
         turret.setDefaultCommand(new RunCommand(() -> {
             turret.setAngle(SmartDashboard.getNumber("TURRET", -50));
         }, turret));
+
+        SmartDashboard.putNumber("HOOD", 0);
+        hood.setDefaultCommand(new RunCommand(() -> {
+            hood.setAngle(SmartDashboard.getNumber("HOOD", -50));
+        }, hood));
         
         // TODO remove
         SmartDashboard.putNumber("RPM", 0.0d);
