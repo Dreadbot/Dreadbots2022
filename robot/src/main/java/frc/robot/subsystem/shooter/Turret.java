@@ -74,6 +74,14 @@ public class Turret extends SubsystemBase implements AutoCloseable, MotorSafeSys
         turretMotor.set(speed);
     }
 
+    public void setRightMotorLimit(double rotations) {
+        this.motorLowerLimit = rotations;
+    }
+
+    public void setLeftMotorLimit(double rotations) {
+        this.motorUpperLimit = rotations;
+    }
+
     public boolean getLeftLimitSwitch() {
         if(!Constants.TURRET_ENABLED) return false;
 
@@ -94,6 +102,12 @@ public class Turret extends SubsystemBase implements AutoCloseable, MotorSafeSys
         double angle = rotations;
 
         return angle;
+    }
+
+    public double getPosition() {
+        if(!Constants.TURRET_ENABLED) return 0.0d;
+
+        return turretEncoder.getPosition();
     }
 
     public void switchDebug() {

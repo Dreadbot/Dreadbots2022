@@ -31,6 +31,7 @@ class TurretCalibrationRightCommand extends CommandBase {
         }
 
         turret.setSpeed(-0.1);
+        turret.setRightMotorLimit(turret.getPosition());
     }
 
     @Override
@@ -56,6 +57,7 @@ class TurretCalibrationLeftCommand extends CommandBase {
         }
 
         turret.setSpeed(0.1);
+        turret.setLeftMotorLimit(turret.getPosition());
     }
 
     @Override
