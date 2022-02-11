@@ -1,5 +1,6 @@
 package frc.robot.command.shooter;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystem.shooter.Hood;
@@ -31,6 +32,8 @@ class HoodCalibrationUpCommand extends CommandBase {
         }
 
         hood.setSpeed(-0.1d);
+        hood.setUpperMotorLimit(hood.getPosition());
+        SmartDashboard.putNumber("Hood Upper", hood.getPosition());
     }
 
     @Override
@@ -56,6 +59,8 @@ class HoodCalibrationDownCommand extends CommandBase {
         }
 
         hood.setSpeed(0.1d);
+        hood.setLowerMotorLimit(hood.getPosition());
+        SmartDashboard.putNumber("Hood Lower", hood.getPosition());
     }
 
     @Override

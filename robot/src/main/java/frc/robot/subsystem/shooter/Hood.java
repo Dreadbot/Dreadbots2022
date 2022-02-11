@@ -75,6 +75,14 @@ public class Hood extends SubsystemBase implements AutoCloseable, MotorSafeSyste
         hoodMotor.set(speed);
     }
 
+    public void setUpperMotorLimit(double position) {
+        motorUpperLimit = position;
+    }
+
+    public void setLowerMotorLimit(double position) {
+        motorLowerLimit = position;
+    }
+
     public boolean getUpperLimitSwitch() {
         if(!Constants.HOOD_ENABLED) return false;
 
@@ -95,6 +103,12 @@ public class Hood extends SubsystemBase implements AutoCloseable, MotorSafeSyste
         double angle = rotations;
 
         return angle;
+    }
+
+    public double getPosition() {
+        if(!Constants.HOOD_ENABLED) return 0.0d;
+
+        return hoodEncoder.getPosition();
     }
 
     public void calibrateHood() {
