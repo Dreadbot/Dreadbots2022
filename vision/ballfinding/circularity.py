@@ -87,7 +87,8 @@ def main():
             distance = round(math.sqrt((dX**2) + (dY**2)), 2)
 
             dIX = (util.focalLength * util.ballDiameterI) / diameter
-            distanceI = round(math.sqrt((dIX**2) + (dY**2)))
+            dIY = (dIX * dFromY) / util.getFocalLength
+            distanceI = round(math.sqrt((dIX**2) + (dIY**2)))
 
             comparisonError = round(
                 int(cv2.contourArea(c)) / (math.pi * (radius**2)) * 100, 2)
