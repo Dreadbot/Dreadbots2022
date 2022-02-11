@@ -1,9 +1,7 @@
 package frc.robot.subsystem.shooter;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class Shooter extends SubsystemBase {
+public class Shooter {
     private final Feeder feeder;
     private final Flywheel flywheel;
     private final Hood hood;
@@ -14,8 +12,6 @@ public class Shooter extends SubsystemBase {
         this.flywheel = flywheel;
         this.hood = hood;
         this.turret = turret;
-        
-        SmartDashboard.putNumber("RPM", 0.0d);
     }
 
     public void feedBall() {
@@ -24,14 +20,10 @@ public class Shooter extends SubsystemBase {
         feeder.feed();
     }
 
-    public void rampFlywheelToSpeed(double rpm) {
+    public void rampFlywheelToSpeed(double velocity) {
         if(!Constants.SHOOTER_ENABLED) return;
 
-        // TODO remove SmartDashboard settings, use vision/distance input
-        double setPoint = SmartDashboard.getNumber("RPM", 0);
-        flywheel.ramp(rpm);
-
-        SmartDashboard.putNumber("Flywheel Velocity (RPM)", flywheel.getVelocity());
+        flywheel.ramp(velocity);
     }
 
     public void turnHoodToAngle(double angle) {
@@ -46,14 +38,10 @@ public class Shooter extends SubsystemBase {
         turret.turnToAngle(angle);
     }
 
-    public void idle() {
-        if(!Constants.SHOOTER_ENABLED) return;
+    public double getFlywheelVelocity() {
+        if(!Constants.SHOOTER_ENABLED) return 0.0d;
 
-        // These processes should only run when a shoot command is registered.
-        flywheel.idle();
-        feeder.idle();
-
-        SmartDashboard.putNumber("Flywheel Velocity (RPM)", flywheel.getVelocity());
+        return flywheel.getVelocity();
     }
 
     public Feeder getFeeder() {

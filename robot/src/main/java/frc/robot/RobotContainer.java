@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.command.climber.RotateClimbingHookVerticalCommand;
@@ -17,6 +18,7 @@ import frc.robot.command.climber.RotateNeutralHookVerticalCommand;
 import frc.robot.command.drive.DriveCommand;
 import frc.robot.command.intake.IntakeCommand;
 import frc.robot.command.intake.OuttakeCommand;
+import frc.robot.command.shooter.FlywheelRampCommand;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
@@ -75,9 +77,15 @@ public class RobotContainer {
         intake.setDefaultCommand(new RunCommand(intake::idle, intake));
         secondaryController.getAButton().whileHeld(new OuttakeCommand(intake));
         secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
+        
+        feeder.setDefaultCommand(new RunCommand(feeder::idle, feeder));
+        flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel)
+            .andThen(new InstantCommand(() -> {SmartDashboard.putNumber("Flywheel Velocity (RPM)", flywheel.getVelocity());})));
 
-        shooter.setDefaultCommand(new RunCommand(shooter::idle, shooter, feeder, flywheel));
-        secondaryController.getBButton().whileHeld(new InstantCommand(feeder::feed, feeder));
+        // TODO remove
+        SmartDashboard.putNumber("RPM", 0.0d);
+        secondaryController.getBButton().whileActiveOnce(new FlywheelRampCommand(shooter));
+        secondaryController.getYButton().whileHeld(new InstantCommand(shooter::feedBall, feeder));
 
         climber.setDefaultCommand(new RunCommand(climber::idle, climber));
         primaryController.getAButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
