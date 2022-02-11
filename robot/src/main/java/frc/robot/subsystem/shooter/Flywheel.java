@@ -6,10 +6,10 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.subsystem.Subsystem;
 
-public class Flywheel extends Subsystem {
+public class Flywheel extends SubsystemBase {
     private final CANSparkMax motor;
     private SparkMaxPIDController pidController;
     private RelativeEncoder encoder;
@@ -17,11 +17,9 @@ public class Flywheel extends Subsystem {
     public double lastVelocity;
 
     public Flywheel(CANSparkMax motor) {
-        super("Flywheel");
-
         this.motor = motor;
 
-        if(!Constants.SHOOTER_ENABLED) {
+        if(!Constants.FLYWHEEL_ENABLED) {
             motor.close();
             
             return;
@@ -42,7 +40,7 @@ public class Flywheel extends Subsystem {
     }
 
     public void ramp(double velocity) {
-        if(!Constants.SHOOTER_ENABLED) return;
+        if(!Constants.FLYWHEEL_ENABLED) return;
 
         if(velocity != lastVelocity) {
             // Prevents the motor from going beyond 5700RPM
@@ -56,29 +54,27 @@ public class Flywheel extends Subsystem {
     }
 
     public void idle() {
-        if(!Constants.SHOOTER_ENABLED) return;
+        if(!Constants.FLYWHEEL_ENABLED) return;
 
         lastVelocity = 0.0d;
         
         motor.set(0.0d);
     }
 
-    @Override
     public void close() throws Exception {
-        if(!Constants.SHOOTER_ENABLED) return;
+        if(!Constants.FLYWHEEL_ENABLED) return;
 
         motor.close();
     }
 
-    @Override
     protected void stopMotors() {
-        if(!Constants.SHOOTER_ENABLED) return;
+        if(!Constants.FLYWHEEL_ENABLED) return;
 
         motor.stopMotor();
     }
 
     public double getVelocity() {
-        if(!Constants.SHOOTER_ENABLED) return 0.0d;
+        if(!Constants.FLYWHEEL_ENABLED) return 0.0d;
 
         return encoder.getVelocity();
     }
