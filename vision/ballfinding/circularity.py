@@ -12,8 +12,8 @@ def main():
 
     vc = cv2.VideoCapture(1)
 
-    print(int(vc.get(cv2.CAP_PROP_FRAME_WIDTH)))
-    print(int(vc.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+    # print(int(vc.get(cv2.CAP_PROP_FRAME_WIDTH)))
+    # print(int(vc.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
     vc.set(cv2.CAP_PROP_EXPOSURE, -4)
 
@@ -81,17 +81,17 @@ def main():
 
             ((x, y), radius) = cv2.minEnclosingCircle(c)
             diameter = radius * 2
-            dX = (util.focalLength * util.ballDiameter) / diameter
-            dY = (dX * dFromY) / util.focalLength
-            angle = round(math.atan(dY / dX) * (180 / math.pi), 2)
-            distance = round(math.sqrt((dX**2) + (dY**2)), 2)
+            dY = (util.focalLength * util.ballDiameter) / diameter
+            dX = (dY * dFromY) / util.focalLength
+            angle = round(math.atan(dX / dY) * (180 / math.pi), 2)
+            distance = round(math.sqrt((dY**2) + (dX**2)), 2)
 
-            dIX = (util.focalLength * util.ballDiameterI) / diameter
-            dIY = (dIX * dFromY) / util.getFocalLength
-            distanceI = round(math.sqrt((dIX**2) + (dIY**2)))
+            dIY = (util.focalLength * util.ballDiameterI) / diameter
+            dIX = (dIY * dFromY) / util.focalLength
+            distanceI = round(math.sqrt((dIY**2) + (dIX**2)))
 
-            comparisonError = round(
-                int(cv2.contourArea(c)) / (math.pi * (radius**2)) * 100, 2)
+            # comparisonError = round(
+            #     int(cv2.contourArea(c)) / (math.pi * (radius**2)) * 100, 2)
 
             # print(center)
 
@@ -102,12 +102,12 @@ def main():
             cv2.putText(frame, f"0: {angle}", (0, 60),
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
 
-            cv2.putText(cntsFrame, f"Error: {comparisonError}", (0, 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
-            cv2.putText(cntsFrame, f"Draw A: {round(math.pi * (radius**2), 2)}", (0, 60),
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
-            cv2.putText(cntsFrame, f"Cnt A: {round(int(cv2.contourArea(c)), 2)}", (
-                0, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            # cv2.putText(cntsFrame, f"Error: {comparisonError}", (0, 30),
+            #             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            # cv2.putText(cntsFrame, f"Draw A: {round(math.pi * (radius**2), 2)}", (0, 60),
+            #             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            # cv2.putText(cntsFrame, f"Cnt A: {round(int(cv2.contourArea(c)), 2)}", (
+            #     0, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
             # cv2.circle(frame, center, 5, (0, 0, 255), -1)
 
             # TEMP FOR FOCAL LENGTH
