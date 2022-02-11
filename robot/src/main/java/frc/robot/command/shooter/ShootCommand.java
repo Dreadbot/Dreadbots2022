@@ -36,7 +36,7 @@ class FlywheelVelocityCommand extends CommandBase {
         // TODO remove SmartDashboard settings, use vision/distance input
         double setPoint = SmartDashboard.getNumber("RPM", 0);
 
-        shooter.setFlywheelSpeed(setPoint);
+        shooter.setFlywheelVelocity(setPoint);
         
         SmartDashboard.putNumber("Flywheel Velocity (RPM)", shooter.getFlywheelVelocity());
     }

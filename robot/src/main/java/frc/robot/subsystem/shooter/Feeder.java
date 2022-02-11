@@ -4,8 +4,9 @@ import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.util.MotorSafeSystem;
 
-public class Feeder extends SubsystemBase {
+public class Feeder extends SubsystemBase implements AutoCloseable, MotorSafeSystem {
     private final CANSparkMax motor;
 
     public Feeder(CANSparkMax motor) {
@@ -30,6 +31,21 @@ public class Feeder extends SubsystemBase {
         if(!Constants.FEEDER_ENABLED) return;
 
         motor.set(0.0d);
+    }
+
+    @Override
+    public void close() throws Exception {
+        if(!Constants.FEEDER_ENABLED) return;
+
+        stopMotors();
+        motor.close();
+    }
+    
+    @Override
+    public void stopMotors() {
+        if(!Constants.FEEDER_ENABLED) return;
+
+        motor.stopMotor();
     }
 
     public CANSparkMax getMotor() {

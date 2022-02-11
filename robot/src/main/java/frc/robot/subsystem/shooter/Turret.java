@@ -9,8 +9,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.DreadbotMath;
+import frc.robot.util.MotorSafeSystem;
 
-public class Turret extends SubsystemBase {
+public class Turret extends SubsystemBase implements AutoCloseable, MotorSafeSystem {
     enum TurretCalibrationState {
         NotCalibrated,
         CalibratedLeft,
@@ -73,11 +74,6 @@ public class Turret extends SubsystemBase {
         turretMotor.set(speed);
     }
 
-    public void close() throws Exception {
-        leftSwitch.close();
-        rightSwitch.close();
-    }
-
     public boolean getLeftLimitSwitch() {
         if(!Constants.TURRET_ENABLED) return false;
 
@@ -95,12 +91,6 @@ public class Turret extends SubsystemBase {
 
         SmartDashboard.putBoolean("left", getLeftLimitSwitch());
         SmartDashboard.putBoolean("right", getRightLimitSwitch());
-    }
-
-    protected void stopMotors() {
-        if(!Constants.TURRET_ENABLED) return; 
-
-        turretMotor.stopMotor();
     }
 
     public void calibrateTurret() {
@@ -140,5 +130,18 @@ public class Turret extends SubsystemBase {
             turretPIDController.setReference(targetPosition, CANSparkMax.ControlType.kPosition);
             calibrationState = TurretCalibrationState.Done;
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        leftSwitch.close();
+        rightSwitch.close();
+    }
+
+    @Override
+    public void stopMotors() {
+        if(!Constants.TURRET_ENABLED) return; 
+
+        turretMotor.stopMotor();
     }
 }

@@ -10,8 +10,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.DreadbotMath;
+import frc.robot.util.MotorSafeSystem;
 
-public class Hood extends SubsystemBase {
+public class Hood extends SubsystemBase implements AutoCloseable, MotorSafeSystem {
     enum HoodCalibrationState {
         NotCalibrated,
         CalibratedLower,
@@ -57,11 +58,6 @@ public class Hood extends SubsystemBase {
         SmartDashboard.putBoolean("upper", getUpperLimitSwitch());
     }
 
-    public void close() throws Exception {
-        lowerSwitch.close();
-        upperSwitch.close();
-    }
-
     public void turnToAngle(double angle) {
         if(!Constants.HOOD_ENABLED) return; 
 
@@ -82,19 +78,6 @@ public class Hood extends SubsystemBase {
         if(!Constants.HOOD_ENABLED) return false;
 
         return !lowerSwitch.get();
-    }
-
-    public void switchDebug() {
-        if(!Constants.HOOD_ENABLED) return;
-
-        SmartDashboard.putBoolean("lower", getLowerLimitSwitch());
-        SmartDashboard.putBoolean("upper", getUpperLimitSwitch());
-    }
-
-    protected void stopMotors() {
-        if(!Constants.HOOD_ENABLED) return;
-
-        hoodMotor.stopMotor();
     }
 
     public void calibrateHood() {
@@ -134,5 +117,18 @@ public class Hood extends SubsystemBase {
             hoodPIDController.setReference(targetPosition, CANSparkMax.ControlType.kPosition);
             calibrationState = HoodCalibrationState.Done;
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        lowerSwitch.close();
+        upperSwitch.close();
+    }
+
+    @Override
+    public void stopMotors() {
+        if(!Constants.HOOD_ENABLED) return;
+
+        hoodMotor.stopMotor();
     }
 }

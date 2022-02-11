@@ -1,7 +1,8 @@
 package frc.robot.subsystem.shooter;
 import frc.robot.Constants;
+import frc.robot.util.MotorSafeSystem;
 
-public class Shooter {
+public class Shooter implements AutoCloseable, MotorSafeSystem {
     private final Feeder feeder;
     private final Flywheel flywheel;
     private final Hood hood;
@@ -20,7 +21,7 @@ public class Shooter {
         feeder.feed();
     }
 
-    public void setFlywheelSpeed(double velocity) {
+    public void setFlywheelVelocity(double velocity) {
         if(!Constants.SHOOTER_ENABLED) return;
 
         flywheel.setVelocity(velocity);
@@ -42,6 +43,24 @@ public class Shooter {
         if(!Constants.SHOOTER_ENABLED) return 0.0d;
 
         return flywheel.getVelocity();
+    }
+
+    @Override
+    public void close() throws Exception {
+        feeder.close();
+        flywheel.close();
+        hood.close();
+        turret.close();
+    }
+
+    @Override
+    public void stopMotors() {
+        if(!Constants.SHOOTER_ENABLED) return;
+
+        feeder.stopMotors();
+        flywheel.stopMotors();
+        hood.stopMotors();
+        turret.stopMotors();
     }
 
     public Feeder getFeeder() {

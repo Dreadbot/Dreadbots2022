@@ -8,8 +8,9 @@ import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.util.MotorSafeSystem;
 
-public class Flywheel extends SubsystemBase {
+public class Flywheel extends SubsystemBase implements AutoCloseable, MotorSafeSystem {
     private final CANSparkMax motor;
     private SparkMaxPIDController pidController;
     private RelativeEncoder encoder;
@@ -61,21 +62,24 @@ public class Flywheel extends SubsystemBase {
         motor.set(0.0d);
     }
 
-    public void close() throws Exception {
-        if(!Constants.FLYWHEEL_ENABLED) return;
-
-        motor.close();
-    }
-
-    protected void stopMotors() {
-        if(!Constants.FLYWHEEL_ENABLED) return;
-
-        motor.stopMotor();
-    }
-
     public double getVelocity() {
         if(!Constants.FLYWHEEL_ENABLED) return 0.0d;
 
         return encoder.getVelocity();
+    }
+
+    @Override
+    public void close() throws Exception {
+        if(!Constants.FLYWHEEL_ENABLED) return;
+
+        stopMotors();
+        motor.close();
+    }
+
+    @Override
+    public void stopMotors() {
+        if(!Constants.FLYWHEEL_ENABLED) return;
+
+        motor.stopMotor();
     }
 }
