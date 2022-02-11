@@ -11,6 +11,7 @@ public abstract class Constants {
     public static final boolean CLIMB_ENABLED = false;
     public static final boolean FEEDER_ENABLED = true;
     public static final boolean FLYWHEEL_ENABLED = true;
+    public static final boolean HOOD_ENABLED = true;
 
     // Joysticks
     public static final int PRIMARY_JOYSTICK_PORT = 0;

@@ -7,9 +7,10 @@ import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystem.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
-public class Hood extends Subsystem {
+public class Hood extends SubsystemBase {
     enum HoodCalibrationState {
         NotCalibrated,
         CalibratedLower,
@@ -17,22 +18,29 @@ public class Hood extends Subsystem {
         Done
     }
 
-
-    
-    private DigitalInput lowerSwitch;
-    private DigitalInput upperSwitch;
-    private CANSparkMax hoodMotor;
-    private HoodCalibrationState calibrationState;
+    private final DigitalInput lowerSwitch;
+    private final DigitalInput upperSwitch;
+    private final CANSparkMax hoodMotor;
     private RelativeEncoder hoodEncoder;
     private SparkMaxPIDController hoodPIDController;
+
+    private HoodCalibrationState calibrationState;
     private double motorLowerLimit = 0.0;
     private double motorUpperLimit = 0.0;
 
     private Hood (CANSparkMax hoodMotor, DigitalInput lowerSwitch, DigitalInput upperSwitch) {
-        super("Hood");
         this.hoodMotor = hoodMotor;
         this.lowerSwitch = lowerSwitch;
         this.upperSwitch = upperSwitch;
+
+        if(!Constants.HOOD_ENABLED) {
+            lowerSwitch.close();
+            upperSwitch.close();
+            hoodMotor.close();
+
+            return;
+        }
+
         hoodMotor.setIdleMode(IdleMode.kCoast);
         hoodEncoder = hoodMotor.getEncoder();
         hoodPIDController = hoodMotor.getPIDController();
@@ -46,37 +54,41 @@ public class Hood extends Subsystem {
         this.calibrationState = HoodCalibrationState.NotCalibrated;
         SmartDashboard.putBoolean("lower", getLowerLimitSwitch());
         SmartDashboard.putBoolean("upper", getUpperLimitSwitch());
-
     }
 
-    
-
-    @Override
     public void close() throws Exception {
         lowerSwitch.close();
         upperSwitch.close();
     }
 
     private boolean getUpperLimitSwitch() {
-        return false;
+        if(!Constants.HOOD_ENABLED) return false;
+
+        return !upperSwitch.get();
     }
 
     private boolean getLowerLimitSwitch() {
-        return false;
+        if(!Constants.HOOD_ENABLED) return false;
+
+        return !lowerSwitch.get();
     }
 
     public void switchDebug() {
+        if(!Constants.HOOD_ENABLED) return;
+
         SmartDashboard.putBoolean("lower", getLowerLimitSwitch());
         SmartDashboard.putBoolean("upper", getUpperLimitSwitch());
     }
 
-    @Override
     protected void stopMotors() {
-        // TODO Auto-generated method stub
-        
+        if(!Constants.HOOD_ENABLED) return;
+
+        hoodMotor.stopMotor();
     }
 
     public void calibrateHood() {
+        if(!Constants.HOOD_ENABLED) return;
+
         double targetPosition = ((motorUpperLimit - motorLowerLimit)/2) + motorLowerLimit;
         if(calibrationState == HoodCalibrationState.Done){
             SmartDashboard.putNumber("Target Position", targetPosition);
