@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.util.DreadbotMath;
 
 public class Hood extends SubsystemBase {
     enum HoodCalibrationState {
@@ -28,7 +29,7 @@ public class Hood extends SubsystemBase {
     private double motorLowerLimit = 0.0;
     private double motorUpperLimit = 0.0;
 
-    private Hood (CANSparkMax hoodMotor, DigitalInput lowerSwitch, DigitalInput upperSwitch) {
+    public Hood (CANSparkMax hoodMotor, DigitalInput lowerSwitch, DigitalInput upperSwitch) {
         this.hoodMotor = hoodMotor;
         this.lowerSwitch = lowerSwitch;
         this.upperSwitch = upperSwitch;
@@ -59,6 +60,16 @@ public class Hood extends SubsystemBase {
     public void close() throws Exception {
         lowerSwitch.close();
         upperSwitch.close();
+    }
+
+    public void turnToAngle(double angle) {
+        if(!Constants.HOOD_ENABLED) return; 
+
+        // TODO Add conversion from angle to rotations
+        double rotations = angle;
+
+        rotations = DreadbotMath.clampValue(rotations, motorLowerLimit, motorUpperLimit);
+        hoodPIDController.setReference(rotations, CANSparkMax.ControlType.kPosition);
     }
 
     private boolean getUpperLimitSwitch() {

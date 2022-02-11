@@ -28,7 +28,7 @@ public class Turret extends SubsystemBase {
     private double motorLowerLimit = 0.0;
     private double motorUpperLimit = 0.0;
 
-    public Turret(DigitalInput leftSwitch, DigitalInput rightSwitch, CANSparkMax turretMotor) {
+    public Turret(CANSparkMax turretMotor, DigitalInput leftSwitch, DigitalInput rightSwitch) {
         this.leftSwitch = leftSwitch;
         this.rightSwitch = rightSwitch;
         this.turretMotor = turretMotor;
@@ -86,8 +86,11 @@ public class Turret extends SubsystemBase {
         turretMotor.stopMotor();
     }
 
-    public void turnToRotation(double rotations) {
+    public void turnToAngle(double angle) {
         if(!Constants.TURRET_ENABLED) return; 
+
+        // TODO Add conversion from angle to rotations
+        double rotations = angle;
 
         rotations = DreadbotMath.clampValue(rotations, motorLowerLimit, motorUpperLimit);
         turretPIDController.setReference(rotations, CANSparkMax.ControlType.kPosition);
