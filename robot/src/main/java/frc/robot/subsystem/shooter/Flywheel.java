@@ -39,7 +39,7 @@ public class Flywheel extends SubsystemBase {
         pidController.setOutputRange(Constants.FLYWHEEL_MIN_OUTPUT, Constants.FLYWHEEL_MAX_OUTPUT);
     }
 
-    public void ramp(double velocity) {
+    public void setVelocity(double velocity) {
         if(!Constants.FLYWHEEL_ENABLED) return;
 
         if(velocity != lastVelocity) {

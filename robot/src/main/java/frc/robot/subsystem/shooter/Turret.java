@@ -56,6 +56,23 @@ public class Turret extends SubsystemBase {
         SmartDashboard.putBoolean("right", getRightLimitSwitch());
     }
 
+    public void setAngle(double angle) {
+        if(!Constants.TURRET_ENABLED) return; 
+
+        // TODO Add conversion from angle to rotations
+        double rotations = angle;
+
+        rotations = DreadbotMath.clampValue(rotations, motorLowerLimit, motorUpperLimit);
+        turretPIDController.setReference(rotations, CANSparkMax.ControlType.kPosition);
+    }
+
+    public void setSpeed(double speed) {
+        if(!Constants.TURRET_ENABLED) return;
+
+        speed = DreadbotMath.clampValue(speed, -0.1, 0.1);
+        turretMotor.set(speed);
+    }
+
     public void close() throws Exception {
         leftSwitch.close();
         rightSwitch.close();
@@ -84,16 +101,6 @@ public class Turret extends SubsystemBase {
         if(!Constants.TURRET_ENABLED) return; 
 
         turretMotor.stopMotor();
-    }
-
-    public void turnToAngle(double angle) {
-        if(!Constants.TURRET_ENABLED) return; 
-
-        // TODO Add conversion from angle to rotations
-        double rotations = angle;
-
-        rotations = DreadbotMath.clampValue(rotations, motorLowerLimit, motorUpperLimit);
-        turretPIDController.setReference(rotations, CANSparkMax.ControlType.kPosition);
     }
 
     public void calibrateTurret() {

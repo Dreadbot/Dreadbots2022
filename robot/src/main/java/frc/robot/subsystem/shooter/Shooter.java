@@ -20,22 +20,22 @@ public class Shooter {
         feeder.feed();
     }
 
-    public void rampFlywheelToSpeed(double velocity) {
+    public void setFlywheelSpeed(double velocity) {
         if(!Constants.SHOOTER_ENABLED) return;
 
-        flywheel.ramp(velocity);
+        flywheel.setVelocity(velocity);
     }
 
-    public void turnHoodToAngle(double angle) {
+    public void setHoodAngle(double angle) {
         if(!Constants.SHOOTER_ENABLED) return;
 
         hood.turnToAngle(angle);
     }
 
-    public void turnTurretToAngle(double angle) {
+    public void setTurretAngle(double angle) {
         if(!Constants.SHOOTER_ENABLED) return;
 
-        turret.turnToAngle(angle);
+        turret.setAngle(angle);
     }
 
     public double getFlywheelVelocity() {

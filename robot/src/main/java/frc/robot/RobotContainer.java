@@ -7,18 +7,20 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.robot.command.climber.RotateClimbingHookVerticalCommand;
 import frc.robot.command.climber.ExtendArmCommand;
 import frc.robot.command.climber.RetractArmCommand;
 import frc.robot.command.climber.RotateClimbingHookDownCommand;
+import frc.robot.command.climber.RotateClimbingHookVerticalCommand;
 import frc.robot.command.climber.RotateNeutralHookDownCommand;
 import frc.robot.command.climber.RotateNeutralHookVerticalCommand;
 import frc.robot.command.drive.DriveCommand;
 import frc.robot.command.intake.IntakeCommand;
 import frc.robot.command.intake.OuttakeCommand;
-import frc.robot.command.shooter.FlywheelRampCommand;
+import frc.robot.command.shooter.ShootCommand;
+import frc.robot.command.shooter.TurretCalibrationCommand;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
@@ -84,7 +86,7 @@ public class RobotContainer {
 
         // TODO remove
         SmartDashboard.putNumber("RPM", 0.0d);
-        secondaryController.getBButton().whileActiveOnce(new FlywheelRampCommand(shooter));
+        secondaryController.getBButton().whileActiveOnce(new ShootCommand(shooter));
         secondaryController.getYButton().whileHeld(new InstantCommand(shooter::feedBall, feeder));
 
         climber.setDefaultCommand(new RunCommand(climber::idle, climber));
@@ -94,5 +96,9 @@ public class RobotContainer {
         primaryController.getYButton().whenPressed(new RotateClimbingHookDownCommand(climber));
         primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber));
         primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
+    }
+
+    public void calibrate() {
+        CommandScheduler.getInstance().schedule(new TurretCalibrationCommand(turret));
     }
 }
