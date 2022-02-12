@@ -12,7 +12,7 @@ public abstract class Constants {
     public static final boolean FEEDER_ENABLED = false;
     public static final boolean FLYWHEEL_ENABLED = false;
     public static final boolean HOOD_ENABLED = true;
-    public static final boolean TURRET_ENABLED = false;
+    public static final boolean TURRET_ENABLED = true;
 
     // Joysticks
     public static final int PRIMARY_JOYSTICK_PORT = 0;
@@ -46,8 +46,9 @@ public abstract class Constants {
     public static final double MAX_TURRET_ANGLE = 300.0d;
     public static final double MIN_TURRET_ANGLE = 0.0d;
 
-    public static final double MAX_HOOD_ANGLE = 90.0d;
-    public static final double MIN_HOOD_ANGLE = 45.0d;
+    public static final double MAX_HOOD_ANGLE = 82.0d;
+    public static final double UPPER_HOOD_ANGLE = 70.0d;
+    public static final double MIN_HOOD_ANGLE = 60.0d;
     
     // Climber constants
     public static final int WINCH_MOTOR_PORT = 15;

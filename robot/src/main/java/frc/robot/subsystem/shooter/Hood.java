@@ -35,9 +35,11 @@ public class Hood extends SubsystemBase implements AutoCloseable, MotorSafeSyste
             return;
         }
 
-        motor.setIdleMode(IdleMode.kBrake);
+        motor.setIdleMode(IdleMode.kCoast);
         encoder = motor.getEncoder();
         pidController = motor.getPIDController();
+
+        motor.setInverted(true);
          
         pidController.setP(0.1); // Change numbers maybe
         pidController.setI(0); 
@@ -115,31 +117,31 @@ public class Hood extends SubsystemBase implements AutoCloseable, MotorSafeSyste
     public void setLowerMotorLimit(double rotations) {
         SmartDashboard.putNumber("Hood Lower Limit", rotations);
 
-        this.upperMotorLimit = rotations;
+        this.lowerMotorLimit = rotations;
     }
 
-    private double convertRotationsToDegrees(double rotations) {
+    public double convertRotationsToDegrees(double rotations) {
         // Slope of the line describing the relationship
-        double degreesPerRotation = (Constants.MAX_HOOD_ANGLE - Constants.MIN_HOOD_ANGLE) / (upperMotorLimit - lowerMotorLimit);
+        double degreesPerRotation = (Constants.MIN_HOOD_ANGLE - Constants.MAX_HOOD_ANGLE) / (upperMotorLimit - lowerMotorLimit);
 
         // This is a computation of the point-slope form of the linear relationship.
         // more info and a visualization on https://www.desmos.com/calculator/dedxfbgiip
         double angle = rotations - lowerMotorLimit;
         angle *= degreesPerRotation;
-        angle += Constants.MIN_HOOD_ANGLE;
-
+        angle += Constants.MAX_HOOD_ANGLE;
+        
         return angle;
     }
 
-    private double convertDegreesToRotations(double degrees) {
+    public double convertDegreesToRotations(double degrees) {
         // Slope of the line describing the relationship
-        double rotationsPerDegree =  (upperMotorLimit - lowerMotorLimit) / (Constants.MAX_HOOD_ANGLE - Constants.MIN_HOOD_ANGLE);
+        double rotationsPerDegree =  (upperMotorLimit - lowerMotorLimit) / (Constants.MIN_HOOD_ANGLE - Constants.MAX_HOOD_ANGLE);
 
         // This is a computation of the point-slope form of the linear relationship.
         // more info and a visualization on https://www.desmos.com/calculator/dedxfbgiip
         double angle = degrees - Constants.MIN_HOOD_ANGLE;
         angle *= rotationsPerDegree;
-        angle += lowerMotorLimit;
+        angle += upperMotorLimit;
 
         return angle;
     }

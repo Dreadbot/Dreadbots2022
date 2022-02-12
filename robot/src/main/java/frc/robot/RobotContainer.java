@@ -51,7 +51,7 @@ public class RobotContainer {
     private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
     private final Flywheel flywheel = new Flywheel(flywheelMotor);
 
-    private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
+    private final CANSparkMax hoodMotor = new CANSparkMax(9, MotorType.kBrushless);
     private final DigitalInput lowerHoodLimitSwitch = new DigitalInput(2);
     private final DigitalInput upperHoodLimitSwitch = new DigitalInput(3);
     private final Hood hood = new Hood(hoodMotor, lowerHoodLimitSwitch, upperHoodLimitSwitch);

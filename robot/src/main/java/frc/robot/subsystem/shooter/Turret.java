@@ -39,11 +39,11 @@ public class Turret extends SubsystemBase implements AutoCloseable, MotorSafeSys
         pidController = motor.getPIDController();
         
         pidController.setP(0.1);
-        pidController.setI(0.0);
+        pidController.setI(1e-4);
         pidController.setD(0);
-        pidController.setIZone(0);
+        pidController.setIZone(2.85);
         pidController.setFF(0.000015);
-        pidController.setOutputRange(-.1, .1);
+        pidController.setOutputRange(-.3, .3);
     }
 
     @Override

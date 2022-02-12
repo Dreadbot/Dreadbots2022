@@ -30,7 +30,7 @@ class HoodCalibrationUpCommand extends CommandBase {
             return;
         }
 
-        hood.setSpeed(-0.1d);
+        hood.setSpeed(0.6d);
         hood.setUpperMotorLimit(hood.getPosition());
     }
 
@@ -56,7 +56,7 @@ class HoodCalibrationDownCommand extends CommandBase {
             return;
         }
 
-        hood.setSpeed(0.1d);
+        hood.setSpeed(-0.6d);
         hood.setLowerMotorLimit(hood.getPosition());
     }
 
