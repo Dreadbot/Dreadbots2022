@@ -3,6 +3,8 @@ import numpy as np
 import imutils
 import json
 import math
+from networktables import NetworkTables
+import threading
 
 dataDir = "vision\\ballfinding\\Data"
 rangesFile = dataDir + "\\ranges.json"
@@ -12,6 +14,28 @@ ballDiameter = 0.24  # In Meters
 ballDiameterI = 9.5  # In Inches
 cameraHight = 0.58  # In Meters
 focalLength = 667  # In Pixels
+
+staticIp = "10.36.56.11"
+
+
+def connectToNetworkTable():
+    condition = threading.Condition()
+    notified = False
+
+    def listener(connected, info):
+        print(f"{info}\nConnected: {connected}")
+        condition.notify()
+        notified = True
+
+    NetworkTables.initialize(staticIp)
+    NetworkTables.addConnectionListener(listener, immediateNotify=True)
+
+    if not notified:
+        condition.wait()
+
+    print("Connected to Network Table")
+
+    return NetworkTables.getTable('SmartDashboard')
 
 
 def getMask(frame, lower: tuple, upper: tuple, eIts: int, dIts: int, blurK: int, colorSpace: int = cv2.COLOR_BGR2HSV):
