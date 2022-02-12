@@ -6,54 +6,67 @@ package frc.robot.subsystem;
 
 import com.revrobotics.CANSparkMax;
 
-public class Intake extends Subsystem {
-    private final CANSparkMax leftIntakeMotor;
-    private final CANSparkMax rightIntakeMotor;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
-    public Intake(CANSparkMax leftIntakeMotor, CANSparkMax rightIntakeMotor) {
-        super("Intake");
+public class Intake extends SubsystemBase {
+    private final CANSparkMax motor;
+
+    public Intake(CANSparkMax motor) {
+        this.motor = motor;
         
-        this.leftIntakeMotor = leftIntakeMotor;
-        this.rightIntakeMotor = rightIntakeMotor;
+        if(!Constants.INTAKE_ENABLED) {
+            motor.close();
+
+            return;
+        }
+
+        motor.setInverted(true);
     }
 
     public void intake() {
-        if(!isEnabled()) {
-            stopMotors();
-            return;
-        }
+        if(!Constants.INTAKE_ENABLED) return;
 
-        leftIntakeMotor.set(1.0d);
-        rightIntakeMotor.set(1.0d);
+        motor.set(1.0d);
     }
 
-    public void outlet() {
-        if(!isEnabled()) {
-            stopMotors();
-            return;
-        }
+    public void outtake() {
+        if(!Constants.INTAKE_ENABLED) return;
+
+        motor.set(-1.0d);
+    }
+
+    public boolean isIntaking() {
+        if(!Constants.INTAKE_ENABLED) return false;
+
+        return motor.get() > 0.0d;
+    }
+
+    public boolean isOuttaking() {
+        if(!Constants.INTAKE_ENABLED) return false;
+
+        return motor.get() < 0.0d;
+    }
+
+    public void idle() {
+        if(!Constants.INTAKE_ENABLED) return;
         
-        leftIntakeMotor.set(-1.0d);
-        rightIntakeMotor.set(-1.0d);
+        motor.set(0.0d);
     }
 
-    @Override
     protected void stopMotors() {
-        leftIntakeMotor.stopMotor();
-        rightIntakeMotor.stopMotor();
+        if(!Constants.INTAKE_ENABLED) return;
+
+        motor.stopMotor();
     }
 
-    @Override
     public void close() throws Exception {
-        leftIntakeMotor.close();
-        rightIntakeMotor.close();
+        if(!Constants.INTAKE_ENABLED) return;
+
+        motor.close();
     }
 
-    public CANSparkMax getLeftIntakeMotor() {
-        return leftIntakeMotor;
-    }
-
-    public CANSparkMax getRightIntakeMotor() {
-        return rightIntakeMotor;
+    public CANSparkMax getMotor() {
+        return motor;
     }
 }

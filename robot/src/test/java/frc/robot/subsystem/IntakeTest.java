@@ -16,64 +16,63 @@ public class IntakeTest {
     public static final double DELTA = 1e-2;
 
     private Intake intake;
-    private CANSparkMax leftIntakeMotor;
-    private CANSparkMax rightIntakeMotor;
+    private CANSparkMax intakeMotor;
 
     @Before
     public void setup() {
         assert HAL.initialize(500, 0);
-        leftIntakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
-        rightIntakeMotor = new CANSparkMax(Constants.RIGHT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
+        intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
 
-        intake = new Intake(leftIntakeMotor, rightIntakeMotor);
+        intake = new Intake(intakeMotor);
     }
 
     @After
     public void shutdown() throws Exception {
-        leftIntakeMotor.close();
-        rightIntakeMotor.close();
+        intakeMotor.close();
         intake.close();
     }
 
     @Test
     public void intake() {
+        if(!Constants.INTAKE_ENABLED) return;
+
         intake.intake();
 
-        assertEquals(1.0d, leftIntakeMotor.get(), DELTA);
-        assertEquals(1.0d, rightIntakeMotor.get(), DELTA);
+        assertEquals(1.0d, intakeMotor.get(), DELTA);
     }
 
     @Test
     public void outlet() {
-        intake.outlet();
+        if(!Constants.INTAKE_ENABLED) return;
 
-        assertEquals(-1.0d, leftIntakeMotor.get(), DELTA);
-        assertEquals(-1.0d, rightIntakeMotor.get(), DELTA);
+        intake.outtake();
+
+        assertEquals(-1.0d, intakeMotor.get(), DELTA);
     }
 
     @Test
     public void intakeDisabled() {
-        intake.disable();
+        if(!Constants.INTAKE_ENABLED) return;
+
         intake.intake();
 
-        assertEquals(0.0d, leftIntakeMotor.get(), DELTA);
-        assertEquals(0.0d, rightIntakeMotor.get(), DELTA);
     }
 
     @Test
     public void outletDisabled() {
-        intake.disable();
-        intake.outlet();
+        if(!Constants.INTAKE_ENABLED) return;
 
-        assertEquals(0.0d, leftIntakeMotor.get(), DELTA);
-        assertEquals(0.0d, rightIntakeMotor.get(), DELTA);
+        intake.outtake();
+
+        assertEquals(0.0d, intakeMotor.get(), DELTA);
     }
 
     @Test
     public void stop() {
+        if(!Constants.INTAKE_ENABLED) return;
+        
         intake.stopMotors();
 
-        assertEquals(0.0d, leftIntakeMotor.get(), DELTA);
-        assertEquals(0.0d, rightIntakeMotor.get(), DELTA);
+        assertEquals(0.0d, intakeMotor.get(), DELTA);
     }
 }
