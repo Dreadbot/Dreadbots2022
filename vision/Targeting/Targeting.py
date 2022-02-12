@@ -3,13 +3,6 @@ import numpy as np
 import math
 import os
 
-### TO DO ###
-# - Convert filtering to a pipeline
-# - Convert contour stuff to pipeline
-# - Make the output
-# - Probably more stuff idk right now
-
-
 
 def _drawTargets(x, y, w, h, rectangleColor, circleColor, lineColor):
 	cv2.rectangle(imgToPush, (x, y), (x+w, y+h), rectangleColor, 3)
@@ -71,8 +64,8 @@ found_contours = 0
 
 # Read until video is completed
 while(cap.isOpened()):
-	XconPositionList = [0,0,0,0,0,0,0,0,0,0]
-	YconPositionList = [0,0,0,0,0,0,0,0,0,0]
+	XconPositionList = []
+	YconPositionList = []
 	found_contours = 0
 	# Capture frame-by-frame
 	ret, inputImg = cap.read()
@@ -98,7 +91,7 @@ while(cap.isOpened()):
 
 # For testing, shows the video feed in different states in windows on your computer
 		cv2.imshow('Input', inputImg)
-		# cv2.imshow('HLS Conversion', hlsImg)
+		cv2.imshow('HLS Conversion', hlsImg)
 		# cv2.imshow('Mask', maskImg)
 		cv2.imshow('Dilated', dilateImg)
 		# cv2.imshow('Contour', contourImg)
@@ -118,8 +111,8 @@ while(cap.isOpened()):
 			img_w = inputImg.shape[1]
 			target_found = False
 			flength = 544
-			camOffsetDegree = 6#3
-			targetHeight = 23.5#29
+			camOffsetDegree = 0#3
+			targetHeight = 20#29
 			cx = int(img_w/2)
 			cy = int(img_h/2)
 			conCX = w/2 + x
@@ -128,30 +121,47 @@ while(cap.isOpened()):
 			target1pos = 0
 			target2pos = 0
 
-			_ = XconPositionList.count(0)
-			for _ in XconPositionList :
-				XconPositionList.remove(0)
+
+			# cv2.circle(imgToPush,)
 			
-			_ = YconPositionList.count(0)
-			for _ in YconPositionList :
-				YconPositionList.remove(0)
-			
-			avgXpos = sum(XconPositionList) / len(XconPositionList)
-			avgYpos = sum(YconPositionList) / len(YconPositionList)
-			print(loopCounterCon)
-			XconPositionList[loopCounterCon]=(conCX)
-			YconPositionList[loopCounterCon]=(conCY)
-			XposListLen = len(XconPositionList)
-			YposListLen = len(YconPositionList)
 			# avgX = 
 			# Checks the width (w) and height (h) of every contour in the frame and only puts the targets over the ones in the range
 			if w > cv2.getTrackbarPos('Lower Width', 'Trackbars') and w < cv2.getTrackbarPos('Upper Width', 'Trackbars') and h > cv2.getTrackbarPos('Lower Height', 'Trackbars') and h < cv2.getTrackbarPos('Upper Height', 'Trackbars'):   # w 5,20   h 25,40
-			#if 10 < w < 25 and 20 < h < 50:
+			#if 10 < w < 25 and 20 < h < 50 :
 				found_contours += 1
 				# Draws the target over the reflective tape on the original image
+
+				# _ = XconPositionList.count(0)
+				# for _ in XconPositionList :
+				# 	XconPositionList.remove(0)
+			
+				# _ = YconPositionList.count(0)
+				# for _ in YconPositionList :
+				# 	YconPositionList.remove(0)
+
+				# print(sum(XconPositionList))
+				# print(len(XconPositionList))
+				
+				# print(loopCounterCon)
+				XconPositionList.append(conCX)
+				YconPositionList.append(conCY)
+				try :
+					avgXpos = sum(XconPositionList) / len(XconPositionList)
+					avgYpos = sum(YconPositionList) / len(YconPositionList)
+					os.system('cls')
+					print(f'{avgXpos}\n{avgYpos}')
+				except:
+					os.system('cls')
+					avgXpos = -1
+					avgYpos = -1
+					print('zero lol')
+					print(f'{avgXpos}\n{avgYpos}')
+				print(len(XconPositionList))
+				print(XconPositionList)
+				
 				target = _drawTargets(x, y, w, h, (0, 255, 0), (255, 0, 0), (255, 255, 255))
 				# Calculate angle to turn to
-				fin_angle_hori = ((math.atan((x - (img_w / 2)) / flength))) * (180 / math.pi)
+				fin_angle_hori = ((math.atan((avgXpos  - (img_w / 2)) / flength))) * (180 / math.pi)
 
 				# Calculate vertical angle for distance calculations (LOTS of fancy math cole did)
 				dy = abs(cy-y)
@@ -159,36 +169,34 @@ while(cap.isOpened()):
 				fin_angle_deg = math.degrees(fin_angle_raw_rad) + camOffsetDegree
 				fin_angle_rad = math.radians(fin_angle_deg)
 				distance = targetHeight / math.tan(fin_angle_rad)
-				os.system('cls')
-				print(f'X List : {XconPositionList}')
-				print(f'Y List : {YconPositionList}')
-				print(f'X List Length : {XposListLen}')
-				print(f'Y List Length : {YposListLen}')
-				print(f'X Average : {avgXpos}\nY Average : {avgYpos}')
-				# print("X:{0}\nY:{1}\nW:{2}\nH:{3}\nFinal Angle:{4}\nFinal Distance:{5}".format(x, y, w, h, fin_angle_deg, distance))
-				# print(f'conCX : {conCX}')
-				# print(f'conCY : {conCY}')
-				# print(f'X:{x}\nY:{y}\nW={w}\nH:{h}')
-				# print(conPositionList)
-				
 			loopCounterCon += 1
+			
+		if len(contours) == 0 :
+			avgXpos = -1
+			avgYpos = -1
+			XconPositionList.clear()
+			YconPositionList.clear()
 # i am stupid
 			# print(distance)
 			# scale image
-
+		# avgXpos = sum(XconPositionList) / len(XconPositionList)
+		# avgYpos = sum(YconPositionList) / len(YconPositionList)
+			
+		cv2.circle(imgToPush,(int(avgXpos),int(avgYpos)),3,(255,255,0),thickness=-1)
+		cv2.putText(imgToPush, str(fin_angle_hori),(25,400),cv2.FONT_HERSHEY_SIMPLEX,2, (0, 0, 0), 2, cv2.LINE_AA)
+		#print(f'X Average : {avgXpos}\nY Average : {avgYpos}')
 		width = int(imgToPush.shape[1] * 160 / 100)
 		height = int(imgToPush.shape[0] * 160 / 100)
 		dim = (width, height)
 		resized = cv2.resize(imgToPush, dim)
-		#cv2.line(resized, (cx+200, 0), (cx+200, 800), (255, 0, 0))
-
-		# resized = cv2.putText(resized, f'{conCX},{conCY}', (int(conCX), int(conCY)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 2, cv2.LINE_AA)
-		
 		if found_contours > 0:
 			resized = cv2.putText(resized, str(distance), (25, 80), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 2, cv2.LINE_AA)
 			resized = cv2.putText(resized, str(fin_angle_deg), (25, 200), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 2, cv2.LINE_AA)
+		#elif found_contours == 0 :
+		# except FileNotFoundError:
+		# 	print("Cant find the file name")
+			
 
-		
 		# Show final image on your computer with targets shown
 		cv2.imshow('pushed image', resized)
 
