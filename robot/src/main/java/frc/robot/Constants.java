@@ -41,6 +41,9 @@ public abstract class Constants {
     public static final double FLYWHEEL_MAX_OUTPUT = 1.0d;
     public static final double FLYWHEEL_MIN_OUTPUT = -1.0d;
     public static final double FLYWHEEL_MAX_RPM = 5700.0d;
+
+    public static final double MAX_TURRET_ANGLE = 300.0d;
+    public static final double MIN_TURRET_ANGLE = 0.0d;
     
     // Climber constants
     public static final int WINCH_MOTOR_PORT = 15;

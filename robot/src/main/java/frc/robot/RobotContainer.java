@@ -72,8 +72,8 @@ public class RobotContainer {
     private Climber climber = new Climber(neutralHookActuator, climbingHookActuator, winchMotor, bottomLimitSwitch, topLimitSwitch);
     
     public RobotContainer() {   
-        drive.setDefaultCommand(new DriveCommand(drive, 
-            primaryController::getYAxis, 
+        drive.setDefaultCommand(new DriveCommand(drive,
+            primaryController::getYAxis,
             primaryController::getXAxis,
             primaryController::getZAxis));
         
@@ -85,14 +85,14 @@ public class RobotContainer {
         flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel)
             .andThen(new InstantCommand(() -> {SmartDashboard.putNumber("Flywheel Velocity (RPM)", flywheel.getVelocity());})));
         
-        SmartDashboard.putNumber("TURRET", 0);
+        SmartDashboard.putNumber("Selected Turret Angle", 150);
         turret.setDefaultCommand(new RunCommand(() -> {
-            turret.setAngle(SmartDashboard.getNumber("TURRET", -50));
+            turret.setAngle(SmartDashboard.getNumber("Selected Turret Angle", 150));
         }, turret));
 
-        SmartDashboard.putNumber("HOOD", 0);
+        SmartDashboard.putNumber("Selected Hood Angle", 68);
         hood.setDefaultCommand(new RunCommand(() -> {
-            hood.setAngle(SmartDashboard.getNumber("HOOD", -50));
+            hood.setAngle(SmartDashboard.getNumber("Selected Hood Angle", 68));
         }, hood));
         
         // TODO remove

@@ -12,94 +12,92 @@ import frc.robot.util.DreadbotMath;
 import frc.robot.util.MotorSafeSystem;
 
 public class Turret extends SubsystemBase implements AutoCloseable, MotorSafeSystem {
-    enum TurretCalibrationState {
-        NotCalibrated,
-        CalibratedLeft,
-        CalibratedRight,
-        Done
-    }
+    private final DigitalInput lowerSwitch;
+    private final DigitalInput upperSwitch;
+    private final CANSparkMax motor;
+    private RelativeEncoder encoder;
+    private SparkMaxPIDController pidController;
 
-    private final DigitalInput leftSwitch;
-    private final DigitalInput rightSwitch;
-    private final CANSparkMax turretMotor;
-    private RelativeEncoder turretEncoder;
-    private SparkMaxPIDController turretPIDController;
+    private double lowerMotorLimit;
+    private double upperMotorLimit;
 
-    private TurretCalibrationState calibrationState;
-    private double motorLowerLimit = 0.0;
-    private double motorUpperLimit = 0.0;
-
-    public Turret(CANSparkMax turretMotor, DigitalInput leftSwitch, DigitalInput rightSwitch) {
-        this.leftSwitch = leftSwitch;
-        this.rightSwitch = rightSwitch;
-        this.turretMotor = turretMotor;
+    public Turret(CANSparkMax motor, DigitalInput lowerSwitch, DigitalInput upperSwitch) {
+        this.lowerSwitch = lowerSwitch;
+        this.upperSwitch = upperSwitch;
+        this.motor = motor;
 
         if(!Constants.TURRET_ENABLED) {
-            leftSwitch.close();
-            rightSwitch.close();
-            turretMotor.close();
+            lowerSwitch.close();
+            upperSwitch.close();
+            motor.close();
 
             return;
         }
 
-        turretMotor.setIdleMode(IdleMode.kBrake);
-        turretEncoder = turretMotor.getEncoder();
-        turretPIDController = turretMotor.getPIDController();
+        motor.setIdleMode(IdleMode.kBrake);
+        encoder = motor.getEncoder();
+        pidController = motor.getPIDController();
         
-        turretPIDController.setP(0.1);
-        turretPIDController.setI(0.0);
-        turretPIDController.setD(0);
-        turretPIDController.setIZone(0);
-        turretPIDController.setFF(0.000015);
-        turretPIDController.setOutputRange(-.1, .1);
-        this.calibrationState = TurretCalibrationState.NotCalibrated;
-        SmartDashboard.putBoolean("left", getLeftLimitSwitch());
-        SmartDashboard.putBoolean("right", getRightLimitSwitch());
+        pidController.setP(0.1);
+        pidController.setI(0.0);
+        pidController.setD(0);
+        pidController.setIZone(0);
+        pidController.setFF(0.000015);
+        pidController.setOutputRange(-.1, .1);
+    }
+
+    @Override
+    public void periodic() {
+        if(!Constants.TURRET_ENABLED) return;
+
+        SmartDashboard.putBoolean("Turret Lower Limit Switch", getLowerLimitSwitch());
+        SmartDashboard.putBoolean("Turret Upper Limit Switch", getUpperLimitSwitch());
+
+        SmartDashboard.putNumber("Turret Angle", getAngle());
     }
 
     public void setAngle(double angle) {
         if(!Constants.TURRET_ENABLED) return; 
 
-        // TODO Add conversion from angle to rotations
-        double rotations = angle;
+        angle = DreadbotMath.clampValue(angle, Constants.MIN_TURRET_ANGLE, Constants.MAX_TURRET_ANGLE);
+        double rotations = convertDegreesToRotations(angle);
 
-        rotations = DreadbotMath.clampValue(rotations, motorLowerLimit, motorUpperLimit);
-        turretPIDController.setReference(rotations, CANSparkMax.ControlType.kPosition);
+        pidController.setReference(rotations, CANSparkMax.ControlType.kPosition);
+    }
+
+    public void setPosition(double rotations) {
+        if(!Constants.TURRET_ENABLED) return;
+
+        rotations = DreadbotMath.clampValue(rotations, lowerMotorLimit, upperMotorLimit);
+        
+        pidController.setReference(rotations, CANSparkMax.ControlType.kPosition);
     }
 
     public void setSpeed(double speed) {
         if(!Constants.TURRET_ENABLED) return;
 
-        speed = DreadbotMath.clampValue(speed, -0.1, 0.1);
-        turretMotor.set(speed);
+        speed = DreadbotMath.clampValue(speed, -1.0d, 1.0d);
+
+        motor.set(speed);
     }
 
-    public void setRightMotorLimit(double rotations) {
-        this.motorLowerLimit = rotations;
-    }
-
-    public void setLeftMotorLimit(double rotations) {
-        this.motorUpperLimit = rotations;
-    }
-
-    public boolean getLeftLimitSwitch() {
+    public boolean getLowerLimitSwitch() {
         if(!Constants.TURRET_ENABLED) return false;
 
-        return !leftSwitch.get();
+        return !lowerSwitch.get();
     }
 
-    public boolean getRightLimitSwitch() {
+    public boolean getUpperLimitSwitch() {
         if(!Constants.TURRET_ENABLED) return false;
 
-        return !rightSwitch.get();
+        return !upperSwitch.get();
     }
 
     public double getAngle() {
         if(!Constants.TURRET_ENABLED) return 0.0d;
 
-        double rotations = turretEncoder.getPosition();
-
-        double angle = rotations;
+        double rotations = encoder.getPosition();
+        double angle = convertRotationsToDegrees(rotations);
 
         return angle;
     }
@@ -107,65 +105,57 @@ public class Turret extends SubsystemBase implements AutoCloseable, MotorSafeSys
     public double getPosition() {
         if(!Constants.TURRET_ENABLED) return 0.0d;
 
-        return turretEncoder.getPosition();
+        return encoder.getPosition();
     }
 
-    public void switchDebug() {
-        if(!Constants.TURRET_ENABLED) return; 
+    public void setUpperMotorLimit(double rotations) {
+        SmartDashboard.putNumber("Turret Upper Limit", rotations);
 
-        SmartDashboard.putBoolean("left", getLeftLimitSwitch());
-        SmartDashboard.putBoolean("right", getRightLimitSwitch());
+        this.upperMotorLimit = rotations;
     }
 
-    public void calibrateTurret() {
-        if(!Constants.TURRET_ENABLED) return; 
+    public void setLowerMotorLimit(double rotations) {
+        SmartDashboard.putNumber("Turret Lower Limit", rotations);
 
-        double targetPosition = ((motorUpperLimit - motorLowerLimit)/2) + motorLowerLimit;
-        if(calibrationState == TurretCalibrationState.Done){
-            SmartDashboard.putNumber("Target Position", targetPosition);
-            SmartDashboard.putNumber("Actual position", turretEncoder.getPosition());
-            return;
-        }
+        this.lowerMotorLimit = rotations;
+    }
 
-        SmartDashboard.putNumber("LowerLimit", motorLowerLimit);
-        SmartDashboard.putNumber("UpperLimit", motorUpperLimit);
-        if(calibrationState == TurretCalibrationState.NotCalibrated) {
-            if(!getRightLimitSwitch()){
-                turretMotor.set(-.1);
-            }
-            else{
-                turretMotor.set(0);
-                motorLowerLimit = turretEncoder.getPosition();
-                calibrationState = TurretCalibrationState.CalibratedLeft;
-            }
-        }
-        else if(calibrationState == TurretCalibrationState.CalibratedLeft){
-            if(!getLeftLimitSwitch()){
-                turretMotor.set(.1);
-            }
-            else{
-                turretMotor.set(0);
-                motorUpperLimit = turretEncoder.getPosition();
-                calibrationState = TurretCalibrationState.CalibratedRight;
-            }
-        }
-        else if (calibrationState == TurretCalibrationState.CalibratedRight){
-            System.out.println("Done");
-            turretPIDController.setReference(targetPosition, CANSparkMax.ControlType.kPosition);
-            calibrationState = TurretCalibrationState.Done;
-        }
+    private double convertRotationsToDegrees(double rotations) {
+        // Slope of the line describing the relationship
+        double degreesPerRotation = (Constants.MAX_TURRET_ANGLE - Constants.MIN_TURRET_ANGLE) / (upperMotorLimit - lowerMotorLimit);
+
+        // This is a computation of the point-slope form of the linear relationship.
+        // more info and a visualization on https://www.desmos.com/calculator/dedxfbgiip
+        double angle = rotations - lowerMotorLimit;
+        angle *= degreesPerRotation;
+        angle += Constants.MIN_TURRET_ANGLE;
+
+        return angle;
+    }
+
+    private double convertDegreesToRotations(double degrees) {
+        // Slope of the line describing the relationship
+        double rotationsPerDegree =  (upperMotorLimit - lowerMotorLimit) / (Constants.MAX_TURRET_ANGLE - Constants.MIN_TURRET_ANGLE);
+
+        // This is a computation of the point-slope form of the linear relationship.
+        // more info and a visualization on https://www.desmos.com/calculator/dedxfbgiip
+        double angle = degrees - Constants.MIN_TURRET_ANGLE;
+        angle *= rotationsPerDegree;
+        angle += lowerMotorLimit;
+
+        return angle;
     }
 
     @Override
     public void close() throws Exception {
-        leftSwitch.close();
-        rightSwitch.close();
+        lowerSwitch.close();
+        upperSwitch.close();
     }
 
     @Override
     public void stopMotors() {
         if(!Constants.TURRET_ENABLED) return; 
 
-        turretMotor.stopMotor();
+        motor.stopMotor();
     }
 }
