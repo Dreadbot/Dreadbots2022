@@ -10,6 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import edu.wpi.first.hal.HAL;
 import frc.robot.Constants;
 
 public class FeederTest {
@@ -20,6 +21,8 @@ public class FeederTest {
 
     @Before
     public void setup() {
+        assert HAL.initialize(500, 0);
+        
         feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless);
         feeder = new Feeder(feederMotor);
     }
