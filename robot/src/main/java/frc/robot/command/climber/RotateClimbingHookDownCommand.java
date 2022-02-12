@@ -18,3 +18,4 @@ public class RotateClimbingHookDownCommand extends CommandBase {
         return true;
     }
 }
+
