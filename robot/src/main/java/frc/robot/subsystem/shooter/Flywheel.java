@@ -15,7 +15,7 @@ public class Flywheel extends SubsystemBase implements AutoCloseable, MotorSafeS
     private SparkMaxPIDController pidController;
     private RelativeEncoder encoder;
 
-    public double lastVelocity;
+    private double lastVelocity;
 
     public Flywheel(CANSparkMax motor) {
         this.motor = motor;
