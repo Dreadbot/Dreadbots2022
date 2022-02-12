@@ -3,10 +3,11 @@ import numpy as np
 import imutils
 import json
 import math
+import os
 
-dataDir = "vision\\ballfinding\\Data"
-rangesFile = dataDir + "\\ranges.json"
-manipFile = dataDir + "\\manipulation.json"
+dataDir = os.path.join("vision", "ballfinding", "Data")
+rangesFile = os.path.join(dataDir, "ranges.json")
+manipFile = os.path.join(dataDir, "manipulation.json")
 
 ballDiameter = 0.24  # In Meters
 ballDiameterI = 9.5  # In Inches
