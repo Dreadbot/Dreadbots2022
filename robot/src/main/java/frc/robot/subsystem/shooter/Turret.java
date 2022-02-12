@@ -44,6 +44,8 @@ public class Turret extends SubsystemBase implements AutoCloseable, MotorSafeSys
         pidController.setIZone(2.85);
         pidController.setFF(0.000015);
         pidController.setOutputRange(-.3, .3);
+
+        SmartDashboard.putNumber("Requested Turret Angle", 0.0d);
     }
 
     @Override

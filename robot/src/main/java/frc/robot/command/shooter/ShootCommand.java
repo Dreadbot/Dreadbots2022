@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystem.shooter.Shooter;
+import frc.robot.util.VisionInterface;
 
 public class ShootCommand extends SequentialCommandGroup {
     public ShootCommand(Shooter shooter) {
@@ -35,20 +36,18 @@ class FlywheelVelocityCommand extends CommandBase {
 
     @Override
     public void execute() {
-        // TODO remove SmartDashboard settings, use vision/distance input
-        double setPoint = SmartDashboard.getNumber("RPM", 0);
+        double velocity = VisionInterface.getFlywheelVelocity();
 
-        shooter.setFlywheelVelocity(setPoint);
-        
-        SmartDashboard.putNumber("Flywheel Velocity (RPM)", shooter.getFlywheelVelocity());
+        shooter.setFlywheelVelocity(velocity);
     }
 
     @Override
     public boolean isFinished() {
-        double setPoint = SmartDashboard.getNumber("RPM", 0);
+        double setPoint = VisionInterface.getFlywheelVelocity();
         double actual = shooter.getFlywheelVelocity();
 
-        return Math.abs(setPoint - actual) <= 15.0;
+        // return Math.abs(setPoint - actual) <= 100.0;
+        return true;
     }
 }
 
@@ -67,22 +66,19 @@ class TurretAngleCommand extends CommandBase {
 
     @Override
     public void execute() {
-        // TODO remove SmartDashboard settings, use vision/distance input
         double turretPosition = shooter.getTurretAngle();
-        double relative = SmartDashboard.getNumber("Turret Angle", 0);
-        if(lastVisionRelativeTarget != relative) {
-            turretActualTarget = turretPosition + relative;
+        double relative = VisionInterface.getRequestedTurretAngle();
 
-            lastVisionRelativeTarget = relative;
-        }
+        turretActualTarget = relative;
 
-        shooter.setTurretAngle(turretActualTarget);
+        shooter.setTurretAngle(relative);
     }
 
     @Override
     public boolean isFinished() {
         double turretPosition = shooter.getTurretAngle();
 
+        System.out.println("turret: " + Boolean.toString(Math.abs(turretActualTarget - turretPosition) <= 10.0d));
         return Math.abs(turretActualTarget - turretPosition) <= 10.0d;
     }
 }
@@ -103,21 +99,19 @@ class HoodAngleCommand extends CommandBase {
     @Override
     public void execute() {
         double hoodPosition = shooter.getHoodAngle();
-        double relative = SmartDashboard.getNumber("Turret Angle", 0);
-        if(lastVisionRelativeTarget != relative) {
-            hoodActualTarget = hoodPosition + relative;
+        double relative = VisionInterface.getRequestedHoodAngle();
 
-            lastVisionRelativeTarget = relative;
-        }
+        hoodActualTarget = relative;
 
-        shooter.setTurretAngle(hoodActualTarget);
+        shooter.setHoodAngle(relative);
     }
 
     @Override
     public boolean isFinished() {
         double turretPosition = shooter.getTurretAngle();
 
-        return Math.abs(hoodActualTarget - turretPosition) <= 10.0d;
+        System.out.println("hood: " + Boolean.toString(Math.abs(hoodActualTarget - turretPosition) <= 10.0d));
+        return true;
     }
 }
 
