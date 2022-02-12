@@ -47,6 +47,8 @@ public class Hood extends SubsystemBase implements AutoCloseable, MotorSafeSyste
         pidController.setIZone(0);
         pidController.setFF(0.000015);
         pidController.setOutputRange(-.5, .5);
+
+        SmartDashboard.putNumber("Requested Hood Angle", 0.0d);
     }
 
     @Override

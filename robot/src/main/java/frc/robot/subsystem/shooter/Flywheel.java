@@ -1,11 +1,14 @@
 package frc.robot.subsystem.shooter;
 
+import javax.print.attribute.standard.RequestingUserName;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.MotorSafeSystem;
@@ -38,6 +41,13 @@ public class Flywheel extends SubsystemBase implements AutoCloseable, MotorSafeS
         pidController.setIZone(Constants.FLYWHEEL_I_ZONE);
         pidController.setFF(Constants.FLYWHEEL_FF_GAIN);
         pidController.setOutputRange(Constants.FLYWHEEL_MIN_OUTPUT, Constants.FLYWHEEL_MAX_OUTPUT);
+
+        SmartDashboard.putNumber("Requested Flywheel RPM", 0.0d);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Flywheel Velocity", getVelocity());
     }
 
     public void setVelocity(double velocity) {

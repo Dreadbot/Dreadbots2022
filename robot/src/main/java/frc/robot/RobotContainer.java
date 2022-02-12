@@ -36,10 +36,10 @@ public class RobotContainer {
     private DreadbotController primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
     private DreadbotController secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
 
-    private CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-    private CANSparkMax rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-    private CANSparkMax leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-    private CANSparkMax rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+    private CANSparkMax leftFrontDriveMotor = new CANSparkMax(1, MotorType.kBrushless);
+    private CANSparkMax rightFrontDriveMotor = new CANSparkMax(2, MotorType.kBrushless);
+    private CANSparkMax leftBackDriveMotor = new CANSparkMax(3, MotorType.kBrushless);
+    private CANSparkMax rightBackDriveMotor = new CANSparkMax(4, MotorType.kBrushless);
     private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
     private CANSparkMax intakeMotor = new CANSparkMax(5, MotorType.kBrushless);
@@ -48,7 +48,7 @@ public class RobotContainer {
     private final CANSparkMax feederMotor = new CANSparkMax(6, MotorType.kBrushless);
     private final Feeder feeder = new Feeder(feederMotor);
 
-    private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
+    private final CANSparkMax flywheelMotor = new CANSparkMax(8, MotorType.kBrushless);
     private final Flywheel flywheel = new Flywheel(flywheelMotor);
 
     private final CANSparkMax hoodMotor = new CANSparkMax(9, MotorType.kBrushless);
@@ -66,7 +66,7 @@ public class RobotContainer {
     private final Solenoid neutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 4);
 
     private final Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 5);
-    private final CANSparkMax winchMotor = new CANSparkMax(1, MotorType.kBrushless);
+    private final CANSparkMax winchMotor = new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless);
     private final DigitalInput bottomLimitSwitch = new DigitalInput(6);
     private final DigitalInput topLimitSwitch = new DigitalInput(7);
     private Climber climber = new Climber(neutralHookActuator, climbingHookActuator, winchMotor, bottomLimitSwitch, topLimitSwitch);
