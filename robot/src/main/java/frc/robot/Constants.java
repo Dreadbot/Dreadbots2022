@@ -29,6 +29,7 @@ public abstract class Constants {
     public static final double INTAKE_MOTOR_RATIO = 1/12;
 
     // Shooter Ports
+    public static final int FEEDER_MOTOR_PORT = 18;
     public static final int FLYWHEEL_MOTOR_PORT = 15;
     public static final int HOOD_MOTOR_PORT = 16;
     public static final int TURRET_MOTOR_PORT = 17;

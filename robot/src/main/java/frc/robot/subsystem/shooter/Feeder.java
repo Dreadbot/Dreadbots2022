@@ -1,7 +1,6 @@
 package frc.robot.subsystem.shooter;
 
 import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.MotorSafeSystem;
@@ -31,6 +30,12 @@ public class Feeder extends SubsystemBase implements AutoCloseable, MotorSafeSys
         if(!Constants.FEEDER_ENABLED) return;
 
         motor.set(0.0d);
+    }
+
+    public boolean isFeeding() {
+        if(!Constants.FEEDER_ENABLED) return false;
+
+        return motor.get() > 0.0d;
     }
 
     @Override
