@@ -133,6 +133,9 @@ public class Climber extends SubsystemBase {
         if(!Constants.CLIMB_ENABLED) return;
         winchPid.setReference((Constants.MAX_ARM_DISTANCE - retractedPosition) * 0.5, ControlType.kPosition);
     }
+    public void stopMotor() {
+        winchMotor.stopMotor();
+    }
     public void climbAutonomous(){
         if(!Constants.CLIMB_ENABLED) return;
         if(state == ClimberState.Idle) {

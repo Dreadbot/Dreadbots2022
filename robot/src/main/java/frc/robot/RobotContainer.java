@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.command.climber.RotateClimbingHookVerticalCommand;
+import frc.robot.command.climber.AutonomousClimberCommand;
 import frc.robot.command.climber.ExtendArmCommand;
 import frc.robot.command.climber.RetractArmCommand;
 import frc.robot.command.climber.RotateClimbingHookDownCommand;
@@ -64,6 +65,7 @@ public class RobotContainer {
         primaryController.getYButton().whenPressed(new RotateClimbingHookDownCommand(climber));
         primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber));
         primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
+        primaryController.getRightBumper().whenPressed(new AutonomousClimberCommand(climber));
 
         feeder.setDefaultCommand(new RunCommand(feeder::idle, feeder));
         secondaryController.getBButton().whileHeld(new InstantCommand(feeder::feed, feeder));
