@@ -8,6 +8,8 @@ import frc.robot.subsystem.shooter.Shooter;
 
 public class ShootCommand extends SequentialCommandGroup {
     public ShootCommand(Shooter shooter) {
+        SmartDashboard.putNumber("RPM", 0.0d);
+        
         addCommands(
             // Prepare the shooter system for the shot
             new ParallelCommandGroup(

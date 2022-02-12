@@ -83,20 +83,14 @@ public class RobotContainer {
         
         feeder.setDefaultCommand(new RunCommand(feeder::idle, feeder));
         flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel)
-            .andThen(new InstantCommand(() -> {SmartDashboard.putNumber("Flywheel Velocity (RPM)", flywheel.getVelocity());})));
+            .andThen(new InstantCommand(() -> SmartDashboard.putNumber("Flywheel Velocity (RPM)", flywheel.getVelocity()))));
         
         SmartDashboard.putNumber("Selected Turret Angle", 150);
-        turret.setDefaultCommand(new RunCommand(() -> {
-            turret.setAngle(SmartDashboard.getNumber("Selected Turret Angle", 150));
-        }, turret));
+        turret.setDefaultCommand(new RunCommand(() -> turret.setAngle(SmartDashboard.getNumber("Selected Turret Angle", 150)), turret));
 
         SmartDashboard.putNumber("Selected Hood Angle", 68);
-        hood.setDefaultCommand(new RunCommand(() -> {
-            hood.setAngle(SmartDashboard.getNumber("Selected Hood Angle", 68));
-        }, hood));
+        hood.setDefaultCommand(new RunCommand(() -> hood.setAngle(SmartDashboard.getNumber("Selected Hood Angle", 68)), hood));
         
-        // TODO remove
-        SmartDashboard.putNumber("RPM", 0.0d);
         secondaryController.getBButton().whileActiveOnce(new ShootCommand(shooter));
         secondaryController.getYButton().whileHeld(new InstantCommand(shooter::feedBall, feeder));
 
