@@ -60,4 +60,8 @@ public abstract class Constants {
     public static final float INITIAL_BALL_HEIGHT = 0.4f;
 
     public static final double TO_RPM = 4 * 60 / 0.279d;
+
+    private Constants() {
+        throw new IllegalStateException("The Constants class is a utility class. It should not be instantiated.");
+    }
 }
