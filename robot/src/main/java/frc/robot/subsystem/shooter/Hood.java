@@ -13,80 +13,72 @@ import frc.robot.util.DreadbotMath;
 import frc.robot.util.MotorSafeSystem;
 
 public class Hood extends SubsystemBase implements AutoCloseable, MotorSafeSystem {
-    enum HoodCalibrationState {
-        NotCalibrated,
-        CalibratedLower,
-        CalibratedUpper,
-        Done
-    }
-
     private final DigitalInput lowerSwitch;
     private final DigitalInput upperSwitch;
-    private final CANSparkMax hoodMotor;
-    private RelativeEncoder hoodEncoder;
-    private SparkMaxPIDController hoodPIDController;
+    private final CANSparkMax motor;
+    private RelativeEncoder encoder;
+    private SparkMaxPIDController pidController;
 
-    private HoodCalibrationState calibrationState;
-    private double motorLowerLimit = 0.0;
-    private double motorUpperLimit = 0.0;
+    private double lowerMotorLimit;
+    private double upperMotorLimit;
 
-    public Hood (CANSparkMax hoodMotor, DigitalInput lowerSwitch, DigitalInput upperSwitch) {
-        this.hoodMotor = hoodMotor;
+    public Hood (CANSparkMax motor, DigitalInput lowerSwitch, DigitalInput upperSwitch) {
+        this.motor = motor;
         this.lowerSwitch = lowerSwitch;
         this.upperSwitch = upperSwitch;
 
         if(!Constants.HOOD_ENABLED) {
             lowerSwitch.close();
             upperSwitch.close();
-            hoodMotor.close();
+            motor.close();
 
             return;
         }
 
-        hoodMotor.setIdleMode(IdleMode.kCoast);
-        hoodEncoder = hoodMotor.getEncoder();
-        hoodPIDController = hoodMotor.getPIDController();
+        motor.setIdleMode(IdleMode.kBrake);
+        encoder = motor.getEncoder();
+        pidController = motor.getPIDController();
          
-        hoodPIDController.setP(0.1); // Change numbers maybe
-        hoodPIDController.setI(0); 
-        hoodPIDController.setD(0);
-        hoodPIDController.setIZone(0);
-        hoodPIDController.setFF(0.000015);
-        hoodPIDController.setOutputRange(-.5, .5);
-        this.calibrationState = HoodCalibrationState.NotCalibrated;
-        SmartDashboard.putBoolean("lower", getLowerLimitSwitch());
-        SmartDashboard.putBoolean("upper", getUpperLimitSwitch());
+        pidController.setP(0.1); // Change numbers maybe
+        pidController.setI(0); 
+        pidController.setD(0);
+        pidController.setIZone(0);
+        pidController.setFF(0.000015);
+        pidController.setOutputRange(-.5, .5);
+    }
+
+    @Override
+    public void periodic() {
+        if(!Constants.HOOD_ENABLED) return; 
+
+        SmartDashboard.putBoolean("Hood Lower Limit Switch", getLowerLimitSwitch());
+        SmartDashboard.putBoolean("Hood Upper Limit Switch", getUpperLimitSwitch());
+
+        SmartDashboard.putNumber("Hood Angle", getAngle());
     }
 
     public void setAngle(double angle) {
         if(!Constants.HOOD_ENABLED) return; 
 
-        // TODO Add conversion from angle to rotations
-        double rotations = angle;
+        angle = DreadbotMath.clampValue(angle, Constants.MIN_HOOD_ANGLE, Constants.MAX_HOOD_ANGLE);
+        double rotations = convertDegreesToRotations(angle);
 
-        rotations = DreadbotMath.clampValue(rotations, motorLowerLimit, motorUpperLimit);
-        hoodPIDController.setReference(rotations, CANSparkMax.ControlType.kPosition);
+        pidController.setReference(rotations, CANSparkMax.ControlType.kPosition);
+    }
+
+    public void setPosition(double rotations) {
+        if(!Constants.HOOD_ENABLED) return; 
+
+        rotations = DreadbotMath.clampValue(rotations, lowerMotorLimit, upperMotorLimit);
+
+        pidController.setReference(rotations, CANSparkMax.ControlType.kPosition);
     }
 
     public void setSpeed(double speed) {
         if(!Constants.HOOD_ENABLED) return;
 
-        speed = DreadbotMath.clampValue(speed, -0.1, 0.1);
-        hoodMotor.set(speed);
-    }
-
-    public void setUpperMotorLimit(double position) {
-        motorUpperLimit = position;
-    }
-
-    public void setLowerMotorLimit(double position) {
-        motorLowerLimit = position;
-    }
-
-    public boolean getUpperLimitSwitch() {
-        if(!Constants.HOOD_ENABLED) return false;
-
-        return !upperSwitch.get();
+        speed = DreadbotMath.clampValue(speed, -1.0, 1.0);
+        motor.set(speed);
     }
 
     public boolean getLowerLimitSwitch() {
@@ -95,12 +87,17 @@ public class Hood extends SubsystemBase implements AutoCloseable, MotorSafeSyste
         return !lowerSwitch.get();
     }
 
+    public boolean getUpperLimitSwitch() {
+        if(!Constants.HOOD_ENABLED) return false;
+
+        return !upperSwitch.get();
+    }
+
     public double getAngle() {
         if(!Constants.HOOD_ENABLED) return 0.0d;
 
-        double rotations = hoodEncoder.getPosition();
-
-        double angle = rotations;
+        double rotations = encoder.getPosition();
+        double angle = convertRotationsToDegrees(rotations);
 
         return angle;
     }
@@ -108,46 +105,45 @@ public class Hood extends SubsystemBase implements AutoCloseable, MotorSafeSyste
     public double getPosition() {
         if(!Constants.HOOD_ENABLED) return 0.0d;
 
-        return hoodEncoder.getPosition();
+        return encoder.getPosition();
     }
 
-    public void calibrateHood() {
-        if(!Constants.HOOD_ENABLED) return;
+    public void setUpperMotorLimit(double rotations) {
+        SmartDashboard.putNumber("Hood Upper Limit", rotations);
 
-        double targetPosition = ((motorUpperLimit - motorLowerLimit)/2) + motorLowerLimit;
-        if(calibrationState == HoodCalibrationState.Done){
-            SmartDashboard.putNumber("Target Position", targetPosition);
-            SmartDashboard.putNumber("Actual position", hoodEncoder.getPosition());
-            return;
-        }
+        this.upperMotorLimit = rotations;
+    }
 
-        SmartDashboard.putNumber("LowerLimit", motorLowerLimit);
-        SmartDashboard.putNumber("UpperLimit", motorUpperLimit);
-        if(calibrationState == HoodCalibrationState.NotCalibrated) {
-            if(!getUpperLimitSwitch()){
-                hoodMotor.set(-.1);
-            }
-            else{
-                hoodMotor.set(0);
-                motorLowerLimit = hoodEncoder.getPosition();
-                calibrationState = HoodCalibrationState.CalibratedLower;
-            }
-        }
-        else if(calibrationState == HoodCalibrationState.CalibratedLower){
-            if(!getLowerLimitSwitch()){
-                hoodMotor.set(.1);
-            }
-            else{
-                hoodMotor.set(0);
-                motorUpperLimit = hoodEncoder.getPosition();
-                calibrationState = HoodCalibrationState.CalibratedUpper;
-            }
-        }
-        else if (calibrationState == HoodCalibrationState.CalibratedUpper){
-            System.out.println("Done");
-            hoodPIDController.setReference(targetPosition, CANSparkMax.ControlType.kPosition);
-            calibrationState = HoodCalibrationState.Done;
-        }
+    public void setLowerMotorLimit(double rotations) {
+        SmartDashboard.putNumber("Hood Lower Limit", rotations);
+
+        this.upperMotorLimit = rotations;
+    }
+
+    private double convertRotationsToDegrees(double rotations) {
+        // Slope of the line describing the relationship
+        double degreesPerRotation = (Constants.MAX_HOOD_ANGLE - Constants.MIN_HOOD_ANGLE) / (upperMotorLimit - lowerMotorLimit);
+
+        // This is a computation of the point-slope form of the linear relationship.
+        // more info and a visualization on https://www.desmos.com/calculator/dedxfbgiip
+        double angle = rotations - lowerMotorLimit;
+        angle *= degreesPerRotation;
+        angle += Constants.MIN_HOOD_ANGLE;
+
+        return angle;
+    }
+
+    private double convertDegreesToRotations(double degrees) {
+        // Slope of the line describing the relationship
+        double rotationsPerDegree =  (upperMotorLimit - lowerMotorLimit) / (Constants.MAX_HOOD_ANGLE - Constants.MIN_HOOD_ANGLE);
+
+        // This is a computation of the point-slope form of the linear relationship.
+        // more info and a visualization on https://www.desmos.com/calculator/dedxfbgiip
+        double angle = degrees - Constants.MIN_HOOD_ANGLE;
+        angle *= rotationsPerDegree;
+        angle += lowerMotorLimit;
+
+        return angle;
     }
 
     @Override
@@ -160,6 +156,6 @@ public class Hood extends SubsystemBase implements AutoCloseable, MotorSafeSyste
     public void stopMotors() {
         if(!Constants.HOOD_ENABLED) return;
 
-        hoodMotor.stopMotor();
+        motor.stopMotor();
     }
 }

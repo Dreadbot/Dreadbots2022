@@ -44,6 +44,9 @@ public abstract class Constants {
 
     public static final double MAX_TURRET_ANGLE = 300.0d;
     public static final double MIN_TURRET_ANGLE = 0.0d;
+
+    public static final double MAX_HOOD_ANGLE = 90.0d;
+    public static final double MIN_HOOD_ANGLE = 45.0d;
     
     // Climber constants
     public static final int WINCH_MOTOR_PORT = 15;

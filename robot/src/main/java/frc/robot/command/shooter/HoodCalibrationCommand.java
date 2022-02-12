@@ -33,7 +33,6 @@ class HoodCalibrationUpCommand extends CommandBase {
 
         hood.setSpeed(-0.1d);
         hood.setUpperMotorLimit(hood.getPosition());
-        SmartDashboard.putNumber("Hood Upper", hood.getPosition());
     }
 
     @Override
@@ -60,7 +59,6 @@ class HoodCalibrationDownCommand extends CommandBase {
 
         hood.setSpeed(0.1d);
         hood.setLowerMotorLimit(hood.getPosition());
-        SmartDashboard.putNumber("Hood Lower", hood.getPosition());
     }
 
     @Override

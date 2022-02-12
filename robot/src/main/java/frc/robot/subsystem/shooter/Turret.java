@@ -77,7 +77,6 @@ public class Turret extends SubsystemBase implements AutoCloseable, MotorSafeSys
         if(!Constants.TURRET_ENABLED) return;
 
         speed = DreadbotMath.clampValue(speed, -1.0d, 1.0d);
-
         motor.set(speed);
     }
 
