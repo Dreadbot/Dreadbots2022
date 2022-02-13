@@ -1,7 +1,5 @@
 package frc.robot.subsystem.shooter;
 
-import javax.print.attribute.standard.RequestingUserName;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;

@@ -13,6 +13,7 @@ public class DriveCommand extends CommandBase {
     private final DoubleSupplier joystickLateralAxis;
     private final DoubleSupplier joystickRotationalAxis;
 
+    @SuppressWarnings("unused")
     private final SlewRateLimiter filter = new SlewRateLimiter(0.5);
 
     public DriveCommand(Drive drive, DoubleSupplier joystickForwardAxis, DoubleSupplier joystickLateralAxis, DoubleSupplier joystickRotationalAxis) {
