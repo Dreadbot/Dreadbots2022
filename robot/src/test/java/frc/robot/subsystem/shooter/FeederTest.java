@@ -25,9 +25,7 @@ public class FeederTest {
 
     @After
     public void shutdown() {
-        try {
-            feeder.close();
-        } catch(IllegalStateException ignored) {}
+        feeder.close();
     }
 
     @Test
@@ -69,9 +67,9 @@ public class FeederTest {
     public void close() {
         feeder.close();
 
-        // These functions should not throw an exception, despite being closed.
-        // This is another check against any motors that are closed, to ensure
-        // they do not crash the robot.
+        // Despite making calls to closed objects, these functions should not
+        // throw an exception. This test case is another check to ensure calls
+        // to closed motors do not crash the robot.
         feeder.feed();
         feeder.idle();
         feeder.stopMotors();
