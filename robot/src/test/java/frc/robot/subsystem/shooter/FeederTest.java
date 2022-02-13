@@ -23,12 +23,14 @@ public class FeederTest {
     }
 
     @After
-    public void shutdown() {
-        feeder.close();
+    public void shutdown() throws Exception {
+        try {
+            feeder.close();
+        } catch(IllegalStateException ignored) {}
     }
 
     @Test
-    public void feedTest() {
+    public void feed() {
         feeder.feed();
         
         if(!Constants.FEEDER_ENABLED) {
@@ -40,16 +42,34 @@ public class FeederTest {
     }
 
     @Test
-    public void idleTest() {
+    public void idle() {
         feeder.idle();
 
         assertFalse(feeder.isFeeding());
     }
 
     @Test
-    public void stopTest() {
+    public void stopMotors() {
         feeder.stopMotors();
 
         assertFalse(feeder.isFeeding());
+    }
+
+    @Test
+    public void isFeeding() {
+        feeder.feed();
+        assertTrue(feeder.isFeeding());
+
+        feeder.idle();
+        assertFalse(feeder.isFeeding());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void close() {
+        feeder.close();
+
+        // These functions should throw an IllegalStateException.
+        feeder.feed();
+        feeder.idle();
     }
 }
