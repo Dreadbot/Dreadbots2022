@@ -46,8 +46,7 @@ class FlywheelVelocityCommand extends CommandBase {
         double setPoint = VisionInterface.getFlywheelVelocity();
         double actual = shooter.getFlywheelVelocity();
 
-        // return Math.abs(setPoint - actual) <= 100.0;
-        return true;
+        return Math.abs(setPoint - actual) <= 10.0;
     }
 }
 
@@ -108,10 +107,13 @@ class HoodAngleCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        double turretPosition = shooter.getTurretAngle();
+        double turretPosition = shooter.getHoodAngle();
 
-        System.out.println("hood: " + Boolean.toString(Math.abs(hoodActualTarget - turretPosition) <= 10.0d));
-        return true;
+        double error = hoodActualTarget - turretPosition;
+        System.out.println("error: " + error);
+
+        //System.out.println("hood: " + Boolean.toString(Math.abs(hoodActualTarget - turretPosition) <= 10.0d));
+        return Math.abs(hoodActualTarget - turretPosition) <= 10.0d;
     }
 }
 
