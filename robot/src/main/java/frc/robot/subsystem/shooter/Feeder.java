@@ -39,7 +39,7 @@ public class Feeder extends SubsystemBase implements AutoCloseable, MotorSafeSys
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         if(!Constants.FEEDER_ENABLED) return;
 
         stopMotors();
