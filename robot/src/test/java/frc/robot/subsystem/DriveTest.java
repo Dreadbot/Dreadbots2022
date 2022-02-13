@@ -3,6 +3,7 @@ package frc.robot.subsystem;
 import static org.junit.Assert.assertEquals;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,17 +25,17 @@ public class DriveTest {
     @Before
     public void setup() {
         assert HAL.initialize(500, 0);
-        // leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-        // rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-        // leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-        // rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+        leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+        rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+        leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+        rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
 
-        // rightFrontDriveMotor.setInverted(true);
-        // rightBackDriveMotor.setInverted(true);
+        rightFrontDriveMotor.setInverted(true);
+        rightBackDriveMotor.setInverted(true);
 
-        // drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
+        drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
-        // angle = 0.0d;
+        angle = 0.0d;
     }
 
     @After
@@ -100,10 +101,10 @@ public class DriveTest {
         if(!Constants.DRIVE_ENABLED) return;
         drive.drivePolar(1.0d, 0.0d, 0.0d);
 
-        assertEquals(0.0d, leftFrontDriveMotor.get(), DELTA);
-        assertEquals(0.0d, rightFrontDriveMotor.get(), DELTA);
-        assertEquals(0.0d, leftBackDriveMotor.get(), DELTA);
-        assertEquals(0.0d, rightBackDriveMotor.get(), DELTA);
+        assertEquals(1.0d, leftFrontDriveMotor.get(), DELTA);
+        assertEquals(1.0d, rightFrontDriveMotor.get(), DELTA);
+        assertEquals(1.0d, leftBackDriveMotor.get(), DELTA);
+        assertEquals(1.0d, rightBackDriveMotor.get(), DELTA);
     }
 
     @Test

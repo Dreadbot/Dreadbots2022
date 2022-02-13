@@ -55,7 +55,6 @@ public class IntakeTest {
         if(!Constants.INTAKE_ENABLED) return;
 
         intake.intake();
-
     }
 
     @Test
@@ -64,7 +63,7 @@ public class IntakeTest {
 
         intake.outtake();
 
-        assertEquals(0.0d, intakeMotor.get(), DELTA);
+        assertEquals(-1.0d, intakeMotor.get(), DELTA);
     }
 
     @Test
