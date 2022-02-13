@@ -6,6 +6,8 @@ import frc.robot.Constants;
 import frc.robot.util.MotorSafeSystem;
 
 public class Feeder extends SubsystemBase implements AutoCloseable, MotorSafeSystem {
+    public static final double FEEDER_SPEED = 1.0d;
+
     private final CANSparkMax motor;
 
     public Feeder(CANSparkMax motor) {
@@ -24,7 +26,7 @@ public class Feeder extends SubsystemBase implements AutoCloseable, MotorSafeSys
         if(!Constants.FEEDER_ENABLED) return;
 
         try {
-            motor.set(1.0d);
+            motor.set(FEEDER_SPEED);
         } catch (IllegalStateException ignored) {}
     }
 
