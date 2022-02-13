@@ -19,11 +19,12 @@ public class FeederTest {
         assert HAL.initialize(500, 0);
 
         CANSparkMax feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless);
+
         feeder = new Feeder(feederMotor);
     }
 
     @After
-    public void shutdown() throws Exception {
+    public void shutdown() {
         try {
             feeder.close();
         } catch(IllegalStateException ignored) {}
