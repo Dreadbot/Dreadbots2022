@@ -23,19 +23,28 @@ public class Feeder extends SubsystemBase implements AutoCloseable, MotorSafeSys
     public void feed() {
         if(!Constants.FEEDER_ENABLED) return;
 
-        motor.set(1.0d);
+        try {
+            motor.set(1.0d);
+        } catch (IllegalStateException ignored) {}
     }
 
     public void idle() {
         if(!Constants.FEEDER_ENABLED) return;
 
-        motor.set(0.0d);
+        try {
+            motor.set(0.0d);
+        } catch (IllegalStateException ignored) {}
     }
 
     public boolean isFeeding() {
         if(!Constants.FEEDER_ENABLED) return false;
 
-        return motor.get() > 0.0d;
+        double output = 0.0d;
+        try {
+            output = motor.get();
+        } catch (IllegalStateException ignored) {}
+
+        return output > 0.0d;
     }
 
     @Override
@@ -43,13 +52,18 @@ public class Feeder extends SubsystemBase implements AutoCloseable, MotorSafeSys
         if(!Constants.FEEDER_ENABLED) return;
 
         stopMotors();
-        motor.close();
+
+        try {
+            motor.close();
+        } catch (IllegalStateException ignored) {}
     }
     
     @Override
     public void stopMotors() {
         if(!Constants.FEEDER_ENABLED) return;
 
-        motor.stopMotor();
+        try {
+            motor.stopMotor();
+        } catch (IllegalStateException ignored) {}
     }
 }

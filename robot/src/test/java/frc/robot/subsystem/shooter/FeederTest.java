@@ -65,12 +65,17 @@ public class FeederTest {
         assertFalse(feeder.isFeeding());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void close() {
         feeder.close();
 
-        // These functions should throw an IllegalStateException.
+        // These functions should not throw an exception, despite being closed.
+        // This is another check against any motors that are closed, to ensure
+        // they do not crash the robot.
         feeder.feed();
         feeder.idle();
+        feeder.stopMotors();
+        feeder.isFeeding();
+        feeder.close();
     }
 }
