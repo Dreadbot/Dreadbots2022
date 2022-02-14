@@ -3,8 +3,6 @@ import numpy as np
 import imutils
 import json
 import math
-from networktables import NetworkTables, NetworkTablesInstance
-import threading
 import os
 
 dataDir = os.path.join("vision", "ballfinding", "Data")
@@ -17,30 +15,6 @@ cameraHight = 0.58  # In Meters
 focalLength = 667  # In Pixels
 
 server = "10.36.56.2"
-
-
-def connectToNetworkTable():
-    cond = threading.Condition()
-    notified = [False]
-
-    def connectionListener(connected, info):
-        print(info, '; Connected=%s' % connected)
-        with cond:
-            notified[0] = True
-            cond.notify()
-
-    NetworkTables.initialize(server=server)
-    NetworkTables.addConnectionListener(
-        connectionListener, immediateNotify=True)
-
-    with cond:
-        print("Waiting")
-        if not notified[0]:
-            cond.wait()
-
-    print("Connected!")
-
-    return NetworkTablesInstance.getTable('SmartDashboard')
 
 
 def getMask(frame, lower: tuple, upper: tuple, eIts: int, dIts: int, blurK: int, colorSpace: int = cv2.COLOR_BGR2HSV):

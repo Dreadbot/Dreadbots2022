@@ -2,15 +2,37 @@ import cv2
 import util
 import circularity
 import hough
+import threading
+from networktables import NetworkTables
 
 
 def main():
+    rangeName = input("Range: ")
+
     if input("Connect to NT?: ") == "y":
-        table = util.connectToNetworkTable()
+        cond = threading.Condition()
+        notified = [False]
+
+        def connectionListener(connected, info):
+            print(info, '; Connected=%s' % connected)
+            with cond:
+                notified[0] = True
+                cond.notify()
+
+        NetworkTables.initialize(server=util.server)
+        NetworkTables.addConnectionListener(
+            connectionListener, immediateNotify=True)
+
+        with cond:
+            print("Waiting")
+            if not notified[0]:
+                cond.wait()
+
+        print("Connected!")
+
+        table = NetworkTables.getTable('SmartDashboard')
     else:
         table = None
-
-    rangeName = input("Range: ")
 
     util.setupDefaultSliderWindow("hsv", "Trackbars", rangeName)
 
@@ -37,31 +59,51 @@ def main():
         circle = circularity.getBall(mask, minCirc, minArea)
         h = hough.getBall(cv2.blur(mask, (blur + 8, blur + 8), 0))
         circles = []
-        compared = []
         if circle is not None:
-            circles.append((circle[0], circle[1], circle[2], "Circularity"))
+            circles.append((circle[0], circle[1], circle[2]))
 
         if h is not None:
-            circles.append((h[0], h[1], h[2], "Hough"))
+            circles.append((h[0], h[1], h[2]))
 
         # print(circles)
         radiusError = 10  # In Pixels
+        xyError = 10  # In Pixels
+
+        filteredCircles = []
 
         for circle in circles:
-            newF = frame.copy()
+            i = circles.index(circle)
+            if i + 1 == len(circles):
+                continue
+
+            nextCircle = circles[i + 1]
+
+            if abs(circle[2] - nextCircle[2]) < radiusError \
+                    and abs(circle[0] - nextCircle[0]) < xyError \
+                    and abs(circle[1] - nextCircle[1]) < xyError:
+                c = ()
+                for i in range(3):
+                    c += ((circle[i] + nextCircle[i]) / 2,)
+
+                filteredCircles.append(c)
+                cv2.circle(frame, (int(c[0]), int(c[1])),
+                           int(c[2]), (255, 255, 0), 2)
+
+        if len(filteredCircles) > 0:
+            bestCircle = filteredCircles[0]
+            for betterC in filteredCircles:
+                if betterC[2] > bestCircle[2]:
+                    bestCircle = betterC
 
             dX, dY, distance, angle = util.getDistance(
-                mask, circle[0], circle[2], util.focalLength, util.ballDiameterI)
-            cv2.circle(newF, (int(circle[0]), int(circle[1])),
-                       int(circle[2]), (255, 255, 0), 2)
-            cv2.putText(newF, f"d: {distance}", (0, 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
-            cv2.putText(newF, f"0: {angle}", (0, 60),
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
-            cv2.putText(newF, f"r: {circle[2]}", (0, 90),
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+                frame, bestCircle[0], bestCircle[2], util.focalLength, util.ballDiameter)
 
-            cv2.imshow(circle[3], newF)
+            if table is not None:
+                table.putNumber("RelativeDistanceToBallX", dX)
+                table.putNumber("RelativeDistanceToBallY", dY)
+                table.putNumber("RelativeAngleToBall", angle)
+
+        cv2.imshow("Frame", frame)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             util.updateLiveRange(rangeName, (hL, sL, vL), (hU, sU, vU))
