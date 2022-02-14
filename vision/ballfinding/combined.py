@@ -10,13 +10,6 @@ def main():
     else:
         table = None
 
-    # if input("Start CS?: ") == "y":
-    #     cs = CameraServer.getInstance()
-    #     print(cs)
-    # else:
-    #     cs = None
-    #     outputStream = None
-
     rangeName = input("Range: ")
 
     util.setupDefaultSliderWindow("hsv", "Trackbars", rangeName)
@@ -46,19 +39,13 @@ def main():
         circles = []
         compared = []
         if circle is not None:
-            # dX, dY, distance, angle = util.getDistance(
-            #     mask, circle[0], circle[2], util.focalLength, util.ballDiameterI)
-
-            # dX, dY, d, angle, r, X, Y, Name
-            # circleO = (dX, dY, distance, angle, circle[2], )
             circles.append((circle[0], circle[1], circle[2], "Circularity"))
 
         if h is not None:
             circles.append((h[0], h[1], h[2], "Hough"))
 
         # print(circles)
-        xyError = 10
-        rError = 10  # In Inches (TEMP)
+        radiusError = 10  # In Pixels
 
         for circle in circles:
             newF = frame.copy()
