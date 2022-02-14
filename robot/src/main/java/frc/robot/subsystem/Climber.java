@@ -66,6 +66,7 @@ public class Climber extends SubsystemBase {
         winchMotor.setIdleMode(IdleMode.kBrake);
         winchMotor.setInverted(true);
         this.retractedPosition = winchEncoder.getPosition();
+        neutralHookActuator.set(false);
     }
     public void close() throws Exception {
         if(!Constants.CLIMB_ENABLED) return; 

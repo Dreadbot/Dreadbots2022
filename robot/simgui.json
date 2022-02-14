@@ -1,0 +1,14 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Climber": "Subsystem",
+      "/LiveWindow/Drive": "Subsystem",
+      "/LiveWindow/Feeder": "Subsystem",
+      "/LiveWindow/Intake": "Subsystem",
+      "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[1]": "Digital Input",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler"
+    }
+  }
+}

@@ -7,7 +7,7 @@ import frc.robot.subsystem.Climber;
 
 public class AutonomousClimberCommand extends SequentialCommandGroup{
     public AutonomousClimberCommand(Climber climber){
-        //Assumes we are below bar but with power hooks on the bar
+        //Assumes we are below bar but with power hooks on the medium bar
         for(int i = 0; i < 2; i++){
             addCommands(
               new RetractArmCommand(climber),
