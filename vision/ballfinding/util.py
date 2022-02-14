@@ -3,7 +3,7 @@ import numpy as np
 import imutils
 import json
 import math
-from networktables import NetworkTables
+from networktables import NetworkTables, NetworkTablesInstance
 import threading
 import os
 
@@ -16,27 +16,31 @@ ballDiameterI = 9.5  # In Inches
 cameraHight = 0.58  # In Meters
 focalLength = 667  # In Pixels
 
-staticIp = "10.36.56.11"
+server = "10.36.56.2"
 
 
 def connectToNetworkTable():
-    condition = threading.Condition()
-    notified = False
+    cond = threading.Condition()
+    notified = [False]
 
-    def listener(connected, info):
-        print(f"{info}\nConnected: {connected}")
-        condition.notify()
-        notified = True
+    def connectionListener(connected, info):
+        print(info, '; Connected=%s' % connected)
+        with cond:
+            notified[0] = True
+            cond.notify()
 
-    NetworkTables.initialize(staticIp)
-    NetworkTables.addConnectionListener(listener, immediateNotify=True)
+    NetworkTables.initialize(server=server)
+    NetworkTables.addConnectionListener(
+        connectionListener, immediateNotify=True)
 
-    if not notified:
-        condition.wait()
+    with cond:
+        print("Waiting")
+        if not notified[0]:
+            cond.wait()
 
-    print("Connected to Network Table")
+    print("Connected!")
 
-    return NetworkTables.getTable('SmartDashboard')
+    return NetworkTablesInstance.getTable('SmartDashboard')
 
 
 def getMask(frame, lower: tuple, upper: tuple, eIts: int, dIts: int, blurK: int, colorSpace: int = cv2.COLOR_BGR2HSV):
@@ -179,13 +183,13 @@ def getFocalLength(kDistance, width, pixels):
 
 
 def getDistance(src, x, radius, focalLength, ballDiameter):
-    dFromY = abs(x - (int(src.shape[1])/2))
+    dFromY = x - (int(src.shape[1])/2)
     diameter = radius * 2
     dY = (focalLength * ballDiameter) / diameter
     dX = (dY * dFromY) / focalLength
     angle = round(math.atan(dX / dY) * (180 / math.pi), 2)
     distance = round(math.sqrt((dY**2) + (dX**2)), 2)
-    return distance, angle
+    return dX, dY, distance, angle
 
 
 def callback(value):

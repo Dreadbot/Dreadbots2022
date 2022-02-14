@@ -5,6 +5,18 @@ import hough
 
 
 def main():
+    if input("Connect to NT?: ") == "y":
+        table = util.connectToNetworkTable()
+    else:
+        table = None
+
+    # if input("Start CS?: ") == "y":
+    #     cs = CameraServer.getInstance()
+    #     print(cs)
+    # else:
+    #     cs = None
+    #     outputStream = None
+
     rangeName = input("Range: ")
 
     util.setupDefaultSliderWindow("hsv", "Trackbars", rangeName)
@@ -26,26 +38,40 @@ def main():
         minCirc = circ / 100
 
         mask = util.getMask(frame, lower, upper, erode, dilate, blur)
+
+        cv2.imshow("Binary", mask)
+
         circle = circularity.getBall(mask, minCirc, minArea)
-        h = hough.getBall(mask)
+        h = hough.getBall(cv2.blur(mask, (blur + 8, blur + 8), 0))
         circles = []
+        compared = []
         if circle is not None:
+            # dX, dY, distance, angle = util.getDistance(
+            #     mask, circle[0], circle[2], util.focalLength, util.ballDiameterI)
+
+            # dX, dY, d, angle, r, X, Y, Name
+            # circleO = (dX, dY, distance, angle, circle[2], )
             circles.append((circle[0], circle[1], circle[2], "Circularity"))
 
         if h is not None:
             circles.append((h[0], h[1], h[2], "Hough"))
 
         # print(circles)
+        xyError = 10
+        rError = 10  # In Inches (TEMP)
 
         for circle in circles:
             newF = frame.copy()
-            distance, angle = util.getDistance(
+
+            dX, dY, distance, angle = util.getDistance(
                 mask, circle[0], circle[2], util.focalLength, util.ballDiameterI)
             cv2.circle(newF, (int(circle[0]), int(circle[1])),
                        int(circle[2]), (255, 255, 0), 2)
             cv2.putText(newF, f"d: {distance}", (0, 30),
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
             cv2.putText(newF, f"0: {angle}", (0, 60),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            cv2.putText(newF, f"r: {circle[2]}", (0, 90),
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
 
             cv2.imshow(circle[3], newF)
