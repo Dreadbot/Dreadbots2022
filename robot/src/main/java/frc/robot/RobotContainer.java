@@ -58,8 +58,8 @@ public class RobotContainer {
     private final Hood hood = new Hood(hoodMotor, lowerHoodLimitSwitch, upperHoodLimitSwitch);
 
     private final CANSparkMax turretMotor = new CANSparkMax(7, MotorType.kBrushless);
-    private final DigitalInput lowerTurretLimitSwitch = new DigitalInput(7);
-    private final DigitalInput upperTurretLimitSwitch = new DigitalInput(6);
+    private final DigitalInput lowerTurretLimitSwitch = new DigitalInput(0); //pls fix this
+    private final DigitalInput upperTurretLimitSwitch = new DigitalInput(1);
     private final Turret turret = new Turret(turretMotor, lowerTurretLimitSwitch, upperTurretLimitSwitch);
     
     private Shooter shooter = new Shooter(feeder, flywheel, hood, turret);
