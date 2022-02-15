@@ -66,7 +66,7 @@ public class RobotContainer {
         primaryController.getYButton().whenPressed(new RotateClimbingHookDownCommand(climber));
         primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber));
         primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
-        //primaryController.getRightBumper().whenPressed(new AutonomousClimberCommand(climber));
+        primaryController.getRightBumper().whenPressed(new AutonomousClimberCommand(climber));
 
         feeder.setDefaultCommand(new RunCommand(feeder::idle, feeder));
         secondaryController.getBButton().whileHeld(new InstantCommand(feeder::feed, feeder));
