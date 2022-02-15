@@ -159,11 +159,11 @@ def getFocalLength(kDistance, width, pixels):
 def getDistance(src, x, radius, focalLength, ballDiameter):
     dFromY = x - (int(src.shape[1])/2)
     diameter = radius * 2
-    dY = (focalLength * ballDiameter) / diameter
-    dX = (dY * dFromY) / focalLength
-    angle = round(math.atan(dX / dY) * (180 / math.pi), 2)
-    distance = round(math.sqrt((dY**2) + (dX**2)), 2)
-    return dX, dY, distance, angle
+    dX = (focalLength * ballDiameter) / diameter
+    dZ = (dX * dFromY) / focalLength
+    angle = math.atan(dZ / dX) * (180 / math.pi)
+    distance = math.sqrt((dX**2) + (dZ**2))
+    return dX, dZ, distance, angle
 
 
 def callback(value):

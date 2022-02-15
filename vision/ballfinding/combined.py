@@ -89,19 +89,22 @@ def main():
                 cv2.circle(frame, (int(c[0]), int(c[1])),
                            int(c[2]), (255, 255, 0), 2)
 
+        dX = -1
+        dZ = -1
+
         if len(filteredCircles) > 0:
             bestCircle = filteredCircles[0]
             for betterC in filteredCircles:
                 if betterC[2] > bestCircle[2]:
                     bestCircle = betterC
 
-            dX, dY, distance, angle = util.getDistance(
+            dX, dZ, distance, angle = util.getDistance(
                 frame, bestCircle[0], bestCircle[2], util.focalLength, util.ballDiameter)
 
-            if table is not None:
-                table.putNumber("RelativeDistanceToBallX", dX)
-                table.putNumber("RelativeDistanceToBallY", dY)
-                table.putNumber("RelativeAngleToBall", angle)
+        if table is not None:
+            table.putNumber("RelativeDistanceToBallX", dX)
+            table.putNumber("RelativeDistanceToBallZ", dZ)
+            table.putNumber("RelativeAngleToBall", angle)
 
         cv2.imshow("Frame", frame)
 
