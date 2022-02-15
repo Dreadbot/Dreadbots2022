@@ -11,12 +11,15 @@ public class ExtendArmCommand extends CommandBase {
     }
     @Override
     public void initialize() {
-        System.out.println("working");
         if(!climber.getTopLimitSwitch())
             climber.extendArm();
     }
     @Override
     public boolean isFinished() {
         return climber.getTopLimitSwitch();
+    }
+    @Override
+    public void end(boolean interupted) {
+        climber.stopMotor();
     }
 }
