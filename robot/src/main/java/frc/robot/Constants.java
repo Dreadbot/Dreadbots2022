@@ -7,9 +7,12 @@ package frc.robot;
 public abstract class Constants {
     public static final boolean DRIVE_ENABLED = false;
     public static final boolean INTAKE_ENABLED = false;
-    public static final boolean SHOOTER_ENABLED = false;
     public static final boolean CLIMB_ENABLED = true;
+    public static final boolean SHOOTER_ENABLED = false;
     public static final boolean FEEDER_ENABLED = false;
+    public static final boolean FLYWHEEL_ENABLED = false;
+    public static final boolean HOOD_ENABLED = false;
+    public static final boolean TURRET_ENABLED = false;
 
     // Joysticks
     public static final int PRIMARY_JOYSTICK_PORT = 0;
@@ -26,6 +29,7 @@ public abstract class Constants {
     public static final double INTAKE_MOTOR_RATIO = 1/12;
 
     // Shooter Ports
+    public static final int FEEDER_MOTOR_PORT = 18;
     public static final int FLYWHEEL_MOTOR_PORT = 15;
     public static final int HOOD_MOTOR_PORT = 16;
     public static final int TURRET_MOTOR_PORT = 17;
@@ -38,6 +42,13 @@ public abstract class Constants {
     public static final double FLYWHEEL_MAX_OUTPUT = 1.0d;
     public static final double FLYWHEEL_MIN_OUTPUT = -1.0d;
     public static final double FLYWHEEL_MAX_RPM = 5700.0d;
+
+    public static final double MAX_TURRET_ANGLE = 300.0d;
+    public static final double MIN_TURRET_ANGLE = 0.0d;
+
+    public static final double MAX_HOOD_ANGLE = 82.0d;
+    public static final double UPPER_HOOD_ANGLE = 70.0d;
+    public static final double MIN_HOOD_ANGLE = 60.0d;
     
     // Climber constants
     public static final int WINCH_MOTOR_PORT = 15;
@@ -51,4 +62,8 @@ public abstract class Constants {
     public static final float INITIAL_BALL_HEIGHT = 0.4f;
 
     public static final double TO_RPM = 4 * 60 / 0.279d;
+
+    private Constants() {
+        throw new IllegalStateException("The Constants class is a utility class. It should not be instantiated.");
+    }
 }

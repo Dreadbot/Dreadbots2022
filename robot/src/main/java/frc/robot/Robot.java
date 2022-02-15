@@ -22,18 +22,20 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void autonomousInit() {}
+  public void autonomousInit() {
+    robotContainer.calibrate();
+  }
 
   @Override
   public void autonomousPeriodic() {}
 
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    robotContainer.calibrate();
+  }
 
   @Override
-  public void teleopPeriodic() {
-    robotContainer.periodic();
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void testInit() {}

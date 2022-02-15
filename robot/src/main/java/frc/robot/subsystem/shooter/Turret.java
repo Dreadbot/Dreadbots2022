@@ -6,108 +6,155 @@ import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystem.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.util.DreadbotMath;
+import frc.robot.util.MotorSafeSystem;
 
-public class Turret extends Subsystem {
-    enum TurretCalibrationState {
-        NotCalibrated,
-        CalibratedLeft,
-        CalibratedRight,
-        Done
+public class Turret extends SubsystemBase implements AutoCloseable, MotorSafeSystem {
+    private final DigitalInput lowerSwitch;
+    private final DigitalInput upperSwitch;
+    private final CANSparkMax motor;
+    private RelativeEncoder encoder;
+    private SparkMaxPIDController pidController;
+
+    private double lowerMotorLimit;
+    private double upperMotorLimit;
+
+    public Turret(CANSparkMax motor, DigitalInput lowerSwitch, DigitalInput upperSwitch) {
+        this.lowerSwitch = lowerSwitch;
+        this.upperSwitch = upperSwitch;
+        this.motor = motor;
+
+        if(!Constants.TURRET_ENABLED) {
+            lowerSwitch.close();
+            upperSwitch.close();
+            motor.close();
+
+            return;
+        }
+
+        motor.setIdleMode(IdleMode.kBrake);
+        encoder = motor.getEncoder();
+        pidController = motor.getPIDController();
+        
+        pidController.setP(0.1);
+        pidController.setI(1e-4);
+        pidController.setD(0);
+        pidController.setIZone(2.85);
+        pidController.setFF(0.000015);
+        pidController.setOutputRange(-.3, .3);
+
+        SmartDashboard.putNumber("Requested Turret Angle", 0.0d);
     }
 
-    private DigitalInput leftSwitch;
-    private DigitalInput rightSwitch;
-    private CANSparkMax turretMotor;
-    private RelativeEncoder turretEncoder;
-    private SparkMaxPIDController turretPIDController;
+    @Override
+    public void periodic() {
+        if(!Constants.TURRET_ENABLED) return;
 
-    private TurretCalibrationState calibrationState;
-    private double motorLowerLimit = 0.0;
-    private double motorUpperLimit = 0.0;
+        SmartDashboard.putBoolean("Turret Lower Limit Switch", getLowerLimitSwitch());
+        SmartDashboard.putBoolean("Turret Upper Limit Switch", getUpperLimitSwitch());
 
-    public Turret(DigitalInput leftSwitch, DigitalInput rightSwitch, CANSparkMax turretMotor) {
-        super("Turret");
-        this.leftSwitch = leftSwitch;
-        this.rightSwitch = rightSwitch;
-        this.turretMotor = turretMotor;
-        turretMotor.setIdleMode(IdleMode.kBrake);
-        turretEncoder = turretMotor.getEncoder();
-        turretPIDController = turretMotor.getPIDController();
+        SmartDashboard.putNumber("Turret Angle", getAngle());
+    }
+
+    public void setAngle(double angle) {
+        if(!Constants.TURRET_ENABLED) return; 
+
+        angle = DreadbotMath.clampValue(angle, Constants.MIN_TURRET_ANGLE, Constants.MAX_TURRET_ANGLE);
+        double rotations = convertDegreesToRotations(angle);
+
+        pidController.setReference(rotations, CANSparkMax.ControlType.kPosition);
+    }
+
+    public void setPosition(double rotations) {
+        if(!Constants.TURRET_ENABLED) return;
+
+        rotations = DreadbotMath.clampValue(rotations, lowerMotorLimit, upperMotorLimit);
         
-        turretPIDController.setP(0.1);
-        turretPIDController.setI(0.0);
-        turretPIDController.setD(0);
-        turretPIDController.setIZone(0);
-        turretPIDController.setFF(0.000015);
-        turretPIDController.setOutputRange(-.1, .1);
-        this.calibrationState = TurretCalibrationState.NotCalibrated;
-        SmartDashboard.putBoolean("left", getLeftLimitSwitch());
-        SmartDashboard.putBoolean("right", getRightLimitSwitch());
+        pidController.setReference(rotations, CANSparkMax.ControlType.kPosition);
+    }
+
+    public void setSpeed(double speed) {
+        if(!Constants.TURRET_ENABLED) return;
+
+        speed = DreadbotMath.clampValue(speed, -1.0d, 1.0d);
+        motor.set(speed);
+    }
+
+    public boolean getLowerLimitSwitch() {
+        if(!Constants.TURRET_ENABLED) return false;
+
+        return !lowerSwitch.get();
+    }
+
+    public boolean getUpperLimitSwitch() {
+        if(!Constants.TURRET_ENABLED) return false;
+
+        return !upperSwitch.get();
+    }
+
+    public double getAngle() {
+        if(!Constants.TURRET_ENABLED) return 0.0d;
+
+        double rotations = encoder.getPosition();
+        return convertRotationsToDegrees(rotations);
+    }
+
+    public double getPosition() {
+        if(!Constants.TURRET_ENABLED) return 0.0d;
+
+        return encoder.getPosition();
+    }
+
+    public void setUpperMotorLimit(double rotations) {
+        SmartDashboard.putNumber("Turret Upper Limit", rotations);
+
+        this.upperMotorLimit = rotations;
+    }
+
+    public void setLowerMotorLimit(double rotations) {
+        SmartDashboard.putNumber("Turret Lower Limit", rotations);
+
+        this.lowerMotorLimit = rotations;
+    }
+
+    private double convertRotationsToDegrees(double rotations) {
+        // Slope of the line describing the relationship
+        double degreesPerRotation = (Constants.MAX_TURRET_ANGLE - Constants.MIN_TURRET_ANGLE) / (upperMotorLimit - lowerMotorLimit);
+
+        // This is a computation of the point-slope form of the linear relationship.
+        // more info and a visualization on https://www.desmos.com/calculator/dedxfbgiip
+        double angle = rotations - lowerMotorLimit;
+        angle *= degreesPerRotation;
+        angle += Constants.MIN_TURRET_ANGLE;
+
+        return angle;
+    }
+
+    private double convertDegreesToRotations(double degrees) {
+        // Slope of the line describing the relationship
+        double rotationsPerDegree =  (upperMotorLimit - lowerMotorLimit) / (Constants.MAX_TURRET_ANGLE - Constants.MIN_TURRET_ANGLE);
+
+        // This is a computation of the point-slope form of the linear relationship.
+        // more info and a visualization on https://www.desmos.com/calculator/dedxfbgiip
+        double angle = degrees - Constants.MIN_TURRET_ANGLE;
+        angle *= rotationsPerDegree;
+        angle += lowerMotorLimit;
+
+        return angle;
     }
 
     @Override
     public void close() throws Exception {
-        leftSwitch.close();
-        rightSwitch.close();
-    }
-    public boolean getLeftLimitSwitch() {
-        return !leftSwitch.get();
+        lowerSwitch.close();
+        upperSwitch.close();
     }
 
-    public boolean getRightLimitSwitch() {
-        return !rightSwitch.get();
-    }
-    public void switchDebug() {
-        SmartDashboard.putBoolean("left", getLeftLimitSwitch());
-        SmartDashboard.putBoolean("right", getRightLimitSwitch());
-    }
     @Override
-    protected void stopMotors() {
-        // TODO Auto-generated method stub
-        
-    }
+    public void stopMotors() {
+        if(!Constants.TURRET_ENABLED) return; 
 
-    public void turnToRotation(double rotations) {
-        rotations = DreadbotMath.clampValue(rotations, motorLowerLimit, motorUpperLimit);
-        turretPIDController.setReference(rotations, CANSparkMax.ControlType.kPosition);
-    }
-
-    public void calibrateTurret() {
-        double targetPosition = ((motorUpperLimit - motorLowerLimit)/2) + motorLowerLimit;
-        if(calibrationState == TurretCalibrationState.Done){
-            SmartDashboard.putNumber("Target Position", targetPosition);
-            SmartDashboard.putNumber("Actual position", turretEncoder.getPosition());
-            return;
-        }
-
-        SmartDashboard.putNumber("LowerLimit", motorLowerLimit);
-        SmartDashboard.putNumber("UpperLimit", motorUpperLimit);
-        if(calibrationState == TurretCalibrationState.NotCalibrated) {
-            if(!getRightLimitSwitch()){
-                turretMotor.set(-.1);
-            }
-            else{
-                turretMotor.set(0);
-                motorLowerLimit = turretEncoder.getPosition();
-                calibrationState = TurretCalibrationState.CalibratedLeft;
-            }
-        }
-        else if(calibrationState == TurretCalibrationState.CalibratedLeft){
-            if(!getLeftLimitSwitch()){
-                turretMotor.set(.1);
-            }
-            else{
-                turretMotor.set(0);
-                motorUpperLimit = turretEncoder.getPosition();
-                calibrationState = TurretCalibrationState.CalibratedRight;
-            }
-        }
-        else if (calibrationState == TurretCalibrationState.CalibratedRight){
-            System.out.println("Done");
-            turretPIDController.setReference(targetPosition, CANSparkMax.ControlType.kPosition);
-            calibrationState = TurretCalibrationState.Done;
-        }
+        motor.stopMotor();
     }
 }

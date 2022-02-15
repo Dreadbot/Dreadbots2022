@@ -1,147 +1,93 @@
 package frc.robot.subsystem.shooter;
-import com.revrobotics.CANSparkMax;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.subsystem.Subsystem;
+import frc.robot.util.MotorSafeSystem;
 
-public class Shooter extends Subsystem {
+public class Shooter implements AutoCloseable, MotorSafeSystem {
+    private final Feeder feeder;
     private final Flywheel flywheel;
-
-    private final CANSparkMax hoodMotor;
-    private final CANSparkMax turretMotor;
-
-    public ShootingState state;
-
-    private double distanceToGoal;
+    private final Hood hood;
+    private final Turret turret;
     
-    public Shooter(CANSparkMax flywheelMotor, CANSparkMax hoodMotor, CANSparkMax turretMotor) {
-        super("Shooter");
-        
-        this.flywheel = new Flywheel(flywheelMotor);
-        this.hoodMotor = hoodMotor;
-        this.turretMotor = turretMotor;
-
-        if(!Constants.SHOOTER_ENABLED) {
-            flywheelMotor.close();
-            hoodMotor.close();
-            turretMotor.close();
-            
-            return;
-        }
-        
-        SmartDashboard.putNumber("RPM", 0.0d);
+    public Shooter(Feeder feeder, Flywheel flywheel, Hood hood, Turret turret) {
+        this.feeder = feeder;
+        this.flywheel = flywheel;
+        this.hood = hood;
+        this.turret = turret;
     }
 
-    public void setTurretAngle(double speed) {
+    public void feedBall() {
         if(!Constants.SHOOTER_ENABLED) return;
 
-        turretMotor.set(speed);
+        feeder.feed();
     }
 
-    public void shoot() {
+    public void setFlywheelVelocity(double velocity) {
         if(!Constants.SHOOTER_ENABLED) return;
 
-        // TODO remove SmartDashboard settings, use vision/distance input
-        double setPoint = SmartDashboard.getNumber("RPM", 0);
-        flywheel.ramp(setPoint);
-
-        SmartDashboard.putNumber("Flywheel Velocity (RPM)", flywheel.getVelocity());
+        flywheel.setVelocity(velocity);
     }
 
-    public void idle() {
+    public void setHoodAngle(double angle) {
         if(!Constants.SHOOTER_ENABLED) return;
 
-        flywheel.idle();
-
-        SmartDashboard.putNumber("Flywheel Velocity (RPM)", flywheel.getVelocity());
+        hood.setAngle(angle);
     }
 
-    @SuppressWarnings("unused")
-    private void setHoodPosition(double hoodPosition) {
+    public void setTurretAngle(double angle) {
         if(!Constants.SHOOTER_ENABLED) return;
 
-        //TODO
+        turret.setAngle(angle);
     }
 
-    public double getRequiredFlyWheelRPM() {
-        return Constants.TO_RPM * Math.sqrt(Math.pow(calculateXVelocity(), 2) + Math.pow(distanceToGoal / calculateTimeToScore(), 2));
+    public double getFlywheelVelocity() {
+        if(!Constants.SHOOTER_ENABLED) return 0.0d;
+
+        return flywheel.getVelocity();
     }
 
-    public double getRequiredHoodAngle() {
-        return Math.atan(calculateXVelocity() / (distanceToGoal / calculateTimeToScore())) * 180 / Math.PI;
+    public double getHoodAngle() {
+        if(!Constants.SHOOTER_ENABLED) return 0.0d;
+
+        return hood.getAngle();
+    }
+
+    public double getTurretAngle() {
+        if(!Constants.SHOOTER_ENABLED) return 0.0d;
+
+        return turret.getAngle();
     }
 
     @Override
     public void close() throws Exception {
+        feeder.close();
+        flywheel.close();
+        hood.close();
+        turret.close();
+    }
+
+    @Override
+    public void stopMotors() {
         if(!Constants.SHOOTER_ENABLED) return;
 
-        flywheel.close();
-        hoodMotor.close();
-        turretMotor.close();
-    }
-    @Override
-    protected void stopMotors() {
-        if(!Constants.SHOOTER_ENABLED) return;
-        
+        feeder.stopMotors();
         flywheel.stopMotors();
-        hoodMotor.stopMotor();
-        turretMotor.stopMotor();
+        hood.stopMotors();
+        turret.stopMotors();
+    }
+
+    public Feeder getFeeder() {
+        return feeder;
     }
     
     public Flywheel getFlywheel() {
         return flywheel;
     }
 
-    public CANSparkMax getHoodMotor() {
-        return hoodMotor;
+    public Hood getHood() {
+        return hood;
     }
 
-    public CANSparkMax getTurretMotor() {
-        return turretMotor;
-    }
-
-    public void setDistanceToGoal(float dist) {
-        distanceToGoal = dist;
-    }
-
-    private double calculateArcHeight() {
-        return ((0.5d * distanceToGoal) + 2.5d);
-    }
-
-    public double calculateXVelocity() {
-        return Math.sqrt(-2 * Constants.GRAVITY * (calculateArcHeight() - Constants.INITIAL_BALL_HEIGHT));
-    }
-
-    public double calculateTimeToScore() { 
-        double xVel = calculateXVelocity();
-        return (-xVel - Math.sqrt(Math.pow(xVel, 2) - 2 * Constants.GRAVITY * (Constants.INITIAL_BALL_HEIGHT - Constants.GOAL_HEIGHT))) / Constants.GRAVITY;
-    }
-
-    @SuppressWarnings("unused")
-    private double hoodAngleToHoodPosition(double hoodAngle) {
-        return 0d;
-    }
-
-    public double[] hoodCalibration() {
-        //TODO
-        return new double[2];
-    }
-
-    public enum ShootingState {
-        Shooting,
-        Aiming,
-        SpinningUp,
-        SpinningDown,
-    }
-
-    @SuppressWarnings("unused")
-    private void setState(ShootingState newState) {
-        state = newState;
-    }
-    
-    @SuppressWarnings("unused")
-    private ShootingState getState() {
-        return state;
+    public Turret getTurret() {
+        return turret;
     }
 }

@@ -6,22 +6,22 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.subsystem.Subsystem;
+import frc.robot.util.MotorSafeSystem;
 
-public class Flywheel extends Subsystem {
+public class Flywheel extends SubsystemBase implements AutoCloseable, MotorSafeSystem {
     private final CANSparkMax motor;
     private SparkMaxPIDController pidController;
     private RelativeEncoder encoder;
 
-    public double lastVelocity;
+    private double lastVelocity;
 
     public Flywheel(CANSparkMax motor) {
-        super("Flywheel");
-
         this.motor = motor;
 
-        if(!Constants.SHOOTER_ENABLED) {
+        if(!Constants.FLYWHEEL_ENABLED) {
             motor.close();
             
             return;
@@ -39,10 +39,17 @@ public class Flywheel extends Subsystem {
         pidController.setIZone(Constants.FLYWHEEL_I_ZONE);
         pidController.setFF(Constants.FLYWHEEL_FF_GAIN);
         pidController.setOutputRange(Constants.FLYWHEEL_MIN_OUTPUT, Constants.FLYWHEEL_MAX_OUTPUT);
+
+        SmartDashboard.putNumber("Requested Flywheel RPM", 0.0d);
     }
 
-    public void ramp(double velocity) {
-        if(!Constants.SHOOTER_ENABLED) return;
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Flywheel Velocity", getVelocity());
+    }
+
+    public void setVelocity(double velocity) {
+        if(!Constants.FLYWHEEL_ENABLED) return;
 
         if(velocity != lastVelocity) {
             // Prevents the motor from going beyond 5700RPM
@@ -56,30 +63,31 @@ public class Flywheel extends Subsystem {
     }
 
     public void idle() {
-        if(!Constants.SHOOTER_ENABLED) return;
+        if(!Constants.FLYWHEEL_ENABLED) return;
 
         lastVelocity = 0.0d;
         
         motor.set(0.0d);
     }
 
+    public double getVelocity() {
+        if(!Constants.FLYWHEEL_ENABLED) return 0.0d;
+
+        return encoder.getVelocity();
+    }
+
     @Override
     public void close() throws Exception {
-        if(!Constants.SHOOTER_ENABLED) return;
+        if(!Constants.FLYWHEEL_ENABLED) return;
 
+        stopMotors();
         motor.close();
     }
 
     @Override
-    protected void stopMotors() {
-        if(!Constants.SHOOTER_ENABLED) return;
+    public void stopMotors() {
+        if(!Constants.FLYWHEEL_ENABLED) return;
 
         motor.stopMotor();
-    }
-
-    public double getVelocity() {
-        if(!Constants.SHOOTER_ENABLED) return 0.0d;
-
-        return encoder.getVelocity();
     }
 }
