@@ -4,29 +4,29 @@ import math
 from networktables import NetworkTables
 import threading
 
+cond = threading.Condition()
+notified = [False]
 
-def connectToNetworkTable():
-    cond = threading.Condition()
-    notified = [False]
 
-    def connectionListener(connected, info):
-        print(info, '; Connected=%s' % connected)
-        with cond:
-            notified[0] = True
-            cond.notify()
-
-    NetworkTables.initialize(server="10.36.56.2")
-    NetworkTables.addConnectionListener(
-        connectionListener, immediateNotify=True)
-
+def connectionListener(connected, info):
+    print(info, '; Connected=%s' % connected)
     with cond:
-        print("Waiting")
-        if not notified[0]:
-            cond.wait()
+        notified[0] = True
+        cond.notify()
 
-    print("Connected!")
 
-    return NetworkTables.getTable('SmartDashboard')
+NetworkTables.initialize(server="10.36.56.2")
+NetworkTables.addConnectionListener(
+    connectionListener, immediateNotify=True)
+
+with cond:
+    print("Waiting")
+    if not notified[0]:
+        cond.wait()
+
+print("Connected!")
+
+table = NetworkTables.getTable('SmartDashboard')
 
 
 def _drawTargets(x, y, w, h, rectangleColor, circleColor, lineColor):
@@ -41,8 +41,6 @@ def _drawTargets(x, y, w, h, rectangleColor, circleColor, lineColor):
              (target[0], target[1]+10), (255, 255, 255))
     return target
 
-
-table = connectToNetworkTable()
 
 # Create a VideoCaqpture object and read from input file
 cap = cv2.VideoCapture(0)
@@ -143,10 +141,6 @@ while(cap.isOpened()):
                         fin_angle_raw_rad) + camOffsetDegree
                     fin_angle_rad = math.radians(fin_angle_deg)
                     distance = targetHeight / math.tan(fin_angle_rad)
-
-                    table.putNumber("relativeDistanceToHub",
-                                    (distance / 39.37))
-                    table.putNumber("relativeAngleToHub", fin_angle_deg)
                 except:
                     '''
                     If no target positions are found it spits out an error
@@ -158,6 +152,10 @@ while(cap.isOpened()):
                     avgXpos = -1
                     avgYpos = -1
             loopCounterCon += 1
+
+            table.putNumber("relativeDistanceToHub",
+                            (distance / 39.37))
+            table.putNumber("relativeAngleToHub", fin_angle_hori)
 
         if len(contours) == 0:
             avgXpos = -1
