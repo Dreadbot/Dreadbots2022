@@ -81,16 +81,18 @@ def main():
             if abs(circle[2] - nextCircle[2]) < radiusError \
                     and abs(circle[0] - nextCircle[0]) < xyError \
                     and abs(circle[1] - nextCircle[1]) < xyError:
-                c = ()
-                for i in range(3):
-                    c += ((circle[i] + nextCircle[i]) / 2,)
+
+                avgX = (circle[0] + nextCircle[0]) / 2
+                avgY = (circle[1] + nextCircle[1]) / 2
+                avgR = (circle[2] + nextCircle[2]) / 2
+                c = (avgX, avgY, avgR)
 
                 filteredCircles.append(c)
                 cv2.circle(frame, (int(c[0]), int(c[1])),
                            int(c[2]), (255, 255, 0), 2)
 
-        dX = -1
-        dZ = -1
+        if table is not None:
+            table.putNumber("TotalBallsFoundInFrame", len(filteredCircles))
 
         if len(filteredCircles) > 0:
             bestCircle = filteredCircles[0]
@@ -101,10 +103,10 @@ def main():
             dX, dZ, distance, angle = util.getDistance(
                 frame, bestCircle[0], bestCircle[2], util.focalLength, util.ballDiameter)
 
-        if table is not None:
-            table.putNumber("RelativeDistanceToBallX", dX)
-            table.putNumber("RelativeDistanceToBallZ", dZ)
-            table.putNumber("RelativeAngleToBall", angle)
+            if table is not None:
+                table.putNumber("RelativeDistanceToBallX", dX)
+                table.putNumber("RelativeDistanceToBallZ", dZ)
+                table.putNumber("RelativeAngleToBall", angle)
 
         cv2.imshow("Frame", frame)
 
