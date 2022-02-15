@@ -32,18 +32,17 @@ public class FeederTest {
 
     @Test
     public void feed() {
+        if(!Constants.FEEDER_ENABLED) return;
+
         feeder.feed();
-        
-        if(!Constants.FEEDER_ENABLED) {
-            assertFalse(feeder.isFeeding());
-            return;
-        }
 
         assertEquals(1.0, feederMotor.get(), DELTA);
     }
 
     @Test
     public void idle() {
+        if(!Constants.FEEDER_ENABLED) return;
+
         feeder.idle();
 
         assertEquals(0.0, feederMotor.get(), DELTA);
@@ -51,6 +50,8 @@ public class FeederTest {
 
     @Test
     public void stopMotors() {
+        if(!Constants.FEEDER_ENABLED) return;
+
         feeder.stopMotors();
 
         assertEquals(0.0, feederMotor.get(), DELTA);
@@ -59,6 +60,7 @@ public class FeederTest {
     @Test
     public void isFeeding() {
         if(!Constants.FEEDER_ENABLED) return;
+
         feeder.feed();
         assertTrue(feeder.isFeeding());
 
@@ -69,6 +71,8 @@ public class FeederTest {
     @SuppressWarnings("DefaultAnnotationParam")
     @Test(expected = None.class /* No exception should be thrown */)
     public void close() {
+        if(!Constants.FEEDER_ENABLED) return;
+
         feeder.close();
 
         // Despite making calls to closed objects, these functions should not

@@ -33,30 +33,26 @@ public class IntakeTest {
 
     @Test
     public void intake() {
-        intake.intake();
+        if(!Constants.INTAKE_ENABLED) return;
 
-        if(!Constants.INTAKE_ENABLED) {
-            assertEquals(0.0d, intakeMotor.get(), DELTA);
-            return;
-        }
+        intake.intake();
 
         assertEquals(1.0d, intakeMotor.get(), DELTA);
     }
 
     @Test
     public void outtake() {
-        intake.outtake();
+        if(!Constants.INTAKE_ENABLED) return;
 
-        if(!Constants.INTAKE_ENABLED) {
-            assertEquals(0.0d, intakeMotor.get(), DELTA);
-            return;
-        }
+        intake.outtake();
 
         assertEquals(-1.0d, intakeMotor.get(), DELTA);
     }
 
     @Test
     public void idle() {
+        if(!Constants.INTAKE_ENABLED) return;
+
         intake.idle();
 
         assertEquals(0.0, intakeMotor.get(), DELTA);
@@ -64,6 +60,8 @@ public class IntakeTest {
 
     @Test
     public void stopMotors() {
+        if(!Constants.INTAKE_ENABLED) return;
+
         intake.stopMotors();
 
         assertEquals(0.0d, intakeMotor.get(), DELTA);
@@ -72,6 +70,8 @@ public class IntakeTest {
     @SuppressWarnings("SpellCheckingInspection")
     @Test
     public void isIntaking() {
+        if(!Constants.INTAKE_ENABLED) return;
+
         intake.intake();
         assertTrue(intake.isIntaking());
 
@@ -82,6 +82,8 @@ public class IntakeTest {
     @SuppressWarnings("SpellCheckingInspection")
     @Test
     public void isOuttaking() {
+        if(!Constants.INTAKE_ENABLED) return;
+
         intake.outtake();
         assertTrue(intake.isOuttaking());
 
@@ -92,6 +94,8 @@ public class IntakeTest {
     @SuppressWarnings("DefaultAnnotationParam")
     @Test(expected = Test.None.class /* No exception should be thrown */)
     public void close() {
+        if(!Constants.INTAKE_ENABLED) return;
+
         intake.close();
 
         // Despite making calls to closed objects, these functions should not
