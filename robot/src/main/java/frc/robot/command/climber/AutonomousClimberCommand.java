@@ -1,6 +1,7 @@
 package frc.robot.command.climber;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystem.Climber;
@@ -14,12 +15,12 @@ public class AutonomousClimberCommand extends SequentialCommandGroup{
               new WaitCommand(.2),
               new RotateNeutralHookVerticalCommand(climber),
               new WaitCommand(.5),
-              new SlightArmExtend(climber),// helps with getting arm off of bar
-              new RotateClimbingHookDownCommand(climber),
+              new SlightArmExtend(climber), // helps with getting arm off of bar
+              new RotateClimbingArmDownCommand(climber),
               new ExtendArmCommand(climber),// retract arm back to grab hook
               new SlightArmRetract(climber),
               new WaitCommand(.5),
-              new RotateClimbingHookVerticalCommand(climber), 
+              new RotateClimbingArmVerticalCommand(climber), 
               new WaitCommand(.5),
               new RotateNeutralHookDownCommand(climber)
             ); 
@@ -32,7 +33,7 @@ public class AutonomousClimberCommand extends SequentialCommandGroup{
     }
 }
 
-class SlightArmExtend extends ParallelCommandGroup{
+class SlightArmExtend extends ParallelRaceGroup{
     public SlightArmExtend(Climber climber){
         addCommands(
             new ExtendArmCommand(climber),
@@ -41,7 +42,7 @@ class SlightArmExtend extends ParallelCommandGroup{
     }
 }
 
-class SlightArmRetract extends ParallelCommandGroup{
+class SlightArmRetract extends ParallelRaceGroup{
     public SlightArmRetract(Climber climber){
         addCommands(
             new RetractArmCommand(climber),
