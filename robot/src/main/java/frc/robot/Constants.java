@@ -7,7 +7,7 @@ package frc.robot;
 public abstract class Constants {
     public static final boolean DRIVE_ENABLED = false;
     public static final boolean INTAKE_ENABLED = false;
-    public static final boolean CLIMB_ENABLED = true;
+    public static final boolean CLIMB_ENABLED = false;
     public static final boolean SHOOTER_ENABLED = false;
     public static final boolean FEEDER_ENABLED = false;
     public static final boolean FLYWHEEL_ENABLED = false;

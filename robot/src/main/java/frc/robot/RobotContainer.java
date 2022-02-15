@@ -58,18 +58,18 @@ public class RobotContainer {
     private final Hood hood = new Hood(hoodMotor, lowerHoodLimitSwitch, upperHoodLimitSwitch);
 
     private final CANSparkMax turretMotor = new CANSparkMax(7, MotorType.kBrushless);
-    private final DigitalInput lowerTurretLimitSwitch = new DigitalInput(0);
-    private final DigitalInput upperTurretLimitSwitch = new DigitalInput(1);
+    private final DigitalInput lowerTurretLimitSwitch = new DigitalInput(7);
+    private final DigitalInput upperTurretLimitSwitch = new DigitalInput(6);
     private final Turret turret = new Turret(turretMotor, lowerTurretLimitSwitch, upperTurretLimitSwitch);
     
     private Shooter shooter = new Shooter(feeder, flywheel, hood, turret);
 
-    private final Solenoid neutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 4);
+    private final Solenoid neutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
 
-    private final Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 5);
-    private final CANSparkMax winchMotor = new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless);
-    private final DigitalInput bottomLimitSwitch = new DigitalInput(6);
-    private final DigitalInput topLimitSwitch = new DigitalInput(7);
+    private final Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
+    private final CANSparkMax winchMotor = new CANSparkMax(1, MotorType.kBrushless);
+    private final DigitalInput bottomLimitSwitch = new DigitalInput(5);
+    private final DigitalInput topLimitSwitch = new DigitalInput(4);
     private Climber climber = new Climber(neutralHookActuator, climbingHookActuator, winchMotor, bottomLimitSwitch, topLimitSwitch);
     
     public RobotContainer() {   
@@ -79,6 +79,7 @@ public class RobotContainer {
             primaryController::getZAxis));
         
         intake.setDefaultCommand(new RunCommand(intake::idle, intake));
+
         secondaryController.getAButton().whileHeld(new OuttakeCommand(intake));
         secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
         
