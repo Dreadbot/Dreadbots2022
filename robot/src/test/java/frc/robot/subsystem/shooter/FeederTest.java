@@ -7,19 +7,21 @@ import frc.robot.Constants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Test.None;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class FeederTest {
+    public static final double DELTA = 1e-2;
+
     private Feeder feeder;
+    private CANSparkMax feederMotor;
 
     @Before
     public void setup() {
         assert HAL.initialize(500, 0);
 
-        CANSparkMax feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless);
-
+        feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless);
         feeder = new Feeder(feederMotor);
     }
 
@@ -36,22 +38,22 @@ public class FeederTest {
             assertFalse(feeder.isFeeding());
             return;
         }
-        
-        assertTrue(feeder.isFeeding());
+
+        assertEquals(1.0, feederMotor.get(), DELTA);
     }
 
     @Test
     public void idle() {
         feeder.idle();
 
-        assertFalse(feeder.isFeeding());
+        assertEquals(0.0, feederMotor.get(), DELTA);
     }
 
     @Test
     public void stopMotors() {
         feeder.stopMotors();
 
-        assertFalse(feeder.isFeeding());
+        assertEquals(0.0, feederMotor.get(), DELTA);
     }
 
     @Test
@@ -64,7 +66,8 @@ public class FeederTest {
         assertFalse(feeder.isFeeding());
     }
 
-    @Test
+    @SuppressWarnings("DefaultAnnotationParam")
+    @Test(expected = None.class /* No exception should be thrown */)
     public void close() {
         feeder.close();
 

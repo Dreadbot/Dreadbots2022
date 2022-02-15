@@ -35,7 +35,7 @@ public class Feeder extends SubsystemBase implements AutoCloseable, MotorSafeSys
         // Set the motor to a high positive speed.
         try {
             motor.set(1.0d);
-        } catch (IllegalStateException ignored) {}
+        } catch (IllegalStateException ignored) { /* No stack trace */ }
     }
 
     /**
@@ -47,7 +47,7 @@ public class Feeder extends SubsystemBase implements AutoCloseable, MotorSafeSys
         // Set the motor to zero movement.
         try {
             motor.set(0.0d);
-        } catch (IllegalStateException ignored) {}
+        } catch (IllegalStateException ignored) { /* No stack trace */ }
     }
 
     /**
@@ -61,7 +61,7 @@ public class Feeder extends SubsystemBase implements AutoCloseable, MotorSafeSys
         double output = 0.0d;
         try {
             output = motor.get();
-        } catch (IllegalStateException ignored) {}
+        } catch (IllegalStateException ignored) { /* No stack trace */ }
 
         return output > 0.0d;
     }
@@ -75,7 +75,7 @@ public class Feeder extends SubsystemBase implements AutoCloseable, MotorSafeSys
 
         try {
             motor.close();
-        } catch (IllegalStateException ignored) {}
+        } catch (IllegalStateException ignored) { /* No stack trace */ }
     }
     
     @Override
@@ -85,6 +85,6 @@ public class Feeder extends SubsystemBase implements AutoCloseable, MotorSafeSys
         // Use the built-in motor stop method.
         try {
             motor.stopMotor();
-        } catch (IllegalStateException ignored) {}
+        } catch (IllegalStateException ignored) { /* No stack trace */ }
     }
 }
