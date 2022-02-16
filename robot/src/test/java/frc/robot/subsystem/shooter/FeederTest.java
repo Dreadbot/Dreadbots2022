@@ -32,37 +32,39 @@ public class FeederTest {
 
     @Test
     public void feed() {
-        if(!Constants.FEEDER_ENABLED) return;
-
         feeder.feed();
 
-        assertEquals(1.0, feederMotor.get(), DELTA);
+        if (feeder.isEnabled()) {
+            assertEquals(1.0, feederMotor.get(), DELTA);
+        }
     }
 
     @Test
     public void idle() {
-        if(!Constants.FEEDER_ENABLED) return;
-
         feeder.idle();
 
-        assertEquals(0.0, feederMotor.get(), DELTA);
+        if (feeder.isEnabled()) {
+            assertEquals(0.0, feederMotor.get(), DELTA);
+        }
     }
 
     @Test
     public void stopMotors() {
-        if(!Constants.FEEDER_ENABLED) return;
-
         feeder.stopMotors();
 
-        assertEquals(0.0, feederMotor.get(), DELTA);
+        if (feeder.isEnabled()) {
+            assertEquals(0.0, feederMotor.get(), DELTA);
+        }
     }
 
     @Test
     public void isFeeding() {
-        if(!Constants.FEEDER_ENABLED) return;
-
         feeder.feed();
-        assertTrue(feeder.isFeeding());
+        if(feeder.isEnabled()) {
+            assertTrue(feeder.isFeeding());
+        } else {
+            assertFalse(feeder.isFeeding());
+        }
 
         feeder.idle();
         assertFalse(feeder.isFeeding());
@@ -71,8 +73,6 @@ public class FeederTest {
     @SuppressWarnings("DefaultAnnotationParam")
     @Test(expected = None.class /* No exception should be thrown */)
     public void close() {
-        if(!Constants.FEEDER_ENABLED) return;
-
         feeder.close();
 
         // Despite making calls to closed objects, these functions should not

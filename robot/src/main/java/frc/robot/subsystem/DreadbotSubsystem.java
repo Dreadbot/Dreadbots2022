@@ -9,8 +9,6 @@ public abstract class DreadbotSubsystem extends SubsystemBase implements AutoClo
     protected DreadbotSubsystem() { }
 
     public void disable() {
-        if(!enabled) return;
-
         this.enabled = false;
     }
 
