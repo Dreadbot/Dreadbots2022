@@ -4,34 +4,35 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.util.MotorSafeSystem;
+import frc.robot.subsystem.DreadbotSubsystem;
 
-public class Flywheel extends SubsystemBase implements AutoCloseable, MotorSafeSystem {
+/**
+ * The flywheel is the mechanism that shoots the ball out of the robot.
+ */
+public class Flywheel extends DreadbotSubsystem {
     private final CANSparkMax motor;
-    private SparkMaxPIDController pidController;
     private RelativeEncoder encoder;
-
-    private double lastVelocity;
+    private SparkMaxPIDController pidController;
 
     public Flywheel(CANSparkMax motor) {
         this.motor = motor;
 
+        // Immediately close motors if subsystem is disabled.
         if(!Constants.FLYWHEEL_ENABLED) {
+            disable();
             motor.close();
             
             return;
         }
 
-        this.pidController = motor.getPIDController();
         this.encoder = motor.getEncoder();
+        this.pidController = motor.getPIDController();
 
         motor.restoreFactoryDefaults();
-        motor.setIdleMode(IdleMode.kCoast);
+        motor.setIdleMode(CANSparkMax.IdleMode.kCoast);
 
         pidController.setP(Constants.FLYWHEEL_P_GAIN);
         pidController.setI(Constants.FLYWHEEL_I_GAIN);
@@ -48,46 +49,75 @@ public class Flywheel extends SubsystemBase implements AutoCloseable, MotorSafeS
         SmartDashboard.putNumber("Flywheel Velocity", getVelocity());
     }
 
-    public void setVelocity(double velocity) {
+    /**
+     * Spools up the motor to the desired velocity in rotations per minute (RPM)
+     *
+     * @param velocity the motor shaft angular velocity, in RPM
+     */
+    public void setVelocity(final double velocity) {
         if(!Constants.FLYWHEEL_ENABLED) return;
+        if(isDisabled()) return;
 
-        if(velocity != lastVelocity) {
-            // Prevents the motor from going beyond 5700RPM
-            velocity = Math.min(velocity, Constants.FLYWHEEL_MAX_RPM);
+        // Prevents the motor from going beyond its maximum 5700RPM
+        final double finalVelocity = Math.min(velocity, Constants.FLYWHEEL_MAX_RPM);
 
-            // Commands the motor to approach the requested angular speed.
-            pidController.setReference(velocity, ControlType.kVelocity);
-            
-            lastVelocity = velocity;
-        }
+        // Commands the motor to approach the requested angular speed.
+        try {
+            pidController.setReference(finalVelocity, ControlType.kVelocity);
+        } catch (IllegalStateException ignored) { disable(); }
     }
 
+    /**
+     * Coasts the motor down to stop while the flywheel is not required.
+     */
     public void idle() {
         if(!Constants.FLYWHEEL_ENABLED) return;
+        if(!isDisabled()) return;
 
-        lastVelocity = 0.0d;
-        
-        motor.set(0.0d);
+        // Commands the motor to coast down to stop.
+        try {
+            motor.set(0.0d);
+        } catch (IllegalStateException ignored) { disable(); }
     }
 
+    /**
+     * Gets the current velocity of the flywheel motor, in rotations
+     * per minute.
+     *
+     * @return the motor shaft angular velocity, in RPM
+     */
     public double getVelocity() {
         if(!Constants.FLYWHEEL_ENABLED) return 0.0d;
+        if(isDisabled()) return 0.0d;
 
-        return encoder.getVelocity();
-    }
+        // Get the current commanded velocity. If there is a failure,
+        // the output is considered zero.
+        double velocity = 0.0d;
+        try {
+            velocity = encoder.getVelocity();
+        } catch (IllegalStateException ignored) { disable(); }
 
-    @Override
-    public void close() throws Exception {
-        if(!Constants.FLYWHEEL_ENABLED) return;
-
-        stopMotors();
-        motor.close();
+        return velocity;
     }
 
     @Override
     public void stopMotors() {
         if(!Constants.FLYWHEEL_ENABLED) return;
+        if(isDisabled()) return;
 
-        motor.stopMotor();
+        // Use the built-in motor stop method.
+        try {
+            motor.stopMotor();
+        } catch (IllegalStateException ignored) { disable(); }
+    }
+
+    @Override
+    public void close() throws Exception {
+        // Stop motor before closure.
+        stopMotors();
+
+        try {
+            motor.close();
+        } catch (IllegalStateException ignored) { disable(); }
     }
 }
