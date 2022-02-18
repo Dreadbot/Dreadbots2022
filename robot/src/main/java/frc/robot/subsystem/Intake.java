@@ -5,24 +5,22 @@
 package frc.robot.subsystem;
 
 import com.revrobotics.CANSparkMax;
-import frc.robot.Constants;
 
 /**
  * The intake is the mechanism that takes cargo from the ground into the feeder mechanism.
  */
 public class Intake extends DreadbotSubsystem {
-    private final CANSparkMax motor;
+    private CANSparkMax motor;
+
+    /**
+     * Disabled Constructor
+     */
+    public Intake() {
+        disable();
+    }
 
     public Intake(CANSparkMax motor) {
         this.motor = motor;
-
-        // Immediately close motors if subsystem is disabled.
-        if(!Constants.INTAKE_ENABLED) {
-            disable();
-            motor.close();
-
-            return;
-        }
 
         motor.restoreFactoryDefaults();
         motor.setIdleMode(CANSparkMax.IdleMode.kCoast);
@@ -36,7 +34,6 @@ public class Intake extends DreadbotSubsystem {
      * Spins the motor to deliver the ground cargo to the feeder mechanism.
      */
     public void intake() {
-        if(!Constants.INTAKE_ENABLED) return;
         if(isDisabled()) return;
 
         // Set the motor to a high positive speed.
@@ -49,7 +46,6 @@ public class Intake extends DreadbotSubsystem {
      * Spins the motor to move the ball out of the robot.
      */
     public void outtake() {
-        if(!Constants.INTAKE_ENABLED) return;
         if(isDisabled()) return;
 
         // Set the motor to a high negative speed.
@@ -62,7 +58,6 @@ public class Intake extends DreadbotSubsystem {
      * Stops the motor while the intake is not required.
      */
     public void idle() {
-        if(!Constants.INTAKE_ENABLED) return;
         if(isDisabled()) return;
 
         // Set the motor to zero movement.
@@ -71,8 +66,8 @@ public class Intake extends DreadbotSubsystem {
         } catch (IllegalStateException ignored) { disable(); }
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     public boolean isIntaking() {
-        if(!Constants.INTAKE_ENABLED) return false;
         if(isDisabled()) return false;
 
         // Get the current commanded speed. If there is a failure,
@@ -85,8 +80,8 @@ public class Intake extends DreadbotSubsystem {
         return output > 0.0d;
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     public boolean isOuttaking() {
-        if(!Constants.INTAKE_ENABLED) return false;
         if(isDisabled()) return false;
 
         // Get the current commanded speed. If there is a failure,
@@ -101,7 +96,6 @@ public class Intake extends DreadbotSubsystem {
 
     @Override
     public void stopMotors() {
-        if(!Constants.INTAKE_ENABLED) return;
         if(isDisabled()) return;
 
         // Use the built-in motor stop method.

@@ -1,39 +1,36 @@
 package frc.robot.subsystem.shooter;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax.IdleMode;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystem.DreadbotSubsystem;
 import frc.robot.util.DreadbotMath;
-import frc.robot.util.MotorSafeSystem;
 
-public class Hood extends SubsystemBase implements AutoCloseable, MotorSafeSystem {
-    private final DigitalInput lowerSwitch;
-    private final DigitalInput upperSwitch;
-    private final CANSparkMax motor;
+public class Hood extends DreadbotSubsystem {
+    private DigitalInput lowerSwitch;
+    private DigitalInput upperSwitch;
+    private CANSparkMax motor;
     private RelativeEncoder encoder;
     private SparkMaxPIDController pidController;
 
     private double lowerMotorLimit;
     private double upperMotorLimit;
 
+    /**
+     * Disabled constructor
+     */
+    public Hood() {
+        disable();
+    }
+
     public Hood (CANSparkMax motor, DigitalInput lowerSwitch, DigitalInput upperSwitch) {
         this.motor = motor;
         this.lowerSwitch = lowerSwitch;
         this.upperSwitch = upperSwitch;
-
-        if(!Constants.HOOD_ENABLED) {
-            lowerSwitch.close();
-            upperSwitch.close();
-            motor.close();
-
-            return;
-        }
 
         motor.setIdleMode(IdleMode.kCoast);
         encoder = motor.getEncoder();
@@ -53,7 +50,7 @@ public class Hood extends SubsystemBase implements AutoCloseable, MotorSafeSyste
 
     @Override
     public void periodic() {
-        if(!Constants.HOOD_ENABLED) return; 
+        if(isDisabled()) return;
 
         SmartDashboard.putBoolean("Hood Lower Limit Switch", getLowerLimitSwitch());
         SmartDashboard.putBoolean("Hood Upper Limit Switch", getUpperLimitSwitch());
@@ -62,52 +59,78 @@ public class Hood extends SubsystemBase implements AutoCloseable, MotorSafeSyste
     }
 
     public void setAngle(double angle) {
-        if(!Constants.HOOD_ENABLED) return; 
+        if(isDisabled()) return;
 
         angle = DreadbotMath.clampValue(angle, Constants.MIN_HOOD_ANGLE, Constants.MAX_HOOD_ANGLE);
         double rotations = convertDegreesToRotations(angle);
 
-        pidController.setReference(rotations, CANSparkMax.ControlType.kPosition);
+        try {
+            pidController.setReference(rotations, CANSparkMax.ControlType.kPosition);
+        } catch (IllegalStateException ignored) { disable(); }
     }
 
     public void setPosition(double rotations) {
-        if(!Constants.HOOD_ENABLED) return; 
+        if(isDisabled()) return;
 
         rotations = DreadbotMath.clampValue(rotations, lowerMotorLimit, upperMotorLimit);
 
-        pidController.setReference(rotations, CANSparkMax.ControlType.kPosition);
+        try {
+            pidController.setReference(rotations, CANSparkMax.ControlType.kPosition);
+        } catch (IllegalStateException ignored) { disable(); }
     }
 
     public void setSpeed(double speed) {
-        if(!Constants.HOOD_ENABLED) return;
+        if(isDisabled()) return;
 
         speed = DreadbotMath.clampValue(speed, -1.0, 1.0);
-        motor.set(speed);
+
+        try {
+            motor.set(speed);
+        } catch (IllegalStateException ignored) { disable(); }
     }
 
     public boolean getLowerLimitSwitch() {
-        if(!Constants.HOOD_ENABLED) return false;
+        if(isDisabled()) return false;
 
-        return !lowerSwitch.get();
+        boolean limitSwitchStatus = false;
+        try {
+            limitSwitchStatus = !lowerSwitch.get();
+        } catch (IllegalStateException ignored) { disable(); }
+
+        return limitSwitchStatus;
     }
 
     public boolean getUpperLimitSwitch() {
-        if(!Constants.HOOD_ENABLED) return false;
+        if(isDisabled()) return false;
 
-        return !upperSwitch.get();
+        boolean limitSwitchStatus = false;
+        try {
+            limitSwitchStatus = !upperSwitch.get();
+        } catch (IllegalStateException ignored) { disable(); }
+
+        return limitSwitchStatus;
     }
 
     public double getAngle() {
-        if(!Constants.HOOD_ENABLED) return 0.0d;
+        if(isDisabled()) return 0.0d;
 
-        double rotations = encoder.getPosition();
+        double rotations = 0.0d;
+        try {
+            rotations = encoder.getPosition();
+        } catch (IllegalStateException ignored) { disable(); }
+
         return convertRotationsToDegrees(rotations);
     }
 
     public double getPosition() {
-        if(!Constants.HOOD_ENABLED) return 0.0d;
+        if(isDisabled()) return 0.0d;
 
-        return encoder.getPosition();
+        double rotations = 0.0d;
+        try {
+            rotations = encoder.getPosition();
+        } catch (IllegalStateException ignored) { disable(); }
+
+        return rotations;
     }
 
     public void setUpperMotorLimit(double rotations) {
@@ -156,7 +179,7 @@ public class Hood extends SubsystemBase implements AutoCloseable, MotorSafeSyste
 
     @Override
     public void stopMotors() {
-        if(!Constants.HOOD_ENABLED) return;
+        if(isDisabled()) return;
 
         motor.stopMotor();
     }

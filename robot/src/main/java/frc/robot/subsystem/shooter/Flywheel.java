@@ -13,23 +13,22 @@ import frc.robot.subsystem.DreadbotSubsystem;
  * The flywheel is the mechanism that shoots the ball out of the robot.
  */
 public class Flywheel extends DreadbotSubsystem {
-    private final CANSparkMax motor;
+    private CANSparkMax motor;
 
     @SuppressWarnings("FieldMayBeFinal")
     private RelativeEncoder encoder;
     @SuppressWarnings("FieldMayBeFinal")
     private SparkMaxPIDController pidController;
 
+    /**
+     * Disabled constructor
+     */
+    public Flywheel() {
+        disable();
+    }
+
     public Flywheel(CANSparkMax motor) {
         this.motor = motor;
-
-        // Immediately close motors if subsystem is disabled.
-        if(!Constants.FLYWHEEL_ENABLED) {
-            disable();
-            motor.close();
-            
-            return;
-        }
 
         this.encoder = motor.getEncoder();
         this.pidController = motor.getPIDController();
@@ -58,7 +57,6 @@ public class Flywheel extends DreadbotSubsystem {
      * @param velocity the motor shaft angular velocity, in RPM
      */
     public void setVelocity(final double velocity) {
-        if(!Constants.FLYWHEEL_ENABLED) return;
         if(isDisabled()) return;
 
         // Prevents the motor from going beyond its maximum 5700RPM
@@ -74,7 +72,6 @@ public class Flywheel extends DreadbotSubsystem {
      * Coasts the motor down to stop while the flywheel is not required.
      */
     public void idle() {
-        if(!Constants.FLYWHEEL_ENABLED) return;
         if(!isDisabled()) return;
 
         // Commands the motor to coast down to stop.
@@ -90,7 +87,6 @@ public class Flywheel extends DreadbotSubsystem {
      * @return the motor shaft angular velocity, in RPM
      */
     public double getVelocity() {
-        if(!Constants.FLYWHEEL_ENABLED) return 0.0d;
         if(isDisabled()) return 0.0d;
 
         // Get the current commanded velocity. If there is a failure,
@@ -105,7 +101,6 @@ public class Flywheel extends DreadbotSubsystem {
 
     @Override
     public void stopMotors() {
-        if(!Constants.FLYWHEEL_ENABLED) return;
         if(isDisabled()) return;
 
         // Use the built-in motor stop method.

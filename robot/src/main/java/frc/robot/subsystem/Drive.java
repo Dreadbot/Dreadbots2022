@@ -6,19 +6,24 @@ package frc.robot.subsystem;
 
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
-import frc.robot.Constants;
 
 /**
  * The drive is the mechanism that moves the robot across the field. We are using a mecanum drive.
  */
 public class Drive extends DreadbotSubsystem {
-    private final CANSparkMax leftFrontMotor;
-    private final CANSparkMax rightFrontMotor;
-    private final CANSparkMax leftBackMotor;
-    private final CANSparkMax rightBackMotor;
+    private CANSparkMax leftFrontMotor;
+    private CANSparkMax rightFrontMotor;
+    private CANSparkMax leftBackMotor;
+    private CANSparkMax rightBackMotor;
 
-    @SuppressWarnings("FieldMayBeFinal")
     private MecanumDrive mecanumDrive;
+
+    /**
+     * Disabled Constructor
+     */
+    public Drive() {
+        disable();
+    }
 
     public Drive(CANSparkMax leftFrontMotor, CANSparkMax rightFrontMotor, CANSparkMax leftBackMotor,
             CANSparkMax rightBackMotor) {
@@ -26,17 +31,6 @@ public class Drive extends DreadbotSubsystem {
         this.rightFrontMotor = rightFrontMotor;
         this.leftBackMotor = leftBackMotor;
         this.rightBackMotor = rightBackMotor;
-        
-        // Immediately close motors if subsystem is disabled.
-        if(!Constants.DRIVE_ENABLED) {
-            disable();
-            leftFrontMotor.close();
-            rightFrontMotor.close();
-            leftBackMotor.close();
-            rightBackMotor.close();
-
-            return;
-        }
 
         leftFrontMotor.restoreFactoryDefaults();
         rightFrontMotor.restoreFactoryDefaults();
@@ -59,7 +53,6 @@ public class Drive extends DreadbotSubsystem {
      *     positive.
      */
     public void driveCartesian(double joystickForwardAxis, double joystickLateralAxis, double zRotation) {
-        if(!Constants.DRIVE_ENABLED) return;
         if(isDisabled()) return;
 
         try {
@@ -79,7 +72,6 @@ public class Drive extends DreadbotSubsystem {
      *     positive.
      */
     public void drivePolar(double magnitude, double angle, double zRotation) {
-        if(!Constants.DRIVE_ENABLED) return;
         if(isDisabled()) return;
 
         try {
@@ -104,7 +96,6 @@ public class Drive extends DreadbotSubsystem {
 
     @Override
     public void stopMotors() {
-        if(!Constants.DRIVE_ENABLED) return;
         if(isDisabled()) return;
 
         try {

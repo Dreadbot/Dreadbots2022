@@ -1,38 +1,36 @@
 package frc.robot.subsystem.shooter;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystem.DreadbotSubsystem;
 import frc.robot.util.DreadbotMath;
-import frc.robot.util.MotorSafeSystem;
 
-public class Turret extends SubsystemBase implements AutoCloseable, MotorSafeSystem {
-    private final DigitalInput lowerSwitch;
-    private final DigitalInput upperSwitch;
-    private final CANSparkMax motor;
+public class Turret extends DreadbotSubsystem {
+    private DigitalInput lowerSwitch;
+    private DigitalInput upperSwitch;
+    private CANSparkMax motor;
     private RelativeEncoder encoder;
     private SparkMaxPIDController pidController;
 
     private double lowerMotorLimit;
     private double upperMotorLimit;
 
+    /**
+     * Disabled Constructor
+     */
+    public Turret() {
+        disable();
+    }
+
     public Turret(CANSparkMax motor, DigitalInput lowerSwitch, DigitalInput upperSwitch) {
         this.lowerSwitch = lowerSwitch;
         this.upperSwitch = upperSwitch;
         this.motor = motor;
-
-        if(!Constants.TURRET_ENABLED) {
-            lowerSwitch.close();
-            upperSwitch.close();
-            motor.close();
-
-            return;
-        }
 
         motor.setIdleMode(IdleMode.kBrake);
         encoder = motor.getEncoder();
@@ -50,7 +48,7 @@ public class Turret extends SubsystemBase implements AutoCloseable, MotorSafeSys
 
     @Override
     public void periodic() {
-        if(!Constants.TURRET_ENABLED) return;
+        if(isDisabled()) return;
 
         SmartDashboard.putBoolean("Turret Lower Limit Switch", getLowerLimitSwitch());
         SmartDashboard.putBoolean("Turret Upper Limit Switch", getUpperLimitSwitch());
@@ -59,7 +57,7 @@ public class Turret extends SubsystemBase implements AutoCloseable, MotorSafeSys
     }
 
     public void setAngle(double angle) {
-        if(!Constants.TURRET_ENABLED) return; 
+        if(isDisabled()) return;
 
         angle = DreadbotMath.clampValue(angle, Constants.MIN_TURRET_ANGLE, Constants.MAX_TURRET_ANGLE);
         double rotations = convertDegreesToRotations(angle);
@@ -68,7 +66,7 @@ public class Turret extends SubsystemBase implements AutoCloseable, MotorSafeSys
     }
 
     public void setPosition(double rotations) {
-        if(!Constants.TURRET_ENABLED) return;
+        if(isDisabled()) return;
 
         rotations = DreadbotMath.clampValue(rotations, lowerMotorLimit, upperMotorLimit);
         
@@ -76,33 +74,33 @@ public class Turret extends SubsystemBase implements AutoCloseable, MotorSafeSys
     }
 
     public void setSpeed(double speed) {
-        if(!Constants.TURRET_ENABLED) return;
+        if(isDisabled()) return;
 
         speed = DreadbotMath.clampValue(speed, -1.0d, 1.0d);
         motor.set(speed);
     }
 
     public boolean getLowerLimitSwitch() {
-        if(!Constants.TURRET_ENABLED) return false;
+        if(isDisabled()) return false;
 
         return !lowerSwitch.get();
     }
 
     public boolean getUpperLimitSwitch() {
-        if(!Constants.TURRET_ENABLED) return false;
+        if(isDisabled()) return false;
 
         return !upperSwitch.get();
     }
 
     public double getAngle() {
-        if(!Constants.TURRET_ENABLED) return 0.0d;
+        if(isDisabled()) return 0.0d;
 
         double rotations = encoder.getPosition();
         return convertRotationsToDegrees(rotations);
     }
 
     public double getPosition() {
-        if(!Constants.TURRET_ENABLED) return 0.0d;
+        if(isDisabled()) return 0.0d;
 
         return encoder.getPosition();
     }
@@ -153,7 +151,7 @@ public class Turret extends SubsystemBase implements AutoCloseable, MotorSafeSys
 
     @Override
     public void stopMotors() {
-        if(!Constants.TURRET_ENABLED) return; 
+        if(isDisabled()) return;
 
         motor.stopMotor();
     }

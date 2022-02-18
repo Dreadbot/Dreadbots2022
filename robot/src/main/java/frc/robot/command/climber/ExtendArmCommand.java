@@ -20,6 +20,6 @@ public class ExtendArmCommand extends CommandBase {
     }
     @Override
     public void end(boolean interupted) {
-        climber.stopMotor();
+        climber.stopMotors();
     }
 }

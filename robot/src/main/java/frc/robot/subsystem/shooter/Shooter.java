@@ -1,13 +1,20 @@
 package frc.robot.subsystem.shooter;
-import frc.robot.Constants;
-import frc.robot.util.MotorSafeSystem;
 
-public class Shooter implements AutoCloseable, MotorSafeSystem {
-    private final Feeder feeder;
-    private final Flywheel flywheel;
-    private final Hood hood;
-    private final Turret turret;
-    
+import frc.robot.subsystem.DreadbotSubsystem;
+
+public class Shooter extends DreadbotSubsystem {
+    private Feeder feeder;
+    private Flywheel flywheel;
+    private Hood hood;
+    private Turret turret;
+
+    /**
+     * Disabled constructor
+     */
+    public Shooter() {
+        disable();
+    }
+
     public Shooter(Feeder feeder, Flywheel flywheel, Hood hood, Turret turret) {
         this.feeder = feeder;
         this.flywheel = flywheel;
@@ -16,43 +23,46 @@ public class Shooter implements AutoCloseable, MotorSafeSystem {
     }
 
     public void feedBall() {
-        if(!Constants.SHOOTER_ENABLED) return;
+        System.out.println("SHOOTER CLASS CALL");
+        if(isDisabled()) return;
+
+        System.out.println("SHOOTER CLASS CALL ENABLED");
 
         feeder.feed();
     }
 
     public void setFlywheelVelocity(double velocity) {
-        if(!Constants.SHOOTER_ENABLED) return;
+        if(isDisabled()) return;
 
         flywheel.setVelocity(velocity);
     }
 
     public void setHoodAngle(double angle) {
-        if(!Constants.SHOOTER_ENABLED) return;
+        if(isDisabled()) return;
 
         hood.setAngle(angle);
     }
 
     public void setTurretAngle(double angle) {
-        if(!Constants.SHOOTER_ENABLED) return;
+        if(isDisabled()) return;
 
         turret.setAngle(angle);
     }
 
     public double getFlywheelVelocity() {
-        if(!Constants.SHOOTER_ENABLED) return 0.0d;
+        if(isDisabled()) return 0.0d;
 
         return flywheel.getVelocity();
     }
 
     public double getHoodAngle() {
-        if(!Constants.SHOOTER_ENABLED) return 0.0d;
+        if(isDisabled()) return 0.0d;
 
         return hood.getAngle();
     }
 
     public double getTurretAngle() {
-        if(!Constants.SHOOTER_ENABLED) return 0.0d;
+        if(isDisabled()) return 0.0d;
 
         return turret.getAngle();
     }
@@ -67,7 +77,7 @@ public class Shooter implements AutoCloseable, MotorSafeSystem {
 
     @Override
     public void stopMotors() {
-        if(!Constants.SHOOTER_ENABLED) return;
+        if(isDisabled()) return;
 
         feeder.stopMotors();
         flywheel.stopMotors();

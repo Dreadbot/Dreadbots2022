@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -34,44 +35,78 @@ import frc.robot.subsystem.shooter.Turret;
 import frc.robot.util.DreadbotController;
 
 public class RobotContainer {
-    private final DreadbotController primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
-    private final DreadbotController secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
+    private final DreadbotController primaryController;
+    private final DreadbotController secondaryController;
 
-    private final CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-    private final CANSparkMax rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-    private final CANSparkMax leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-    private final CANSparkMax rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-    private final Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
-
-    private final CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
-    private final Intake intake = new Intake(intakeMotor);
-
-    private final CANSparkMax feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless);
-    private final Feeder feeder = new Feeder(feederMotor);
-
-    private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
-    private final DigitalInput lowerTurretLimitSwitch = new DigitalInput(Constants.LOWER_TURRET_LIMIT_SWITCH_ID);
-    private final DigitalInput upperTurretLimitSwitch = new DigitalInput(Constants.UPPER_TURRET_LIMIT_SWITCH_ID);
-    private final Turret turret = new Turret(turretMotor, lowerTurretLimitSwitch, upperTurretLimitSwitch);
-
-    private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
-    private final Flywheel flywheel = new Flywheel(flywheelMotor);
-
-    private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
-    private final DigitalInput lowerHoodLimitSwitch = new DigitalInput(Constants.LOWER_HOOD_LIMIT_SWITCH_ID);
-    private final DigitalInput upperHoodLimitSwitch = new DigitalInput(Constants.UPPER_HOOD_LIMIT_SWITCH_ID);
-    private final Hood hood = new Hood(hoodMotor, lowerHoodLimitSwitch, upperHoodLimitSwitch);
-
-    private final Shooter shooter = new Shooter(feeder, flywheel, hood, turret);
-
-    private final Solenoid neutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.NEUTRAL_HOOK_ACTUATOR_ID);
-    private final Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.CLIMBING_HOOK_ACTUATOR_ID);
-    private final CANSparkMax winchMotor = new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless);
-    private final DigitalInput bottomLimitSwitch = new DigitalInput(Constants.BOTTOM_CLIMBER_LIMIT_SWITCH_ID);
-    private final DigitalInput topLimitSwitch = new DigitalInput(Constants.TOP_CLIMBER_LIMIT_SWITCH_ID);
-    private final Climber climber = new Climber(neutralHookActuator, climbingHookActuator, winchMotor, bottomLimitSwitch, topLimitSwitch);
+    private final Drive drive;
+    private final Intake intake;
+    private final Feeder feeder;
+    private final Climber climber;
+    private final Turret turret;
+    private final Flywheel flywheel;
+    private final Hood hood;
+    private final Shooter shooter;
     
     public RobotContainer() {
+        primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
+        secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
+
+        if (Constants.DRIVE_ENABLED) {
+            CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+            CANSparkMax rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+            CANSparkMax leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+            CANSparkMax rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+
+            drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
+        } else drive = new Drive();
+
+        if (Constants.INTAKE_ENABLED) {
+            CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
+
+            intake = new Intake(intakeMotor);
+        } else intake = new Intake();
+
+        if (Constants.FEEDER_ENABLED) {
+            CANSparkMax feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless);
+
+            feeder = new Feeder(feederMotor);
+        } else feeder = new Feeder();
+
+        if (Constants.TURRET_ENABLED) {
+            CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
+            DigitalInput lowerTurretLimitSwitch = new DigitalInput(Constants.LOWER_TURRET_LIMIT_SWITCH_ID);
+            DigitalInput upperTurretLimitSwitch = new DigitalInput(Constants.UPPER_TURRET_LIMIT_SWITCH_ID);
+
+            turret = new Turret(turretMotor, lowerTurretLimitSwitch, upperTurretLimitSwitch);
+        } else turret = new Turret();
+
+        if (Constants.FLYWHEEL_ENABLED) {
+            CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
+
+            flywheel = new Flywheel(flywheelMotor);
+        } else flywheel = new Flywheel();
+
+        if (Constants.HOOD_ENABLED) {
+            CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
+            DigitalInput lowerHoodLimitSwitch = new DigitalInput(Constants.LOWER_HOOD_LIMIT_SWITCH_ID);
+            DigitalInput upperHoodLimitSwitch = new DigitalInput(Constants.UPPER_HOOD_LIMIT_SWITCH_ID);
+
+            hood = new Hood(hoodMotor, lowerHoodLimitSwitch, upperHoodLimitSwitch);
+        } else hood = new Hood();
+
+        if (Constants.SHOOTER_ENABLED) {
+            shooter = new Shooter(feeder, flywheel, hood, turret);
+        } else shooter = new Shooter();
+
+        if (Constants.CLIMB_ENABLED) {
+            Solenoid neutralHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.NEUTRAL_HOOK_ACTUATOR_ID);
+            Solenoid climbingHookActuator = new Solenoid(PneumaticsModuleType.CTREPCM, Constants.CLIMBING_HOOK_ACTUATOR_ID);
+            CANSparkMax winchMotor = new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless);
+            DigitalInput bottomLimitSwitch = new DigitalInput(Constants.BOTTOM_CLIMBER_LIMIT_SWITCH_ID);
+            DigitalInput topLimitSwitch = new DigitalInput(Constants.TOP_CLIMBER_LIMIT_SWITCH_ID);
+            climber = new Climber(neutralHookActuator, climbingHookActuator, winchMotor, bottomLimitSwitch, topLimitSwitch);
+        } else climber = new Climber();
+
         configureButtonBindings();
     }
 

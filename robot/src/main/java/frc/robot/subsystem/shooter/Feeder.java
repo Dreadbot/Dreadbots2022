@@ -2,25 +2,23 @@ package frc.robot.subsystem.shooter;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
-import frc.robot.Constants;
 import frc.robot.subsystem.DreadbotSubsystem;
 
 /**
  * The feeder is the mechanism that delivers the cargo from the intake mechanism to the shooter mechanism.
  */
 public class Feeder extends DreadbotSubsystem {
-    private final CANSparkMax motor;
+    private CANSparkMax motor;
+
+    /**
+     * Disabled Constructor
+     */
+    public Feeder() {
+        disable();
+    }
 
     public Feeder(CANSparkMax motor) {
         this.motor = motor;
-
-        // Immediately close motors if subsystem is disabled.
-        if(!Constants.FEEDER_ENABLED) {
-            disable();
-            motor.close();
-
-            return;
-        }
 
         motor.restoreFactoryDefaults();
         motor.setIdleMode(IdleMode.kCoast);
@@ -30,7 +28,6 @@ public class Feeder extends DreadbotSubsystem {
      * Spins the motor to deliver the cargo to the shooter mechanism.
      */
     public void feed() {
-        if(!Constants.FEEDER_ENABLED) return;
         if(isDisabled()) return;
 
         // Set the motor to a high positive speed.
@@ -43,7 +40,6 @@ public class Feeder extends DreadbotSubsystem {
      * Stops the motor while the feeder is not required.
      */
     public void idle() {
-        if(!Constants.FEEDER_ENABLED) return;
         if(isDisabled()) return;
 
         // Set the motor to zero movement.
@@ -56,7 +52,6 @@ public class Feeder extends DreadbotSubsystem {
      * @return Whether the motor is currently feeding a ball.
      */
     public boolean isFeeding() {
-        if(!Constants.FEEDER_ENABLED) return false;
         if(isDisabled()) return false;
 
         // Get the current commanded speed. If there is a failure,
@@ -71,7 +66,6 @@ public class Feeder extends DreadbotSubsystem {
 
     @Override
     public void stopMotors() {
-        if(!Constants.FEEDER_ENABLED) return;
         if(isDisabled()) return;
 
         // Use the built-in motor stop method.
