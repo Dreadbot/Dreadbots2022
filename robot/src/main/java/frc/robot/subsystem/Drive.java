@@ -8,6 +8,9 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import frc.robot.Constants;
 
+/**
+ * The drive is the mechanism that moves the robot across the field. We are using a mecanum drive.
+ */
 public class Drive extends DreadbotSubsystem {
     private final CANSparkMax leftFrontMotor;
     private final CANSparkMax rightFrontMotor;
@@ -23,7 +26,7 @@ public class Drive extends DreadbotSubsystem {
         this.leftBackMotor = leftBackMotor;
         this.rightBackMotor = rightBackMotor;
         
-        // Prevent SparkMax crashes.
+        // Immediately close motors if subsystem is disabled.
         if(!Constants.DRIVE_ENABLED) {
             disable();
             leftFrontMotor.close();
@@ -38,15 +41,22 @@ public class Drive extends DreadbotSubsystem {
         rightFrontMotor.restoreFactoryDefaults();
         leftBackMotor.restoreFactoryDefaults();
         rightBackMotor.restoreFactoryDefaults();
-        
-        // Invert right motors
+
+        // According to the docs, motors must be inverted before they are passed into the MecanumDrive utility.
         rightFrontMotor.setInverted(true);
         rightBackMotor.setInverted(true);
 
-        // According to the docs, motors must be inverted before they are passed into the mecanumdrive utility.
         this.mecanumDrive = new MecanumDrive(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
     }
 
+    /**
+     * Drive method for joystick inputs
+     *
+     * @param joystickForwardAxis The robot's speed along the Y axis [-1.0..1.0]. Right is positive.
+     * @param joystickLateralAxis The robot's speed along the X axis [-1.0..1.0]. Forward is positive.
+     * @param zRotation The robot's rotation rate around the Z axis [-1.0..1.0]. Clockwise is
+     *     positive.
+     */
     public void driveCartesian(double joystickForwardAxis, double joystickLateralAxis, double zRotation) {
         if(!Constants.DRIVE_ENABLED) return;
         if(isDisabled()) return;
@@ -56,6 +66,17 @@ public class Drive extends DreadbotSubsystem {
         } catch (IllegalStateException ignored) { disable(); }
     }
 
+    /**
+     * Drive method for magnitude, angle, and rotation
+     *
+     * <p>Angles are measured counter-clockwise from straight ahead. The speed at which the robot
+     * drives (translation) is independent from its angle or rotation rate.
+     *
+     * @param magnitude The robot's speed at a given angle [-1.0..1.0]. Forward is positive.
+     * @param angle The angle around the Z axis at which the robot drives in degrees [-180..180].
+     * @param zRotation The robot's rotation rate around the Z axis [-1.0..1.0]. Clockwise is
+     *     positive.
+     */
     public void drivePolar(double magnitude, double angle, double zRotation) {
         if(!Constants.DRIVE_ENABLED) return;
         if(isDisabled()) return;
@@ -65,6 +86,14 @@ public class Drive extends DreadbotSubsystem {
         } catch (IllegalStateException ignored) { disable(); }
     }
 
+    /**
+     * Converts joystick inputs to a polar angle.
+     *
+     * @param forwardAxis The joystick's position along the Y axis [-1.0..1.0]
+     * @param lateralAxis The joystick's position along the X axis [-1.0..1.0]
+     *
+     * @return The angle of the joystick input
+     */
     public static double getAngleDegreesFromJoystick(double forwardAxis, double lateralAxis) {
         double angleInRadians = Math.atan2(-forwardAxis, lateralAxis);
         double angleInDegrees = angleInRadians * 180.0d / Math.PI;
