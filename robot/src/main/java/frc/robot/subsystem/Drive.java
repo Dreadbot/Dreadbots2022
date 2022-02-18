@@ -5,12 +5,10 @@
 package frc.robot.subsystem;
 
 import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class Drive extends SubsystemBase {
+public class Drive extends DreadbotSubsystem {
     private final CANSparkMax leftFrontMotor;
     private final CANSparkMax rightFrontMotor;
     private final CANSparkMax leftBackMotor;
@@ -27,6 +25,7 @@ public class Drive extends SubsystemBase {
         
         // Prevent SparkMax crashes.
         if(!Constants.DRIVE_ENABLED) {
+            disable();
             leftFrontMotor.close();
             rightFrontMotor.close();
             leftBackMotor.close();
@@ -50,18 +49,20 @@ public class Drive extends SubsystemBase {
 
     public void driveCartesian(double joystickForwardAxis, double joystickLateralAxis, double zRotation) {
         if(!Constants.DRIVE_ENABLED) return;
+        if(isDisabled()) return;
 
-        mecanumDrive.driveCartesian(joystickForwardAxis, joystickLateralAxis, zRotation);
+        try {
+            mecanumDrive.driveCartesian(joystickForwardAxis, joystickLateralAxis, zRotation);
+        } catch (IllegalStateException ignored) { disable(); }
     }
 
-    public void drivePolar(double joystickForwardAxis, double joystickLateralAxis, double zRotation) {
+    public void drivePolar(double magnitude, double angle, double zRotation) {
         if(!Constants.DRIVE_ENABLED) return;
-        
-        // For polar drive, calculate the magnitude and angle that the MecanumDrive should drive at.
-        double magnitude = Math.sqrt(Math.pow(joystickForwardAxis, 2) + Math.pow(joystickLateralAxis, 2));
-        double angle = Drive.getAngleDegreesFromJoystick(-joystickForwardAxis, joystickLateralAxis);
+        if(isDisabled()) return;
 
-        mecanumDrive.drivePolar(magnitude, angle, -zRotation);
+        try {
+            mecanumDrive.drivePolar(magnitude, angle, zRotation);
+        } catch (IllegalStateException ignored) { disable(); }
     }
 
     public static double getAngleDegreesFromJoystick(double forwardAxis, double lateralAxis) {
@@ -71,41 +72,26 @@ public class Drive extends SubsystemBase {
         return (angleInDegrees <= -180.0d) ? angleInDegrees + 360.0d : angleInDegrees;
     }
 
-    protected void stopMotors() {
+    @Override
+    public void stopMotors() {
         if(!Constants.DRIVE_ENABLED) return;
+        if(isDisabled()) return;
 
-        leftFrontMotor.stopMotor();
-        rightFrontMotor.stopMotor();
-        leftBackMotor.stopMotor();
-        rightBackMotor.stopMotor();
-
-        mecanumDrive.stopMotor();
+        try {
+            mecanumDrive.stopMotor();
+        } catch (IllegalStateException ignored) { disable(); }
     }
 
-    public void close() throws Exception {
-        if(!Constants.DRIVE_ENABLED) return;
+    @Override
+    public void close() {
+        // Stop motors before closure
+        stopMotors();
 
-        leftFrontMotor.close();
-        rightFrontMotor.close();
-        leftBackMotor.close();
-        rightBackMotor.close();
-
-        mecanumDrive.close();
-    }
-
-    public CANSparkMax getRightBackMotor() {
-        return rightBackMotor;
-    }
-
-    public CANSparkMax getLeftBackMotor() {
-        return leftBackMotor;
-    }
-
-    public CANSparkMax getRightFrontMotor() {
-        return rightFrontMotor;
-    }
-
-    public CANSparkMax getLeftFrontMotor() {
-        return leftFrontMotor;
+        try {
+            leftFrontMotor.close();
+            rightFrontMotor.close();
+            leftBackMotor.close();
+            rightBackMotor.close();
+        } catch (IllegalStateException ignored) { disable(); }
     }
 }

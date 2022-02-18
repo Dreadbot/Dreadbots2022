@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Test.None;
 
 import edu.wpi.first.hal.HAL;
 import frc.robot.Constants;
@@ -25,13 +26,11 @@ public class DriveTest {
     @Before
     public void setup() {
         assert HAL.initialize(500, 0);
+
         leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
         rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
         leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
         rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-
-        rightFrontDriveMotor.setInverted(true);
-        rightBackDriveMotor.setInverted(true);
 
         drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
@@ -39,18 +38,12 @@ public class DriveTest {
     }
 
     @After
-    public void shutdown() throws Exception {
-        if(!Constants.DRIVE_ENABLED) return;
-        leftFrontDriveMotor.close();
-        rightFrontDriveMotor.close();
-        leftBackDriveMotor.close();
-        rightBackDriveMotor.close();
+    public void shutdown() {
         drive.close();
     }
 
     @Test
-    public void testJoystickPolarMath() {
-        if(!Constants.DRIVE_ENABLED) return;
+    public void getAngleDegreesFromJoystick() {
         // First Quadrant of the Joystick (-,+)
         angle = Drive.getAngleDegreesFromJoystick(
             -Math.sin(Math.PI / 3), Math.cos(Math.PI / 3));
@@ -97,24 +90,142 @@ public class DriveTest {
     }
 
     @Test
-    public void fullForwardDisabled() {
-        if(!Constants.DRIVE_ENABLED) return;
-        drive.drivePolar(1.0d, 0.0d, 0.0d);
+    public void driveCartesian() {
+        // Full forward
+        drive.driveCartesian(1.0d, 0.0d, 0.0d);
+        if (drive.isEnabled()) {
+            assertEquals(1.0d, leftFrontDriveMotor.get(), DELTA);
+            assertEquals(1.0d, rightFrontDriveMotor.get(), DELTA);
+            assertEquals(1.0d, leftBackDriveMotor.get(), DELTA);
+            assertEquals(1.0d, rightBackDriveMotor.get(), DELTA);
+        }
 
-        assertEquals(1.0d, leftFrontDriveMotor.get(), DELTA);
-        assertEquals(1.0d, rightFrontDriveMotor.get(), DELTA);
-        assertEquals(1.0d, leftBackDriveMotor.get(), DELTA);
-        assertEquals(1.0d, rightBackDriveMotor.get(), DELTA);
+        // Full backward
+        drive.driveCartesian(-1.0d, 0.0d, 0.0d);
+        if (drive.isEnabled()) {
+            assertEquals(-1.0d, leftFrontDriveMotor.get(), DELTA);
+            assertEquals(-1.0d, rightFrontDriveMotor.get(), DELTA);
+            assertEquals(-1.0d, leftBackDriveMotor.get(), DELTA);
+            assertEquals(-1.0d, rightBackDriveMotor.get(), DELTA);
+        }
+
+        // Full strafe left
+        drive.driveCartesian(0.0d, -1.0d, 0.0d);
+        if (drive.isEnabled()) {
+            assertEquals(-1.0d, leftFrontDriveMotor.get(), DELTA);
+            assertEquals(1.0d, rightFrontDriveMotor.get(), DELTA);
+            assertEquals(1.0d, leftBackDriveMotor.get(), DELTA);
+            assertEquals(-1.0d, rightBackDriveMotor.get(), DELTA);
+        }
+
+        // Full strafe right
+        drive.driveCartesian(0.0d, 1.0d, 0.0d);
+        if (drive.isEnabled()) {
+            assertEquals(1.0d, leftFrontDriveMotor.get(), DELTA);
+            assertEquals(-1.0d, rightFrontDriveMotor.get(), DELTA);
+            assertEquals(-1.0d, leftBackDriveMotor.get(), DELTA);
+            assertEquals(1.0d, rightBackDriveMotor.get(), DELTA);
+        }
+
+        // Full negative rotation
+        drive.driveCartesian(0.0d, 0.0d, -1.0d);
+        if (drive.isEnabled()) {
+            assertEquals(-1.0d, leftFrontDriveMotor.get(), DELTA);
+            assertEquals(1.0d, rightFrontDriveMotor.get(), DELTA);
+            assertEquals(-1.0d, leftBackDriveMotor.get(), DELTA);
+            assertEquals(1.0d, rightBackDriveMotor.get(), DELTA);
+        }
+
+        // Full positive rotation
+        drive.driveCartesian(0.0d, 0.0d, 1.0d);
+        if (drive.isEnabled()) {
+            assertEquals(1.0d, leftFrontDriveMotor.get(), DELTA);
+            assertEquals(-1.0d, rightFrontDriveMotor.get(), DELTA);
+            assertEquals(1.0d, leftBackDriveMotor.get(), DELTA);
+            assertEquals(-1.0d, rightBackDriveMotor.get(), DELTA);
+        }
+    }
+
+    @Test
+    public void drivePolar() {
+        // Full forward
+        drive.drivePolar(1.0d, 0.0d, 0.0d);
+        if (drive.isEnabled()) {
+            assertEquals(1.0d, leftFrontDriveMotor.get(), DELTA);
+            assertEquals(1.0d, rightFrontDriveMotor.get(), DELTA);
+            assertEquals(1.0d, leftBackDriveMotor.get(), DELTA);
+            assertEquals(1.0d, rightBackDriveMotor.get(), DELTA);
+        }
+
+        // Full backward
+        drive.drivePolar(1.0d, 180.0d, 0.0d);
+        if (drive.isEnabled()) {
+            assertEquals(-1.0d, leftFrontDriveMotor.get(), DELTA);
+            assertEquals(-1.0d, rightFrontDriveMotor.get(), DELTA);
+            assertEquals(-1.0d, leftBackDriveMotor.get(), DELTA);
+            assertEquals(-1.0d, rightBackDriveMotor.get(), DELTA);
+        }
+
+        // Full strafe left
+        drive.drivePolar(1.0d, -90.0d, 0.0d);
+        if (drive.isEnabled()) {
+            assertEquals(-1.0d, leftFrontDriveMotor.get(), DELTA);
+            assertEquals(1.0d, rightFrontDriveMotor.get(), DELTA);
+            assertEquals(1.0d, leftBackDriveMotor.get(), DELTA);
+            assertEquals(-1.0d, rightBackDriveMotor.get(), DELTA);
+        }
+
+        // Full strafe right
+        drive.drivePolar(1.0d, 90.0d, 0.0d);
+        if (drive.isEnabled()) {
+            assertEquals(1.0d, leftFrontDriveMotor.get(), DELTA);
+            assertEquals(-1.0d, rightFrontDriveMotor.get(), DELTA);
+            assertEquals(-1.0d, leftBackDriveMotor.get(), DELTA);
+            assertEquals(1.0d, rightBackDriveMotor.get(), DELTA);
+        }
+
+        // Full negative rotation
+        drive.drivePolar(0.0d, 0.0d, -1.0d);
+        if (drive.isEnabled()) {
+            assertEquals(-1.0d, leftFrontDriveMotor.get(), DELTA);
+            assertEquals(1.0d, rightFrontDriveMotor.get(), DELTA);
+            assertEquals(-1.0d, leftBackDriveMotor.get(), DELTA);
+            assertEquals(1.0d, rightBackDriveMotor.get(), DELTA);
+        }
+
+        // Full positive rotation
+        drive.drivePolar(0.0d, 0.0d, 1.0d);
+        if (drive.isEnabled()) {
+            assertEquals(1.0d, leftFrontDriveMotor.get(), DELTA);
+            assertEquals(-1.0d, rightFrontDriveMotor.get(), DELTA);
+            assertEquals(1.0d, leftBackDriveMotor.get(), DELTA);
+            assertEquals(-1.0d, rightBackDriveMotor.get(), DELTA);
+        }
     }
 
     @Test
     public void stopMotors() {
-        if(!Constants.DRIVE_ENABLED) return;
         drive.stopMotors();
 
-        assertEquals(0.0d, leftFrontDriveMotor.get(), 0.0d);
-        assertEquals(0.0d, rightFrontDriveMotor.get(), 0.0d);
-        assertEquals(0.0d, leftBackDriveMotor.get(), 0.0d);
-        assertEquals(0.0d, rightBackDriveMotor.get(), 0.0d);
+        if (drive.isEnabled()) {
+            assertEquals(0.0d, leftFrontDriveMotor.get(), 0.0d);
+            assertEquals(0.0d, rightFrontDriveMotor.get(), 0.0d);
+            assertEquals(0.0d, leftBackDriveMotor.get(), 0.0d);
+            assertEquals(0.0d, rightBackDriveMotor.get(), 0.0d);
+        }
+    }
+
+    @SuppressWarnings("DefaultAnnotationParam")
+    @Test(expected = None.class /* No exception should be thrown */)
+    public void close() {
+        drive.close();
+
+        // Despite making calls to closed objects, these functions should not
+        // throw an exception. This test case is another check to ensure calls
+        // to closed motors do not crash the robot.
+        drive.driveCartesian(1.0d, -1.0d, 0.0d);
+        drive.drivePolar(1.0d, -90.0d, 23.0d);
+        drive.stopMotors();
+        drive.close();
     }
 }

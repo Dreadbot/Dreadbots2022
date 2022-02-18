@@ -32,10 +32,8 @@ public class IntakeTest {
 
     @Test
     public void intake() {
-        System.out.println("intake.isDisabled() = " + intake.isDisabled());
         intake.intake();
 
-        System.out.println("intake.isDisabled() = " + intake.isDisabled());
         if (intake.isEnabled()) {
             assertEquals(1.0d, intakeMotor.get(), DELTA);
         }
