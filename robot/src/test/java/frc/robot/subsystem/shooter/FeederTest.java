@@ -4,10 +4,13 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.hal.HAL;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Test.None;
+
+import java.util.logging.Level;
 
 import static org.junit.Assert.*;
 
@@ -21,13 +24,23 @@ public class FeederTest {
     public void setup() {
         assert HAL.initialize(500, 0);
 
+        // This logic notifies the programmer which systems are disabled in the Constants file.
+        // The DreadbotSubsystem class will throw a warning while the log level is here.
+        Robot.LOGGER.setLevel(Level.INFO);
+
         feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless);
         feeder = new Feeder(feederMotor);
+
+        // Set log level higher than warnings, so that tests do not log disabled warnings.
+        Robot.LOGGER.setLevel(Level.SEVERE);
     }
 
     @After
     public void shutdown() {
         feeder.close();
+
+        // Return to the regular log level.
+        Robot.LOGGER.setLevel(Level.INFO);
     }
 
     @Test

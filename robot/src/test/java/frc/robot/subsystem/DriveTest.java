@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import frc.robot.Robot;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +12,8 @@ import org.junit.Test.None;
 
 import edu.wpi.first.hal.HAL;
 import frc.robot.Constants;
+
+import java.util.logging.Level;
 
 public class DriveTest {
     public static final double DELTA = 1e-2;
@@ -27,6 +30,10 @@ public class DriveTest {
     public void setup() {
         assert HAL.initialize(500, 0);
 
+        // This logic notifies the programmer which systems are disabled in the Constants file.
+        // The DreadbotSubsystem class will throw a warning while the log level is here.
+        Robot.LOGGER.setLevel(Level.INFO);
+
         leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
         rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
         leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
@@ -35,11 +42,17 @@ public class DriveTest {
         drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
         angle = 0.0d;
+
+        // Set log level higher than warnings, so that tests do not log disabled warnings.
+        Robot.LOGGER.setLevel(Level.SEVERE);
     }
 
     @After
     public void shutdown() {
         drive.close();
+
+        // Return to the regular log level.
+        Robot.LOGGER.setLevel(Level.INFO);
     }
 
     @Test

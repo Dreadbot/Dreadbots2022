@@ -1,6 +1,7 @@
 package frc.robot.subsystem;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.util.MotorSafeSystem;
 
 /**
@@ -11,6 +12,7 @@ import frc.robot.util.MotorSafeSystem;
  * <p>
  * See {@link SubsystemBase}, {@link AutoCloseable}, {@link MotorSafeSystem}
  */
+@SuppressWarnings("SpellCheckingInspection")
 public abstract class DreadbotSubsystem extends SubsystemBase implements AutoCloseable, MotorSafeSystem {
     /**
      * Determines whether internal hardware of the subsystem is crashing or failing.
@@ -26,7 +28,7 @@ public abstract class DreadbotSubsystem extends SubsystemBase implements AutoClo
      */
     public void disable() {
         if(enabled) {
-            System.out.println("NOTICE: " + getName() + " is disabled!");
+            Robot.LOGGER.warning(getName() + " is disabled!");
         }
 
         this.enabled = false;
