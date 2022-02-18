@@ -4,11 +4,9 @@ import circularity
 import hough
 import threading
 from networktables import NetworkTables
-
+import cscore
 
 def main():
-    rangeName = input("Range: ")
-
     if input("Connect to NT?: ") == "y":
         cond = threading.Condition()
         notified = [False]
@@ -32,9 +30,10 @@ def main():
 
         table = NetworkTables.getTable('SmartDashboard')
     else:
+        rangeName = input("Range: ")
         table = None
 
-    util.setupDefaultSliderWindow("hsv", "Trackbars", rangeName)
+        util.setupDefaultSliderWindow("hsv", "Trackbars", rangeName)
 
     vc = cv2.VideoCapture(1)
     vc.set(cv2.CAP_PROP_EXPOSURE, -4)
@@ -44,17 +43,31 @@ def main():
 
         if not ret:
             break
+        
+        if table is not None:
+            hL, sL, vL, hU, sU, vU, erode, dilate, blur, minArea, circ = util.getSliderValues(
+                "hsv", "Trackbars")
+        else:
+            hL = table.getNumber("HLowerValue", 0)
+            hU = table.getNumber("HUpperValue", 255)
+            
+            sL = table.getNumber("SLowerValue", 0)
+            sU = table.getNumber("SUpperValue", 255)
 
-        hL, sL, vL, hU, sU, vU, erode, dilate, blur, minArea, circ = util.getSliderValues(
-            "hsv", "Trackbars")
+            vL = table.getNumber("VLowerValue", 0)
+            vU = table.getNumber("VUpperValue", 255)
+
+            manip = util.getManipulation()
+            erode = manip["erode"]
+            dilate = manip["dilate"]
+            minArea = manip["area"]
+            circ = manip["circ"]
 
         lower = (hL, sL, vL)
         upper = (hU, sU, vU)
         minCirc = circ / 100
 
         mask = util.getMask(frame, lower, upper, erode, dilate, blur)
-
-        cv2.imshow("Binary", mask)
 
         circle = circularity.getBall(mask, minCirc, minArea)
         h = hough.getBall(cv2.blur(mask, (blur + 8, blur + 8), 0))
@@ -108,12 +121,12 @@ def main():
                 table.putNumber("RelativeDistanceToBallZ", dZ)
                 table.putNumber("RelativeAngleToBall", angle)
 
-        cv2.imshow("Frame", frame)
-
         if cv2.waitKey(1) & 0xFF == ord("q"):
-            util.updateLiveRange(rangeName, (hL, sL, vL), (hU, sU, vU))
+            if table is not None:
+                util.updateLiveRange(rangeName, (hL, sL, vL), (hU, sU, vU))
 
-            util.setAllManipulation(erode, dilate, blur, minArea, circ)
+                util.setAllManipulation(erode, dilate, blur, minArea, circ)
+            
             break
 
     vc.release()
