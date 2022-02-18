@@ -91,8 +91,7 @@ public class RobotContainer {
         feeder.setDefaultCommand(new RunCommand(feeder::idle, feeder));
 
         // Flywheel Commands
-        flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel)
-            .andThen(new InstantCommand(() -> SmartDashboard.putNumber("Flywheel Velocity (RPM)", flywheel.getVelocity()))));
+        flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
 
         // Hood Commands
         SmartDashboard.putNumber("Selected Hood Angle", 68);
