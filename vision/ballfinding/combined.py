@@ -4,7 +4,7 @@ import circularity
 import hough
 import threading
 from networktables import NetworkTables
-import cscore
+from cscore import CameraServer
 
 def main():
     if input("Connect to NT?: ") == "y":
@@ -35,7 +35,15 @@ def main():
 
         util.setupDefaultSliderWindow("hsv", "Trackbars", rangeName)
 
-    vc = cv2.VideoCapture(1)
+    if input("Start Camera Server?: ") == "y" and table is not None:
+        cs = CameraServer.getInstance()
+        cs.enableLogging()
+
+        outputStream = cs.putVideo("Source", 640, 480)
+    else:
+        cs = None
+
+    vc = cv2.VideoCapture(0)
     vc.set(cv2.CAP_PROP_EXPOSURE, -4)
 
     while True:
@@ -120,6 +128,16 @@ def main():
                 table.putNumber("RelativeDistanceToBallX", dX)
                 table.putNumber("RelativeDistanceToBallZ", dZ)
                 table.putNumber("RelativeAngleToBall", angle)
+        
+        if cs is not None:
+            camId = table.getNumber("CurrentCameraNumber", 0)
+
+            if camId == 0:
+                outputStream.putFrame(frame)
+            elif camId == 1:
+                outputStream.putFrame(mask)
+            else:
+                table.putNumber("CurrentCameraNumber", 0)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             if table is not None:
