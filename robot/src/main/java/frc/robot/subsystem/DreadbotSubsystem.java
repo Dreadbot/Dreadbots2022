@@ -25,6 +25,10 @@ public abstract class DreadbotSubsystem extends SubsystemBase implements AutoClo
      * again until re-deploy. This is a final action.
      */
     public void disable() {
+        if(enabled) {
+            System.out.println("NOTICE: " + getName() + " is disabled!");
+        }
+
         this.enabled = false;
     }
 

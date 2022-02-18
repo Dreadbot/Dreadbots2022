@@ -5,9 +5,14 @@
       "/LiveWindow/Climber": "Subsystem",
       "/LiveWindow/Drive": "Subsystem",
       "/LiveWindow/Feeder": "Subsystem",
+      "/LiveWindow/Flywheel": "Subsystem",
+      "/LiveWindow/Hood": "Subsystem",
       "/LiveWindow/Intake": "Subsystem",
+      "/LiveWindow/Turret": "Subsystem",
       "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[1]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[4]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[5]": "Digital Input",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler"
     }
   }
