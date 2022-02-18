@@ -17,6 +17,7 @@ public class Drive extends DreadbotSubsystem {
     private final CANSparkMax leftBackMotor;
     private final CANSparkMax rightBackMotor;
 
+    @SuppressWarnings("FieldMayBeFinal")
     private MecanumDrive mecanumDrive;
 
     public Drive(CANSparkMax leftFrontMotor, CANSparkMax rightFrontMotor, CANSparkMax leftBackMotor,
