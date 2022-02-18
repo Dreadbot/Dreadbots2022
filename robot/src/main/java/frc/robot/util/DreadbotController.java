@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  * designed for simplicity of use.
  * This facade has only been tested on the Logitech F310 Gamepad.
  */
+@SuppressWarnings({"unused", "SpellCheckingInspection"})
 public final class DreadbotController {
     private final Joystick joystick;
 
