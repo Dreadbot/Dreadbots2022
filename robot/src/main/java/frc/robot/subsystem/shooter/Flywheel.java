@@ -112,7 +112,7 @@ public class Flywheel extends DreadbotSubsystem {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         // Stop motor before closure.
         stopMotors();
 
