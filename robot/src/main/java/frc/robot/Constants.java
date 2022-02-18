@@ -19,21 +19,24 @@ public abstract class Constants {
     public static final int SECONDARY_JOYSTICK_PORT = 1;
 
     // Drive Ports
-    public static final int LEFT_FRONT_DRIVE_MOTOR_PORT = 10;
-    public static final int RIGHT_FRONT_DRIVE_MOTOR_PORT = 11;
-    public static final int LEFT_BACK_DRIVE_MOTOR_PORT = 12;
-    public static final int RIGHT_BACK_DRIVE_MOTOR_PORT = 13;
+    public static final int LEFT_FRONT_DRIVE_MOTOR_PORT = 1;
+    public static final int RIGHT_FRONT_DRIVE_MOTOR_PORT = 2;
+    public static final int LEFT_BACK_DRIVE_MOTOR_PORT = 3;
+    public static final int RIGHT_BACK_DRIVE_MOTOR_PORT = 4;
 
     // Intake Ports
-    public static final int INTAKE_MOTOR_PORT = 14;
-    public static final double INTAKE_MOTOR_RATIO = 1/12;
+    public static final int INTAKE_MOTOR_PORT = 5;
 
     // Shooter Ports
-    public static final int FEEDER_MOTOR_PORT = 18;
-    public static final int FLYWHEEL_MOTOR_PORT = 15;
-    public static final int HOOD_MOTOR_PORT = 16;
-    public static final int TURRET_MOTOR_PORT = 17;
+    public static final int FEEDER_MOTOR_PORT = 6;
 
+    public static final int TURRET_MOTOR_PORT = 7;
+    public static final int LOWER_TURRET_LIMIT_SWITCH_ID = 0;
+    public static final int UPPER_TURRET_LIMIT_SWITCH_ID = 1;
+    public static final double MAX_TURRET_ANGLE = 300.0d;
+    public static final double MIN_TURRET_ANGLE = 0.0d;
+
+    public static final int FLYWHEEL_MOTOR_PORT = 8;
     public static final double FLYWHEEL_P_GAIN = 1e-4d;
     public static final double FLYWHEEL_I_GAIN = 0.0d;
     public static final double FLYWHEEL_D_GAIN = 0.0d;
@@ -43,19 +46,21 @@ public abstract class Constants {
     public static final double FLYWHEEL_MIN_OUTPUT = -1.0d;
     public static final double FLYWHEEL_MAX_RPM = 5700.0d;
 
-    public static final double MAX_TURRET_ANGLE = 300.0d;
-    public static final double MIN_TURRET_ANGLE = 0.0d;
-
+    public static final int HOOD_MOTOR_PORT = 9;
+    public static final int LOWER_HOOD_LIMIT_SWITCH_ID = 2;
+    public static final int UPPER_HOOD_LIMIT_SWITCH_ID = 3;
     public static final double MAX_HOOD_ANGLE = 82.0d;
     public static final double UPPER_HOOD_ANGLE = 70.0d;
     public static final double MIN_HOOD_ANGLE = 60.0d;
     
     // Climber constants
-    public static final int WINCH_MOTOR_PORT = 15;
-    public static final int LEFT_NEUTRAL_HOOK_ACTUATOR = 1;
-    public static final int RIGHT_NEUTRAL_HOOK_ACTUATOR = 2;
-    public static final int CLIMBING_HOOK_ACTUATOR = 3;
+    public static final int WINCH_MOTOR_PORT = 10;
+    public static final int NEUTRAL_HOOK_ACTUATOR_ID = 0;
+    public static final int CLIMBING_HOOK_ACTUATOR_ID = 1;
+    public static final int BOTTOM_CLIMBER_LIMIT_SWITCH_ID = 4;
+    public static final int TOP_CLIMBER_LIMIT_SWITCH_ID = 5;
     public static final double MAX_ARM_DISTANCE = 50; //Later change this to phyisical distance
+
     // Robot Constants
     public static final float GRAVITY = -9.81f;
     public static final float GOAL_HEIGHT = 2.64f;
