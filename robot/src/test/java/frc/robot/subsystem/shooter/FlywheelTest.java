@@ -20,8 +20,6 @@ public class FlywheelTest {
 
     private Flywheel flywheel;
     private CANSparkMax flywheelMotor;
-    private RelativeEncoder flywheelEncoder;
-    private SparkMaxPIDController flywheelPidController;
 
     @Before
     public void setup() {
@@ -32,8 +30,6 @@ public class FlywheelTest {
         Robot.LOGGER.setLevel(Level.INFO);
 
         flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
-        flywheelEncoder = flywheelMotor.getEncoder();
-
 
         flywheel = new Flywheel(flywheelMotor);
 

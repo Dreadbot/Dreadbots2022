@@ -14,7 +14,10 @@ import frc.robot.subsystem.DreadbotSubsystem;
  */
 public class Flywheel extends DreadbotSubsystem {
     private final CANSparkMax motor;
+
+    @SuppressWarnings("FieldMayBeFinal")
     private RelativeEncoder encoder;
+    @SuppressWarnings("FieldMayBeFinal")
     private SparkMaxPIDController pidController;
 
     public Flywheel(CANSparkMax motor) {
