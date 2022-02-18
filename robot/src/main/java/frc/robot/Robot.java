@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  * project.
  */
 public class Robot extends TimedRobot {
-    public static Logger LOGGER = Logger.getLogger(Robot.class.getName());
+    public static final Logger LOGGER = Logger.getLogger(Robot.class.getName());
 
     private RobotContainer robotContainer;
 
