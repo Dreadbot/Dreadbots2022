@@ -161,9 +161,9 @@ while(cap.isOpened()):
                     avgYpos = -1
             loopCounterCon += 1
 
-            table.putNumber("relativeDistanceToHub",
+            table.putNumber("RelativeDistanceToHub",
                             (distance / 39.37))
-            table.putNumber("relativeAngleToHub", fin_angle_hori)
+            table.putNumber("RelativeAngleToHub", fin_angle_hori)
             
             if cs is not None:
                 camId = table.getNumber("CurrentCameraNumber", 0)
