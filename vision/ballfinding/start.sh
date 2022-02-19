@@ -1,3 +1,2 @@
 #!/usr/bin/bash
-./combined.py -r blue -p /home/pi/vision/Data
-
+/usr/bin/python3 /home/pi/vision/combined.py -p /home/pi/vision/Data > /home/pi/vision/out.log
