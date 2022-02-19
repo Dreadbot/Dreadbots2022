@@ -3,6 +3,7 @@ import numpy as np
 import math
 from networktables import NetworkTables
 import threading
+from cscore import CameraServer
 
 cond = threading.Condition()
 notified = [False]
@@ -28,6 +29,13 @@ print("Connected!")
 
 table = NetworkTables.getTable('SmartDashboard')
 
+if table is not None:
+    cs = CameraServer.getInstance()
+    cs.enableLogging()
+
+    outputStream = cs.putVideo("Source", 620, 480)
+else:
+    cs = None
 
 def _drawTargets(x, y, w, h, rectangleColor, circleColor, lineColor):
     cv2.rectangle(imgToPush, (x, y), (x+w, y+h), rectangleColor, 3)
@@ -156,6 +164,14 @@ while(cap.isOpened()):
             table.putNumber("relativeDistanceToHub",
                             (distance / 39.37))
             table.putNumber("relativeAngleToHub", fin_angle_hori)
+            
+            if cs is not None:
+                camId = table.getNumber("CurrentCameraNumber", 0)
+                
+                if camId == 2:
+                    outputStream.putFrame(inputImg)
+                elif camId == 3:
+                    outputStream.putFrame(imgToPush)
 
         if len(contours) == 0:
             avgXpos = -1
