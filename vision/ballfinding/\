@@ -17,13 +17,10 @@ focalLength = 667  # In Pixels
 server = "10.36.56.2"
 
 def setDataDirectory(path):
-    global dataDir
-    global rangesFile
-    global manipFile
-
     dataDir = path
     rangesFile = os.path.join(dataDir, "ranges.json")
     manipFile = os.path.join(dataDir, "manipulation.json")
+    print(rangesFile)
 
 def getMask(frame, lower: tuple, upper: tuple, eIts: int, dIts: int, blurK: int, colorSpace: int = cv2.COLOR_BGR2HSV):
     hsv = cv2.cvtColor(frame, colorSpace)

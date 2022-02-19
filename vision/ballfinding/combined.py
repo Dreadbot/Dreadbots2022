@@ -1,13 +1,26 @@
+#!/usr/bin/python3
 import cv2
 import util
 import circularity
 import hough
 import threading
+import argparse
 from networktables import NetworkTables
 from cscore import CameraServer
 
 def main():
-    if input("Connect to NT?: ") == "y":
+    argparser = argparse.ArgumentParser(description="Tracks balls using circularity and hough circles.")
+    argparser.add_argument('--no-tables', action='store_false', dest='ntenabled')
+    argparser.add_argument('--no-server', action='store_false', dest='csenabled')
+    argparser.add_argument('-r', '--range', action='store', dest='colorrange')
+    argparser.add_argument('-p', '--data-path', action='store', dest='datapath')
+    argparser.add_argument('-v', '--visual', action='store_true', dest='visualmode')
+    args = argparser.parse_args()
+
+    if args.datapath is not None:
+        util.setDataDirectory(args.datapath)
+
+    if args.ntenabled:
         cond = threading.Condition()
         notified = [False]
 
@@ -30,12 +43,12 @@ def main():
 
         table = NetworkTables.getTable('SmartDashboard')
     else:
-        rangeName = input("Range: ")
+        rangeName = args.colorrange
         table = None
 
         util.setupDefaultSliderWindow("hsv", "Trackbars", rangeName)
 
-    if input("Start Camera Server?: ") == "y" and table is not None:
+    if args.csenabled and table is not None:
         cs = CameraServer.getInstance()
         cs.enableLogging()
 
@@ -153,3 +166,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
