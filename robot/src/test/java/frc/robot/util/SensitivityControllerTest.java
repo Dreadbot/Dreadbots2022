@@ -23,27 +23,35 @@ public class SensitivityControllerTest {
         assertEquals(1.0d, sensitivityController.calculate(1.0d), DELTA);
         assertEquals(-1.0d, sensitivityController.calculate(-1.0d), DELTA);
         assertEquals(0.0d, sensitivityController.calculate(0.0d), DELTA);
+
+        assertEquals(1.0d, sensitivityController.calculate(32.0d), DELTA);
+        assertEquals(-1.0d, sensitivityController.calculate(-55.0d), DELTA);
     }
 
     @Test
     public void setPercentageSensitivity() {
-        sensitivityController.setPercentageSensitivity(43d, 98d);
+        sensitivityController.setPercentageSensitivity(43.0d, 98.0d);
 
-        assertEquals(43d, sensitivityController.getPositivePercentageSensitivity(), DELTA);
-        assertEquals(98d, sensitivityController.getNegativePercentageSensitivity(), DELTA);
+        assertEquals(43.0d, sensitivityController.getPositivePercentageSensitivity(), DELTA);
+        assertEquals(98.0d, sensitivityController.getNegativePercentageSensitivity(), DELTA);
+
+        sensitivityController.setPercentageSensitivity(145.0d, -443.0d);
+
+        assertEquals(100.0d, sensitivityController.getPositivePercentageSensitivity(), DELTA);
+        assertEquals(-100.0d, sensitivityController.getNegativePercentageSensitivity(), DELTA);
     }
 
     @Test
     public void getPositivePercentageSensitivity() {
-        sensitivityController.setPercentageSensitivity(68d, 88d);
+        sensitivityController.setPercentageSensitivity(68.0d, 88.0d);
 
-        assertEquals(68d, sensitivityController.getPositivePercentageSensitivity(), DELTA);
+        assertEquals(68.0d, sensitivityController.getPositivePercentageSensitivity(), DELTA);
     }
 
     @Test
     public void getNegativePercentageSensitivity() {
-        sensitivityController.setPercentageSensitivity(8d, 87d);
+        sensitivityController.setPercentageSensitivity(8.0d, 87.0d);
 
-        assertEquals(87d, sensitivityController.getNegativePercentageSensitivity(), DELTA);
+        assertEquals(87.0d, sensitivityController.getNegativePercentageSensitivity(), DELTA);
     }
 }
