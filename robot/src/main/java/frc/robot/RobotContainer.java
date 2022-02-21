@@ -8,10 +8,12 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.command.climber.RotateClimbingArmVerticalCommand;
+import frc.robot.command.autonomous.BasicAuton;
 import frc.robot.command.climber.AutonomousClimberCommand;
 import frc.robot.command.climber.ExtendArmCommand;
 import frc.robot.command.climber.RetractArmCommand;
@@ -150,6 +152,11 @@ public class RobotContainer {
         primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
         primaryController.getRightBumper().whenPressed(new AutonomousClimberCommand(climber));
     }
+
+    public Command getAutonomousCommand(){
+        return new BasicAuton(drive);
+    }  
+
 
     public void calibrate() {
         CommandScheduler.getInstance().schedule(new TurretCalibrationCommand(turret));
