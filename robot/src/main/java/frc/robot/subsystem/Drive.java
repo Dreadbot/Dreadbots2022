@@ -5,7 +5,11 @@
 package frc.robot.subsystem;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The drive is the mechanism that moves the robot across the field. We are using a mecanum drive.
@@ -25,6 +29,10 @@ public class Drive extends DreadbotSubsystem {
         disable();
     }
 
+    public void periodic(){
+        getFrontEncoderAvg();
+    }
+
     public Drive(CANSparkMax leftFrontMotor, CANSparkMax rightFrontMotor, CANSparkMax leftBackMotor,
             CANSparkMax rightBackMotor) {
         this.leftFrontMotor = leftFrontMotor;
@@ -37,11 +45,22 @@ public class Drive extends DreadbotSubsystem {
         leftBackMotor.restoreFactoryDefaults();
         rightBackMotor.restoreFactoryDefaults();
 
+        leftFrontMotor.setIdleMode(IdleMode.kBrake);
+        rightFrontMotor.setIdleMode(IdleMode.kBrake);
+        leftBackMotor.setIdleMode(IdleMode.kBrake);
+        rightBackMotor.setIdleMode(IdleMode.kBrake);
+        
+
         // According to the docs, motors must be inverted before they are passed into the MecanumDrive utility.
         rightFrontMotor.setInverted(true);
         rightBackMotor.setInverted(true);
 
         this.mecanumDrive = new MecanumDrive(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
+    }
+
+    public void resetMotorEncoders() {
+        rightFrontMotor.getEncoder().setPosition(0);
+        leftFrontMotor.getEncoder().setPosition(0);
     }
 
     /**
@@ -114,5 +133,15 @@ public class Drive extends DreadbotSubsystem {
             leftBackMotor.close();
             rightBackMotor.close();
         } catch (IllegalStateException ignored) { disable(); }
+    }
+
+    public double getFrontEncoderAvg(){
+        RelativeEncoder frontRightEncoder = rightFrontMotor.getEncoder();
+        RelativeEncoder frontLeftEncoder = leftFrontMotor.getEncoder();
+        double getEncoderAvg = ((frontRightEncoder.getPosition() ) + frontLeftEncoder.getPosition())/2;
+        SmartDashboard.putNumber("FrontRightEncoder", frontRightEncoder.getPosition());
+        SmartDashboard.putNumber("FrontLeftEncoder", frontLeftEncoder.getPosition());
+        SmartDashboard.putNumber("AvgEncoder", getEncoderAvg);
+        return getEncoderAvg;
     }
 }
