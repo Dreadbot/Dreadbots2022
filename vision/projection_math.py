@@ -3,29 +3,61 @@ import math
 import cv2
 import os
 
-def rotation_matrix(yaw, pitch, roll):
-    z_rotation_matrix = np.array([
-        [math.cos(yaw), -math.sin(yaw), 0],
-        [math.sin(yaw), math.cos(yaw), 0],
-        [0, 0, 1]
-    ])
+def rotation_matrix(yaw, pitch, roll, single_axis=None):
+    yaw = math.degrees(yaw)
+    pitch = math.degrees(pitch)
+    roll = math.degrees(roll)
 
-    x_rotation_matrix = np.array([
-        [1, 0, 0],
-        [0, math.cos(pitch), math.sin(pitch)],
-        [0, math.sin(pitch), math.cos(pitch)]
-    ])
+    if single_axis is not None:
+        z_rotation_matrix = np.array([
+            [math.cos(yaw), -math.sin(yaw), 0],
+            [math.sin(yaw), math.cos(yaw), 0],
+            [0, 0, 1]
+        ])
 
-    y_rotation_matrix = np.array([
-        [math.cos(roll), 0, -math.sin(roll)],
-        [0, 1, 0],
-        [math.sin(roll), 0, math.cos(roll)]
-    ])
+        x_rotation_matrix = np.array([
+            [1, 0, 0],
+            [0, math.cos(pitch), -math.sin(pitch)],
+            [0, math.sin(pitch), math.cos(pitch)]
+        ])
 
-    zx_multiplied = np.matmul(z_rotation_matrix, x_rotation_matrix)
-    output_rotation_matrix = np.matmul(zx_multiplied, y_rotation_matrix)
+        y_rotation_matrix = np.array([
+            [math.cos(roll), 0, math.sin(roll)],
+            [0, 1, 0],
+            [-math.sin(roll), 0, math.cos(roll)]
+        ])
 
-    return output_rotation_matrix
+        zx_multiplied = np.matmul(z_rotation_matrix, x_rotation_matrix)
+        output_rotation_matrix = np.matmul(zx_multiplied, y_rotation_matrix)
+
+        return output_rotation_matrix
+
+    elif single_axis == "Z":
+        z_rotation_matrix = np.array([
+            [math.cos(yaw), -math.sin(yaw), 0],
+            [math.sin(yaw), math.cos(yaw), 0],
+            [0, 0, 1]
+        ])
+
+        return z_rotation_matrix
+
+    elif single_axis == "X":
+        x_rotation_matrix = np.array([
+            [1, 0, 0],
+            [0, math.cos(pitch), -math.sin(pitch)],
+            [0, math.sin(pitch), math.cos(pitch)]
+        ])
+
+        return x_rotation_matrix
+
+    elif single_axis == "Y":
+        y_rotation_matrix = np.array([
+            [math.cos(roll), 0, math.sin(roll)],
+            [0, 1, 0],
+            [-math.sin(roll), 0, math.cos(roll)]
+        ])
+
+        return y_rotation_matrix
 
 def calibrate_s(paired_points, intrinsic_matrix, rotation_matrix):
     raw_s_results = []
@@ -83,20 +115,20 @@ def calibrate_intrinsic(cam_id, img_count=20):
 
     base_path = "calibrating_imgs"
 
-    for i in range(img_count):
-        path = "calibrating_imgs/{0}.png".format(i)
-        while True:
-            ret, img = cap.read()
-            cv2.imshow('frame', img)
+    # for i in range(img_count):
+    #     path = "calibrating_imgs/{0}.png".format(i)
+    #     while True:
+    #         ret, img = cap.read()
+    #         cv2.imshow('frame', img)
 
-            key = cv2.waitKey(1) & 0xFF
+    #         key = cv2.waitKey(1) & 0xFF
 
-            if key == ord('p'):
-                cv2.imwrite(path, img)
-                break
+    #         if key == ord('p'):
+    #             cv2.imwrite(path, img)
+    #             break
                 
-            if key == ord('q'):
-                exit()
+    #         if key == ord('q'):
+    #             exit()
 
     CHECKERBOARD = (7,9)
 
@@ -161,66 +193,99 @@ def camera_to_world(u, v, intrinsic_matrix, rotation_matrix, s_scalar):
 
     return(world_vector)
 
-def similar_triangles_calculation(u, v, intrinsic_matrix):
-    #Need rot in future
-    x = 0.0
-    y = 0.0
+def similar_triangles_calculation(u, v, K, R):
+    angle = math.radians(14)
+    z_off = 104-22.5
+    z = z_off
 
-    z = 4.25
 
-    fx, cx = intrinsic_matrix[0, 0], intrinsic_matrix[0, 2]
-    fy, cy = -intrinsic_matrix[1, 1], intrinsic_matrix[1, 2]
+    # K = np.matmul(R, K)
+
+    fx, cx = K[0, 0], K[0, 2]
+    fy, cy = K[1, 1], K[1, 2]
 
     y = (z * fy) / (v - cy)
     x = y * ( (u-cx) / fx)
 
-    world_vector = np.array([x, y, z])
+    y *= 0.5
 
-    return world_vector
+    # world_vector_camera = rotation_matrix.dot(np.array([x, y, z]))
+    world_vector_camera = np.array([-x,-y,z])
+    world_vector_camera[2] = z_off
+
+    unit = world_vector_camera / np.linalg.norm(world_vector_camera)
+
+    world_vector_world = world_vector_camera*math.cos(angle) + np.cross(unit, world_vector_camera)*math.sin(angle) + unit*np.dot(unit, world_vector_camera)*(1-math.cos(angle))
+
+    return world_vector_world
+
+def reverse_point(x, y, z, K, R):
+    angle = math.radians(-14)
+
+    world_vector_camera = np.array([x, y, z])
+
+    unit = world_vector_camera / np.linalg.norm(world_vector_camera)
+
+    world_vector_world = world_vector_camera*math.cos(angle) + np.cross(unit, world_vector_camera)*math.sin(angle) + unit*np.dot(unit, world_vector_camera)*(1-math.cos(angle))
+
+    x, y, z = world_vector_world
+
+    y *= 2
+
+    fx, cx = K[0, 0], K[0, 2]
+    fy, cy = K[1, 1], K[1, 2]
+
+    u = abs(fx * (x/y) + cx)
+    v = abs(fy * (z/y) + cy)
+
+    return (u,v)
 
 
-def calculate_true_center(p1, p2, intrinsic_matrix):
-    # x1, y1, _ = similar_triangles_calculation(p1[0], p1[1], intrinsic_matrix)
-    # x2, y2, _ = similar_triangles_calculation(p2[0], p2[1], intrinsic_matrix)
+def geometric_true_center(p1, p2, K, R): #Rework later for u,v,K
+    # y1,x1 = p1
+    # y2,x2 = p2
+    x1,y1 = p1
+    x2,y2 = p2
 
-    x1, y1, _ = p1
-    x2, y2, _ = p2
+    x1,y1,_ = similar_triangles_calculation(x1,y1,K,R)
+    x2,y2,_ = similar_triangles_calculation(x2,y2,K,R)
 
-    q = ( -(x1**2) + x2**2 -(y1**2) + y2**2) / 2
-    m = (y1-y2)/(x1-x2)
+    slope = (y2-y1)/(x2-x1)
+    orth_slope = -1/slope
 
-    r = 4
+    mx = (x1 + x2) / 2
+    my = (y1 + y2) / 2
 
-    a_ty = (m**2 + 1)
-    b_ty = (2*m*x1 + 2*m*q + 2*y1)
-    c_ty = -(r**2 - (x1+q)**2 + y1**2)
+    r = 24
 
-    print(f"a[ {a_ty} ]   b[ {b_ty} ]   c[ {c_ty} ]")
+    # try:
+    d = math.sqrt( (x2-x1)**2 + (y2-y1)**2 )
+    D = math.sqrt(r**2 - 0.25*((x2-x1)**2 + (y2-y1)**2))
+    # except ValueError:
+    #     print("Failure")
+    #     return None
+    cx1 = mx + (2*D/d)*(y1-my)
+    cx2 = mx - (2*D/d)*(y1-my)
 
-    ty_plus = (-b_ty + math.sqrt(b_ty**2 - 4*a_ty*c_ty)) / 2*a_ty
-    ty_minus = (-b_ty - math.sqrt(b_ty**2 - 4*a_ty*c_ty)) / 2*a_ty
+    cy1 = my + (2*D/d)*(x1-mx)
+    cy2 = my - (2*D/d)*(x1-mx)
 
-    a_tx = 1
-    b_tx = 2*x1
-    c_tx = -r**2 + (y1 + ty_minus)**2 + x1**2
-
-    print(f"a[ {a_tx} ]   b[ {b_tx} ]   c[ {c_tx} ]")
-
-    try:
-        tx_plus = (-b_tx + math.sqrt(b_tx**2 - 4*a_tx*c_tx)) / 2*a_tx
-    except:
-        tx_plus = 1000000
+    tx = max([cx1, cx2])
+    # print(cy1)
     
-    try:
-        tx_minus = (-b_tx - math.sqrt(b_tx**2 - 4*a_tx*c_tx)) / 2*a_tx
-    except:
-        tx_minus = -10000000
+    if (cy1-my)/(tx-mx) == orth_slope:
+        ty = cy1
 
-    print(f"Y MINUS[ {ty_minus} ]  Y PLUS[ {ty_plus} ]")
-    print(f"X MINUS[ {tx_minus} ]  X PLUS[ {tx_plus} ]")
+    elif (cy2-my)/(tx-mx) == orth_slope:
+        ty = cy2
+    else:
+        ty = cy1 # Failure, check for err on use side
 
-calculate_true_center((3,4,1), (5,2,1), None)
+    distance = math.sqrt(tx**2 + ty**2)
+    angle = math.degrees(math.atan(tx/distance)) # If this number is weird try swapping x and y, I got flipped around at some point
 
+
+    return(angle, distance)
 
 '''
 paired_points = np.array([
