@@ -59,7 +59,13 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {}
 
     @Override
-    public void testInit() {}
+    public void testInit() {
+      autonomousCommand = robotContainer.getTestingCommand();
+
+      if(autonomousCommand != null) {
+        autonomousCommand.schedule();
+      }
+    }
 
     @Override
     public void testPeriodic() {}
