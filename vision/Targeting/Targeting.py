@@ -70,6 +70,10 @@ def main():
     camOffsetDegree = 0  # TO FIND IN THE MOMENT
     targetHeight = 20  # TO FIND IN THE MOMENT
 
+    h = [50, 90]
+    l = [20, 100]
+    s = [200, 255]
+
     # Read until video is completed
     while(cap.isOpened()):
         XconPositionList = []
@@ -92,13 +96,19 @@ def main():
         # Converting the input to HLS color
         hlsImg = cv2.cvtColor(inputImg, cv2.COLOR_BGR2HLS)
         # - find the HSL values for different environments/lights in the README.md
-        h = [50, 90]
-        s = [20, 100]
-        l = [200, 255]
+
+        if table is not None:
+            h = (table.getNumber("TargetHLowerValue", 0),
+                 table.getNumber("TargetHUpperValue", 255))
+            l = (table.getNumber("TargetLLowerValue", 0),
+                 table.getNumber("TargetLUpperValue", 255))
+            s = (table.getNumber("TargetSLowerValue", 0),
+                 table.getNumber("TargetSUpperValue", 255))
+
         # Blurs the HLS image a bit to make it easier to work with
         blurImg = cv2.GaussianBlur(hlsImg, (7, 7), 0)
         # Checks all pixels and changes the ones outside the range to black and the ones in to white
-        maskImg = cv2.inRange(blurImg, (h[0], s[0], l[0]), (h[1], s[1], l[1]))
+        maskImg = cv2.inRange(blurImg, (h[0], l[0], s[0]), (h[1], l[1], s[1]))
         # Dilates out all the found sections so we can get them more solid
         dilateImg = cv2.dilate(maskImg, (7, 7), 20)
         # Finds then adds the contours over the original image
@@ -160,7 +170,7 @@ def main():
             if camId == 2:
                 outputStream.putFrame(inputImg)
             elif camId == 3:
-                outputStream.putFrame(imgToPush)
+                outputStream.putFrame(dilateImg)
 
         # if len(contours) == 0:
         #     avgXpos = -1
