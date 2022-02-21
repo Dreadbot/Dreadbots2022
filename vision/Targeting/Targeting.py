@@ -66,7 +66,7 @@ def main():
     if (cap.isOpened() == False):
         print("Error opening video  file")
 
-    flength = 544  # We know the focal length of the camera to be 544
+    flength = 667  # We know the focal length of the camera to be 544
     camOffsetDegree = 0  # TO FIND IN THE MOMENT
     targetHeight = 20  # TO FIND IN THE MOMENT
 
