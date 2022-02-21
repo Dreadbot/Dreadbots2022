@@ -70,6 +70,14 @@ def main():
     camOffsetDegree = 0  # TO FIND IN THE MOMENT
     targetHeight = 20  # TO FIND IN THE MOMENT
 
+    if table is not None:
+        table.putNumber("TargetHLowerValue", 50)
+        table.putNumber("TargetHUpperValue", 90)
+        table.putNumber("TargetLLowerValue", 20)
+        table.putNumber("TargetLUpperValue", 100)
+        table.putNumber("TargetSLowerValue", 200)
+        table.putNumber("TargetSUpperValue", 255)
+
     h = [50, 90]
     l = [20, 100]
     s = [200, 255]
