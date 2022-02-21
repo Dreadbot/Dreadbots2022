@@ -37,17 +37,17 @@ def main():
     else:
         cs = None
 
-    # def _drawTargets(x, y, w, h, rectangleColor, circleColor, lineColor):
-    #     cv2.rectangle(imgToPush, (x, y), (x+w, y+h), rectangleColor, 3)
-    #     cv2.circle(imgToPush, (int(x+(w/2)), int(y+(h/2))), 5, (255, 0, 0))
+    def _drawTargets(x, y, w, h, rectangleColor, circleColor, lineColor):
+        cv2.rectangle(imgToPush, (x, y), (x+w, y+h), rectangleColor, 3)
+        cv2.circle(imgToPush, (int(x+(w/2)), int(y+(h/2))), 5, (255, 0, 0))
 
-    #     target = [int(x+(w/2)), int(y+(h/2))]
+        target = [int(x+(w/2)), int(y+(h/2))]
 
-    #     cv2.line(imgToPush, (target[0]-10, target[1]),
-    #              (target[0]+10, target[1]), (255, 255, 255))
-    #     cv2.line(imgToPush, (target[0], target[1]-10),
-    #              (target[0], target[1]+10), (255, 255, 255))
-    #     return target
+        cv2.line(imgToPush, (target[0]-10, target[1]),
+                 (target[0]+10, target[1]), (255, 255, 255))
+        cv2.line(imgToPush, (target[0], target[1]-10),
+                 (target[0], target[1]+10), (255, 255, 255))
+        return target
 
     # Create a VideoCaqpture object and read from input file
     cap = cv2.VideoCapture(0)
