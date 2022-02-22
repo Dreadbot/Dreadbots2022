@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.command.autonomous.BasicAuton;
+import frc.robot.command.autonomous.VelocityControlTestCommand;
 import frc.robot.command.climber.*;
 import frc.robot.command.drive.DriveCommand;
 import frc.robot.command.intake.IntakeCommand;
@@ -125,8 +126,8 @@ public class RobotContainer {
 
         // Turret Commands
         SmartDashboard.putNumber("Selected Turret Angle", 150);
-//        turret.setDefaultCommand(new RunCommand(() -> turret.setAngle(SmartDashboard.getNumber("Selected Turret Angle", 150)), turret));
-        turret.setDefaultCommand(new TurretCommands.TurretTrackingCommand(turret));
+        turret.setDefaultCommand(new RunCommand(() -> turret.setAngle(SmartDashboard.getNumber("Selected Turret Angle", 150)), turret));
+//        turret.setDefaultCommand(new TurretCommands.TurretTrackingCommand(turret));
 
         VisionInterface.selectCamera(2);
         // Shooter Commands
@@ -146,9 +147,8 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand(){
-        return new BasicAuton(drive);
+        return new VelocityControlTestCommand(drive);
     }  
-
 
     public void calibrate() {
         CommandScheduler.getInstance().schedule(new TurretCalibrationCommand(turret));

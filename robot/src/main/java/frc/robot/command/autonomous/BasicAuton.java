@@ -32,7 +32,7 @@ class AutonDrive extends CommandBase {
     @Override
     public void initialize(){
         System.out.println("Started");
-        drive.resetMotorEncoders();
+        drive.resetEncoders();
         orginalEncoderValue = 0; //drive.getFrontEncoderAvg();
         SmartDashboard.putNumber("Orginal Encoder Value", orginalEncoderValue);
     }
@@ -52,7 +52,7 @@ class AutonDrive extends CommandBase {
     @Override
     public void end(boolean isIntertupted){
         System.out.println("End");
-        drive.resetMotorEncoders();
+        drive.resetEncoders();
         drive.drivePolar(0, 0, 0);
     }
 }
