@@ -2,8 +2,11 @@ package frc.robot;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.ColorSensorV3;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -29,6 +32,7 @@ import frc.robot.command.shooter.TurretCalibrationCommand;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
+import frc.robot.subsystem.shooter.ColorSensor;
 import frc.robot.subsystem.shooter.Feeder;
 import frc.robot.subsystem.shooter.Flywheel;
 import frc.robot.subsystem.shooter.Hood;
@@ -48,10 +52,13 @@ public class RobotContainer {
     private final Flywheel flywheel;
     private final Hood hood;
     private final Shooter shooter;
+
     
     public RobotContainer() {
         primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
         secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
+
+
 
         if (Constants.DRIVE_ENABLED) {
             CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
@@ -70,8 +77,12 @@ public class RobotContainer {
 
         if (Constants.FEEDER_ENABLED) {
             CANSparkMax feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless);
+            ColorSensorV3 colorSensorV3 = new ColorSensorV3(Constants.I2C_PORT);
+            ColorSensor dreadbotColorSensor = new ColorSensor(colorSensorV3);
 
             feeder = new Feeder(feederMotor);
+
+
         } else feeder = new Feeder();
 
         if (Constants.TURRET_ENABLED) {
