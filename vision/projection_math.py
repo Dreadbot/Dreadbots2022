@@ -59,6 +59,24 @@ def rotation_matrix(yaw, pitch, roll, single_axis=None):
 
         return y_rotation_matrix
 
+def rotate_2d(vector, theta, origin, round=False):
+    theta = math.radians(theta)
+
+    vector = vector - origin
+
+    R = np.array([
+        [math.cos(theta), -math.sin(theta)],
+        [math.sin(theta),  math.cos(theta)]
+    ])
+
+    rotated_vector = R.dot(vector) + origin
+
+    if round:
+        rotated_vector[0] = int(rotated_vector[0])
+        rotated_vector[1] = int(rotated_vector[1])
+
+    return(rotated_vector)
+
 
 def camera_to_world(u, v, intrinsic_matrix, rotation_matrix, s_scalar):
     camera_vector = np.array([u,v,1]) * s_scalar
@@ -74,7 +92,7 @@ def camera_to_world(u, v, intrinsic_matrix, rotation_matrix, s_scalar):
 
 
 def similar_triangles_calculation(u, v, K, R):
-    angle = math.radians(14)
+    # angle = math.radians(14)
     z_off = 104-22.5
     z = z_off
 
@@ -87,38 +105,46 @@ def similar_triangles_calculation(u, v, K, R):
     y *= 0.5
 
     world_vector_camera = np.array([-x,-y,z])
+    angle = math.radians(np.linalg.norm(world_vector_camera))
     world_vector_camera[2] = z_off
 
     unit = world_vector_camera / np.linalg.norm(world_vector_camera)
 
     world_vector_world = world_vector_camera*math.cos(angle) + np.cross(unit, world_vector_camera)*math.sin(angle) + unit*np.dot(unit, world_vector_camera)*(1-math.cos(angle))
 
+
     return world_vector_world
 
 
-def reverse_point(x, y, z, K, R):
-    angle = math.radians(-14)
+def reverse_point(world_x, world_y, world_z, K, R, round=False):
+    angle = 14
 
-    world_vector_camera = np.array([x, y, z])
+    world_vector_camera = np.array([-world_x, -world_y, world_z])
 
     unit = world_vector_camera / np.linalg.norm(world_vector_camera)
 
     world_vector_world = world_vector_camera*math.cos(angle) + np.cross(unit, world_vector_camera)*math.sin(angle) + unit*np.dot(unit, world_vector_camera)*(1-math.cos(angle))
 
-    x, y, z = world_vector_world
+    world_x, world_y, world_z = world_vector_world
 
-    y *= 2
+    world_y *= 2
 
     fx, cx = K[0, 0], K[0, 2]
     fy, cy = K[1, 1], K[1, 2]
 
-    u = abs(fx * (x/y) + cx)
-    v = abs(fy * (z/y) + cy)
+    u = fx * world_x/world_y + cx
+    v = fy * world_z/world_y + cy
+
+    if round:
+        u = int(u)
+        v = int(v)
 
     return (u,v)
 
+dots_or_circle = False #False - dots   True - Ellipse
+dots = 360
 
-def geometric_true_center(p1, p2): #Rework later for u,v,K
+def geometric_true_center(p1, p2, draw_target=None): #Rework later for u,v,K
     # y1,x1 = p1
     # y2,x2 = p2
     x1,y1 = p1
@@ -131,7 +157,7 @@ def geometric_true_center(p1, p2): #Rework later for u,v,K
 
     R = rotation_matrix(0, -14, 0, single_axis="X")
 
-    x1,y1,_ = similar_triangles_calculation(x1,y1,K,R)
+    x1,y1,z = similar_triangles_calculation(x1,y1,K,R)
     x2,y2,_ = similar_triangles_calculation(x2,y2,K,R)
 
     slope = (y2-y1)/(x2-x1)
@@ -140,14 +166,14 @@ def geometric_true_center(p1, p2): #Rework later for u,v,K
     mx = (x1 + x2) / 2
     my = (y1 + y2) / 2
 
-    r = 24
+    r = 48
 
     try:
         d = math.sqrt( (x2-x1)**2 + (y2-y1)**2 )
         D = math.sqrt(r**2 - 0.25*((x2-x1)**2 + (y2-y1)**2))
     except ValueError:
         print("Circle Fail")
-        return None
+        return (False, None, None)
 
     
     cx1 = mx + (2*D/d)*(y1-my)
@@ -166,13 +192,88 @@ def geometric_true_center(p1, p2): #Rework later for u,v,K
     elif cy2_orth_test == orth_slope:
         ty = cy2
     else:
-        return None
+        return (False, None, None)
 
     distance = math.sqrt(tx**2 + ty**2)
-    angle = math.degrees(math.atan(tx/ty)) # If this number is weird try swapping x and y, I got flipped around at some point
+    horizontal_angle = math.degrees(math.atan(tx/ty))
+
+    if draw_target is not None and dots_or_circle:
+        target_center = (tx, ty)
+
+        far_edge = (tx, ty+r)
+        close_edge = (tx, ty-r)
+        left_edge = (tx-r, ty)
+        right_edge = (tx+r, ty)
+
+        draw_pts = [far_edge, close_edge, left_edge, right_edge, target_center]
+
+        for p in range(len(draw_pts)):
+            px, py = draw_pts[p]
+            
+            draw_pts[p] = reverse_point(px, py, z, K, R, round=True)
+
+            print(draw_pts[p])
+            # cv2.circle(draw_target, draw_pts[p], 2, (200, 50, 50), thickness=-1)
+        
+        far, close, left, right, center = draw_pts
+
+        cx, cy = center
+        
+        major_axis_left = int(math.sqrt( (left[0] - center[0])**2 + (left[1] - center[1])**2 ))
+        major_axis_right = int(math.sqrt( (right[0] - center[0])**2 + (right[1] - center[1])**2 ))
+
+        minor_axis_far = int(math.sqrt( (far[0] - center[0])**2 + (far[1] - center[1])**2 ))
+        minor_axis_close = int(math.sqrt( (close[0] - center[0])**2 + (close[1] - center[1])**2 ))
+
+        minor_axis = sum([minor_axis_close, minor_axis_far]) // 2
+        major_axis = sum([major_axis_left, major_axis_right]) // 2
+
+        thickness = 2
+
+        vertical_angle = -math.degrees( math.atan( (close[0]-center[0]) / (close[1]-center[1]) ) )
+ 
+
+        test_angle = 45
+
+        color = (0,255,0)
+
+        origin = np.array([cx, cy])
+
+        hp1, hp2 = (cx-major_axis, cy), (cx+major_axis, cy)
+
+        vertical_points = np.array([
+            rotate_2d(np.array([cx, cy-minor_axis]), vertical_angle, (cx, cy), round=True),
+            rotate_2d(np.array([cx, cy+minor_axis]), vertical_angle, (cx, cy), round=True)
+        ]).astype(int)
+
+        vp1, vp2 = (vertical_points[0,0], vertical_points[0,1]),(vertical_points[1,0], vertical_points[1,1])
 
 
-    return(angle, distance)
+        cv2.line(draw_target, hp1, hp2, (0,255,0))
+        cv2.line(draw_target, vp1, vp2, (0,255,0))
+
+
+        cv2.ellipse(draw_target, center, (major_axis, minor_axis), 0, 0, 360, color, thickness=thickness)
+        cv2.circle(draw_target, center, 3, (0,255,0), thickness=-1)
+
+        # cv2.circle(draw_target, p, 3, (215,30,30), thickness=-1)
+
+    elif draw_target is not None:
+        base_pt = np.array([tx,ty+r])
+
+        pts = [(tx, ty), base_pt]
+
+        for i in range(dots):
+            cur_pt = rotate_2d(base_pt, (360/dots)*i, (tx, ty))
+            pts.append(cur_pt)
+
+
+        for k in range(len(pts)):
+            px, py = pts[k]
+            p = reverse_point(px, py, z, K, R, round=True)
+            cv2.circle(draw_target, p, 2, (150,100,200), thickness=-1)
+
+    return(True, horizontal_angle, distance)
 
 
 def calibrate_intrinsic(cam_id, img_count=20):
@@ -243,4 +344,3 @@ def calibrate_intrinsic(cam_id, img_count=20):
     print("DIM=" + str(_img_shape[::-1]))
     print("K=np.array(" + str(K.tolist()) + ")")
     print("D=np.array(" + str(D.tolist()) + ")")
-    
