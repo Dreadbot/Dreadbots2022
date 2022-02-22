@@ -241,16 +241,18 @@ def geometric_true_center(p1, p2): #Rework later for u,v,K
 
     return(angle, distance)
 
-# Performs an exponential smoothing operation (Holt Linear) to filter out high-frequency relative angle noise.
-def filter(current_observation, previous_smoothed_statistic, smoothing_factor):
+def exponential_filter(current_observation, previous_smoothed_statistic, smoothing_factor):
+    '''Performs an exponential smoothing operation (Holt Linear) 
+    to filter out high-frequency relative angle noise.'''
+
     # Smoothing factor clamp [-1.0, 1.0]
-    if smoothing_factor > 1:
-        smoothing_factor = 1
-    if smoothing_factor < 0:
-        smoothing_factor = 0
+    if smoothing_factor > 1.0:
+        smoothing_factor = 1.0
+    if smoothing_factor < 0.0:
+        smoothing_factor = 0.0
     
     # Performs the exponential smoothing
     smoothed_statistic = smoothing_factor * current_observation
-    smoothed_statistic += (1 - smoothing_factor) * previous_smoothed_statistic
+    smoothed_statistic += (1.0 - smoothing_factor) * previous_smoothed_statistic
 
     return smoothed_statistic
