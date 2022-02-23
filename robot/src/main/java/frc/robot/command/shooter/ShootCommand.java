@@ -13,10 +13,13 @@ import frc.robot.util.VisionInterface;
 public class ShootCommand extends SequentialCommandGroup {
     private Color ballColor;
     private final ColorSensor dreadbotColorSensor;
-    public ShootCommand(Shooter shooter, ColorSensor dreadbotColorSensor) {
+    private Color teamColor;
+    public static boolean correctColor; // Change to not static later?
+    public ShootCommand(Shooter shooter, ColorSensor dreadbotColorSensor, Color teamColor) {
         SmartDashboard.putNumber("RPM", 0.0d);
         this.dreadbotColorSensor = dreadbotColorSensor;
-        GetBallColorCommand getBallColorCommand = new GetBallColorCommand(dreadbotColorSensor);
+        this.teamColor = teamColor;
+        GetBallColorCommand getBallColorCommand = new GetBallColorCommand(dreadbotColorSensor, teamColor);
         addCommands(
             getBallColorCommand,
             // Prepare the shooter system for the shot
@@ -35,8 +38,10 @@ public class ShootCommand extends SequentialCommandGroup {
 class GetBallColorCommand extends CommandBase {
     private Color ballColor;
     private ColorSensor dreadbotColorSensor;
-    public GetBallColorCommand(ColorSensor dreadbotColorSensor){
+    private Color teamColor;
+    public GetBallColorCommand(ColorSensor dreadbotColorSensor, Color teamColor){
         this.dreadbotColorSensor = dreadbotColorSensor;
+        this.teamColor = teamColor;
     }
 
 
@@ -47,6 +52,10 @@ class GetBallColorCommand extends CommandBase {
     @Override
     public boolean isFinished(){
         ballColor = dreadbotColorSensor.getBallColor();
+        if(ballColor == teamColor)
+            ShootCommand.correctColor = true;
+        else
+            ShootCommand.correctColor = false;
         return dreadbotColorSensor.getBallColor() != null;
     }
 }
@@ -62,14 +71,14 @@ class FlywheelVelocityCommand extends CommandBase {
 
     @Override
     public void execute() {
-        double velocity = VisionInterface.getFlywheelVelocity();
+        double velocity = VisionInterface.getFlywheelVelocity(ShootCommand.correctColor);
 
         shooter.setFlywheelVelocity(velocity);
     }
 
     @Override
     public boolean isFinished() {
-        double setPoint = VisionInterface.getFlywheelVelocity();
+        double setPoint = VisionInterface.getFlywheelVelocity(ShootCommand.correctColor);
         double actual = shooter.getFlywheelVelocity();
 
         return Math.abs(setPoint - actual) <= 10.0;
@@ -92,7 +101,7 @@ class TurretAngleCommand extends CommandBase {
     @Override
     public void execute() {
         double turretPosition = shooter.getTurretAngle();
-        double relative = VisionInterface.getRequestedTurretAngle();
+        double relative = VisionInterface.getRequestedTurretAngle(ShootCommand.correctColor);
 
         turretActualTarget = relative;
 
@@ -124,7 +133,7 @@ class HoodAngleCommand extends CommandBase {
     @Override
     public void execute() {
         double hoodPosition = shooter.getHoodAngle();
-        double relative = VisionInterface.getRequestedHoodAngle();
+        double relative = VisionInterface.getRequestedHoodAngle(ShootCommand.correctColor);
 
         hoodActualTarget = relative;
 

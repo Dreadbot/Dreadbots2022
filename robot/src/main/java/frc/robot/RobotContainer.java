@@ -7,10 +7,13 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -54,12 +57,19 @@ public class RobotContainer {
     private final Hood hood;
     private final Shooter shooter;    
 
+    private Color teamColor;
+    SendableChooser<Color> teamColorChooser;
     
     public RobotContainer() {
         primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
         secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
 
+        teamColorChooser = new SendableChooser<>();
+        teamColorChooser.setDefaultOption("Blue Alliance", Constants.COLOR_BLUE);
+        teamColorChooser.addOption("Red Alliance", Constants.COLOR_RED);
+        SmartDashboard.putData(teamColorChooser);
 
+        
 
         if (Constants.DRIVE_ENABLED) {
             CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
@@ -149,7 +159,7 @@ public class RobotContainer {
         turret.setDefaultCommand(new RunCommand(() -> turret.setAngle(SmartDashboard.getNumber("Selected Turret Angle", 150)), turret));
 
         // Shooter Commands
-        secondaryController.getBButton().whileHeld(new ShootCommand(shooter, dreadbotColorSensor));
+        secondaryController.getBButton().whileHeld(new ShootCommand(shooter, dreadbotColorSensor, teamColor));
         secondaryController.getYButton().whileHeld(new InstantCommand(shooter::feedBall, feeder));
 
         // Climber Commands
@@ -171,5 +181,9 @@ public class RobotContainer {
     public void calibrate() {
         CommandScheduler.getInstance().schedule(new TurretCalibrationCommand(turret));
         CommandScheduler.getInstance().schedule(new HoodCalibrationCommand(hood));
+    }
+
+    public void setTeamColor(){
+        teamColor = teamColorChooser.getSelected();
     }
 }
