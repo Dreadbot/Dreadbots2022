@@ -44,6 +44,7 @@ public class RobotContainer {
     private final DreadbotController primaryController;
     private final DreadbotController secondaryController;
 
+    private final ColorSensor dreadbotColorSensor;
     private final Drive drive;
     private final Intake intake;
     private final Feeder feeder;
@@ -51,7 +52,7 @@ public class RobotContainer {
     private final Turret turret;
     private final Flywheel flywheel;
     private final Hood hood;
-    private final Shooter shooter;
+    private final Shooter shooter;    
 
     
     public RobotContainer() {
@@ -78,11 +79,9 @@ public class RobotContainer {
         if (Constants.FEEDER_ENABLED) {
             CANSparkMax feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless);
             ColorSensorV3 colorSensorV3 = new ColorSensorV3(Constants.I2C_PORT);
-            ColorSensor dreadbotColorSensor = new ColorSensor(colorSensorV3);
+            dreadbotColorSensor = new ColorSensor(colorSensorV3);
 
             feeder = new Feeder(feederMotor);
-
-
         } else feeder = new Feeder();
 
         if (Constants.TURRET_ENABLED) {
@@ -150,7 +149,7 @@ public class RobotContainer {
         turret.setDefaultCommand(new RunCommand(() -> turret.setAngle(SmartDashboard.getNumber("Selected Turret Angle", 150)), turret));
 
         // Shooter Commands
-        secondaryController.getBButton().whileActiveOnce(new ShootCommand(shooter));
+        secondaryController.getBButton().whileHeld(new ShootCommand(shooter, dreadbotColorSensor));
         secondaryController.getYButton().whileHeld(new InstantCommand(shooter::feedBall, feeder));
 
         // Climber Commands

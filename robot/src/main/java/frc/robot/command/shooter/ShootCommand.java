@@ -1,17 +1,24 @@
 package frc.robot.command.shooter;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.subsystem.shooter.ColorSensor;
+import frc.robot.subsystem.shooter.Feeder;
 import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.util.VisionInterface;
 
 public class ShootCommand extends SequentialCommandGroup {
-    public ShootCommand(Shooter shooter) {
+    private Color ballColor;
+    private final ColorSensor dreadbotColorSensor;
+    public ShootCommand(Shooter shooter, ColorSensor dreadbotColorSensor) {
         SmartDashboard.putNumber("RPM", 0.0d);
-        
+        this.dreadbotColorSensor = dreadbotColorSensor;
+        GetBallColorCommand getBallColorCommand = new GetBallColorCommand(dreadbotColorSensor);
         addCommands(
+            getBallColorCommand,
             // Prepare the shooter system for the shot
             new ParallelCommandGroup(
                 new FlywheelVelocityCommand(shooter),
@@ -20,8 +27,27 @@ public class ShootCommand extends SequentialCommandGroup {
             ),
 
             // Feed the ball, and shoot continuously.
-            new FeedBallCommand(shooter)
+            new FeedBallCommand(shooter, dreadbotColorSensor, getBallColorCommand.getBallColor())
         );
+    }
+}
+
+class GetBallColorCommand extends CommandBase {
+    private Color ballColor;
+    private ColorSensor dreadbotColorSensor;
+    public GetBallColorCommand(ColorSensor dreadbotColorSensor){
+        this.dreadbotColorSensor = dreadbotColorSensor;
+    }
+
+
+    public Color getBallColor(){
+        return ballColor;
+    }
+
+    @Override
+    public boolean isFinished(){
+        ballColor = dreadbotColorSensor.getBallColor();
+        return dreadbotColorSensor.getBallColor() != null;
     }
 }
 
@@ -119,9 +145,13 @@ class HoodAngleCommand extends CommandBase {
 
 class FeedBallCommand extends CommandBase { 
     private final Shooter shooter;
+    private final ColorSensor dreadbotColorSensor;
+    private Color orginalBallColor;
 
-    public FeedBallCommand(Shooter shooter) {
+    public FeedBallCommand(Shooter shooter, ColorSensor dreadbotColorSensor, Color orginalBallColor) {
         this.shooter = shooter;
+        this.dreadbotColorSensor = dreadbotColorSensor;
+        this.orginalBallColor = orginalBallColor;
 
         addRequirements(shooter.getFeeder());
     }
@@ -129,5 +159,10 @@ class FeedBallCommand extends CommandBase {
     @Override
     public void execute() {
         shooter.feedBall();
+    }
+
+    @Override
+    public boolean isFinished(){
+        return dreadbotColorSensor.getBallColor() != orginalBallColor;
     }
 }

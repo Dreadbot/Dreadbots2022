@@ -4,6 +4,7 @@ import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.Constants;
 
 public class ColorSensor {
@@ -20,26 +21,28 @@ public class ColorSensor {
         colorMatch.setConfidenceThreshold(colorConfidence);
     }
 
-    public void printBallColor()
+    public Color getBallColor()
     {
         ColorMatchResult matchColor = colorMatch.matchColor(sensor.getColor());
-        //ColorMatchResult matchColor = colorMatch.matchClosestColor(Constants.COLOR_BLUE);
-        //SmartDashboard.putNumber("Confidence", matchColor.confidence);
 
         if(matchColor == null)
         {
             SmartDashboard.putString("Color:", "Null");
+            return null;
         }
         else if(matchColor.color == Constants.COLOR_RED)
         {
             SmartDashboard.putNumber("Confidence", matchColor.confidence);
             SmartDashboard.putString("Color:", "Red");
+            return Constants.COLOR_RED;
         }
         else if(matchColor.color == Constants.COLOR_BLUE)
         {
             SmartDashboard.putNumber("Confidence", matchColor.confidence);
             SmartDashboard.putString("Color:", "Blue");
+            return Constants.COLOR_BLUE;
         }
+        return null; // Keeps compiler happy
     }
     
     public void printColor() // for testing and finding color, switch to rio log if possible
