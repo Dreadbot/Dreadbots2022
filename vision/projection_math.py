@@ -105,12 +105,14 @@ def similar_triangles_calculation(u, v, K, R):
     y *= 0.5
 
     world_vector_camera = np.array([-x,-y,z])
-    angle = math.radians(np.linalg.norm(world_vector_camera))
-    world_vector_camera[2] = z_off
+    # angle = math.radians(np.linalg.norm(world_vector_camera))
+    world_vector_world = R.dot(world_vector_camera)
+    print(f"WORLD VECTOR[ {world_vector_world} ]")
+    world_vector_world[2] = z_off
 
-    unit = world_vector_camera / np.linalg.norm(world_vector_camera)
+    # unit = world_vector_camera / np.linalg.norm(world_vector_camera)
 
-    world_vector_world = world_vector_camera*math.cos(angle) + np.cross(unit, world_vector_camera)*math.sin(angle) + unit*np.dot(unit, world_vector_camera)*(1-math.cos(angle))
+    # world_vector_world = world_vector_camera*math.cos(angle) + np.cross(unit, world_vector_camera)*math.sin(angle) + unit*np.dot(unit, world_vector_camera)*(1-math.cos(angle))
 
 
     return world_vector_world
@@ -141,14 +143,15 @@ def reverse_point(world_x, world_y, world_z, K, R, round=False):
 
     return (u,v)
 
-dots_or_circle = False #False - dots   True - Ellipse
+dots_or_circle = True #False - dots   True - Ellipse
 dots = 360
 
 def geometric_true_center(p1, p2, draw_target=None): #Rework later for u,v,K
-    # y1,x1 = p1
-    # y2,x2 = p2
+    #y1,x1 = p1
+    #y2,x2 = p2
     x1,y1 = p1
     x2,y2 = p2
+
 
     K=np.array([[678.3675545820577, 0.0, 304.74552960651096], 
             [0.0, 677.88787206697, 228.7902426460552], 
@@ -160,7 +163,7 @@ def geometric_true_center(p1, p2, draw_target=None): #Rework later for u,v,K
     x1,y1,z = similar_triangles_calculation(x1,y1,K,R)
     x2,y2,_ = similar_triangles_calculation(x2,y2,K,R)
 
-    slope = (y2-y1)/(x2-x1)
+    slope = (x2-x1)/(y2-y1)
     orth_slope = round(-1/slope, 2)
 
     mx = (x1 + x2) / 2
@@ -172,7 +175,6 @@ def geometric_true_center(p1, p2, draw_target=None): #Rework later for u,v,K
         d = math.sqrt( (x2-x1)**2 + (y2-y1)**2 )
         D = math.sqrt(r**2 - 0.25*((x2-x1)**2 + (y2-y1)**2))
     except ValueError:
-        print("Circle Fail")
         return (False, None, None)
 
     
@@ -182,20 +184,41 @@ def geometric_true_center(p1, p2, draw_target=None): #Rework later for u,v,K
     cy1 = my + (2*D/d)*(x1-mx)
     cy2 = my - (2*D/d)*(x1-mx)
 
-    tx = max([cx1, cx2])
+    
+    # tx = max([cx1, cx2])
 
-    cy1_orth_test = round((cy1-my)/(tx-mx), 2)
-    cy2_orth_test = round((cy2-my)/(tx-mx), 2)
+    # if cx1 > mx:
+    #     tx = cx1
+    # elif cx2 > mx:
+    #     tx = cx2
 
-    if cy1_orth_test == orth_slope:
-        ty = cy1
-    elif cy2_orth_test == orth_slope:
-        ty = cy2
-    else:
-        return (False, None, None)
+    ty = max([cy1, cy2])
+    # if abs(cx1) >= abs(cx2):
+    #     tx = cx1
+    # else:
+    #     tx = cx2
+
+    # os.system('clear')
+
+
+    cx1_orth_test = round((cx1-mx)/(ty-my), 2)
+    cx2_orth_test = round((cx2-mx)/(ty-my), 2)
+
+
+    if cx1_orth_test == orth_slope:
+        tx = cx1
+    elif cx2_orth_test == orth_slope:
+        tx = cx2
+    # else:
+    #     return (False, None, None)
 
     distance = math.sqrt(tx**2 + ty**2)
     horizontal_angle = math.degrees(math.atan(tx/ty))
+
+    print(f"\ndist[ {distance} ]")
+    print(f"angle[ {horizontal_angle} ]")
+    print(f"TX[ {tx} ]   TY[ {ty} ]")
+
 
     if draw_target is not None and dots_or_circle:
         target_center = (tx, ty)
@@ -272,7 +295,7 @@ def geometric_true_center(p1, p2, draw_target=None): #Rework later for u,v,K
             px, py = pts[k]
             p = reverse_point(px, py, z, K, R, round=True)
             cv2.circle(draw_target, p, 2, (150,100,200), thickness=-1)
-
+    
     return(True, horizontal_angle, distance)
 
 
