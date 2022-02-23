@@ -65,7 +65,7 @@ def main():
         if not ret:
             break
         
-        if table is not None:
+        if table is None:
             hL, sL, vL, hU, sU, vU, erode, dilate, blur, minArea, circ = util.getSliderValues(
                 "hsv", "Trackbars")
         else:
@@ -81,6 +81,7 @@ def main():
             manip = util.getManipulation()
             erode = manip["erode"]
             dilate = manip["dilate"]
+            blur = manip["blur"]
             minArea = manip["area"]
             circ = manip["circ"]
 
