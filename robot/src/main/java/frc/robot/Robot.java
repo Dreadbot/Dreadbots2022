@@ -32,14 +32,13 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        robotContainer.setTeamColor();
         //robotContainer.calibrate();
         autonomousCommand = robotContainer.getAutonomousCommand();
 
         // schedule the autonomous command (example)
         if (autonomousCommand != null) {
-    
           autonomousCommand.schedule();
-    
         }
     }
 
@@ -48,9 +47,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-      if (autonomousCommand != null) {
-        autonomousCommand.cancel();
-      }
+        if (autonomousCommand != null) {
+            autonomousCommand.cancel();
+        }
+        robotContainer.setTeamColor();
         robotContainer.calibrate();
     }
 

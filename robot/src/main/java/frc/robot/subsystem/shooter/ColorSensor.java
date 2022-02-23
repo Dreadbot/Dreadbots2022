@@ -6,8 +6,9 @@ import com.revrobotics.ColorSensorV3;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.Constants;
+import frc.robot.subsystem.DreadbotSubsystem;
 
-public class ColorSensor {
+public class ColorSensor extends DreadbotSubsystem {
     private ColorSensorV3 sensor;
     private ColorMatch colorMatch;
     private double colorConfidence = 0.9;
@@ -23,6 +24,8 @@ public class ColorSensor {
 
     public Color getBallColor()
     {
+        if(isDisabled()) return null;
+
         ColorMatchResult matchColor = colorMatch.matchColor(sensor.getColor());
 
         if(matchColor == null)
@@ -47,8 +50,22 @@ public class ColorSensor {
     
     public void printColor() // for testing and finding color, switch to rio log if possible
     {
+        if(isDisabled()) return;
+
         SmartDashboard.putNumber("Color R:", sensor.getColor().red );
         SmartDashboard.putNumber("Color G:", sensor.getColor().green);
         SmartDashboard.putNumber("Color B:", sensor.getColor().blue);
+    }
+
+    @Override
+    public void stopMotors() {
+        if(isDisabled()) return;
+        // nothing to do
+    }
+
+    @Override
+    public void close() throws Exception {
+        if(isDisabled()) return;
+        // nothing to close
     }
 }

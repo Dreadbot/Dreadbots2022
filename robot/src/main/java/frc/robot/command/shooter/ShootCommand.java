@@ -11,14 +11,15 @@ import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.util.VisionInterface;
 
 public class ShootCommand extends SequentialCommandGroup {
-    private Color ballColor;
+    //private Color ballColor;
+    //private Color teamColor;
     private final ColorSensor dreadbotColorSensor;
-    private Color teamColor;
     public static boolean correctColor; // Change to not static later?
+
     public ShootCommand(Shooter shooter, ColorSensor dreadbotColorSensor, Color teamColor) {
         SmartDashboard.putNumber("RPM", 0.0d);
         this.dreadbotColorSensor = dreadbotColorSensor;
-        this.teamColor = teamColor;
+        //this.teamColor = teamColor;
         GetBallColorCommand getBallColorCommand = new GetBallColorCommand(dreadbotColorSensor, teamColor);
         addCommands(
             getBallColorCommand,
@@ -37,26 +38,26 @@ public class ShootCommand extends SequentialCommandGroup {
 
 class GetBallColorCommand extends CommandBase {
     private Color ballColor;
-    private ColorSensor dreadbotColorSensor;
-    private Color teamColor;
+    private final ColorSensor dreadbotColorSensor;
+    private final Color teamColor;
+
     public GetBallColorCommand(ColorSensor dreadbotColorSensor, Color teamColor){
         this.dreadbotColorSensor = dreadbotColorSensor;
         this.teamColor = teamColor;
     }
-
 
     public Color getBallColor(){
         return ballColor;
     }
 
     @Override
-    public boolean isFinished(){
+    public boolean isFinished() {
         ballColor = dreadbotColorSensor.getBallColor();
-        if(ballColor == teamColor)
+        if (ballColor == teamColor)
             ShootCommand.correctColor = true;
         else
             ShootCommand.correctColor = false;
-        return dreadbotColorSensor.getBallColor() != null;
+        return ballColor != null;
     }
 }
 
@@ -100,7 +101,7 @@ class TurretAngleCommand extends CommandBase {
 
     @Override
     public void execute() {
-        double turretPosition = shooter.getTurretAngle();
+        //double turretPosition = shooter.getTurretAngle();
         double relative = VisionInterface.getRequestedTurretAngle(ShootCommand.correctColor);
 
         turretActualTarget = relative;
@@ -132,7 +133,7 @@ class HoodAngleCommand extends CommandBase {
 
     @Override
     public void execute() {
-        double hoodPosition = shooter.getHoodAngle();
+        //double hoodPosition = shooter.getHoodAngle();
         double relative = VisionInterface.getRequestedHoodAngle(ShootCommand.correctColor);
 
         hoodActualTarget = relative;
@@ -171,7 +172,9 @@ class FeedBallCommand extends CommandBase {
     }
 
     @Override
-    public boolean isFinished(){
-        return dreadbotColorSensor.getBallColor() != orginalBallColor;
+    public boolean isFinished() {
+        Color currentBallColor = dreadbotColorSensor.getBallColor();
+        // Return true if different color ball, or if no ball is detected
+        return currentBallColor == null || currentBallColor != orginalBallColor;
     }
 }

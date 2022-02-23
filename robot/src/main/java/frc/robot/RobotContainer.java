@@ -69,8 +69,6 @@ public class RobotContainer {
         teamColorChooser.addOption("Red Alliance", Constants.COLOR_RED);
         SmartDashboard.putData(teamColorChooser);
 
-        
-
         if (Constants.DRIVE_ENABLED) {
             CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
             CANSparkMax rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
@@ -183,6 +181,11 @@ public class RobotContainer {
         CommandScheduler.getInstance().schedule(new HoodCalibrationCommand(hood));
     }
 
+    /*
+     * Grab Alliance Color from the smart dashboard
+     * This will be used to determine if a ball is the right color or not
+     * and either shoot it into the goal or off to the side
+     */
     public void setTeamColor(){
         teamColor = teamColorChooser.getSelected();
     }
