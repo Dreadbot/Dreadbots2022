@@ -1,1 +1,1 @@
-/usr/bin/python3 /home/pi/Dreadbots2022/vision/ballfinding/main.py -p ballfinding/Data
+/usr/bin/python3 /home/pi/vision/ballfinding/main.py -p /home/pi/vision/ballfinding/Data -r blue
