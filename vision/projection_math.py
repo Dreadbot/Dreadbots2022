@@ -107,7 +107,7 @@ def similar_triangles_calculation(u, v, K, R):
     world_vector_camera = np.array([-x,-y,z])
     # angle = math.radians(np.linalg.norm(world_vector_camera))
     world_vector_world = R.dot(world_vector_camera)
-    print(f"WORLD VECTOR[ {world_vector_world} ]")
+    # print(f"WORLD VECTOR[ {world_vector_world} ]")
     world_vector_world[2] = z_off
 
     # unit = world_vector_camera / np.linalg.norm(world_vector_camera)
@@ -118,8 +118,10 @@ def similar_triangles_calculation(u, v, K, R):
     return world_vector_world
 
 
-def reverse_point(world_x, world_y, world_z, K, R, round=False):
+def reverse_point(world_vector, K, R, round=False):
     angle = 14
+
+    world_x, world_y, world_z = world_vector
 
     world_vector_camera = np.array([-world_x, -world_y, world_z])
 
@@ -143,8 +145,22 @@ def reverse_point(world_x, world_y, world_z, K, R, round=False):
 
     return (u,v)
 
-dots_or_circle = True #False - dots   True - Ellipse
-dots = 360
+
+def center_distance(point, K, angle_offset=14, height=81.5):
+    fy, cy = K[1, 1], K[1, 2]
+
+    _, y = point
+
+    dy = cy - y
+
+    angle_offset_radians = math.radians(angle_offset)
+
+    vertical_angle_radians = math.atan(dy/fy) + angle_offset_radians # Vertical Angle
+
+    center_distance = height/math.tan(vertical_angle_radians)
+
+    return(center_distance)
+
 
 def geometric_true_center(p1, p2, draw_target=None): #Rework later for u,v,K
     #y1,x1 = p1
@@ -184,21 +200,7 @@ def geometric_true_center(p1, p2, draw_target=None): #Rework later for u,v,K
     cy1 = my + (2*D/d)*(x1-mx)
     cy2 = my - (2*D/d)*(x1-mx)
 
-    
-    # tx = max([cx1, cx2])
-
-    # if cx1 > mx:
-    #     tx = cx1
-    # elif cx2 > mx:
-    #     tx = cx2
-
     ty = max([cy1, cy2])
-    # if abs(cx1) >= abs(cx2):
-    #     tx = cx1
-    # else:
-    #     tx = cx2
-
-    # os.system('clear')
 
 
     cx1_orth_test = round((cx1-mx)/(ty-my), 2)
@@ -212,15 +214,20 @@ def geometric_true_center(p1, p2, draw_target=None): #Rework later for u,v,K
     # else:
     #     return (False, None, None)
 
-    distance = math.sqrt(tx**2 + ty**2)
+    # distance = math.sqrt(tx**2 + ty**2)
     horizontal_angle = math.degrees(math.atan(tx/ty))
 
-    print(f"\ndist[ {distance} ]")
-    print(f"angle[ {horizontal_angle} ]")
-    print(f"TX[ {tx} ]   TY[ {ty} ]")
+    # print(f"\ndist[ {distance} ]")
 
 
-    if draw_target is not None and dots_or_circle:
+    target_center = (tx, ty, z)
+    target_pixel_center = reverse_point(target_center, K, R)
+
+    distance = center_distance(target_pixel_center, K)
+
+    if draw_target is not None:
+        cv2.circle(draw_target, target_pixel_center, 3, (255,0,0), thickness=-1)
+    if False: # yes this is bad im sorry okay
         target_center = (tx, ty)
 
         far_edge = (tx, ty+r)
@@ -254,13 +261,8 @@ def geometric_true_center(p1, p2, draw_target=None): #Rework later for u,v,K
         thickness = 2
 
         vertical_angle = -math.degrees( math.atan( (close[0]-center[0]) / (close[1]-center[1]) ) )
- 
-
-        test_angle = 45
 
         color = (0,255,0)
-
-        origin = np.array([cx, cy])
 
         hp1, hp2 = (cx-major_axis, cy), (cx+major_axis, cy)
 
@@ -278,25 +280,10 @@ def geometric_true_center(p1, p2, draw_target=None): #Rework later for u,v,K
 
         cv2.ellipse(draw_target, center, (major_axis, minor_axis), 0, 0, 360, color, thickness=thickness)
         cv2.circle(draw_target, center, 3, (0,255,0), thickness=-1)
+    print(f"angle[ {horizontal_angle} ]  dist[ {distance} ]")
 
-        # cv2.circle(draw_target, p, 3, (215,30,30), thickness=-1)
-
-    elif draw_target is not None:
-        base_pt = np.array([tx,ty+r])
-
-        pts = [(tx, ty), base_pt]
-
-        for i in range(dots):
-            cur_pt = rotate_2d(base_pt, (360/dots)*i, (tx, ty))
-            pts.append(cur_pt)
-
-
-        for k in range(len(pts)):
-            px, py = pts[k]
-            p = reverse_point(px, py, z, K, R, round=True)
-            cv2.circle(draw_target, p, 2, (150,100,200), thickness=-1)
-    
     return(True, horizontal_angle, distance)
+
 
 
 def calibrate_intrinsic(cam_id, img_count=20):
