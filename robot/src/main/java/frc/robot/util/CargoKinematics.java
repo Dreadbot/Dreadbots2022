@@ -19,8 +19,7 @@ public class CargoKinematics {
     }
 
     public double toBallVelocity(double horizontalDistance) {
-        double changeInHeightToArc = arcHeightCalculator.getArcHeight(horizontalDistance) - initialHeight;
-        double initialVerticalVelocityComponent = Math.sqrt(-2 * Constants.GRAVITY * changeInHeightToArc);
+        double initialVerticalVelocityComponent = getInitialVerticalVelocity(horizontalDistance);
 
         double changeInHeightToHub = initialHeight - targetHeight;
         changeInHeightToHub *= 2 * Constants.GRAVITY;
@@ -37,8 +36,7 @@ public class CargoKinematics {
     }
 
     public double toBallAngle(double horizontalDistance) {
-        double changeInHeightToArc = arcHeightCalculator.getArcHeight(horizontalDistance) - initialHeight;
-        double initialVerticalVelocityComponent = Math.sqrt(-2 * Constants.GRAVITY * changeInHeightToArc);
+        double initialVerticalVelocityComponent = getInitialVerticalVelocity(horizontalDistance);
 
         double changeInHeightToHub = initialHeight - targetHeight;
         changeInHeightToHub *= 2 * Constants.GRAVITY;
@@ -51,5 +49,9 @@ public class CargoKinematics {
         double initialHorizontalVelocityComponent = horizontalDistance / timeToScore;
 
         return Math.atan(initialVerticalVelocityComponent / initialHorizontalVelocityComponent) * 180.0d / Math.PI;
+    }
+
+    private double getInitialVerticalVelocity(double horizontalDistance) {
+        return Math.sqrt(-2 * Constants.GRAVITY * (arcHeightCalculator.getArcHeight(horizontalDistance) - initialHeight));
     }
 }
