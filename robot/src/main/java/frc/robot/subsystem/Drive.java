@@ -193,6 +193,14 @@ public class Drive extends DreadbotSubsystem {
         );
     }
 
+    public void setWheelVoltages(double leftFrontVoltage, double rightFrontVoltage,
+                                 double leftBackVoltage, double rightBackVoltage) {
+        leftFrontMotor.setVoltage(leftFrontVoltage);
+        rightFrontMotor.setVoltage(rightFrontVoltage);
+        leftBackMotor.setVoltage(leftBackVoltage);
+        rightBackMotor.setVoltage(rightBackVoltage);
+    }
+
     public void setWheelSpeeds(MecanumDriveWheelSpeeds wheelSpeeds) {
         leftFrontVelocityPID.setSetpoint(wheelSpeeds.frontLeftMetersPerSecond);
         rightFrontVelocityPID.setSetpoint(wheelSpeeds.frontRightMetersPerSecond);
