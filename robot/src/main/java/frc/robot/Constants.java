@@ -7,7 +7,7 @@ package frc.robot;
 public abstract class Constants {
     public static final boolean DRIVE_ENABLED = false;
     public static final boolean INTAKE_ENABLED = false;
-    public static final boolean CLIMB_ENABLED = false;
+    public static final boolean CLIMB_ENABLED = true;
     public static final boolean SHOOTER_ENABLED = false;
     public static final boolean FEEDER_ENABLED = false;
     public static final boolean FLYWHEEL_ENABLED = false;
@@ -56,6 +56,7 @@ public abstract class Constants {
     public static final int RIGHT_NEUTRAL_HOOK_ACTUATOR = 2;
     public static final int CLIMBING_HOOK_ACTUATOR = 3;
     public static final double MAX_ARM_DISTANCE = 50; //Later change this to phyisical distance
+    public static final double MAX_ENCODER_POSITION = 204.632;
     // Robot Constants
     public static final float GRAVITY = -9.81f;
     public static final float GOAL_HEIGHT = 2.64f;

@@ -64,8 +64,8 @@ public class Climber extends SubsystemBase {
         winchPid.setOutputRange(-0.1, 0.1);
         winchMotor.getFirmwareVersion();
         winchMotor.setIdleMode(IdleMode.kBrake);
-        winchMotor.setInverted(true);
         this.retractedPosition = winchEncoder.getPosition();
+        winchEncoder.setPosition(0);
         neutralHookActuator.set(false);
     }
     public void close() throws Exception {
@@ -100,16 +100,17 @@ public class Climber extends SubsystemBase {
 
     public void rotateNeutralHookVertical() {
         if(!Constants.CLIMB_ENABLED) return;
-        leftNeutralHookActuator.set(true);
-        // rightNeutralHookActuator.set(true);
+        leftNeutralHookActuator.set(false);
     }
 
     public void rotateNeutralHookDown() {
         if(!Constants.CLIMB_ENABLED) return;
-        leftNeutralHookActuator.set(false);
-        // rightNeutralHookActuator.set(false);
-    }
+        leftNeutralHookActuator.set(true);
 
+    }
+    public double getEncoderPosition() {
+        return winchEncoder.getPosition();
+    }
     public void setWinch(double factor) {
         if(!Constants.CLIMB_ENABLED) return;
         winchMotor.set(factor);
