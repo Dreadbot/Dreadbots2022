@@ -8,13 +8,19 @@ import argparse
 from networktables import NetworkTables
 from cscore import CameraServer
 
+
 def main():
-    argparser = argparse.ArgumentParser(description="Tracks balls using circularity and hough circles.")
-    argparser.add_argument('--no-tables', action='store_false', dest='ntenabled')
-    argparser.add_argument('--no-server', action='store_false', dest='csenabled')
+    argparser = argparse.ArgumentParser(
+        description="Tracks balls using circularity and hough circles.")
+    argparser.add_argument(
+        '--no-tables', action='store_false', dest='ntenabled')
+    argparser.add_argument(
+        '--no-server', action='store_false', dest='csenabled')
     argparser.add_argument('-r', '--range', action='store', dest='colorrange')
-    argparser.add_argument('-p', '--data-path', action='store', dest='datapath')
-    argparser.add_argument('-v', '--visual', action='store_true', dest='visualmode')
+    argparser.add_argument('-p', '--data-path',
+                           action='store', dest='datapath')
+    argparser.add_argument(
+        '-v', '--visual', action='store_true', dest='visualmode')
     args = argparser.parse_args()
 
     if args.datapath is not None:
@@ -43,16 +49,31 @@ def main():
 
         table = NetworkTables.getTable('SmartDashboard')
     else:
-        rangeName = args.colorrange
         table = None
 
-        util.setupDefaultSliderWindow("hsv", "Trackbars", rangeName)
+        # util.setupDefaultSliderWindow("hsv", "Trackbars", rangeName)
+    if args.colorrange is not None:
+        cRange = args.colorrange
+
+        if not util.isLiveRange(cRange):
+            util.updateLiveRange(cRange, (0, 0, 0), (255, 255, 255))
+
+        range = util.getLiveRange(cRange)
+        lower = range["lower"]
+        upper = range["upper"]
+
+        for c in "HSV":
+            i = "HSV".index(c)
+
+            table.putNumber(f"{c}LowerValue", lower[i])
+            table.putNumber(f"{c}UpperValue", upper[i])
 
     if args.csenabled and table is not None:
         cs = CameraServer.getInstance()
         cs.enableLogging()
 
         outputStream = cs.putVideo("Source", 640, 480)
+        table.putNumber("CurrentCameraNumber", 0)
     else:
         cs = None
 
@@ -64,14 +85,14 @@ def main():
 
         if not ret:
             break
-        
+
         if table is None:
             hL, sL, vL, hU, sU, vU, erode, dilate, blur, minArea, circ = util.getSliderValues(
                 "hsv", "Trackbars")
         else:
             hL = table.getNumber("HLowerValue", 0)
             hU = table.getNumber("HUpperValue", 255)
-            
+
             sL = table.getNumber("SLowerValue", 0)
             sU = table.getNumber("SUpperValue", 255)
 
@@ -142,7 +163,7 @@ def main():
                 table.putNumber("RelativeDistanceToBallX", dX)
                 table.putNumber("RelativeDistanceToBallZ", dZ)
                 table.putNumber("RelativeAngleToBall", angle)
-        
+
         if cs is not None:
             camId = table.getNumber("CurrentCameraNumber", 0)
 
@@ -158,7 +179,7 @@ def main():
                 util.updateLiveRange(rangeName, (hL, sL, vL), (hU, sU, vU))
 
                 util.setAllManipulation(erode, dilate, blur, minArea, circ)
-            
+
             break
 
     vc.release()
@@ -167,4 +188,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
