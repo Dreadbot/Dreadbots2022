@@ -28,6 +28,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         CameraServer.startAutomaticCapture(0);
         robotContainer = new RobotContainer();
+        robotContainer.setTeamColor();
     }
 
     @Override

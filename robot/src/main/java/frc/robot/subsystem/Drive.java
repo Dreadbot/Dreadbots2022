@@ -30,7 +30,7 @@ public class Drive extends DreadbotSubsystem {
     }
 
     public void periodic(){
-        getFrontEncoderAvg();
+        //getFrontEncoderAvg();
     }
 
     public Drive(CANSparkMax leftFrontMotor, CANSparkMax rightFrontMotor, CANSparkMax leftBackMotor,
