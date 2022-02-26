@@ -72,7 +72,7 @@ public class Flywheel extends DreadbotSubsystem {
      * Coasts the motor down to stop while the flywheel is not required.
      */
     public void idle() {
-        if(!isDisabled()) return;
+        if(isDisabled()) return;
 
         // Commands the motor to coast down to stop.
         try {
