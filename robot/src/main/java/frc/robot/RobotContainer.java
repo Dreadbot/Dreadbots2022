@@ -70,10 +70,6 @@ public class RobotContainer {
         SmartDashboard.putData(teamColorChooser);
         setTeamColor();
 
-        //Remove before commit
-        ColorSensorV3 colorSensorV3 = new ColorSensorV3(Constants.I2C_PORT);
-        dreadbotColorSensor = new ColorSensor(colorSensorV3);
-
         if (Constants.DRIVE_ENABLED) {
             CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
             CANSparkMax rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
@@ -91,7 +87,7 @@ public class RobotContainer {
 
         if (Constants.FEEDER_ENABLED) {
             CANSparkMax feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless);
-             colorSensorV3 = new ColorSensorV3(Constants.I2C_PORT);
+            ColorSensorV3 colorSensorV3 = new ColorSensorV3(Constants.I2C_PORT);
             dreadbotColorSensor = new ColorSensor(colorSensorV3);
 
             feeder = new Feeder(feederMotor);

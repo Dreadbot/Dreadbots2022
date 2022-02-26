@@ -7,34 +7,25 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Constants;
 import frc.robot.subsystem.shooter.ColorSensor;
-import frc.robot.subsystem.shooter.Feeder;
 import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.util.VisionInterface;
 
 public class ShootCommand extends SequentialCommandGroup {
-    //private Color ballColor;
-    //private Color teamColor;
-    private Supplier<Color> colorSupplier;
-    private final ColorSensor dreadbotColorSensor;
     public static boolean correctColor; // Change to not static later?
 
     public ShootCommand(Shooter shooter, ColorSensor dreadbotColorSensor, Supplier<Color> colorSupplier) {
         SmartDashboard.putNumber("RPM", 0.0d);
-        this.dreadbotColorSensor = dreadbotColorSensor;
-        this.colorSupplier = colorSupplier;
        
-        //this.teamColor = teamColor;
         GetBallColorCommand getBallColorCommand = new GetBallColorCommand(dreadbotColorSensor, colorSupplier);
         addCommands(
             getBallColorCommand,
             // Prepare the shooter system for the shot
-            new ParallelCommandGroup(
-                new FlywheelVelocityCommand(shooter),
-                new TurretAngleCommand(shooter),
-                new HoodAngleCommand(shooter)
-            ),
+             new ParallelCommandGroup(
+            //     new FlywheelVelocityCommand(shooter),
+            //     new TurretAngleCommand(shooter),
+                 new HoodAngleCommand(shooter)
+             ),
 
             // Feed the ball, and shoot continuously.
             new FeedBallCommand(shooter, dreadbotColorSensor, getBallColorCommand.getBallColor())
@@ -42,12 +33,6 @@ public class ShootCommand extends SequentialCommandGroup {
         
     }
 
-    // public void execute(){
-    //     if(colorSupplier.get() == Constants.COLOR_BLUE)
-    //     SmartDashboard.putString("Team color", "Blue");
-    // else if (colorSupplier.get() == Constants.COLOR_RED)
-    //     SmartDashboard.putString("Team color", "Red");
-    // }
 }
 
 class GetBallColorCommand extends CommandBase {
@@ -66,18 +51,17 @@ class GetBallColorCommand extends CommandBase {
     @Override
     public boolean isFinished() {
         ballColor = dreadbotColorSensor.getBallColor();
-        
+
         if(ballColor == null)
             return false;
-        if (ballColor == colorSupplier.get()){
+        else if (ballColor == colorSupplier.get()){
             ShootCommand.correctColor = true;
-            SmartDashboard.putString("Turret Color State", "Correct color");
-        }  
+            return true;
+        }
         else{
             ShootCommand.correctColor = false;
-            SmartDashboard.putString("Turret Color State", "Incorrect color");
+            return true;
         }
-        return ballColor != null;
     }
 }
 
@@ -169,7 +153,6 @@ class HoodAngleCommand extends CommandBase {
         double error = hoodActualTarget - turretPosition;
         System.out.println("error: " + error);
 
-        //System.out.println("hood: " + Boolean.toString(Math.abs(hoodActualTarget - turretPosition) <= 10.0d));
         return Math.abs(hoodActualTarget - turretPosition) <= 10.0d;
     }
 }

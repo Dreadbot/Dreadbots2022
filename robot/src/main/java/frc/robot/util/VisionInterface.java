@@ -33,7 +33,7 @@ public class VisionInterface {
         if(correctBallColor){
             return SmartDashboard.getNumber("Requested Hood Angle", 0.0d);
         } else {
-            return Constants.MAX_HOOD_ANGLE;
+            return Constants.MAX_HOOD_ANGLE - 10.0d;
         }
     }
 }
