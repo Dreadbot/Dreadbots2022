@@ -27,7 +27,6 @@ public class ExtendArmCommand extends CommandBase {
     }
     @Override
     public void end(boolean interupted) {
-        SmartDashboard.putNumber("Encoder Position", climber.getEncoderPosition());
         climber.stopMotor();
     }
 }

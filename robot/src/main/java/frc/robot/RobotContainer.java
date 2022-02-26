@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.command.climber.RotateClimbingArmVerticalCommand;
 import frc.robot.command.climber.AutonomousClimberCommand;
+import frc.robot.command.climber.CalibrateArmCommand;
 import frc.robot.command.climber.ExtendArmCommand;
 import frc.robot.command.climber.RetractArmCommand;
 import frc.robot.command.climber.RotateClimbingArmDownCommand;
@@ -115,10 +116,11 @@ public class RobotContainer {
     }
 
     public void periodic() {
-        
+        SmartDashboard.putNumber("Motor Velocity", climber.getVelocity());
     }
 
     public void calibrate() {
+        CommandScheduler.getInstance().schedule(new CalibrateArmCommand(climber));
         CommandScheduler.getInstance().schedule(new TurretCalibrationCommand(turret));
         CommandScheduler.getInstance().schedule(new HoodCalibrationCommand(hood));
     }

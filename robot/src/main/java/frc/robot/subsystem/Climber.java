@@ -55,7 +55,6 @@ public class Climber extends SubsystemBase {
         winchMotor.restoreFactoryDefaults();
         this.winchPid = winchMotor.getPIDController();
         this.winchEncoder = winchMotor.getEncoder();
-        SmartDashboard.putNumber("WinchPosition", 0);
         winchPid.setP(0.1);
         winchPid.setI(0);
         winchPid.setD(0);
@@ -63,6 +62,7 @@ public class Climber extends SubsystemBase {
         winchPid.setFF(0.000015);
         winchPid.setOutputRange(-0.1, 0.1);
         winchMotor.getFirmwareVersion();
+        winchMotor.setInverted(true);
         winchMotor.setIdleMode(IdleMode.kBrake);
         this.retractedPosition = winchEncoder.getPosition();
         winchEncoder.setPosition(0);
@@ -108,12 +108,20 @@ public class Climber extends SubsystemBase {
         leftNeutralHookActuator.set(true);
 
     }
+
+    public void zeroEncoderPosition() {
+        winchEncoder.setPosition(0);
+    }
+
     public double getEncoderPosition() {
         return winchEncoder.getPosition();
     }
     public void setWinch(double factor) {
         if(!Constants.CLIMB_ENABLED) return;
         winchMotor.set(factor);
+    }
+    public double getVelocity() {
+        return winchEncoder.getVelocity();
     }
     public boolean getBottomLimitSwitch() {
         return !bottomLimitSwitch.get();
