@@ -8,6 +8,8 @@ public class TurretCommands {
     public static class TurretTrackingCommand extends CommandBase {
         private final Turret turret;
 
+        private double lastRelativeAngleToHub;
+
         public TurretTrackingCommand(Turret turret) {
             this.turret = turret;
 
@@ -21,12 +23,19 @@ public class TurretCommands {
         public void execute() {
             if(!VisionInterface.canTrackHub()) return;
 
+            // Fetch current vision relative angle
             double relativeAngleToHub = VisionInterface.getRelativeAngleToHub();
-            double currentTurretAngle = turret.getAngle();
+            if(relativeAngleToHub == lastRelativeAngleToHub) return;
 
+            // Calculate the commanded absolute angle from relative
+            double currentTurretAngle = turret.getAngle();
             double requestedAngle = currentTurretAngle + relativeAngleToHub;
 
+            // Command hardware and update state
             turret.setAngle(requestedAngle);
+            lastRelativeAngleToHub = relativeAngleToHub;
         }
     }
+
+    private TurretCommands() { }
 }
