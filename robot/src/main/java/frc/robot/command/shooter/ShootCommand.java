@@ -22,8 +22,8 @@ public class ShootCommand extends SequentialCommandGroup {
             getBallColorCommand,
             // Prepare the shooter system for the shot
              new ParallelCommandGroup(
-            //     new FlywheelVelocityCommand(shooter),
-            //     new TurretAngleCommand(shooter),
+                 new FlywheelVelocityCommand(shooter),
+                 new TurretAngleCommand(shooter),
                  new HoodAngleCommand(shooter)
              ),
 

@@ -5,11 +5,11 @@ import frc.robot.Constants;
 
 public class VisionInterface {
     public static double getRelativeDistanceToHub() {
-        return 0.0d;
+        return SmartDashboard.getNumber("RelativeDistanceToHub", -1.0d);
     }
 
     public static double getRelativeAngleToHub() {
-        return 0.0d;
+        return SmartDashboard.getNumber("RelativeAngleToHub", Double.MAX_VALUE);
     }
 
     public static double getFlywheelVelocity(boolean correctBallColor) {
@@ -35,5 +35,19 @@ public class VisionInterface {
         } else {
             return Constants.MAX_HOOD_ANGLE - 10.0d;
         }
+    }
+
+    public static void selectCamera(int camera) {
+        SmartDashboard.putNumber("CurrentCameraNumber", camera);
+    }
+
+    public static boolean canTrackHub() {
+        return SmartDashboard.getBoolean("TargetFoundInFrame", false);
+    }
+
+    public static void debug() {
+        SmartDashboard.putNumber("DEBUG DISTANCE", getRelativeDistanceToHub());
+        SmartDashboard.putNumber("DEBUG ANGLE", getRelativeAngleToHub());
+        SmartDashboard.putBoolean("DEBUG CANTRACK", canTrackHub());
     }
 }

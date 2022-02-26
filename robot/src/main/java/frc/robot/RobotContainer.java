@@ -1,13 +1,8 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -18,30 +13,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.robot.command.climber.RotateClimbingArmVerticalCommand;
 import frc.robot.command.autonomous.BasicAuton;
-import frc.robot.command.climber.AutonomousClimberCommand;
-import frc.robot.command.climber.ExtendArmCommand;
-import frc.robot.command.climber.RetractArmCommand;
-import frc.robot.command.climber.RotateClimbingArmDownCommand;
-import frc.robot.command.climber.RotateNeutralHookDownCommand;
-import frc.robot.command.climber.RotateNeutralHookVerticalCommand;
+import frc.robot.command.climber.*;
 import frc.robot.command.drive.DriveCommand;
 import frc.robot.command.intake.IntakeCommand;
 import frc.robot.command.intake.OuttakeCommand;
 import frc.robot.command.shooter.HoodCalibrationCommand;
 import frc.robot.command.shooter.ShootCommand;
 import frc.robot.command.shooter.TurretCalibrationCommand;
+import frc.robot.command.shooter.TurretCommands;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
-import frc.robot.subsystem.shooter.ColorSensor;
-import frc.robot.subsystem.shooter.Feeder;
-import frc.robot.subsystem.shooter.Flywheel;
-import frc.robot.subsystem.shooter.Hood;
-import frc.robot.subsystem.shooter.Shooter;
-import frc.robot.subsystem.shooter.Turret;
+import frc.robot.subsystem.shooter.*;
 import frc.robot.util.DreadbotController;
+import frc.robot.util.VisionInterface;
 
 public class RobotContainer {
     private final DreadbotController primaryController;
@@ -155,8 +141,10 @@ public class RobotContainer {
 
         // Turret Commands
         SmartDashboard.putNumber("Selected Turret Angle", 150);
-        turret.setDefaultCommand(new RunCommand(() -> turret.setAngle(SmartDashboard.getNumber("Selected Turret Angle", 150)), turret));
+//        turret.setDefaultCommand(new RunCommand(() -> turret.setAngle(SmartDashboard.getNumber("Selected Turret Angle", 150)), turret));
+        turret.setDefaultCommand(new TurretCommands.TurretTrackingCommand(turret));
 
+        VisionInterface.selectCamera(2);
         // Shooter Commands
         secondaryController.getBButton().whileHeld(new ShootCommand(shooter, dreadbotColorSensor, teamColorChooser::getSelected));
         secondaryController.getYButton().whileHeld(new InstantCommand(shooter::feedBall, feeder));
