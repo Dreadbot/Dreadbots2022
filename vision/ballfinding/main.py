@@ -175,8 +175,8 @@ def main():
                 table.putNumber("CurrentCameraNumber", 0)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
-            if table is not None:
-                util.updateLiveRange(rangeName, (hL, sL, vL), (hU, sU, vU))
+            if args.colorrange is not None:
+                util.updateLiveRange(cRange, (hL, sL, vL), (hU, sU, vU))
 
                 util.setAllManipulation(erode, dilate, blur, minArea, circ)
 
