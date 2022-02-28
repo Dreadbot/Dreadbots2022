@@ -4,15 +4,20 @@
 
 package frc.robot;
 
+import com.revrobotics.ColorMatch;
+
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.util.Color;
+
 public abstract class Constants {
-    public static final boolean DRIVE_ENABLED = true;
+    public static final boolean DRIVE_ENABLED = false;
     public static final boolean INTAKE_ENABLED = true;
     public static final boolean CLIMB_ENABLED = false;
     public static final boolean SHOOTER_ENABLED = true;
     public static final boolean FEEDER_ENABLED = true;
     public static final boolean FLYWHEEL_ENABLED = true;
     public static final boolean HOOD_ENABLED = true;
-    public static final boolean TURRET_ENABLED = false;
+    public static final boolean TURRET_ENABLED = true;
 
     // Joysticks
     public static final int PRIMARY_JOYSTICK_PORT = 0;
@@ -68,6 +73,11 @@ public abstract class Constants {
 
     public static final double TO_RPM = 4 * 60 / 0.279d;
 
+    //Color Sensor
+    public static final I2C.Port I2C_PORT = I2C.Port.kOnboard;
+    public static final Color COLOR_BLUE =  new Color(.17, .42, .41); // May need to be tweaked later
+    public static final Color COLOR_RED = new Color(.58, .33, .09);
+    
     private Constants() {
         throw new IllegalStateException("The Constants class is a utility class. It should not be instantiated.");
     }
