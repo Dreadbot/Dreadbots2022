@@ -8,15 +8,15 @@ import frc.robot.util.VisionInterface;
 
 public class TurretCommands {
     public static class TurretTrackingCommand extends CommandBase {
-        private final PIDController visionErrorPIDController;
         private final Turret turret;
+        private double kPTurret;
 
         private double lastRelativeAngleToHub;
 
         public TurretTrackingCommand(Turret turret) {
             this.turret = turret;
-            this.visionErrorPIDController = new PIDController(1.0d, 0.0d, 0.0d);
-            SmartDashboard.putData("VISION TURRET PID", visionErrorPIDController);
+            kPTurret = SmartDashboard.getNumber("TURRET P", 0.1);
+            SmartDashboard.putNumber("TURRET P", kPTurret);
 
             addRequirements(turret);
         }
@@ -33,17 +33,15 @@ public class TurretCommands {
             if(relativeAngleToHub == lastRelativeAngleToHub) return;
             SmartDashboard.putNumber("DEBUG RA", relativeAngleToHub);
 
+            kPTurret = SmartDashboard.getNumber("TURRET P", 0.1);
             // Calculate the commanded absolute angle from relative
             double currentTurretAngle = turret.getAngle();
-            double finalAngle = currentTurretAngle - relativeAngleToHub;
+            double finalAngle = currentTurretAngle + (kPTurret * relativeAngleToHub);
 
-            visionErrorPIDController.setSetpoint(finalAngle);
-            double requestedAngle = visionErrorPIDController.calculate(currentTurretAngle);
-
-            SmartDashboard.putNumber("DEBUG REQA", requestedAngle);
+            SmartDashboard.putNumber("DEBUG REQA", finalAngle);
 
             // Command hardware and update state
-            turret.setAngle(requestedAngle);
+            turret.setAngle(finalAngle);
             lastRelativeAngleToHub = relativeAngleToHub;
         }
     }
