@@ -36,4 +36,8 @@ public class VisionInterface {
         SmartDashboard.putNumber("DEBUG ANGLE", getRelativeAngleToHub());
         SmartDashboard.putBoolean("DEBUG CANTRACK", canTrackHub());
     }
+
+    private VisionInterface() {
+        throw new IllegalStateException("VisionInterface cannot be instantiated!");
+    }
 }

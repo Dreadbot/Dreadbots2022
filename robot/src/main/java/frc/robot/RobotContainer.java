@@ -125,8 +125,8 @@ public class RobotContainer {
 
         // Turret Commands
         SmartDashboard.putNumber("Selected Turret Angle", 150);
-//        turret.setDefaultCommand(new RunCommand(() -> turret.setAngle(SmartDashboard.getNumber("Selected Turret Angle", 150)), turret));
-        turret.setDefaultCommand(new TurretCommands.TurretTrackingCommand(turret));
+        turret.setDefaultCommand(new RunCommand(() -> turret.setAngle(SmartDashboard.getNumber("Selected Turret Angle", 150)), turret));
+//        turret.setDefaultCommand(new TurretCommands.TurretTrackingCommand(turret));
 
         VisionInterface.selectCamera(2);
         // Shooter Commands
