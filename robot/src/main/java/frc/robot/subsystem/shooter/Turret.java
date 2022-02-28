@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystem.DreadbotSubsystem;
 import frc.robot.util.DreadbotMath;
+import frc.robot.util.VisionInterface;
 
 public class Turret extends DreadbotSubsystem {
     private DigitalInput lowerSwitch;
@@ -48,6 +49,9 @@ public class Turret extends DreadbotSubsystem {
 
     @Override
     public void periodic() {
+        // TODO REMOVE
+        VisionInterface.debug();
+
         if(isDisabled()) return;
 
         SmartDashboard.putBoolean("Turret Lower Limit Switch", getLowerLimitSwitch());

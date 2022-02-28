@@ -5,6 +5,7 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystem.Drive;
+import frc.robot.util.SensitivityController;
 
 public class DriveCommand extends CommandBase {
     private final Drive drive;
@@ -13,8 +14,10 @@ public class DriveCommand extends CommandBase {
     private final DoubleSupplier joystickLateralAxis;
     private final DoubleSupplier joystickRotationalAxis;
 
+    private final SensitivityController sensitivityFilter;
+
     @SuppressWarnings("unused")
-    private final SlewRateLimiter filter = new SlewRateLimiter(0.5);
+    private final SlewRateLimiter filter = new SlewRateLimiter(3);
 
     public DriveCommand(Drive drive, DoubleSupplier joystickForwardAxis, DoubleSupplier joystickLateralAxis, DoubleSupplier joystickRotationalAxis) {
         this.drive = drive;
@@ -22,6 +25,8 @@ public class DriveCommand extends CommandBase {
         this.joystickForwardAxis = joystickForwardAxis;
         this.joystickLateralAxis = joystickLateralAxis;
         this.joystickRotationalAxis = joystickRotationalAxis;
+
+        this.sensitivityFilter = new SensitivityController();
 
         addRequirements(drive);
     }
@@ -35,13 +40,9 @@ public class DriveCommand extends CommandBase {
         double lateralAxis = joystickLateralAxis.getAsDouble();
         double rotationalAxis = -joystickRotationalAxis.getAsDouble();
 
-        double fSign = Math.signum(forwardAxis);
-        double lSign = Math.signum(lateralAxis);
-        double rSign = Math.signum(rotationalAxis);
-
-        forwardAxis *= forwardAxis * fSign * 0.75;
-        lateralAxis *= lateralAxis * lSign;
-        rotationalAxis *= rotationalAxis * rSign * 0.5;
+        forwardAxis = sensitivityFilter.calculate(forwardAxis);
+        lateralAxis = sensitivityFilter.calculate(lateralAxis);
+        rotationalAxis = sensitivityFilter.calculate(rotationalAxis);
 
         drive.driveCartesian(forwardAxis, lateralAxis, rotationalAxis);
     }

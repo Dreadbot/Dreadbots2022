@@ -24,10 +24,6 @@ public class Intake extends DreadbotSubsystem {
 
         motor.restoreFactoryDefaults();
         motor.setIdleMode(CANSparkMax.IdleMode.kCoast);
-
-        // Motor is inverted because by default a positive value represents motion
-        // that moves the ball out of the intake.
-        motor.setInverted(true);
     }
 
     /**
