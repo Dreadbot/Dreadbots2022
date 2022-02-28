@@ -1,11 +1,14 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ColorSensorV3;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -16,6 +19,7 @@ import frc.robot.command.drive.DriveCommand;
 import frc.robot.command.intake.IntakeCommand;
 import frc.robot.command.intake.OuttakeCommand;
 import frc.robot.command.shooter.HoodCalibrationCommand;
+import frc.robot.command.shooter.ShootCommand;
 import frc.robot.command.shooter.TurretCalibrationCommand;
 import frc.robot.command.shooter.TurretCommands;
 import frc.robot.subsystem.Climber;
@@ -29,6 +33,7 @@ public class RobotContainer {
     private final DreadbotController primaryController;
     private final DreadbotController secondaryController;
 
+    private final ColorSensor dreadbotColorSensor;
     private final Drive drive;
     private final Intake intake;
     private final Feeder feeder;
@@ -36,11 +41,20 @@ public class RobotContainer {
     private final Turret turret;
     private final Flywheel flywheel;
     private final Hood hood;
-    private final Shooter shooter;
+    private final Shooter shooter;    
+
+    private Color teamColor;
+    SendableChooser<Color> teamColorChooser;
     
     public RobotContainer() {
         primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
         secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
+
+        teamColorChooser = new SendableChooser<>();
+        teamColorChooser.setDefaultOption("Blue Alliance", Constants.COLOR_BLUE);
+        teamColorChooser.addOption("Red Alliance", Constants.COLOR_RED);
+        SmartDashboard.putData(teamColorChooser);
+        setTeamColor();
 
         if (Constants.DRIVE_ENABLED) {
             CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
@@ -59,6 +73,8 @@ public class RobotContainer {
 
         if (Constants.FEEDER_ENABLED) {
             CANSparkMax feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless);
+            ColorSensorV3 colorSensorV3 = new ColorSensorV3(Constants.I2C_PORT);
+            dreadbotColorSensor = new ColorSensor(colorSensorV3);
 
             feeder = new Feeder(feederMotor);
         } else feeder = new Feeder();
@@ -130,8 +146,7 @@ public class RobotContainer {
 
         VisionInterface.selectCamera(2);
         // Shooter Commands
-//        secondaryController.getBButton().whileActiveOnce(new ShootCommand(shooter));
-        secondaryController.getBButton().whileActiveOnce(new TurretCommands.TurretTrackingCommand(turret));
+        secondaryController.getBButton().whileHeld(new ShootCommand(shooter, dreadbotColorSensor, teamColorChooser::getSelected));
         secondaryController.getYButton().whileHeld(new InstantCommand(shooter::feedBall, feeder));
 
         // Climber Commands
@@ -153,5 +168,18 @@ public class RobotContainer {
     public void calibrate() {
         CommandScheduler.getInstance().schedule(new TurretCalibrationCommand(turret));
         CommandScheduler.getInstance().schedule(new HoodCalibrationCommand(hood));
+    }
+
+    /*
+     * Grab Alliance Color from the smart dashboard
+     * This will be used to determine if a ball is the right color or not
+     * and either shoot it into the goal or off to the side
+     */
+    public void setTeamColor(){
+        teamColor = teamColorChooser.getSelected();
+        if(teamColor == Constants.COLOR_BLUE)
+            SmartDashboard.putString("Team color 2", "Blue");
+        else if (teamColor == Constants.COLOR_RED)
+            SmartDashboard.putString("Team color 2", "Red");
     }
 }
