@@ -12,7 +12,8 @@ public class SensitivityControllerTest {
 
     @Before
     public void setup() {
-        sensitivityController = new SensitivityController();
+        var builder = new SensitivityController.Builder(-40.0d, -40.0d);
+        sensitivityController = builder.build();
     }
 
     @Test
@@ -30,12 +31,14 @@ public class SensitivityControllerTest {
 
     @Test
     public void setPercentageSensitivity() {
-        sensitivityController.setPercentageSensitivity(43.0d, 98.0d);
+        sensitivityController.setPositivePercentageSensitivity(43.0d);
+        sensitivityController.setNegativePercentageSensitivity(98.0d);
 
         assertEquals(43.0d, sensitivityController.getPositivePercentageSensitivity(), DELTA);
         assertEquals(98.0d, sensitivityController.getNegativePercentageSensitivity(), DELTA);
 
-        sensitivityController.setPercentageSensitivity(145.0d, -443.0d);
+        sensitivityController.setPositivePercentageSensitivity(145.0d);
+        sensitivityController.setNegativePercentageSensitivity(-443.0d);
 
         assertEquals(100.0d, sensitivityController.getPositivePercentageSensitivity(), DELTA);
         assertEquals(-100.0d, sensitivityController.getNegativePercentageSensitivity(), DELTA);
@@ -43,14 +46,16 @@ public class SensitivityControllerTest {
 
     @Test
     public void getPositivePercentageSensitivity() {
-        sensitivityController.setPercentageSensitivity(68.0d, 88.0d);
+        sensitivityController.setPositivePercentageSensitivity(68.0d);
+        sensitivityController.setNegativePercentageSensitivity(88.0d);
 
         assertEquals(68.0d, sensitivityController.getPositivePercentageSensitivity(), DELTA);
     }
 
     @Test
     public void getNegativePercentageSensitivity() {
-        sensitivityController.setPercentageSensitivity(8.0d, 87.0d);
+        sensitivityController.setPositivePercentageSensitivity(8.0d);
+        sensitivityController.setNegativePercentageSensitivity(87.0d);
 
         assertEquals(87.0d, sensitivityController.getNegativePercentageSensitivity(), DELTA);
     }
