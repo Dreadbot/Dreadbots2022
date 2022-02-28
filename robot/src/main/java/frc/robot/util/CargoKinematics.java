@@ -49,7 +49,7 @@ public class CargoKinematics {
     public double getBallVelocityNorm(double horizontalDistance) {
         Vector2D ballVelocity = getBallVelocity(horizontalDistance);
 
-        return ballVelocity.magnitude();
+        return ballVelocity.norm();
     }
 
     /**
