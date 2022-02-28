@@ -21,31 +21,31 @@ public class CargoKinematicsTest {
     
     @Test
     public void toBallVelocity() {
-        double metersPerSecond = kinematics.toBallVelocity(1.3d);
+        double metersPerSecond = kinematics.getBallVelocityNorm(1.3d);
         assertEquals(7.699d, metersPerSecond, DELTA);
 
-        metersPerSecond = kinematics.toBallVelocity(3.55d);
+        metersPerSecond = kinematics.getBallVelocityNorm(3.55d);
         assertEquals(9.254d, metersPerSecond, DELTA);
 
-        metersPerSecond = kinematics.toBallVelocity(5.95d);
+        metersPerSecond = kinematics.getBallVelocityNorm(5.95d);
         assertEquals(10.698d, metersPerSecond, DELTA);
 
-        metersPerSecond = kinematics.toBallVelocity(9.2d);
+        metersPerSecond = kinematics.getBallVelocityNorm(9.2d);
         assertEquals(12.404d, metersPerSecond, DELTA);
     }
 
     @Test
     public void toBallAngle() {
-        double metersPerSecond = kinematics.toBallAngle(1.3d);
+        double metersPerSecond = kinematics.getBallDirectionAngle(1.3d);
         assertEquals(81.154d, metersPerSecond, DELTA);
 
-        metersPerSecond = kinematics.toBallAngle(3.55d);
+        metersPerSecond = kinematics.getBallDirectionAngle(3.55d);
         assertEquals(75.068d, metersPerSecond, DELTA);
 
-        metersPerSecond = kinematics.toBallAngle(5.95d);
+        metersPerSecond = kinematics.getBallDirectionAngle(5.95d);
         assertEquals(71.974d, metersPerSecond, DELTA);
 
-        metersPerSecond = kinematics.toBallAngle(9.2d);
+        metersPerSecond = kinematics.getBallDirectionAngle(9.2d);
         assertEquals(69.718d, metersPerSecond, DELTA);
     }
 }

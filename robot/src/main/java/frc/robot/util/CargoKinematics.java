@@ -4,9 +4,20 @@ import frc.robot.Constants;
 import frc.robot.util.math.Vector2D;
 
 /**
- * Calculations class for the ball physics to score
+ * Calculations class for ball physics.
+ *
+ * This calculator uses standard, algebra-based projectile motion (parameterized with time)
+ * kinematics to calculate required initial velocity properties for a launched cargo.
  */
 public class CargoKinematics {
+    /**
+     * Definition of function signature for the anonymous calculation of
+     * arc height, dependent on the current turret displacement from the hub.
+     *
+     * In practice, the argument passed into
+     * {@link CargoKinematics#CargoKinematics(ArcHeightCalculator, double, double)}
+     * would most practically be a lambda function expression.
+     */
     public interface ArcHeightCalculator {
         double getArcHeight(double horizontalDistance);
     }
@@ -29,18 +40,36 @@ public class CargoKinematics {
         this.targetHeight = targetHeight;
     }
 
-    public double toBallVelocity(double horizontalDistance) {
+    /**
+     * Gets the norm (magnitude) of the ball velocity required in order to make a cargo shot attempt.
+     *
+     * @param horizontalDistance Distance (meters) from the shooter to the center point of the hub
+     * @return Required norm (magnitude) of velocity
+     */
+    public double getBallVelocityNorm(double horizontalDistance) {
         Vector2D ballVelocity = getBallVelocity(horizontalDistance);
 
         return ballVelocity.magnitude();
     }
 
-    public double toBallAngle(double horizontalDistance) {
+    /**
+     * Gets the direction angle (degrees of the initial velocity vector in order to make a cargo shot attempt
+     *
+     * @param horizontalDistance Distance (meters) from the shooter to the center point of the hub
+     * @return Required direction angle (degrees) of velocity
+     */
+    public double getBallDirectionAngle(double horizontalDistance) {
         Vector2D ballVelocity = getBallVelocity(horizontalDistance);
 
         return ballVelocity.terminalAngle() * 180 / Math.PI;
     }
 
+    /**
+     * Gets the ball velocity required in order to make a cargo shot attempt
+     *
+     * @param horizontalDistance Distance (meters) from the shooter to the center point of the hub
+     * @return Required ball velocity
+     */
     public Vector2D getBallVelocity(double horizontalDistance) {
         double initialVerticalVelocityComponent = getInitialVerticalVelocity(horizontalDistance);
         double timeToScore = getTimeToScore(initialVerticalVelocityComponent);
@@ -61,9 +90,14 @@ public class CargoKinematics {
         return Math.sqrt(2 * -Constants.GRAVITY * ballHeightRange);
     }
 
+    /**
+     * Calculates the delta time from ball release to capture by the hub.
+     *
+     * @param initialVerticalVelocityComponent The initial vertical velocity of the ball
+     * @return Hub capture time
+     */
     private double getTimeToScore(double initialVerticalVelocityComponent) {
-        double changeInHeightToHub = initialHeight - targetHeight;
-        changeInHeightToHub *= 2 * Constants.GRAVITY;
+        double changeInHeightToHub = 2 * Constants.GRAVITY * (initialHeight - targetHeight);
         double timeDeterminant = Math.pow(initialVerticalVelocityComponent, 2) - changeInHeightToHub;
 
         double timeToScore = -initialVerticalVelocityComponent;
