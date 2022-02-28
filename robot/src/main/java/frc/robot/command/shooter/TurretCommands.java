@@ -31,7 +31,7 @@ public class TurretCommands {
 
             // Calculate the commanded absolute angle from relative
             double currentTurretAngle = turret.getAngle();
-            double requestedAngle = currentTurretAngle + relativeAngleToHub;
+            double requestedAngle = currentTurretAngle - relativeAngleToHub;
             SmartDashboard.putNumber("DEBUG REQA", requestedAngle);
 
             // Command hardware and update state

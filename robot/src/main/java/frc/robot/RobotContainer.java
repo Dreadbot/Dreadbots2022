@@ -146,7 +146,8 @@ public class RobotContainer {
 
         VisionInterface.selectCamera(2);
         // Shooter Commands
-        secondaryController.getBButton().whileHeld(new ShootCommand(shooter, dreadbotColorSensor, teamColorChooser::getSelected));
+        secondaryController.getBButton().whileHeld(new TurretCommands.TurretTrackingCommand(turret));
+//        secondaryController.getBButton().whileHeld(new ShootCommand(shooter, dreadbotColorSensor, teamColorChooser::getSelected));
         secondaryController.getYButton().whileHeld(new InstantCommand(shooter::feedBall, feeder));
 
         // Climber Commands
