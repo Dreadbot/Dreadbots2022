@@ -58,6 +58,7 @@ public abstract class Constants {
     public static final double MAX_HOOD_ANGLE = 82.0d;
     public static final double UPPER_HOOD_ANGLE = 70.0d;
     public static final double MIN_HOOD_ANGLE = 60.0d;
+    public static final double HOOD_RANGE = 223.0d;
     
     // Climber constants
     public static final int WINCH_MOTOR_PORT = 10;

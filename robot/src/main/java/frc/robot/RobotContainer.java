@@ -18,6 +18,7 @@ import frc.robot.command.drive.DriveCommand;
 import frc.robot.command.intake.IntakeCommand;
 import frc.robot.command.intake.OuttakeCommand;
 import frc.robot.command.shooter.HoodCalibrationCommand;
+import frc.robot.command.shooter.HoodCommands;
 import frc.robot.command.shooter.TurretCommands;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
@@ -164,7 +165,7 @@ public class RobotContainer {
 
     public void calibrate() {
         CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, false));
-        CommandScheduler.getInstance().schedule(false, new HoodCalibrationCommand(hood));
+        CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, false));
     }
 
     /*

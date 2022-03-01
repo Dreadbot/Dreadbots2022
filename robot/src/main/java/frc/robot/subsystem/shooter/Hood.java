@@ -56,6 +56,8 @@ public class Hood extends DreadbotSubsystem {
         SmartDashboard.putBoolean("Hood Upper Limit Switch", getUpperLimitSwitch());
 
         SmartDashboard.putNumber("Hood Angle", getAngle());
+
+        SmartDashboard.putNumber("HOOD RANGE", upperMotorLimit - lowerMotorLimit);
     }
 
     public void setAngle(double angle) {
