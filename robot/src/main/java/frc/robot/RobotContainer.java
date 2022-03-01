@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.command.autonomous.BasicAuton;
 import frc.robot.command.climber.*;
@@ -19,7 +18,6 @@ import frc.robot.command.drive.DriveCommand;
 import frc.robot.command.intake.IntakeCommand;
 import frc.robot.command.intake.OuttakeCommand;
 import frc.robot.command.shooter.HoodCalibrationCommand;
-import frc.robot.command.shooter.ShootCommand;
 import frc.robot.command.shooter.TurretCalibrationCommand;
 import frc.robot.command.shooter.TurretCommands;
 import frc.robot.subsystem.Climber;
@@ -146,7 +144,7 @@ public class RobotContainer {
 
         VisionInterface.selectCamera(2);
         // Shooter Commands
-        secondaryController.getBButton().whileHeld(new TurretCommands.TurretTrackingCommand(turret));
+        secondaryController.getBButton().whileHeld(new TurretCommands.TrackHubPassively(turret));
 //        secondaryController.getBButton().whileHeld(new ShootCommand(shooter, dreadbotColorSensor, teamColorChooser::getSelected));
 
         // Climber Commands
