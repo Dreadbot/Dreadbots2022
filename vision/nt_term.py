@@ -2,9 +2,18 @@ import curses
 from curses import wrapper
 import random
 import json
+from networktables import NetworkTables
+import time, sys, logging       
 
 vchar = None
 hchar = None
+
+log = ""
+
+def quick_log(input_str):
+    global log
+
+    log += "\n"+input_str
 
 def init_curses(screen):
     global vchar
@@ -36,7 +45,7 @@ def dividers(screen, start_x, stop_x, stop_y, output_width, padding):
     screen.hline(0, 0, hchar, stop_x)
 
 
-def show_monitors(screen, table, monitors, start_y, start_x, stop_x, padding):
+def show_monitors(screen, table, monitors, start_y, start_x, stop_x, padding, output_width):
     for title in monitors:
             monitor_type = monitors[title]['type']
             monitor_default = monitors[title]['default']
@@ -46,6 +55,7 @@ def show_monitors(screen, table, monitors, start_y, start_x, stop_x, padding):
             else:
                 value = ""
 
+            value = str(value)[0:output_width]
             screen.addstr(start_y, padding+1, title)
             screen.addstr(start_y, start_x+padding, value)
             screen.hline(start_y+1, 0, hchar, stop_x)
@@ -60,14 +70,15 @@ def nt_update(table, selection, monitors, buffer):
 
 
 def nt_connect():
-    logging.basicConfig(level=logging.DEBUG)
+    #    logging.basicConfig(level=logging.DEBUG)
 
     ip = "10.36.56.2"
 
     NetworkTables.initialize(server=ip)
 
     def connection_listener(connected, info):
-        print(info, "; connected=%s" % connected)
+        #print(info, "; connected=%s" % connected)
+        pass
 
     NetworkTables.addConnectionListener(connection_listener, immediateNotify=True)
 
@@ -90,7 +101,7 @@ def main(screen):
 
     longest_monitor = max([len(x) for x in monitors])
 
-    output_width = 5 #also truncation width
+    output_width = 8 #also truncation width
     input_width = 5
 
 
@@ -114,7 +125,7 @@ def main(screen):
 
         dividers(screen, start_x, stop_x, stop_y, output_width, padding)
 
-        show_monitors(screen, table, monitors, start_y, start_x, stop_x, padding)
+        show_monitors(screen, table, monitors, start_y, start_x, stop_x, padding, output_width)
         
         cursor_output = ''.join(map(str, buffer))
         screen.addstr(my, mx, cursor_output)
@@ -134,9 +145,9 @@ def main(screen):
         elif key == curses.KEY_ENTER or key == ord('\n'):
             selection_index = (my-1) // 2
             selection = list(monitors)[selection_index]
-
+            quick_log(str(type(selection)))
             buffer = float(''.join(map(str, buffer)))
-            nt_update(selection, monitors, table, buffer)
+            nt_update(table, selection, monitors, buffer)
             buffer = []
         else:
             if key is not curses.ERR and chr(key).isalnum():
@@ -144,3 +155,4 @@ def main(screen):
 
 
 wrapper(main)
+print(log)

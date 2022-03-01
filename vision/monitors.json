@@ -1,0 +1,27 @@
+{
+	"CameraSelection" : {
+		"type" : "number",
+		"default" : 0
+	},
+	"RelativeDistanceToHub" : {
+		"type" : "number",
+		"default" : 0
+	},
+	"RelativeAngleToHub" : { 
+		"type" : "number",
+		"default" : 0
+	},
+	"TurretBlurKernel" : {
+		"type" : "number",
+		"default" : 1
+	},
+	"TurretErodeKernel" : {
+		"type" : "number",
+		"default" : 1
+	},
+	"TurretDilateKernel" : {
+		"type" : "number",
+		"default" : 1
+	}
+
+}
