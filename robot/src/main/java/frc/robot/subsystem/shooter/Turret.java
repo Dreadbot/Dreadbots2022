@@ -34,6 +34,7 @@ public class Turret extends DreadbotSubsystem {
         this.motor = motor;
 
         motor.setIdleMode(IdleMode.kBrake);
+        motor.setInverted(true);
         encoder = motor.getEncoder();
         pidController = motor.getPIDController();
         
@@ -58,6 +59,8 @@ public class Turret extends DreadbotSubsystem {
         SmartDashboard.putBoolean("Turret Upper Limit Switch", getUpperLimitSwitch());
 
         SmartDashboard.putNumber("Turret Angle", getAngle());
+
+        SmartDashboard.putNumber("Turret Range", upperMotorLimit - lowerMotorLimit);
     }
 
     public void setAngle(double angle) {

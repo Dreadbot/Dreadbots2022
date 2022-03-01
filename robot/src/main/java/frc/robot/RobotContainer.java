@@ -1,8 +1,8 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.ColorSensorV3;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.ColorSensorV3;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -18,7 +18,6 @@ import frc.robot.command.drive.DriveCommand;
 import frc.robot.command.intake.IntakeCommand;
 import frc.robot.command.intake.OuttakeCommand;
 import frc.robot.command.shooter.HoodCalibrationCommand;
-import frc.robot.command.shooter.TurretCalibrationCommand;
 import frc.robot.command.shooter.TurretCommands;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
@@ -144,7 +143,7 @@ public class RobotContainer {
 
         VisionInterface.selectCamera(2);
         // Shooter Commands
-        secondaryController.getBButton().whileHeld(new TurretCommands.TrackHubPassively(turret));
+        secondaryController.getBButton().whileHeld(new TurretCommands.PassiveTrack(turret));
 //        secondaryController.getBButton().whileHeld(new ShootCommand(shooter, dreadbotColorSensor, teamColorChooser::getSelected));
 
         // Climber Commands
@@ -164,8 +163,8 @@ public class RobotContainer {
 
 
     public void calibrate() {
-        CommandScheduler.getInstance().schedule(new TurretCalibrationCommand(turret));
-        CommandScheduler.getInstance().schedule(new HoodCalibrationCommand(hood));
+        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, false));
+        CommandScheduler.getInstance().schedule(false, new HoodCalibrationCommand(hood));
     }
 
     /*
