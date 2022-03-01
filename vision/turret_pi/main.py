@@ -80,13 +80,13 @@ def getSliderValues(windowName, mode="hsv"):
 
 def getMask(frame, lower: tuple, upper: tuple, eIts: int, dIts: int, blurK: int, colorSpace: int = cv2.COLOR_BGR2HSV):
     hsv = cv2.cvtColor(frame, colorSpace)
-    inRange = cv2.inRange(hsv, lower, upper)
-    blurred = cv2.blur(inRange, (blurK, blurK), 0)
-
-    erode = cv2.erode(blurred, None, iterations=eIts)
+    
+    blurred = cv2.blur(hsv, (blurK, blurK))
+    inRange = cv2.inRange(blurred, lower, upper)
+    erode = cv2.erode(inRange, None, iterations=eIts)
     dilate = cv2.dilate(erode, None, iterations=dIts)
-
-    return inRange
+    
+    return dilate
 
 def resImg(frame):
     h,w,_ = frame.shape
@@ -161,12 +161,15 @@ def main():
         hue = [table.getNumber("TargetHLowerValue", 0), table.getNumber("TargetHUpperValue", 255)]
         sat = [table.getNumber("TargetSLowerValue", 0), table.getNumber("TargetSUpperValue", 255)]
         lum = [table.getNumber("TargetLLowerValue", 0), table.getNumber("TargetSUpperValue", 255)]
+        blur = int(table.getNumber("TurretBlurKernel", 1))
+        erode = int(table.getNumber("TurretErodeKernel", 1))
+        dilate = int(table.getNumber("TurretErodeKernel", 1))
         data = getData()
-        (hL, sL, vL) = data["lower"]
-        (hU, sU, vU) = data["upper"]
-        erode = data["erode"]
-        dilate = data["dilate"]
-        blur = data["blur"]
+        #(hL, sL, vL) = data["lower"]
+        #(hU, sU, vU) = data["upper"]
+        #erode = data["erode"]
+        #dilate = data["dilate"]
+        #blur = data["blur"]
 
         mask = getMask(frame, (hue[0], lum[0], sat[0]), (hue[1], lum[1], sat[1]), erode, dilate, blur, colorSpace=cv2.COLOR_BGR2HLS)
         cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL,
@@ -249,6 +252,7 @@ def main():
             # frame = np.concatenate((frame, mask), axis=1)
             # frame = mask
             if table.getNumber("CameraSelection", 0) == 0:
+                cv2.line(frame, (320, 0), (320,480), (0,0,255))
                 frame = resImg(frame)
                 outputStream.putFrame(frame)
             elif table.getNumber("CameraSelection", 0) == 1:
