@@ -110,9 +110,7 @@ def similar_triangles_calculation(u, v, K, R):
     # print(f"WORLD VECTOR[ {world_vector_world} ]")
     world_vector_world[2] = z_off
 
-    # unit = world_vector_camera / np.linalg.norm(world_vector_camera)
 
-    # world_vector_world = world_vector_camera*math.cos(angle) + np.cross(unit, world_vector_camera)*math.sin(angle) + unit*np.dot(unit, world_vector_camera)*(1-math.cos(angle))
 
 
     return world_vector_world
@@ -170,6 +168,8 @@ def geometric_true_center(p1, p2, draw_target=None): #Rework later for u,v,K
     x2,y2 = p2
 
 
+
+
     K=np.array([[678.3675545820577, 0.0, 304.74552960651096], 
             [0.0, 677.88787206697, 228.7902426460552], 
             [0.0, 0.0, 1.0]])
@@ -188,7 +188,7 @@ def geometric_true_center(p1, p2, draw_target=None): #Rework later for u,v,K
     mx = (x1 + x2) / 2
     my = (y1 + y2) / 2
 
-    r = 48
+    r = 48 + 10
 
     try:
         d = math.sqrt( (x2-x1)**2 + (y2-y1)**2 )
@@ -225,9 +225,12 @@ def geometric_true_center(p1, p2, draw_target=None): #Rework later for u,v,K
 
     target_center = (tx, ty, z)
     target_pixel_center = reverse_point(target_center, K, R)
-    target_px, _ = target_pixel_center
+    target_px, target_py = target_pixel_center
+    
+    cv2.line(draw_target, (int(target_px), 0), (int(target_px), 480), (0,255,0))
+
     distance = center_distance(target_pixel_center, K)
-    horizontal_angle = math.degrees(math.atan( (camera_cx - target_px) / fx ))
+    horizontal_angle = math.degrees(math.atan( (target_px - camera_cx) / fx ))
 
     if draw_target is not None:
         target_center = (tx, ty)
@@ -244,7 +247,7 @@ def geometric_true_center(p1, p2, draw_target=None): #Rework later for u,v,K
             
             draw_pts[p] = reverse_point((px, py, z), K, R, round=True)
 
-            # cv2.circle(draw_target, draw_pts[p], 2, (200, 50, 50), thickness=-1)
+            cv2.circle(draw_target, draw_pts[p], 2, (200, 50, 50), thickness=-1)
         
         far, close, left, right, center = draw_pts
 
