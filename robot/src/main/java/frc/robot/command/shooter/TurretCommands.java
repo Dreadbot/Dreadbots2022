@@ -100,7 +100,7 @@ public class TurretCommands {
 
             // Calculate the commanded absolute angle from relative
             double currentTurretAngle = turret.getAngle();
-            double requestedAngle = currentTurretAngle + pidController.calculate(relativeAngleToHub);
+            double requestedAngle = currentTurretAngle - pidController.calculate(relativeAngleToHub);
 
             // Command hardware and update state
             turret.setAngle(requestedAngle);
