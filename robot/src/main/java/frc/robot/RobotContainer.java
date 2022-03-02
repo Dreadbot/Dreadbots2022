@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.command.autonomous.BasicAuton;
+import frc.robot.command.autonomous.VelocityControlTestCommand;
 import frc.robot.command.climber.*;
 import frc.robot.command.drive.DriveCommand;
 import frc.robot.command.intake.IntakeCommand;
@@ -159,9 +160,8 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand(){
-        return new BasicAuton(drive);
+        return new VelocityControlTestCommand(drive);
     }  
-
 
     public void calibrate() {
         CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, false));
