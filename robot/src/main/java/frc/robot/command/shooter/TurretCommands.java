@@ -50,14 +50,20 @@ public class TurretCommands {
 
         private final boolean fullCalibration;
 
-        private boolean lowerCalibrated = false;
-        private boolean upperCalibrated = false;
+        private boolean lowerCalibrated;
+        private boolean upperCalibrated;
 
         public Calibrate(Turret turret, boolean fullCalibration) {
             this.turret = turret;
             this.fullCalibration = fullCalibration;
 
             addRequirements(turret);
+        }
+
+        @Override
+        public void initialize() {
+            this.lowerCalibrated = false;
+            this.upperCalibrated = false;
         }
 
         @Override
@@ -82,6 +88,7 @@ public class TurretCommands {
             if(!turret.getUpperLimitSwitch()) return;
             turret.stopMotors();
             turret.setUpperMotorLimit(turret.getPosition());
+
             upperCalibrated = true;
         }
 
@@ -91,6 +98,7 @@ public class TurretCommands {
             if(!turret.getLowerLimitSwitch()) return;
             turret.stopMotors();
             turret.setLowerMotorLimit(turret.getPosition());
+
             lowerCalibrated = true;
         }
 
