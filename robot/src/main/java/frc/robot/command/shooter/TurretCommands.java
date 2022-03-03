@@ -45,6 +45,35 @@ public class TurretCommands {
         }
     }
 
+    public static class ActiveTrack extends CommandBase {
+        private final Turret turret;
+
+        private double lastRelativeAngleToHub;
+
+        public ActiveTrack(Turret turret) {
+            this.turret = turret;
+
+            addRequirements(turret);
+        }
+
+        @Override
+        public void execute() {
+            if(!VisionInterface.canTrackHub()) return;
+
+            double relativeAngleToHub = VisionInterface.getRelativeAngleToHub();
+
+            if(relativeAngleToHub != lastRelativeAngleToHub) turretControlAngle(relativeAngleToHub);
+            lastRelativeAngleToHub = relativeAngleToHub;
+        }
+
+        private void turretControlAngle(double relativeAngleToHub) {
+            double currentAngle = turret.getAngle();
+            double requestedAngle = currentAngle - turretTrackingController.calculate(relativeAngleToHub);
+
+            turret.setAngle(requestedAngle);
+        }
+    }
+
     public static class Calibrate extends CommandBase {
         private final Turret turret;
 

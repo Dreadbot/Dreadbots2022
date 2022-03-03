@@ -12,12 +12,12 @@ import frc.robot.util.DreadbotMath;
 import frc.robot.util.VisionInterface;
 
 public class Turret extends DreadbotSubsystem {
-    private DigitalInput lowerSwitch;
-    private DigitalInput upperSwitch;
     private CANSparkMax motor;
     private RelativeEncoder encoder;
     private SparkMaxPIDController pidController;
 
+    private DigitalInput lowerSwitch;
+    private DigitalInput upperSwitch;
     private double lowerMotorLimit;
     private double upperMotorLimit;
 
@@ -32,27 +32,22 @@ public class Turret extends DreadbotSubsystem {
         this.lowerSwitch = lowerSwitch;
         this.upperSwitch = upperSwitch;
         this.motor = motor;
+        this.encoder = motor.getEncoder();
+        this.pidController = motor.getPIDController();
 
         motor.setIdleMode(IdleMode.kBrake);
         motor.setInverted(true);
-        encoder = motor.getEncoder();
-        pidController = motor.getPIDController();
-        
+
         pidController.setP(0.1);
         pidController.setI(1e-4);
         pidController.setD(0);
         pidController.setIZone(2.85);
         pidController.setFF(0.000015);
         pidController.setOutputRange(-.3, .3);
-
-        SmartDashboard.putNumber("Requested Turret Angle", 0.0d);
     }
 
     @Override
     public void periodic() {
-        // TODO REMOVE
-        VisionInterface.debug();
-
         if(isDisabled()) return;
 
         SmartDashboard.putBoolean("Turret Lower Limit Switch", getLowerLimitSwitch());
