@@ -35,6 +35,7 @@ public class TurretCommands {
             double relativeAngleToHub = VisionInterface.getRelativeAngleToHub();
 
             if(relativeAngleToHub != lastRelativeAngleToHub) turretControlAngle(relativeAngleToHub);
+            lastRelativeAngleToHub = relativeAngleToHub;
         }
 
         private void turretControlAngle(double relativeAngleToHub) {
@@ -42,8 +43,6 @@ public class TurretCommands {
             double requestedAngle = currentAngle - turretTrackingController.calculate(relativeAngleToHub);
 
             turret.setAngle(requestedAngle);
-
-            lastRelativeAngleToHub = relativeAngleToHub;
         }
     }
 
@@ -56,13 +55,6 @@ public class TurretCommands {
 
         private boolean lowerCalibrated = false;
         private boolean upperCalibrated = false;
-
-        public Calibrate(Turret turret) {
-            this.turret = turret;
-            this.fullCalibration = true;
-
-            addRequirements(turret);
-        }
 
         public Calibrate(Turret turret, boolean fullCalibration) {
             this.turret = turret;
