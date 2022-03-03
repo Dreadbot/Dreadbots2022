@@ -4,7 +4,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.shooter.Turret;
 import frc.robot.util.VisionInterface;
 
@@ -47,8 +46,6 @@ public class TurretCommands {
     }
 
     public static class Calibrate extends CommandBase {
-        public static final double TURRET_CALIBRATION_SPEED = 0.3d;
-
         private final Turret turret;
 
         private final boolean fullCalibration;
@@ -80,7 +77,7 @@ public class TurretCommands {
         }
 
         private void calibrateUpper() {
-            turret.setSpeed(TURRET_CALIBRATION_SPEED);
+            turret.setSpeed(Constants.TURRET_CALIBRATION_SPEED);
 
             if(!turret.getUpperLimitSwitch()) return;
             turret.stopMotors();
@@ -89,7 +86,7 @@ public class TurretCommands {
         }
 
         private void calibrateLower() {
-            turret.setSpeed(-TURRET_CALIBRATION_SPEED);
+            turret.setSpeed(-Constants.TURRET_CALIBRATION_SPEED);
 
             if(!turret.getLowerLimitSwitch()) return;
             turret.stopMotors();
@@ -104,7 +101,6 @@ public class TurretCommands {
     }
 
     private TurretCommands() { }
-
 }
 
 

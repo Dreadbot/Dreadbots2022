@@ -41,6 +41,7 @@ public abstract class Constants {
     public static final double MAX_TURRET_ANGLE = 300.0d;
     public static final double MIN_TURRET_ANGLE = 0.0d;
     public static final double TURRET_RANGE = 106.0d;
+    public static final double TURRET_CALIBRATION_SPEED = 0.3d;
 
     public static final int FLYWHEEL_MOTOR_PORT = 8;
     public static final double FLYWHEEL_P_GAIN = 1e-4d;
