@@ -4,16 +4,55 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.shooter.Turret;
 import frc.robot.util.VisionInterface;
 
 public class TurretCommands {
+    private static final PIDController turretTrackingController = new PIDController(1.0d, 0.0d, 0.0d);
+    static {
+        turretTrackingController.setSetpoint(0.0d);
+        turretTrackingController.disableContinuousInput();
+
+        SmartDashboard.putData("TurretTrackingPID", turretTrackingController);
+    }
+
+    public static class PassiveTrack extends CommandBase {
+        private final Turret turret;
+
+        private double lastRelativeAngleToHub;
+
+        public PassiveTrack(Turret turret) {
+            this.turret = turret;
+
+            addRequirements(turret);
+        }
+
+        @Override
+        public void execute() {
+            if(!VisionInterface.canTrackHub()) return;
+
+            double relativeAngleToHub = VisionInterface.getRelativeAngleToHub();
+
+            if(relativeAngleToHub != lastRelativeAngleToHub) turretControlAngle(relativeAngleToHub);
+        }
+
+        private void turretControlAngle(double relativeAngleToHub) {
+            double currentAngle = turret.getAngle();
+            double requestedAngle = currentAngle - turretTrackingController.calculate(relativeAngleToHub);
+
+            turret.setAngle(requestedAngle);
+
+            lastRelativeAngleToHub = relativeAngleToHub;
+        }
+    }
+
     public static class Calibrate extends CommandBase {
         public static final double TURRET_CALIBRATION_SPEED = 0.3d;
 
         private final Turret turret;
 
-        private boolean fullCalibration;
+        private final boolean fullCalibration;
 
         private boolean lowerCalibrated = false;
         private boolean upperCalibrated = false;
@@ -72,44 +111,16 @@ public class TurretCommands {
         }
     }
 
-    public static class PassiveTrack extends CommandBase {
-        private final Turret turret;
-        private final PIDController pidController;
-
-        private double lastRelativeAngleToHub;
-
-        public PassiveTrack(Turret turret) {
-            this.turret = turret;
-            this.pidController = new PIDController(1.0d, 0.0d, 0.0d);
-
-            pidController.setSetpoint(0.0d);
-            pidController.disableContinuousInput();
-            pidController.setTolerance(1.0d);
-            SmartDashboard.putData("TurretTrackingPID", pidController);
-
-            addRequirements(turret);
-        }
-
-        @Override
-        public void execute() {
-            if(!VisionInterface.canTrackHub()) return;
-
-            // Fetch current vision relative angle
-            double relativeAngleToHub = VisionInterface.getRelativeAngleToHub();
-            if(relativeAngleToHub == lastRelativeAngleToHub) return;
-
-            // Calculate the commanded absolute angle from relative
-            double currentTurretAngle = turret.getAngle();
-            double requestedAngle = currentTurretAngle - pidController.calculate(relativeAngleToHub);
-
-            // Command hardware and update state
-            turret.setAngle(requestedAngle);
-            lastRelativeAngleToHub = relativeAngleToHub;
-
-            SmartDashboard.putNumber("DEBUG RA", relativeAngleToHub);
-            SmartDashboard.putNumber("DEBUG REQA", requestedAngle);
-        }
-    }
-
     private TurretCommands() { }
+
 }
+
+
+
+
+
+
+
+
+
+
