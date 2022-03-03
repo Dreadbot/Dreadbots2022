@@ -70,10 +70,10 @@ public class RobotContainer {
             intake = new Intake(intakeMotor);
         } else intake = new Intake();
 
+        ColorSensorV3 colorSensorV3 = new ColorSensorV3(Constants.I2C_PORT);
+        dreadbotColorSensor = new ColorSensor(colorSensorV3);
         if (Constants.FEEDER_ENABLED) {
             CANSparkMax feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless);
-            ColorSensorV3 colorSensorV3 = new ColorSensorV3(Constants.I2C_PORT);
-            dreadbotColorSensor = new ColorSensor(colorSensorV3);
 
             feeder = new Feeder(feederMotor);
         } else feeder = new Feeder();
@@ -164,8 +164,8 @@ public class RobotContainer {
     }  
 
     public void calibrate() {
-        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, false));
-        CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, false));
+        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, true));
+        CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, true));
     }
 
     /*
