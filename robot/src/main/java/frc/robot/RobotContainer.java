@@ -134,12 +134,13 @@ public class RobotContainer {
 
         // Hood Commands
         SmartDashboard.putNumber("Selected Hood Angle", 68);
-        hood.setDefaultCommand(new RunCommand(() -> hood.setAngle(SmartDashboard.getNumber("Selected Hood Angle", 68)), hood));
+//        hood.setDefaultCommand(new RunCommand(() -> hood.setAngle(SmartDashboard.getNumber("Selected Hood Angle", 68)), hood));
+        hood.setDefaultCommand(new HoodCommands.PassiveTrack(hood));
 
         // Turret Commands
         SmartDashboard.putNumber("Selected Turret Angle", 150);
-        turret.setDefaultCommand(new RunCommand(() -> turret.setAngle(SmartDashboard.getNumber("Selected Turret Angle", 150)), turret));
-//        turret.setDefaultCommand(new TurretCommands.TurretTrackingCommand(turret));
+//        turret.setDefaultCommand(new RunCommand(() -> turret.setAngle(SmartDashboard.getNumber("Selected Turret Angle", 150)), turret));
+        turret.setDefaultCommand(new TurretCommands.PassiveTrack(turret));
 
         VisionInterface.selectCamera(2);
         // Shooter Commands

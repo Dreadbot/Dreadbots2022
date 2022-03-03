@@ -1,10 +1,54 @@
 package frc.robot.command.shooter;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystem.shooter.Hood;
+import frc.robot.util.CargoKinematics;
+import frc.robot.util.VisionInterface;
 
 public class HoodCommands {
+    private static final PIDController hoodTrackingController = new PIDController(1.0d, 0.0d, 0.0d);
+    static {
+        hoodTrackingController.setSetpoint(0.0d);
+        hoodTrackingController.disableContinuousInput();
+
+        SmartDashboard.putData("HoodTrackingPID", hoodTrackingController);
+    }
+
+    public static class PassiveTrack extends CommandBase {
+        private final Hood hood;
+        private final CargoKinematics cargoKinematics;
+
+        private double lastDistanceToHub;
+
+        public PassiveTrack(Hood hood) {
+            this.hood = hood;
+            this.cargoKinematics = new CargoKinematics(s -> 3.048, 0.5715, 2.6416);
+
+            addRequirements(hood);
+        }
+
+        @Override
+        public void execute() {
+            if(!VisionInterface.canTrackHub()) return;
+
+            double distanceToHub = VisionInterface.getRelativeDistanceToHub();
+            double hoodAngle = cargoKinematics.getBallDirectionAngle(distanceToHub);
+
+            if(distanceToHub != lastDistanceToHub) hoodControlAngle(hoodAngle);
+            lastDistanceToHub = distanceToHub;
+        }
+
+        private void hoodControlAngle(double relativeHoodAngle) {
+            double currentAngle = hood.getAngle();
+            double requestedAngle = currentAngle - hoodTrackingController.calculate(relativeHoodAngle);
+
+            hood.setAngle(requestedAngle);
+        }
+    }
+
     public static class Calibrate extends CommandBase {
         public static final double HOOD_CALIBRATION_SPEED = 0.7d;
 
