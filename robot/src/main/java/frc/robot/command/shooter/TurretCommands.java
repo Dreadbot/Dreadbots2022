@@ -80,6 +80,28 @@ public class TurretCommands {
         }
     }
 
+    public static class TurnToAngle extends CommandBase {
+        private final Turret turret;
+        private final double angle;
+
+        public TurnToAngle(Turret turret, double angle) {
+            this.turret = turret;
+            this.angle = angle;
+
+            addRequirements(turret);
+        }
+
+        @Override
+        public void execute() {
+            turret.setAngle(angle);
+        }
+
+        @Override
+        public boolean isFinished() {
+            return Math.abs(turret.getAngle() - angle) <= 1.0d;
+        }
+    }
+
     public static class Calibrate extends CommandBase {
         private final Turret turret;
 

@@ -112,6 +112,12 @@ public class HoodCommands {
         }
 
         @Override
+        public void initialize() {
+            lowerCalibrated = false;
+            upperCalibrated = false;
+        }
+
+        @Override
         public void execute() {
             if(!lowerCalibrated) {
                 calibrateLower();

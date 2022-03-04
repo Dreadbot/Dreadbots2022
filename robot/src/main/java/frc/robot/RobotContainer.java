@@ -170,7 +170,8 @@ public class RobotContainer {
     }  
 
     public void calibrate() {
-//        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, true));
+        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, true)
+            .andThen(new TurretCommands.TurnToAngle(turret, 155.0d)));
         CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, true));
     }
 
