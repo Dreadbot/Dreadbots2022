@@ -134,7 +134,7 @@ public class HoodCommands {
         }
 
         private void calibrateUpper() {
-            hood.setSpeed(HOOD_CALIBRATION_SPEED);
+            hood.setSpeed(-HOOD_CALIBRATION_SPEED);
 
             if(!hood.getUpperLimitSwitch()) return;
             hood.stopMotors();
@@ -143,7 +143,7 @@ public class HoodCommands {
         }
 
         private void calibrateLower() {
-            hood.setSpeed(-HOOD_CALIBRATION_SPEED);
+            hood.setSpeed(HOOD_CALIBRATION_SPEED);
 
             if(!hood.getLowerLimitSwitch()) return;
             hood.stopMotors();

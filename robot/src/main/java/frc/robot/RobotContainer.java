@@ -139,6 +139,8 @@ public class RobotContainer {
         // Flywheel Commands
         flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
 
+        secondaryController.getYButton().whileHeld(new RunCommand(() -> flywheel.setVelocity(1000.0d)));
+
         // Hood Commands
         SmartDashboard.putNumber("Selected Hood Angle", 68);
 //        hood.setDefaultCommand(new RunCommand(() -> hood.setAngle(SmartDashboard.getNumber("Selected Hood Angle", 68)), hood));
