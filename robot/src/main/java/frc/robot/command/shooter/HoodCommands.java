@@ -13,6 +13,7 @@ public class HoodCommands {
     static {
         hoodTrackingController.setSetpoint(0.0d);
         hoodTrackingController.disableContinuousInput();
+        hoodTrackingController.setTolerance(1.0d);
 
         SmartDashboard.putData("HoodTrackingPID", hoodTrackingController);
     }
@@ -49,8 +50,45 @@ public class HoodCommands {
         }
     }
 
+    public static class ActiveTrack extends CommandBase {
+        private final Hood hood;
+        private final CargoKinematics cargoKinematics;
+
+        private double lastDistanceToHub;
+
+        public ActiveTrack(Hood hood) {
+            this.hood = hood;
+            this.cargoKinematics = new CargoKinematics(s -> 3.048, 0.5715, 2.6416);
+
+            addRequirements(hood);
+        }
+
+        @Override
+        public void execute() {
+            if(!VisionInterface.canTrackHub()) return;
+
+            double distanceToHub = VisionInterface.getRelativeDistanceToHub();
+            double hoodAngle = cargoKinematics.getBallDirectionAngle(distanceToHub);
+
+            if(distanceToHub != lastDistanceToHub) hoodControlAngle(hoodAngle);
+            lastDistanceToHub = distanceToHub;
+        }
+
+        @Override
+        public boolean isFinished() {
+            return hoodTrackingController.atSetpoint();
+        }
+
+        private void hoodControlAngle(double relativeHoodAngle) {
+            double currentAngle = hood.getAngle();
+            double requestedAngle = currentAngle - hoodTrackingController.calculate(relativeHoodAngle);
+
+            hood.setAngle(requestedAngle);
+        }
+    }
+
     public static class Calibrate extends CommandBase {
-        public static final double HOOD_CALIBRATION_SPEED = 0.7d;
+        public static final double HOOD_CALIBRATION_SPEED = 0.1d;
 
         private final Hood hood;
 

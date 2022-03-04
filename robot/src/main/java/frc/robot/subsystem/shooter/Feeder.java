@@ -22,6 +22,7 @@ public class Feeder extends DreadbotSubsystem {
 
         motor.restoreFactoryDefaults();
         motor.setIdleMode(IdleMode.kCoast);
+        motor.setInverted(true);
     }
 
     /**

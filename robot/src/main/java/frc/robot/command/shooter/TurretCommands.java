@@ -8,10 +8,11 @@ import frc.robot.subsystem.shooter.Turret;
 import frc.robot.util.VisionInterface;
 
 public class TurretCommands {
-    private static final PIDController turretTrackingController = new PIDController(1.0d, 0.0d, 0.0d);
+    private static final PIDController turretTrackingController = new PIDController(0.75d, 0.0d, 0.0d);
     static {
         turretTrackingController.setSetpoint(0.0d);
         turretTrackingController.disableContinuousInput();
+        turretTrackingController.setTolerance(1.0d);
 
         SmartDashboard.putData("TurretTrackingPID", turretTrackingController);
     }
@@ -64,6 +65,11 @@ public class TurretCommands {
 
             if(relativeAngleToHub != lastRelativeAngleToHub) turretControlAngle(relativeAngleToHub);
             lastRelativeAngleToHub = relativeAngleToHub;
+        }
+
+        @Override
+        public boolean isFinished() {
+            return turretTrackingController.atSetpoint();
         }
 
         private void turretControlAngle(double relativeAngleToHub) {

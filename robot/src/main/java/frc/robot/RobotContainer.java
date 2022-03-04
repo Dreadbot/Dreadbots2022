@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.command.autonomous.VelocityControlTestCommand;
 import frc.robot.command.climber.*;
@@ -18,6 +19,7 @@ import frc.robot.command.drive.DriveCommand;
 import frc.robot.command.intake.IntakeCommand;
 import frc.robot.command.intake.OuttakeCommand;
 import frc.robot.command.shooter.HoodCommands;
+import frc.robot.command.shooter.ShooterCommands;
 import frc.robot.command.shooter.TurretCommands;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
@@ -68,8 +70,6 @@ public class RobotContainer {
             intake = new Intake(intakeMotor);
         } else intake = new Intake();
 
-        ColorSensorV3 colorSensorV3 = new ColorSensorV3(Constants.I2C_PORT);
-        dreadbotColorSensor = new ColorSensor(colorSensorV3);
         if (Constants.FEEDER_ENABLED) {
             CANSparkMax feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless);
 
@@ -98,8 +98,15 @@ public class RobotContainer {
             hood = new Hood(hoodMotor, lowerHoodLimitSwitch, upperHoodLimitSwitch);
         } else hood = new Hood();
 
+        if (Constants.COLOR_SENSOR_ENABLED) {
+            ColorSensorV3 colorSensorV3 = new ColorSensorV3(Constants.I2C_PORT);
+            dreadbotColorSensor = new ColorSensor(colorSensorV3);
+        } else dreadbotColorSensor = new ColorSensor();
+
         if (Constants.SHOOTER_ENABLED) {
-            shooter = new Shooter(feeder, flywheel, hood, turret);
+
+
+            shooter = new Shooter(feeder, flywheel, hood, turret, dreadbotColorSensor);
         } else shooter = new Shooter();
 
         if (Constants.CLIMB_ENABLED) {
@@ -144,7 +151,7 @@ public class RobotContainer {
 
         VisionInterface.selectCamera(2);
         // Shooter Commands
-        secondaryController.getBButton().whileHeld(new TurretCommands.PassiveTrack(turret));
+        secondaryController.getBButton().whileHeld(new ShooterCommands.Shoot(shooter));
 //        secondaryController.getBButton().whileHeld(new ShootCommand(shooter, dreadbotColorSensor, teamColorChooser::getSelected));
 
         // Climber Commands
@@ -163,7 +170,7 @@ public class RobotContainer {
     }  
 
     public void calibrate() {
-        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, true));
+//        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, true));
         CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, true));
     }
 

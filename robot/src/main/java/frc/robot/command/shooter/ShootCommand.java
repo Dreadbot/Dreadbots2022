@@ -28,7 +28,7 @@ public class ShootCommand extends SequentialCommandGroup {
              ),
 
             // Feed the ball, and shoot continuously.
-            new FeedBallCommand(shooter, dreadbotColorSensor, getBallColorCommand.getBallColor())
+            new FeedBallCommand(shooter)
         );
         
     }
@@ -158,16 +158,14 @@ class HoodAngleCommand extends CommandBase {
 }
 
 class FeedBallCommand extends CommandBase { 
-    private final Shooter shooter;
-    private final ColorSensor dreadbotColorSensor;
-    private Color orginalBallColor;
+    private Shooter shooter;
+    private ColorSensor colorSensor;
 
-    public FeedBallCommand(Shooter shooter, ColorSensor dreadbotColorSensor, Color orginalBallColor) {
+    public FeedBallCommand(Shooter shooter) {
         this.shooter = shooter;
-        this.dreadbotColorSensor = dreadbotColorSensor;
-        this.orginalBallColor = orginalBallColor;
+        this.colorSensor = shooter.getColorSensor();
 
-        addRequirements(shooter.getFeeder());
+        addRequirements(colorSensor);
     }
 
     @Override
@@ -178,8 +176,8 @@ class FeedBallCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        Color currentBallColor = dreadbotColorSensor.getBallColor();
+        Color currentBallColor = colorSensor.getBallColor();
         // Return true if different color ball, or if no ball is detected
-        return currentBallColor == null || currentBallColor != orginalBallColor;
+        return currentBallColor == null || currentBallColor != colorSensor.getInitialBallColor();
     }
 }

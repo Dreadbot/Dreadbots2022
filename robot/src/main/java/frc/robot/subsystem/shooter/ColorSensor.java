@@ -11,7 +11,15 @@ import frc.robot.subsystem.DreadbotSubsystem;
 public class ColorSensor extends DreadbotSubsystem {
     private ColorSensorV3 sensor;
     private ColorMatch colorMatch;
-    private double colorConfidence = 0.9;
+
+    private Color initialBallColor;
+
+    private final double colorConfidence = 0.9;
+    private double currentConfidence;
+
+    public ColorSensor() {
+        disable();
+    }
 
     public ColorSensor(ColorSensorV3 sensor)
     {
@@ -22,39 +30,42 @@ public class ColorSensor extends DreadbotSubsystem {
         colorMatch.setConfidenceThreshold(colorConfidence);
     }
 
+    @Override
+    public void periodic() {
+        String colorName;
+        Color ballColor = getBallColor();
+
+        if (ballColor == Constants.COLOR_RED) {
+            colorName = "RED";
+        } else if (ballColor == Constants.COLOR_BLUE) {
+            colorName = "BLUE";
+        } else {
+            colorName = "NO MATCH";
+        }
+
+        SmartDashboard.putString("Color:", colorName);
+    }
+
     public Color getBallColor()
     {
         if(isDisabled()) return null;
 
         ColorMatchResult matchColor = colorMatch.matchColor(sensor.getColor());
+        if(matchColor == null) return null;
 
-        if(matchColor == null)
-        {
-            SmartDashboard.putString("Color:", "Null");
-            return null;
-        }
-        else if(matchColor.color == Constants.COLOR_RED)
-        {
-            SmartDashboard.putNumber("Confidence", matchColor.confidence);
-            SmartDashboard.putString("Color:", "Red");
-            return Constants.COLOR_RED;
-        }
-        else if(matchColor.color == Constants.COLOR_BLUE)
-        {
-            SmartDashboard.putNumber("Confidence", matchColor.confidence);
-            SmartDashboard.putString("Color:", "Blue");
-            return Constants.COLOR_BLUE;
-        }
-        return null; // Keeps compiler happy
+        currentConfidence = matchColor.confidence;
+        if(matchColor.color == Constants.COLOR_RED) return Constants.COLOR_RED;
+        if(matchColor.color == Constants.COLOR_BLUE) return Constants.COLOR_BLUE;
+        return null;
     }
-    
-    public void printColor() // for testing and finding color, switch to rio log if possible
-    {
-        if(isDisabled()) return;
 
-        SmartDashboard.putNumber("Color R:", sensor.getColor().red );
-        SmartDashboard.putNumber("Color G:", sensor.getColor().green);
-        SmartDashboard.putNumber("Color B:", sensor.getColor().blue);
+    public void prepareInitialShootConditions() {
+        initialBallColor = getBallColor();
+    }
+
+    public boolean isBallDetected() {
+        prepareInitialShootConditions();
+        return initialBallColor != null;
     }
 
     @Override
@@ -67,5 +78,9 @@ public class ColorSensor extends DreadbotSubsystem {
     public void close() throws Exception {
         if(isDisabled()) return;
         // nothing to close
+    }
+
+    public Color getInitialBallColor() {
+        return initialBallColor;
     }
 }

@@ -7,6 +7,7 @@ public class Shooter extends DreadbotSubsystem {
     private Flywheel flywheel;
     private Hood hood;
     private Turret turret;
+    private ColorSensor colorSensor;
 
     /**
      * Disabled constructor
@@ -15,11 +16,12 @@ public class Shooter extends DreadbotSubsystem {
         disable();
     }
 
-    public Shooter(Feeder feeder, Flywheel flywheel, Hood hood, Turret turret) {
+    public Shooter(Feeder feeder, Flywheel flywheel, Hood hood, Turret turret, ColorSensor colorSensor) {
         this.feeder = feeder;
         this.flywheel = flywheel;
         this.hood = hood;
         this.turret = turret;
+        this.colorSensor = colorSensor;
     }
 
     public void feedBall() {
@@ -86,18 +88,32 @@ public class Shooter extends DreadbotSubsystem {
     }
 
     public Feeder getFeeder() {
+        if(isDisabled()) return new Feeder();
+
         return feeder;
     }
     
     public Flywheel getFlywheel() {
+        if(isDisabled()) return new Flywheel();
+
         return flywheel;
     }
 
     public Hood getHood() {
+        if(isDisabled()) return new Hood();
+
         return hood;
     }
 
     public Turret getTurret() {
+        if(isDisabled()) return new Turret();
+
         return turret;
+    }
+
+    public ColorSensor getColorSensor() {
+        if(isDisabled()) return new ColorSensor();
+
+        return colorSensor;
     }
 }

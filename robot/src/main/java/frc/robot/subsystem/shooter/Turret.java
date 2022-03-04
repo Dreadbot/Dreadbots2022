@@ -108,12 +108,16 @@ public class Turret extends DreadbotSubsystem {
     }
 
     public void setUpperMotorLimit(double rotations) {
+        if(isDisabled()) return;
+
         SmartDashboard.putNumber("Turret Upper Limit", rotations);
 
         this.upperMotorLimit = rotations;
     }
 
     public void setLowerMotorLimit(double rotations) {
+        if(isDisabled()) return;
+
         SmartDashboard.putNumber("Turret Lower Limit", rotations);
 
         this.lowerMotorLimit = rotations;

@@ -90,6 +90,8 @@ public class Drive extends DreadbotSubsystem {
 
     @Override
     public void periodic() {
+        if(isDisabled()) return;
+
         odometry.update(gyroscope.getRotation2d(), getWheelSpeeds());
     }
 
@@ -168,10 +170,14 @@ public class Drive extends DreadbotSubsystem {
     }
 
     public ChassisSpeeds getChassisSpeeds() {
+        if(isDisabled()) return new ChassisSpeeds();
+
         return kinematics.toChassisSpeeds(getWheelSpeeds());
     }
 
     public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+        if(isDisabled()) return;
+
         final var wheelSpeeds = kinematics.toWheelSpeeds(chassisSpeeds);
 
         setWheelSpeeds(wheelSpeeds);
@@ -195,6 +201,8 @@ public class Drive extends DreadbotSubsystem {
 
     public void setWheelVoltages(double leftFrontVoltage, double rightFrontVoltage,
                                  double leftBackVoltage, double rightBackVoltage) {
+        if(isDisabled()) return;
+
         leftFrontMotor.setVoltage(leftFrontVoltage);
         rightFrontMotor.setVoltage(rightFrontVoltage);
         leftBackMotor.setVoltage(leftBackVoltage);
@@ -202,6 +210,8 @@ public class Drive extends DreadbotSubsystem {
     }
 
     public void setWheelSpeeds(MecanumDriveWheelSpeeds wheelSpeeds) {
+        if(isDisabled()) return;
+
         leftFrontVelocityPID.setSetpoint(wheelSpeeds.frontLeftMetersPerSecond);
         rightFrontVelocityPID.setSetpoint(wheelSpeeds.frontRightMetersPerSecond);
         leftBackVelocityPID.setSetpoint(wheelSpeeds.rearLeftMetersPerSecond);
