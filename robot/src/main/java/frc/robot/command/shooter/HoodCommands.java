@@ -88,8 +88,6 @@ public class HoodCommands {
     }
 
     public static class Calibrate extends CommandBase {
-        public static final double HOOD_CALIBRATION_SPEED = 0.1d;
-
         private final Hood hood;
 
         private boolean fullCalibration;
@@ -134,7 +132,7 @@ public class HoodCommands {
         }
 
         private void calibrateUpper() {
-            hood.setSpeed(-HOOD_CALIBRATION_SPEED);
+            hood.setSpeed(-Constants.HOOD_CALIBRATION_SPEED);
 
             if(!hood.getUpperLimitSwitch()) return;
             hood.stopMotors();
@@ -143,7 +141,7 @@ public class HoodCommands {
         }
 
         private void calibrateLower() {
-            hood.setSpeed(HOOD_CALIBRATION_SPEED);
+            hood.setSpeed(Constants.HOOD_CALIBRATION_SPEED);
 
             if(!hood.getLowerLimitSwitch()) return;
             hood.stopMotors();
