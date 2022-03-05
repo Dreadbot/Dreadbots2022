@@ -153,7 +153,7 @@ public class RobotContainer {
 
         VisionInterface.selectCamera(2);
         // Shooter Commands
-        secondaryController.getBButton().whileHeld(new ShooterCommands.Shoot(shooter));
+        secondaryController.getBButton().whileHeld(new ShooterCommands.BlindShoot(shooter));
 //        secondaryController.getBButton().whileHeld(new ShootCommand(shooter, dreadbotColorSensor, teamColorChooser::getSelected));
 
         // Climber Commands
@@ -174,7 +174,8 @@ public class RobotContainer {
     public void calibrate() {
         CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, true)
             .andThen(new TurretCommands.TurnToAngle(turret, 155.0d)));
-        CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, true));
+        CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, true)
+            .andThen(new HoodCommands.TurnToAngle(hood, 70.0d)));
     }
 
     /*

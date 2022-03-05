@@ -2,6 +2,7 @@ package frc.robot.command.shooter;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystem.shooter.Hood;
@@ -156,4 +157,26 @@ public class HoodCommands {
     }
 
     private HoodCommands() {}
+
+    public static class TurnToAngle extends CommandBase {
+        private final Hood hood;
+        private final double angle;
+
+        public TurnToAngle(Hood hood, double angle) {
+            this.hood = hood;
+            this.angle = angle;
+
+            addRequirements(hood);
+        }
+
+        @Override
+        public void execute() {
+            hood.setAngle(angle);
+        }
+
+        @Override
+        public boolean isFinished() {
+            return Math.abs(hood.getAngle() - angle) <= 1.0d;
+        }
+    }
 }

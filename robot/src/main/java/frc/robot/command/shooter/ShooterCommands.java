@@ -25,4 +25,19 @@ public class ShooterCommands {
             );
         }
     }
+
+    public static class BlindShoot extends SequentialCommandGroup {
+        private Shooter shooter;
+
+        public BlindShoot(Shooter shooter) {
+            this.shooter = shooter;
+
+            addRequirements(shooter);
+            addCommands(
+                new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
+                new FlywheelCommands.PrepareBlindShot(shooter.getFlywheel()),
+                new FeedBallCommand(shooter)
+            );
+        }
+    }
 }
