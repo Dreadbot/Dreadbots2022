@@ -1,9 +1,9 @@
 package frc.robot.command.shooter;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.*;
+import frc.robot.subsystem.shooter.ColorSensor;
 import frc.robot.subsystem.shooter.Shooter;
 
 public class ShooterCommands {
@@ -38,6 +38,31 @@ public class ShooterCommands {
                 new FlywheelCommands.PrepareBlindShot(shooter.getFlywheel()),
                 new FeedBallCommand(shooter)
             );
+        }
+    }
+
+    public static class FeedBallCommand extends CommandBase {
+        private Shooter shooter;
+        private ColorSensor colorSensor;
+
+        public FeedBallCommand(Shooter shooter) {
+            this.shooter = shooter;
+            this.colorSensor = shooter.getColorSensor();
+
+            addRequirements(colorSensor);
+        }
+
+        @Override
+        public void execute() {
+            shooter.feedBall();
+            SmartDashboard.putString("Ball fed", "Ball is being fed");
+        }
+
+        @Override
+        public boolean isFinished() {
+            Color currentBallColor = colorSensor.getBallColor();
+            // Return true if different color ball, or if no ball is detected
+            return currentBallColor == null || currentBallColor != colorSensor.getInitialBallColor();
         }
     }
 }
