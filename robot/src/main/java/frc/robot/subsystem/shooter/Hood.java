@@ -36,7 +36,7 @@ public class Hood extends DreadbotSubsystem {
         encoder = motor.getEncoder();
         pidController = motor.getPIDController();
 
-        motor.setInverted(true);
+        motor.setInverted(false);
          
         pidController.setP(0.1); // Change numbers maybe
         pidController.setI(0); 

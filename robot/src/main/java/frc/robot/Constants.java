@@ -39,15 +39,15 @@ public abstract class Constants {
     public static final int UPPER_TURRET_LIMIT_SWITCH_ID = 1;
     public static final double MAX_TURRET_ANGLE = 300.0d;
     public static final double MIN_TURRET_ANGLE = 0.0d;
-    public static final double TURRET_RANGE = 106.0d;
+    public static final double TURRET_RANGE = 56.452d;
     public static final double TURRET_CALIBRATION_SPEED = 0.3d;
 
     public static final int FLYWHEEL_MOTOR_PORT = 8;
-    public static final double FLYWHEEL_P_GAIN = 3e-4d;
+    public static final double FLYWHEEL_P_GAIN = 1e-4d;
     public static final double FLYWHEEL_I_GAIN = 0.0d;
     public static final double FLYWHEEL_D_GAIN = 0.0d;
     public static final double FLYWHEEL_I_ZONE = 2.0d;
-    public static final double FLYWHEEL_FF_GAIN = 1.9e-4d;
+    public static final double FLYWHEEL_FF_GAIN = 1e-3d;
     public static final double FLYWHEEL_MAX_OUTPUT = 1.0d;
     public static final double FLYWHEEL_MIN_OUTPUT = -1.0d;
     public static final double FLYWHEEL_MAX_RPM = 5700.0d;
@@ -58,7 +58,7 @@ public abstract class Constants {
     public static final double MAX_HOOD_ANGLE = 82.0d;
     public static final double UPPER_HOOD_ANGLE = 70.0d;
     public static final double MIN_HOOD_ANGLE = 60.0d;
-    public static final double HOOD_RANGE = 223.0d;
+    public static final double HOOD_RANGE = 75.717d;
     public static final double HOOD_CALIBRATION_SPEED = 0.3d;
     
     // Climber constants

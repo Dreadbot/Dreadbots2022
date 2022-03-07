@@ -139,17 +139,11 @@ public class RobotContainer {
         // Flywheel Commands
         flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
 
-        secondaryController.getYButton().whileHeld(new RunCommand(() -> flywheel.setVelocity(1000.0d)));
-
-        // Hood Commands
-        SmartDashboard.putNumber("Selected Hood Angle", 68);
-//        hood.setDefaultCommand(new RunCommand(() -> hood.setAngle(SmartDashboard.getNumber("Selected Hood Angle", 68)), hood));
         hood.setDefaultCommand(new HoodCommands.PassiveTrack(hood));
 
-        // Turret Commands
-        SmartDashboard.putNumber("Selected Turret Angle", 150);
-//        turret.setDefaultCommand(new RunCommand(() -> turret.setAngle(SmartDashboard.getNumber("Selected Turret Angle", 150)), turret));
         turret.setDefaultCommand(new TurretCommands.PassiveTrack(turret));
+        secondaryController.getStartButton().whenPressed(TurretCommands::swapManualAutomaticControls);
+        SmartDashboard.putBoolean("TURRET AUTOMATION", true);
 
         VisionInterface.selectCamera(2);
         // Shooter Commands
@@ -172,10 +166,11 @@ public class RobotContainer {
     }  
 
     public void calibrate() {
-        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, true)
+        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, false)
             .andThen(new TurretCommands.TurnToAngle(turret, 155.0d)));
-        CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, true)
-            .andThen(new HoodCommands.TurnToAngle(hood, 70.0d)));
+
+        CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, false)
+            .andThen(new HoodCommands.TurnToAngle(hood, Constants.MIN_HOOD_ANGLE)));
     }
 
     /*

@@ -5,11 +5,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystem.shooter.Turret;
+import frc.robot.util.RobotControlMode;
 import frc.robot.util.VisionInterface;
 
 public class TurretCommands {
     private static final PIDController turretTrackingController = new PIDController(0.75d, 0.0d, 0.0d);
+    private static RobotControlMode turretControlMode;
     static {
+        turretControlMode = RobotControlMode.AUTOMATIC;
+
         turretTrackingController.setSetpoint(0.0d);
         turretTrackingController.disableContinuousInput();
         turretTrackingController.setTolerance(1.0d);
@@ -166,6 +170,16 @@ public class TurretCommands {
     }
 
     private TurretCommands() { }
+
+    public static void swapManualAutomaticControls() {
+        if(turretControlMode == RobotControlMode.AUTOMATIC) {
+            turretControlMode = RobotControlMode.MANUAL;
+        } else {
+            turretControlMode = RobotControlMode.AUTOMATIC;
+        }
+
+        SmartDashboard.putBoolean("TURRET AUTOMATION", turretControlMode == RobotControlMode.AUTOMATIC);
+    }
 }
 
 

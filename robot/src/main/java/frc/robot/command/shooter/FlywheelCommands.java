@@ -68,11 +68,7 @@ public class FlywheelCommands {
 
         @Override
         public void execute() {
-            double distanceToHub = 150.0d;
-            distanceToHub = Units.inchesToMeters(distanceToHub);
-            double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
-
-            velocityControl(velocity);
+            velocityControl(18d);
         }
 
         @Override
