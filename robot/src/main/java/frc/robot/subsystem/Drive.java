@@ -19,9 +19,11 @@ import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.util.DreadbotMath;
 
 /**
@@ -29,9 +31,9 @@ import frc.robot.util.DreadbotMath;
  */
 public class Drive extends DreadbotSubsystem {
     public static final SimpleMotorFeedforward FEEDFORWARD =
-        new SimpleMotorFeedforward(0.22d, 1.98d, 0.2d);
+        new SimpleMotorFeedforward(0.12119d, 0.024942d, 0.0058527d);
 
-    public static final double DRIVE_KP = 1;
+    public static final double DRIVE_KP = 0.034824;
 
     public static final double MAX_SPEED_METERS_PER_SECOND = 8.0d;
     public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 5.0;
@@ -90,6 +92,7 @@ public class Drive extends DreadbotSubsystem {
 
     @Override
     public void periodic() {
+        if(isDisabled()) return;
         odometry.update(gyroscope.getRotation2d(), getWheelSpeeds());
     }
 
@@ -130,6 +133,17 @@ public class Drive extends DreadbotSubsystem {
         odometry = new MecanumDriveOdometry(kinematics, gyroscope.getRotation2d());
 
         this.mecanumDrive = new MecanumDrive(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
+    }
+
+    public void printMotorVelocities(){
+        SmartDashboard.putNumber("Left back velocity", leftBackMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Left front velocity", leftFrontMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Right back velocity", rightBackMotor.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Right Front velocity", rightFrontMotor.getEncoder().getVelocity());
+        System.out.println(rightBackMotor.getBusVoltage());
+        System.out.println(leftBackMotor.getBusVoltage());
+        System.out.println(rightFrontMotor.getBusVoltage());
+        System.out.println(leftFrontMotor.getBusVoltage());
     }
 
     /**
@@ -197,8 +211,8 @@ public class Drive extends DreadbotSubsystem {
                                  double leftBackVoltage, double rightBackVoltage) {
         leftFrontMotor.setVoltage(leftFrontVoltage);
         rightFrontMotor.setVoltage(rightFrontVoltage);
-        leftBackMotor.setVoltage(leftBackVoltage);
-        rightBackMotor.setVoltage(rightBackVoltage);
+        leftBackMotor.set(leftBackVoltage);
+        rightBackMotor.set(rightBackVoltage);
     }
 
     public void setWheelSpeeds(MecanumDriveWheelSpeeds wheelSpeeds) {
@@ -272,5 +286,12 @@ public class Drive extends DreadbotSubsystem {
         SmartDashboard.putNumber("FrontLeftEncoder", frontLeftEncoder.getPosition());
         SmartDashboard.putNumber("AvgEncoder", getEncoderAvg);
         return getEncoderAvg;
+    }
+
+    public void setIdleMode(IdleMode mode){
+        leftBackMotor.setIdleMode(mode);
+        leftFrontMotor.setIdleMode(mode);
+        rightBackMotor.setIdleMode(mode);
+        rightFrontMotor.setIdleMode(mode);
     }
 }

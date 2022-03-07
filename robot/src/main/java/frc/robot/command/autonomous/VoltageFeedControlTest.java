@@ -8,7 +8,6 @@ public class VoltageFeedControlTest extends CommandBase {
 
     public VoltageFeedControlTest(Drive drive) {
         this.drive = drive;
-
         addRequirements(drive);
     }
 
@@ -17,16 +16,23 @@ public class VoltageFeedControlTest extends CommandBase {
 
     @Override
     public void execute() {
-        drive.setWheelVoltages(6.0, 6.0, 6.0, 6.0);
+        drive.setWheelVoltages(3.0, 3.0, 3.0, 3.0);
+        drive.printMotorVelocities();
     }
 
     @Override
     public void end(boolean interrupted) {
-        drive.stopMotors();
+        //drive.stopMotors();
     }
 
+    int i =0;
     @Override
     public boolean isFinished() {
-        return false;
+        if(i < 100)
+        {
+            i++;
+            return false;
+        }
+        return true;
     }
 }

@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import java.util.logging.Logger;
 
+import com.revrobotics.CANSparkMax.IdleMode;
+
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -34,6 +36,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         robotContainer.setTeamColor();
+        robotContainer.setDriveMode(IdleMode.kCoast);
         //robotContainer.calibrate();
         autonomousCommand = robotContainer.getAutonomousCommand();
 
@@ -53,6 +56,7 @@ public class Robot extends TimedRobot {
         }
         robotContainer.setTeamColor();
         robotContainer.calibrate();
+        robotContainer.setDriveMode(IdleMode.kBrake);
     }
 
     @Override
