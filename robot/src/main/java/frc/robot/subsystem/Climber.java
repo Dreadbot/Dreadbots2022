@@ -60,10 +60,16 @@ public class Climber extends DreadbotSubsystem {
     @Override
     public void periodic() {
         if(isDisabled()) return;
-
+        SmartDashboard.putBoolean("Lower Limit", getBottomLimitSwitch());
+        SmartDashboard.putBoolean("Upper Limit", getTopLimitSwitch());  
         SmartDashboard.putNumber("WinchPosition", winchEncoder.getPosition());
     }
-
+    public void zeroEncoderPosition() {
+        if(isDisabled()) return;
+        try {
+            winchEncoder.setPosition(0);
+        } catch (IllegalStateException ignored) { disable(); }
+    }
     public void rotateClimbingHookDown() {
         if(isDisabled()) return;
 
