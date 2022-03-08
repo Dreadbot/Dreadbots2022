@@ -1,79 +1,125 @@
 package frc.robot.subsystem;
 
-import static org.junit.Assert.assertEquals;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
+import edu.wpi.first.hal.HAL;
+import frc.robot.Constants;
+import frc.robot.Robot;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Test.None;
 
-import edu.wpi.first.hal.HAL;
-import frc.robot.Constants;
+import java.util.logging.Level;
+
+import static org.junit.Assert.*;
 
 public class IntakeTest {
     public static final double DELTA = 1e-2;
 
     private Intake intake;
-    private CANSparkMax leftIntakeMotor;
-    private CANSparkMax rightIntakeMotor;
+    private CANSparkMax intakeMotor;
 
     @Before
     public void setup() {
         assert HAL.initialize(500, 0);
-        leftIntakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
-        rightIntakeMotor = new CANSparkMax(Constants.RIGHT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
 
-        intake = new Intake(leftIntakeMotor, rightIntakeMotor);
+        // This logic notifies the programmer which systems are disabled in the Constants file.
+        // The DreadbotSubsystem class will throw a warning while the log level is here.
+        Robot.LOGGER.setLevel(Level.INFO);
+
+        intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
+        intake = new Intake(intakeMotor);
+
+        // Set log level higher than warnings, so that tests do not log disabled warnings.
+        Robot.LOGGER.setLevel(Level.SEVERE);
     }
 
     @After
-    public void shutdown() throws Exception {
-        leftIntakeMotor.close();
-        rightIntakeMotor.close();
+    public void shutdown() {
         intake.close();
+
+        // Return to the regular log level.
+        Robot.LOGGER.setLevel(Level.INFO);
     }
 
     @Test
     public void intake() {
         intake.intake();
 
-        assertEquals(1.0d, leftIntakeMotor.get(), DELTA);
-        assertEquals(1.0d, rightIntakeMotor.get(), DELTA);
+        if (intake.isEnabled()) {
+            assertEquals(1.0d, intakeMotor.get(), DELTA);
+        }
     }
 
     @Test
-    public void outlet() {
-        intake.outlet();
+    public void outtake() {
+        intake.outtake();
 
-        assertEquals(-1.0d, leftIntakeMotor.get(), DELTA);
-        assertEquals(-1.0d, rightIntakeMotor.get(), DELTA);
+        if (intake.isEnabled()) {
+            assertEquals(-1.0d, intakeMotor.get(), DELTA);
+        }
     }
 
     @Test
-    public void intakeDisabled() {
-        intake.disable();
-        intake.intake();
+    public void idle() {
+        intake.idle();
 
-        assertEquals(0.0d, leftIntakeMotor.get(), DELTA);
-        assertEquals(0.0d, rightIntakeMotor.get(), DELTA);
+        if (intake.isEnabled()) {
+            assertEquals(0.0, intakeMotor.get(), DELTA);
+        }
     }
 
     @Test
-    public void outletDisabled() {
-        intake.disable();
-        intake.outlet();
-
-        assertEquals(0.0d, leftIntakeMotor.get(), DELTA);
-        assertEquals(0.0d, rightIntakeMotor.get(), DELTA);
-    }
-
-    @Test
-    public void stop() {
+    public void stopMotors() {
         intake.stopMotors();
 
-        assertEquals(0.0d, leftIntakeMotor.get(), DELTA);
-        assertEquals(0.0d, rightIntakeMotor.get(), DELTA);
+        if (intake.isEnabled()) {
+            assertEquals(0.0d, intakeMotor.get(), DELTA);
+        }
+    }
+
+    @SuppressWarnings("SpellCheckingInspection")
+    @Test
+    public void isIntaking() {
+        intake.intake();
+        if (intake.isEnabled()) {
+            assertTrue(intake.isIntaking());
+        } else {
+            assertFalse(intake.isIntaking());
+        }
+
+        intake.idle();
+        assertFalse(intake.isIntaking());
+    }
+
+    @SuppressWarnings("SpellCheckingInspection")
+    @Test
+    public void isOuttaking() {
+        intake.outtake();
+        if (intake.isEnabled()) {
+            assertTrue(intake.isOuttaking());
+        } else {
+            assertFalse(intake.isOuttaking());
+        }
+
+        intake.idle();
+        assertFalse(intake.isOuttaking());
+    }
+
+    @SuppressWarnings("DefaultAnnotationParam")
+    @Test(expected = None.class /* No exception should be thrown */)
+    public void close() {
+        intake.close();
+
+        // Despite making calls to closed objects, these functions should not
+        // throw an exception. This test case is another check to ensure calls
+        // to closed motors do not crash the robot.
+        intake.intake();
+        intake.outtake();
+        intake.stopMotors();
+        intake.isIntaking();
+        intake.isOuttaking();
+        intake.close();
     }
 }

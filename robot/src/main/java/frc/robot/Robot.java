@@ -4,14 +4,12 @@
 
 package frc.robot;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
-import frc.robot.subsystem.Drive;
-import frc.robot.subsystem.Intake;
-import frc.robot.subsystem.Shooter;
-import frc.robot.util.DreadbotController;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
+import java.util.logging.Logger;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -20,56 +18,60 @@ import frc.robot.util.DreadbotController;
  * project.
  */
 public class Robot extends TimedRobot {
-  @SuppressWarnings("unused")
-  private DreadbotController primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
-  @SuppressWarnings("unused")
-  private DreadbotController secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
+    public static final Logger LOGGER = Logger.getLogger(Robot.class.getName());
 
-  private CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-  @SuppressWarnings("unused")
-  private Drive drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
+    private RobotContainer robotContainer;
 
-  private CANSparkMax leftIntakeMotor = new CANSparkMax(Constants.LEFT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
-  private CANSparkMax rightIntakeMotor = new CANSparkMax(Constants.RIGHT_INTAKE_MOTOR_PORT, MotorType.kBrushless);
-  @SuppressWarnings("unused")
-  private Intake intake = new Intake(leftIntakeMotor, rightIntakeMotor);
+    private Command autonomousCommand;
 
-  private final CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
-  private final CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
-  private final CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
-  @SuppressWarnings("unused")
-  private Shooter shooter = new Shooter(flywheelMotor, hoodMotor, turretMotor);
-  
-  @Override
-  public void robotInit() {}
+    @Override
+    public void robotInit() {
+        CameraServer.startAutomaticCapture(0);
+        robotContainer = new RobotContainer();
+        robotContainer.setTeamColor();
+    }
 
-  @Override
-  public void robotPeriodic() {}
+    @Override
+    public void autonomousInit() {
+        robotContainer.setTeamColor();
+        //robotContainer.calibrate();
+        autonomousCommand = robotContainer.getAutonomousCommand();
 
-  @Override
-  public void autonomousInit() {}
+        // schedule the autonomous command (example)
+        if (autonomousCommand != null) {
+          autonomousCommand.schedule();
+        }
+    }
 
-  @Override
-  public void autonomousPeriodic() {}
+    @Override
+    public void autonomousPeriodic() {}
 
-  @Override
-  public void teleopInit() {}
+    @Override
+    public void teleopInit() {
+        if (autonomousCommand != null) {
+            autonomousCommand.cancel();
+        }
+        robotContainer.setTeamColor();
+        robotContainer.calibrate();
+    }
 
-  @Override
-  public void teleopPeriodic() {}
+    @Override
+    public void teleopPeriodic() {}
 
-  @Override
-  public void disabledInit() {}
+    @Override
+    public void testInit() {}
 
-  @Override
-  public void disabledPeriodic() {}
+    @Override
+    public void testPeriodic() {}
 
-  @Override
-  public void testInit() {}
+    @Override
+    public void robotPeriodic() {
+        CommandScheduler.getInstance().run();
+    }
 
-  @Override
-  public void testPeriodic() {}
+    @Override
+    public void disabledInit() {}
+
+    @Override
+    public void disabledPeriodic() {}
 }

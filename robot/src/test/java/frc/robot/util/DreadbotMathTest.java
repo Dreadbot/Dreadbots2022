@@ -1,11 +1,12 @@
 package frc.robot.util;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.*;
+
+@SuppressWarnings("SpellCheckingInspection")
 public class DreadbotMathTest {
     public static final double DELTA = 1e-99;
 
@@ -27,7 +28,7 @@ public class DreadbotMathTest {
     public void setup() {}
 
     @After
-    public void shutdown() throws Exception {
+    public void shutdown() {
         bottomValueD = 0.0d;
         topValueD = 0.0d;
         resultValueD = 0.0d;
@@ -50,21 +51,21 @@ public class DreadbotMathTest {
 
         // Regular Function Test (Within Range)
         result = DreadbotMath.inRange(0.5d, bottomValueD, topValueD, false);
-        assertEquals(true, result);
+        assertTrue(result);
         result = DreadbotMath.inRange(-0.5d, bottomValueD, topValueD, false);
-        assertEquals(true, result);
+        assertTrue(result);
 
         // Regular Function Test (Outside Range)
         result = DreadbotMath.inRange(2.0d, bottomValueD, topValueD, false);
-        assertEquals(false, result);
+        assertFalse(result);
         result = DreadbotMath.inRange(-2.0d, bottomValueD, topValueD, false);
-        assertEquals(false, result);
+        assertFalse(result);
 
         // Bounds Tests (Exclusive implies bounds are not considered part of the range)
         result = DreadbotMath.inRange(1.0d, bottomValueD, topValueD, false);
-        assertEquals(false, result);
+        assertFalse(result);
         result = DreadbotMath.inRange(-1.0d, bottomValueD, topValueD, false);
-        assertEquals(false, result);
+        assertFalse(result);
     }
 
     @Test
@@ -74,21 +75,21 @@ public class DreadbotMathTest {
 
         // Regular Function Test (Within Range)
         result = DreadbotMath.inRange(0.5f, bottomValueF, topValueF, false);
-        assertEquals(true, result);
+        assertTrue(result);
         result = DreadbotMath.inRange(-0.5f, bottomValueF, topValueF, false);
-        assertEquals(true, result);
+        assertTrue(result);
 
         // Regular Function Test (Outside Range)
         result = DreadbotMath.inRange(2.0f, bottomValueF, topValueF, false);
-        assertEquals(false, result);
+        assertFalse(result);
         result = DreadbotMath.inRange(-2.0f, bottomValueF, topValueF, false);
-        assertEquals(false, result);
+        assertFalse(result);
 
         // Bounds Tests (Exclusive implies bounds are not considered part of the range)
         result = DreadbotMath.inRange(1.0f, bottomValueF, topValueF, false);
-        assertEquals(false, result);
+        assertFalse(result);
         result = DreadbotMath.inRange(-1.0f, bottomValueF, topValueF, false);
-        assertEquals(false, result);
+        assertFalse(result);
     }
 
     @Test
@@ -98,21 +99,21 @@ public class DreadbotMathTest {
 
         // Regular Function Test (Within Range)
         result = DreadbotMath.inRange(1, bottomValueI, topValueI, false);
-        assertEquals(true, result);
+        assertTrue(result);
         result = DreadbotMath.inRange(-1, bottomValueI, topValueI, false);
-        assertEquals(true, result);
+        assertTrue(result);
 
         // Regular Function Test (Outside Range)
         result = DreadbotMath.inRange(3, bottomValueI, topValueI, false);
-        assertEquals(false, result);
+        assertFalse(result);
         result = DreadbotMath.inRange(-3, bottomValueI, topValueI, false);
-        assertEquals(false, result);
+        assertFalse(result);
 
         // Bounds Tests (Exclusive implies bounds are not considered part of the range)
         result = DreadbotMath.inRange(2, bottomValueI, topValueI, false);
-        assertEquals(false, result);
+        assertFalse(result);
         result = DreadbotMath.inRange(-2, bottomValueI, topValueI, false);
-        assertEquals(false, result);
+        assertFalse(result);
     }
 
     @Test
@@ -122,21 +123,21 @@ public class DreadbotMathTest {
 
         // Regular Function Test (Within Range)
         result = DreadbotMath.inRange(0.5d, bottomValueD, topValueD, true);
-        assertEquals(true, result);
+        assertTrue(result);
         result = DreadbotMath.inRange(-0.5d, bottomValueD, topValueD, true);
-        assertEquals(true, result);
+        assertTrue(result);
 
         // Regular Function Test (Outside Range)
         result = DreadbotMath.inRange(2.0d, bottomValueD, topValueD, true);
-        assertEquals(false, result);
+        assertFalse(result);
         result = DreadbotMath.inRange(-2.0d, bottomValueD, topValueD, true);
-        assertEquals(false, result);
+        assertFalse(result);
 
         // Bounds Tests (Inclusive implies bounds are considered part of the range)
         result = DreadbotMath.inRange(1.0d, bottomValueD, topValueD, true);
-        assertEquals(true, result);
+        assertTrue(result);
         result = DreadbotMath.inRange(-1.0d, bottomValueD, topValueD, true);
-        assertEquals(true, result);
+        assertTrue(result);
     }
 
     @Test
@@ -146,21 +147,21 @@ public class DreadbotMathTest {
 
         // Regular Function Test (Within Range)
         result = DreadbotMath.inRange(0.5f, bottomValueF, topValueF, true);
-        assertEquals(true, result);
+        assertTrue(result);
         result = DreadbotMath.inRange(-0.5f, bottomValueF, topValueF, true);
-        assertEquals(true, result);
+        assertTrue(result);
 
         // Regular Function Test (Outside Range)
         result = DreadbotMath.inRange(2.0f, bottomValueF, topValueF, true);
-        assertEquals(false, result);
+        assertFalse(result);
         result = DreadbotMath.inRange(-2.0f, bottomValueF, topValueF, true);
-        assertEquals(false, result);
+        assertFalse(result);
 
         // Bounds Tests (Inclusive implies bounds are considered part of the range)
         result = DreadbotMath.inRange(1.0f, bottomValueF, topValueF, true);
-        assertEquals(true, result);
+        assertTrue(result);
         result = DreadbotMath.inRange(-1.0f, bottomValueF, topValueF, true);
-        assertEquals(true, result);
+        assertTrue(result);
     }
 
     @Test
@@ -170,21 +171,21 @@ public class DreadbotMathTest {
 
         // Regular Function Test (Within Range)
         result = DreadbotMath.inRange(1, bottomValueI, topValueI, true);
-        assertEquals(true, result);
+        assertTrue(result);
         result = DreadbotMath.inRange(-1, bottomValueI, topValueI, true);
-        assertEquals(true, result);
+        assertTrue(result);
 
         // Regular Function Test (Outside Range)
         result = DreadbotMath.inRange(3, bottomValueI, topValueI, true);
-        assertEquals(false, result);
+        assertFalse(result);
         result = DreadbotMath.inRange(-3, bottomValueI, topValueI, true);
-        assertEquals(false, result);
+        assertFalse(result);
 
         // Bounds Tests (Inclusive implies bounds are considered part of the range)
         result = DreadbotMath.inRange(2, bottomValueI, topValueI, true);
-        assertEquals(true, result);
+        assertTrue(result);
         result = DreadbotMath.inRange(-2, bottomValueI, topValueI, true);
-        assertEquals(true, result);
+        assertTrue(result);
     }
 
     @Test
@@ -194,15 +195,15 @@ public class DreadbotMathTest {
 
         // Equality Assertion
         result = DreadbotMath.inRange(1.0d, bottomValueD, topValueD, true);
-        assertEquals(true, result);
+        assertTrue(result);
         result = DreadbotMath.inRange(1.0d, bottomValueD, topValueD);
-        assertEquals(true, result);
+        assertTrue(result);
 
         // Inequality Assertion
         result = DreadbotMath.inRange(1.0d, bottomValueD, topValueD, false);
-        assertEquals(false, result);
+        assertFalse(result);
         result = DreadbotMath.inRange(1.0d, bottomValueD, topValueD);
-        assertEquals(true, result);
+        assertTrue(result);
     }
 
     @Test

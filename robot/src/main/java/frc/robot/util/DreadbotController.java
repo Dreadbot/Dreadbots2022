@@ -5,12 +5,14 @@
 package frc.robot.util;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * A custom Facade pattern for the default WPI Joystick class
  * designed for simplicity of use.
  * This facade has only been tested on the Logitech F310 Gamepad.
  */
+@SuppressWarnings({"unused", "SpellCheckingInspection"})
 public final class DreadbotController {
     private final Joystick joystick;
 
@@ -60,10 +62,24 @@ public final class DreadbotController {
     }
 
     /**
+     * @return The joystick button reference to the blue 'X button' on the right hand side of the gamepad.
+     */
+    public JoystickButton getXButton() {
+        return new JoystickButton(joystick, 1);
+    }
+
+    /**
      * @return The state of the green 'A' button on the right side of the gamepad.
      */
     public boolean isAButtonPressed() {
         return joystick.getRawButton(2);
+    }
+
+    /**
+     * @return The joystick button reference to the green 'A' button on the right hand side of the gamepad.
+     */
+    public JoystickButton getAButton() {
+        return new JoystickButton(joystick, 2);
     }
 
     /**
@@ -74,10 +90,24 @@ public final class DreadbotController {
     }
 
     /**
+     * @return The joystick button reference to the red 'B' button on the right hand side of the gamepad.
+     */
+    public JoystickButton getBButton() {
+        return new JoystickButton(joystick, 3);
+    }
+
+    /**
      * @return The state of the orange 'Y' button on the right side of the gamepad.
      */
     public boolean isYButtonPressed() {
         return joystick.getRawButton(4);
+    }
+
+    /**
+     * @return The joystick button reference to the orange 'Y' button on the right hand side of the gamepad.
+     */
+    public JoystickButton getYButton() {
+        return new JoystickButton(joystick, 4);
     }
 
     /**
@@ -88,10 +118,24 @@ public final class DreadbotController {
     }
 
     /**
+     * @return The joystick button reference to the left flat button on the front face of the gamepad.
+     */
+    public JoystickButton getLeftBumper() {
+        return new JoystickButton(joystick, 5);
+    }
+
+    /**
      * @return The state of the right flat button on the front face of the gamepad.
      */
     public boolean isRightBumperPressed() {
         return joystick.getRawButton(6);
+    }
+
+    /**
+     * @return The joystick button reference to the right flat button on the front face of the gamepad.
+     */
+    public JoystickButton getRightBumper() {
+        return new JoystickButton(joystick, 6);
     }
 
     /**
@@ -102,10 +146,24 @@ public final class DreadbotController {
     }
 
     /**
+     * @return The joystick button reference to the left trigger on the front face of the gamepad.
+     */
+    public JoystickButton getLeftTrigger() {
+        return new JoystickButton(joystick, 7);
+    }
+
+    /**
      * @return The state of the right trigger on the front face of the gamepad.
      */
     public boolean isRightTriggerPressed() {
         return joystick.getRawButton(8);
+    }
+
+    /**
+     * @return The joystick button reference to the right trigger on the front face of the gamepad.
+     */
+    public JoystickButton getRightTrigger() {
+        return new JoystickButton(joystick, 8);
     }
 
     /**
@@ -116,10 +174,24 @@ public final class DreadbotController {
     }
 
     /**
+     * @return The joystick button reference to the 'BACK' utility button in the center of the gamepad.
+     */
+    public JoystickButton getBackButton() {
+        return new JoystickButton(joystick, 9);
+    }
+
+    /**
      * @return The state of the 'START' utility button in the center of the gamepad.
      */
     public boolean isStartButtonPressed() {
         return joystick.getRawButton(10);
+    }
+
+    /**
+     * @return The joystick button reference to the 'START' utility button in the center of the gamepad.
+     */
+    public JoystickButton getStartButton() {
+        return new JoystickButton(joystick, 10);
     }
 
     /**

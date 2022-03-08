@@ -1,6 +1,131 @@
 # This gitignore has been specially created by the WPILib team.
 # If you remove items from this file, intellisense might break.
 
+### Intellij ###
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+
+# User-specific stuff
+robot/.idea/**/workspace.xml
+robot/.idea/**/tasks.xml
+robot/.idea/**/usage.statistics.xml
+robot/.idea/**/dictionaries
+robot/.idea/**/shelf
+robot/.idea/*
+
+# AWS User-specific
+robot/.idea/**/aws.xml
+
+# Generated files
+robot/.idea/**/contentModel.xml
+
+# Sensitive or high-churn files
+robot/.idea/**/dataSources/
+robot/.idea/**/dataSources.ids
+robot/.idea/**/dataSources.local.xml
+robot/.idea/**/sqlDataSources.xml
+robot/.idea/**/dynamic.xml
+robot/.idea/**/uiDesigner.xml
+robot/.idea/**/dbnavigator.xml
+
+# Gradle
+robot/.idea/**/gradle.xml
+robot/.idea/**/libraries
+
+# Gradle and Maven with auto-import
+# When using Gradle or Maven with auto-import, you should exclude module files,
+# since they will be recreated, and may cause churn.  Uncomment if using
+# auto-import.
+# .idea/artifacts
+# .idea/compiler.xml
+# .idea/jarRepositories.xml
+# .idea/modules.xml
+# .idea/*.iml
+# .idea/modules
+# *.iml
+# *.ipr
+
+# CMake
+robot/cmake-build-*/
+
+# Mongo Explorer plugin
+robot/.idea/**/mongoSettings.xml
+
+# File-based project format
+robot/*.iws
+
+# IntelliJ
+robot/out/
+
+# mpeltonen/sbt-idea plugin
+robot/.idea_modules/
+
+# JIRA plugin
+robot/atlassian-ide-plugin.xml
+
+# Cursive Clojure plugin
+robot/.idea/replstate.xml
+
+# SonarLint plugin
+robot/.idea/sonarlint/
+
+# Crashlytics plugin (for Android Studio and IntelliJ)
+robot/com_crashlytics_export_strings.xml
+robot/crashlytics.properties
+robot/crashlytics-build.properties
+robot/fabric.properties
+
+# Editor-based Rest Client
+robot/.idea/httpRequests
+
+# Android studio 3.1+ serialized cache file
+robot/.idea/caches/build_file_checksums.ser
+
+### Intellij Patch ###
+# Comment Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-215987721
+
+# *.iml
+# modules.xml
+# .idea/misc.xml
+# *.ipr
+
+# Sonarlint plugin
+# https://plugins.jetbrains.com/plugin/7973-sonarlint
+robot/.idea/**/sonarlint/
+
+# SonarQube Plugin
+# https://plugins.jetbrains.com/plugin/7238-sonarqube-community-plugin
+robot/.idea/**/sonarIssues.xml
+
+# Markdown Navigator plugin
+# https://plugins.jetbrains.com/plugin/7896-markdown-navigator-enhanced
+robot/.idea/**/markdown-navigator.xml
+robot/.idea/**/markdown-navigator-enh.xml
+robot/.idea/**/markdown-navigator/
+
+# Cache file creation bug
+# See https://youtrack.jetbrains.com/issue/JBR-2257
+robot/.idea/$CACHE_FILE$
+
+# CodeStream plugin
+# https://plugins.jetbrains.com/plugin/12206-codestream
+robot/.idea/codestream.xml
+
+### SonarQube ###
+# SonarQube ignore files.
+#
+# https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner
+# Sonar Scanner working directories
+robot/.sonar/
+robot/.sonarqube/
+robot/.scannerwork/
+
+# http://www.sonarlint.org/commandline/
+# SonarLint working directories, configuration files (including credentials)
+robot/.sonarlint/
+
+# End of https://www.toptal.com/developers/gitignore/api/intellij,sonarqube
+
 ### C++ ###
 # Prerequisites
 *.d

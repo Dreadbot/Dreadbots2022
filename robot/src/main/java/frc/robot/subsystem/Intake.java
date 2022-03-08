@@ -6,54 +6,107 @@ package frc.robot.subsystem;
 
 import com.revrobotics.CANSparkMax;
 
-public class Intake extends Subsystem {
-    private final CANSparkMax leftIntakeMotor;
-    private final CANSparkMax rightIntakeMotor;
+/**
+ * The intake is the mechanism that takes cargo from the ground into the feeder mechanism.
+ */
+public class Intake extends DreadbotSubsystem {
+    private CANSparkMax motor;
 
-    public Intake(CANSparkMax leftIntakeMotor, CANSparkMax rightIntakeMotor) {
-        super("Intake");
-        
-        this.leftIntakeMotor = leftIntakeMotor;
-        this.rightIntakeMotor = rightIntakeMotor;
+    /**
+     * Disabled Constructor
+     */
+    public Intake() {
+        disable();
     }
 
+    public Intake(CANSparkMax motor) {
+        this.motor = motor;
+
+        motor.restoreFactoryDefaults();
+        motor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    }
+
+    /**
+     * Spins the motor to deliver the ground cargo to the feeder mechanism.
+     */
     public void intake() {
-        if(!isEnabled()) {
-            stopMotors();
-            return;
-        }
+        if(isDisabled()) return;
 
-        leftIntakeMotor.set(1.0d);
-        rightIntakeMotor.set(1.0d);
+        // Set the motor to a high positive speed.
+        try {
+            motor.set(1.0d);
+        } catch (IllegalStateException ignored) { disable(); }
     }
 
-    public void outlet() {
-        if(!isEnabled()) {
-            stopMotors();
-            return;
-        }
-        
-        leftIntakeMotor.set(-1.0d);
-        rightIntakeMotor.set(-1.0d);
+    /**
+     * Spins the motor to move the ball out of the robot.
+     */
+    public void outtake() {
+        if(isDisabled()) return;
+
+        // Set the motor to a high negative speed.
+        try {
+            motor.set(-1.0d);
+        } catch (IllegalStateException ignored) { disable(); }
+    }
+
+    /**
+     * Stops the motor while the intake is not required.
+     */
+    public void idle() {
+        if(isDisabled()) return;
+
+        // Set the motor to zero movement.
+        try {
+            motor.set(0.0d);
+        } catch (IllegalStateException ignored) { disable(); }
+    }
+
+    @SuppressWarnings("SpellCheckingInspection")
+    public boolean isIntaking() {
+        if(isDisabled()) return false;
+
+        // Get the current commanded speed. If there is a failure,
+        // the output is considered zero.
+        double output = 0.0d;
+        try {
+            output = motor.get();
+        } catch (IllegalStateException ignored) { disable(); }
+
+        return output > 0.0d;
+    }
+
+    @SuppressWarnings("SpellCheckingInspection")
+    public boolean isOuttaking() {
+        if(isDisabled()) return false;
+
+        // Get the current commanded speed. If there is a failure,
+        // the output is considered zero.
+        double output = 0.0d;
+        try {
+            output = motor.get();
+        } catch (IllegalStateException ignored) { disable(); }
+
+        return output < 0.0d;
     }
 
     @Override
-    protected void stopMotors() {
-        leftIntakeMotor.stopMotor();
-        rightIntakeMotor.stopMotor();
+    public void stopMotors() {
+        if(isDisabled()) return;
+
+        // Use the built-in motor stop method.
+        try {
+            motor.stopMotor();
+        } catch (IllegalStateException ignored) { disable(); }
     }
 
     @Override
-    public void close() throws Exception {
-        leftIntakeMotor.close();
-        rightIntakeMotor.close();
-    }
+    public void close() {
+        // Stop motor before closure.
+        stopMotors();
 
-    public CANSparkMax getLeftIntakeMotor() {
-        return leftIntakeMotor;
-    }
-
-    public CANSparkMax getRightIntakeMotor() {
-        return rightIntakeMotor;
+        try {
+            motor.close();
+        } catch (IllegalStateException ignored) { disable(); }
     }
 }

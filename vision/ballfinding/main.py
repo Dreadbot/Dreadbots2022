@@ -87,6 +87,7 @@ def main():
             break
 
         if table is None:
+            util.setupDefaultSliderWindow("hsv", "Trackbars", "blue")
             hL, sL, vL, hU, sU, vU, erode, dilate, blur, minArea, circ = util.getSliderValues(
                 "hsv", "Trackbars")
         else:
