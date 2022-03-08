@@ -22,6 +22,38 @@
 	"TurretDilateKernel" : {
 		"type" : "number",
 		"default" : 1
+	},
+	"TargetHLowerValue" : {
+		"type" : "number",
+		"default" : 50
+	},
+	"TargetHUpperValue" : {
+		"type" : "number",
+		"default" : 150
+	},
+	"TargetSLowerValue" : {
+		"type" : "number",
+		"default" : 100
+	},
+	"TargetSUpperValue" : {
+		"type" : "number",
+		"default" : 255
+	},
+	"TargetLLowerValue" : {
+		"type" : "number",
+		"default" : 200
+	},
+	"TargetLUpperValue" : {
+		"type" : "number",
+		"default" : 255
+	},
+	"DampenWeight" : {
+		"type" : "number",
+		"default" : 1
+	},
+	"YIgnore" : {
+		"type" : "number",
+		"default" : 1
 	}
 
 }
