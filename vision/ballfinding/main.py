@@ -19,8 +19,8 @@ def main():
     argparser.add_argument('-r', '--range', action='store', dest='colorrange')
     argparser.add_argument('-p', '--data-path',
                            action='store', dest='datapath')
-    argparser.add_argument(
-        '-v', '--visual', action='store_true', dest='visualmode')
+    # argparser.add_argument(
+    #     '-v', '--visual', action='store_true', dest='visualmode')
     args = argparser.parse_args()
 
     if args.datapath is not None:
@@ -68,19 +68,31 @@ def main():
             table.putNumber(f"{c}LowerValue", lower[i])
             table.putNumber(f"{c}UpperValue", upper[i])
 
-    if args.csenabled and table is not None:
+    if args.csenabled:
         cs = CameraServer.getInstance()
         cs.enableLogging()
 
         outputStream = cs.putVideo("Source", 640, 480)
-        table.putNumber("CurrentCameraNumber", 0)
+        if table is not None:
+            table.putNumber("CurrentCameraNumber", 0)
     else:
         cs = None
 
-    vc = cv2.VideoCapture(0)
+    camId = 0
+    vc = cv2.VideoCapture(camId)
     vc.set(cv2.CAP_PROP_EXPOSURE, -4)
 
     while True:
+        if table is not None:
+            tableCam = table.getNumber("CurrentCameraNumber", 0)
+
+            if tableCam > 0:  # CHANGE LATER, THIS RESTRICTS TO ONE CAMERA
+                table.putNumber("CurrentCameraNumber", 0)
+
+            if tableCam != camId:
+                camId = tableCam
+                vc = cv2.VideoCapture(camId)
+
         ret, frame = vc.read()
 
         if not ret:
@@ -166,22 +178,14 @@ def main():
                 table.putNumber("RelativeAngleToBall", angle)
 
         if cs is not None:
-            camId = table.getNumber("CurrentCameraNumber", 0)
+            outputStream.putFrame(frame)
 
-            if camId == 0:
-                outputStream.putFrame(frame)
-            elif camId == 1:
-                outputStream.putFrame(mask)
-            else:
-                table.putNumber("CurrentCameraNumber", 0)
+        # if cv2.waitKey(1) & 0xFF == ord("q"):
+        #     break
 
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            if args.colorrange is not None:
-                util.updateLiveRange(cRange, (hL, sL, vL), (hU, sU, vU))
-
-                util.setAllManipulation(erode, dilate, blur, minArea, circ)
-
-            break
+    if args.colorrange is not None:
+        util.updateLiveRange(cRange, (hL, sL, vL), (hU, sU, vU))
+        util.setAllManipulation(erode, dilate, blur, minArea, circ)
 
     vc.release()
     cv2.destroyAllWindows()
