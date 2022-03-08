@@ -15,6 +15,16 @@ def quick_log(input_str):
 
     log += "\n"+input_str
 
+def write_values(monitors, table):
+    out_dict = {}
+
+    for entry in monitors:
+        saved_value = table.getNumber(entry, 0)
+        out_dict[entry] = saved_value
+
+    with open('saved_monitors.json', 'w+') as f:
+        json.dump(out_dict, f)
+
 def init_curses(screen):
     global vchar
     global hchar
@@ -67,6 +77,13 @@ def nt_update(table, selection, monitors, buffer):
     monitor_type = monitors[selection]['type']
     if monitor_type == 'num' or monitor_type == 'number':
         table.putNumber(selection, buffer)
+
+def restore_values(monitors, table):
+    with open('saved_monitors.json', 'r') as f:
+        saved_dict = json.load(f)
+
+    for entry in saved_dict:
+        nt_update(table, entry, monitors, saved_dict[entry]) 
 
 
 def nt_connect():
@@ -149,6 +166,10 @@ def main(screen):
             buffer = float(''.join(map(str, buffer)))
             nt_update(table, selection, monitors, buffer)
             buffer = []
+        elif key == ord('s'):
+            write_values(monitors, table)
+        elif key == ord('r'):
+            restore_values(monitors, table)
         else:
             if key is not curses.ERR and chr(key).isalnum():
                 buffer.append(chr(key))
