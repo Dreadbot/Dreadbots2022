@@ -138,7 +138,7 @@ public class RobotContainer {
         feeder.setDefaultCommand(new RunCommand(feeder::idle, feeder));
 
         // Flywheel Commands
-        flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
+//        flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
 
         hood.setDefaultCommand(new HoodCommands.PassiveTrack(hood));
 

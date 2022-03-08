@@ -24,6 +24,11 @@ public class ShooterCommands {
                 new FeedBallCommand(shooter)
             );
         }
+
+        @Override
+        public void end(boolean interrupted) {
+            shooter.getFlywheel().idle();
+        }
     }
 
     public static class BlindShoot extends SequentialCommandGroup {
@@ -38,6 +43,11 @@ public class ShooterCommands {
                 new FlywheelCommands.PrepareBlindShot(shooter.getFlywheel()),
                 new FeedBallCommand(shooter)
             );
+        }
+
+        @Override
+        public void end(boolean interrupted) {
+            shooter.getFlywheel().idle();
         }
     }
 

@@ -44,6 +44,7 @@ public class Flywheel extends DreadbotSubsystem {
         pidController.setOutputRange(Constants.FLYWHEEL_MIN_OUTPUT, Constants.FLYWHEEL_MAX_OUTPUT);
 
         SmartDashboard.putNumber("Requested Flywheel RPM", 0.0d);
+        SmartDashboard.putNumber("Target Flywheel Velocity", 0.0d);
     }
 
     @Override
@@ -61,6 +62,7 @@ public class Flywheel extends DreadbotSubsystem {
 
         // Prevents the motor from going beyond its maximum 5700RPM
         final double finalVelocity = Math.min(velocity, Constants.FLYWHEEL_MAX_RPM);
+        SmartDashboard.putNumber("Target Flywheel Velocity", finalVelocity);
 
         // Commands the motor to approach the requested angular speed.
         try {
