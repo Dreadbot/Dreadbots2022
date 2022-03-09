@@ -78,20 +78,21 @@ def main():
     else:
         cs = None
 
-    camId = 0
-    vc = cv2.VideoCapture(camId)
-    vc.set(cv2.CAP_PROP_EXPOSURE, -4)
+    cameras = cv2.VideoCapture(0), cv2.VideoCapture(1)
+
+    for cam in cameras:
+        cam.set(cv2.CAP_PROP_EXPOSURE, -4)
 
     while True:
+        vc = cameras[0]
+
         if table is not None:
             tableCam = table.getNumber("CurrentCameraNumber", 0)
 
-            if tableCam > 0:  # CHANGE LATER, THIS RESTRICTS TO ONE CAMERA
+            if tableCam > 1:  # CHANGE LATER, THIS RESTRICTS TO TWO CAMERA
                 table.putNumber("CurrentCameraNumber", 0)
 
-            if tableCam != camId:
-                camId = tableCam
-                vc = cv2.VideoCapture(camId)
+            vc = cameras[tableCam]
 
         ret, frame = vc.read()
 
