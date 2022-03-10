@@ -246,6 +246,7 @@ public class Drive extends DreadbotSubsystem {
     }
 
     public void resetEncoders() {
+        if(isDisabled())return;
         rightFrontMotor.getEncoder().setPosition(0.0d);
         leftFrontMotor.getEncoder().setPosition(0.0d);
         rightBackMotor.getEncoder().setPosition(0.0d);
@@ -275,6 +276,7 @@ public class Drive extends DreadbotSubsystem {
     }
 
     public double getFrontEncoderAvg(){
+        if(isDisabled()) return -3656;
         RelativeEncoder frontRightEncoder = rightFrontMotor.getEncoder();
         RelativeEncoder frontLeftEncoder = leftFrontMotor.getEncoder();
         double getEncoderAvg = ((frontRightEncoder.getPosition() ) + frontLeftEncoder.getPosition())/2;
