@@ -42,6 +42,9 @@ public class CargoKinematicsTest {
         metersPerSecond = kinematics.getBallDirectionAngle(3.55d);
         assertEquals(75.068d, metersPerSecond, DELTA);
 
+        metersPerSecond = kinematics.getBallDirectionAngle(3.81d);
+        assertEquals(74.6280d, metersPerSecond, DELTA);
+
         metersPerSecond = kinematics.getBallDirectionAngle(5.95d);
         assertEquals(71.974d, metersPerSecond, DELTA);
 
