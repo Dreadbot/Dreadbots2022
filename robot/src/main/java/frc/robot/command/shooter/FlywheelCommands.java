@@ -23,7 +23,7 @@ public class FlywheelCommands {
 
         public PrepareShot(Flywheel flywheel) {
             this.flywheel = flywheel;
-            this.cargoKinematics = new CargoKinematics(s -> 3.048, 0.5715, 2.6416);
+            this.cargoKinematics = new CargoKinematics(s -> 0.306*s + 2.6, 0.5715, 2.6416);
 
             addRequirements(flywheel);
         }
@@ -32,7 +32,7 @@ public class FlywheelCommands {
         public void execute() {
             if(!VisionInterface.canTrackHub()) return;
 
-            double distanceToHub = VisionInterface.getRelativeDistanceToHub();
+            double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
             distanceToHub = Units.inchesToMeters(distanceToHub);
             double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
 
@@ -61,19 +61,19 @@ public class FlywheelCommands {
 
         public PrepareBlindShot(Flywheel flywheel) {
             this.flywheel = flywheel;
-            this.cargoKinematics = new CargoKinematics(s -> 3.048, 0.5715, 2.6416);
+            this.cargoKinematics = new CargoKinematics(s -> 0.306*s + 2.6, 0.5715, 2.6416);
 
             addRequirements(flywheel);
         }
 
         @Override
         public void execute() {
-            velocityControl(18d);
+            velocityControl(8d);
         }
 
         @Override
         public boolean isFinished() {
-            return Math.abs(currentCommandedRPM - flywheel.getVelocity()) <= 20.0d;
+            return Math.abs(currentCommandedRPM - flywheel.getVelocity()) <= 100.0d;
         }
 
         private void velocityControl(double velocity) {
