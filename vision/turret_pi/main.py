@@ -67,7 +67,7 @@ def main():
     cs.set(cv2.CAP_PROP_EXPOSURE, 0.01)
 
     if table is not None:
-        with open('/home/pi/vision/Targeting/saved_monitors.json', 'r') as f:
+        with open('/home/pi/vision/saved_monitors.json', 'r') as f:
             preload = json.load(f)
 
         for entry in preload:
@@ -89,13 +89,19 @@ def main():
         hue = [table.getNumber("TargetHLowerValue", 0), table.getNumber("TargetHUpperValue", 255)]
         sat = [table.getNumber("TargetSLowerValue", 0), table.getNumber("TargetSUpperValue", 255)]
         lum = [table.getNumber("TargetLLowerValue", 0), table.getNumber("TargetSUpperValue", 255)]
-        blur = max([int(table.getNumber("TurretBlurKernel", 1)), 1])
-        erode = int(table.getNumber("TurretErodeKernel", 1))
-        dilate = int(table.getNumber("TurretErodeKernel", 1))
-        y_ignore = int(table.getNumber("YIgnore", 0))
-        dampen_weight = table.getNumber("DampenWeight", 1)
 
-        mask = getMask(frame, (hue[0], lum[0], sat[0]), (hue[1], lum[1], sat[1]), erode, dilate, blur, colorSpace=cv2.COLOR_BGR2HLS)
+        mask_lower_bound = (hue[0], lum[0], sat[0])
+        mask_upper_bound = (hue[1], lum[1], sat[1])
+        
+        blur   = max([int(table.getNumber("TurretBlurKernel", 1)),  1])
+        erode  = max([int(table.getNumber("TurretErodeKernel", 1)), 1])
+        dilate = max([int(table.getNumber("TurretErodeKernel", 1)), 1])
+        
+        y_ignore = int(table.getNumber("YIgnore", 0))
+        
+        dampen_weight = max([table.getNumber("DampenWeight", 1), 0])
+
+        mask = getMask(frame, mask_lower_bound, mask_upper_bound, erode, dilate, blur, colorSpace=cv2.COLOR_BGR2HLS)
 
         cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         cnts = imutils.grab_contours(cnts)
@@ -116,7 +122,7 @@ def main():
             x += (w//2)
             y += (h//2)
 
-            if 3 < w < 30 and 3 < h < 15:
+            if w < 30 and h < 30:
                 cv2.circle(frame, (x, y), 3, (0,0,255), thickness=-1)
                 xs.append(x)
                 ys.append(y)
@@ -134,7 +140,11 @@ def main():
             rw_vis.circle((x,y), (0,0,255))
 
         if len(xs) > 2:
-            center_ret, angle, distance = projection_math.orth_bisector_calculation(imgpoints, dampen=dampen_weight, prev=(angle, distance), draw_target=frame, visualizer=rw_vis)
+            center_ret, angle, distance = projection_math.orth_bisector_calculation(imgpoints, 
+                                                            dampen=dampen_weight, 
+                                                            prev=(angle, distance), 
+                                                            draw_target=frame, 
+                                                            visualizer=rw_vis)
 
         if not center_ret:
             angle = 0
@@ -169,6 +179,7 @@ def main():
             elif table.getNumber("CameraSelection", 0) == 2:
                 frame = rw_vis.retrieve_img()
                 outputStream.putFrame(frame)
+
 
     cs.release()
     cv2.destroyAllWindows()

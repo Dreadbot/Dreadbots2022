@@ -26,19 +26,19 @@ class space:
         adj_u, adj_v = int(adj_u), int(adj_v)
         return((adj_u, adj_v))
 
-    def circle(self, pt, color, radius=2, thickness=-1):
-        pt = self.world_img(pt)
+    def circle(self, _pt, color, radius=2, thickness=-1):
+        pt = self.world_img(_pt)
 
-        if pt[1] < 0:
+        if type(pt[0]) != type(1) or type(pt[1]) != type(1):
             return
-
-        cv2.circle(self.img, pt, radius, color, thickness=thickness)
+        
+        # cv2.circle(self.img, pt, radius, color, thickness=thickness)
 
     def line(self, pt1, pt2, color):
         pt1 = self.world_img(pt1)
         pt2 = self.world_img(pt2)
 
-        cv2.line(self.img, pt1, pt2, color)
+        # cv2.line(self.img, pt1, pt2, color)
 
     def reset_img(self):
         self.img[::] = [255,255,255]
