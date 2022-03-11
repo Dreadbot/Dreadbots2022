@@ -32,6 +32,8 @@ elif bot == 'crackle':
     z_offset = target_height - 22.325
     relation_factor = 67/22 #deg/px
 
+angle_offset_radians = math.radians(angle_offset)
+
 
 def rotation_matrix(yaw, pitch, roll):
     yaw = math.radians(yaw)
@@ -62,6 +64,10 @@ def rotation_matrix(yaw, pitch, roll):
     return output_rotation_matrix
 
 
+R = rotation_matrix(0, angle_offset, roll)
+inv_R = np.linalg.inv(R)
+
+
 def rotate_2d(vec, theta, origin, round=False):
     theta = math.radians(theta)
 
@@ -83,7 +89,6 @@ def rotate_2d(vec, theta, origin, round=False):
 
 def similar_triangles_calculation(u,v):
     K = global_K
-    R = rotation_matrix(0, angle_offset, roll)
 
     y = 1
 
@@ -101,16 +106,11 @@ def similar_triangles_calculation(u,v):
 
 
 def reverse_point(wvec, round=False): #fix convention later
-    K = global_K
-    R = rotation_matrix(0,angle_offset,roll)
-
     wvec = np.array(wvec)
 
     s = z_offset / wvec[2]
 
     wvec /= s
-
-    inv_R = np.linalg.inv(R)
 
     wvec = inv_R.dot(wvec)
 
@@ -135,9 +135,6 @@ def single_point(pt, frame):
 
     dx = cam_cx - x
     dy = cam_cy - y
-
-    angle_offset_radians = math.radians(angle_offset)
-
 
     try:
         horizontal_angle = math.degrees(math.atan( dx / f ))
