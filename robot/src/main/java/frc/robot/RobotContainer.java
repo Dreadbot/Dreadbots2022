@@ -5,7 +5,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ColorSensorV3;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticHub;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -138,7 +137,7 @@ public class RobotContainer {
         feeder.setDefaultCommand(new RunCommand(feeder::idle, feeder));
 
         // Flywheel Commands
-        flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
+//        flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
 
         hood.setDefaultCommand(new HoodCommands.PassiveTrack(hood));
 
@@ -148,7 +147,8 @@ public class RobotContainer {
 
         VisionInterface.selectCamera(2);
         // Shooter Commands
-        secondaryController.getBButton().whileHeld(new ShooterCommands.BlindShoot(shooter));
+        secondaryController.getBButton().whileHeld(new ShooterCommands.LowShoot(shooter));
+        secondaryController.getYButton().whileHeld(new ShooterCommands.HighShoot(shooter));
 //        secondaryController.getBButton().whileHeld(new ShootCommand(shooter, dreadbotColorSensor, teamColorChooser::getSelected));
 
         // Climber Commands

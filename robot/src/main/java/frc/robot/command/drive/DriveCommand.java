@@ -46,7 +46,7 @@ public class DriveCommand extends CommandBase {
         forwardAxis = slewRateLimiter.calculate(forwardAxis);
 
         // Calculate the side-to-side axis gain
-        double lateralAxis = joystickLateralAxis.getAsDouble();
+        double lateralAxis = -joystickLateralAxis.getAsDouble();
         lateralAxis = MathUtil.applyDeadband(lateralAxis, 0.05d);
         lateralAxis = lateralSensitivityFilter.calculate(lateralAxis);
 
@@ -65,11 +65,13 @@ public class DriveCommand extends CommandBase {
         var forwardBuilder = new SensitivityController.Builder(-40.0, -40.0);
         this.forwardSensitivityFilter = forwardBuilder.build();
 
-        var lateralBuilder = new SensitivityController.Builder(-40.0, -40.0);
+        var lateralBuilder = new SensitivityController.Builder(-40.0, -40.0)
+            .minimumValues(0.1d, 0.1d)
+            .maximumValues(0.5d, 0.5d);
         this.lateralSensitivityFilter = lateralBuilder.build();
 
         var rotationalBuilder = new SensitivityController.Builder(-40.0, -40.0);
-        rotationalBuilder.maximumValues(0.5d, 0.5d);
+        rotationalBuilder.maximumValues(0.3d, 0.3d);
         this.rotationalSensitivityFilter = rotationalBuilder.build();
 
         SmartDashboard.putData("forwardSensFilter", forwardSensitivityFilter);

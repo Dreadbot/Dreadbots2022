@@ -73,6 +73,7 @@ public class TurretCommands {
 
         @Override
         public boolean isFinished() {
+            System.out.println("turretTrackingController.atSetpoint() = " + turretTrackingController.atSetpoint());
             return turretTrackingController.atSetpoint();
         }
 
