@@ -33,7 +33,8 @@ public class FlywheelCommands {
             if(!VisionInterface.canTrackHub()) return;
 
             double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
-            distanceToHub = Units.inchesToMeters(distanceToHub);
+            // We don't need to convert inches to meters twice...  this causes a NaN error
+            // distanceToHub = Units.inchesToMeters(distanceToHub);
             double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
 
             if(distanceToHub != lastDistanceToHub) velocityControl(velocity);
