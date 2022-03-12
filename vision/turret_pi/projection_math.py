@@ -11,7 +11,7 @@ negate_x =  1
 negate_y =  1
 negate_z = -1
 
-bot = 'crackle' # 'crackle'   'practice'
+bot = 'practice' # 'crackle'   'practice'
 
 target_height = 104 #in
 
@@ -21,16 +21,17 @@ cam_cx, cam_cy = 320, 240
 
 f = 554
 
+color = (150, 150, 150)
+
 
 if bot == 'practice':
-    angle_offset = 23
+    angle_offset = 22
     roll = 0
     z_offset = target_height - 28.5
 elif bot == 'crackle':
     angle_offset = 14
     roll = 0
     z_offset = target_height - 22.325
-    relation_factor = 67/22 #deg/px
 
 angle_offset_radians = math.radians(angle_offset)
 
@@ -130,7 +131,7 @@ def reverse_point(wvec, round=False): #fix convention later
     return (u,v)
 
 
-def single_point(pt, frame):
+def single_point(pt, draw_target=None): # FIX TO USE SIM TRI
     x, y = pt
 
     dx = cam_cx - x
@@ -145,7 +146,8 @@ def single_point(pt, frame):
     except:
         return(False, None, None)
 
-    cv2.circle(frame, (int(x), int(y)), 5, (100,255,100), thickness=2)
+    if draw_target is not None:
+        cv2.circle(draw_target, (int(x), int(y)), 5, (100,255,100), thickness=2)
 
     return(True, horizontal_angle, distance)
 
@@ -223,6 +225,7 @@ def orth_bisector_calculation(imgpoints, dampen=1.0, prev=None, draw_target=None
     target_wvec = (target_x, target_y, z_offset)
 
     if visualizer is not None:
+        visualizer.circle((target_x, target_y), (0,255,0), radius=24, thickness=1)
         visualizer.circle((target_x, target_y), (0,255,0))
         visualizer.line((0,0), (target_x, target_y), (100,0,0))
 
@@ -231,9 +234,102 @@ def orth_bisector_calculation(imgpoints, dampen=1.0, prev=None, draw_target=None
     if draw_target is not None:
         #crosshairs
         u, v = cvec
-        cv2.circle(draw_target, cvec, 3, (255,255,255)) #circle
-        cv2.line(draw_target, (u, v+crosshair_scale), (u, v-crosshair_scale), (255,255,255), thickness=3) #vertical crosshair
-        cv2.line(draw_target, (u-crosshair_scale, v), (u+crosshair_scale, v), (255,255,255), thickness=3) #horizontal crosshair
+        cv2.circle(draw_target, cvec, 3, color) #circle
+        cv2.line(draw_target, (u, v+crosshair_scale), (u, v-crosshair_scale), color, thickness=1) #vertical crosshair
+        cv2.line(draw_target, (u-crosshair_scale, v), (u+crosshair_scale, v), color, thickness=1) #horizontal crosshair
+
+    return(True, target_angle, target_dist)
+
+def leg_calculation(imgpoints, dampen=1.0, prev=None, draw_target=None, visualizer=None):
+    # imgpoints = np.array([ [x1,y1], [x2,y2], ... , [xn, yn] ])
+
+    xs = []
+    ys = []
+
+    for i in range(len(imgpoints)):
+        start_u, start_v = imgpoints[i]
+        
+        try:
+            end_u, end_v = imgpoints[i+1]
+        except IndexError:
+            break
+
+        sx, sy, _ = similar_triangles_calculation(start_u, start_v) #s - START
+        ex, ey, _ = similar_triangles_calculation(end_u, end_v) #e - END  IM SORRY OK I  LIKE TYPING SHORT VARIABLES SUE ME
+
+        if visualizer is not None:
+            visualizer.line((sx, sy), (ex, ey), (0,0,0))
+
+        raw_slope = (sy - ey) / (sx - ex)
+
+        if raw_slope == 0.0:
+            orth_slope = 10**10
+        else:
+            orth_slope = -(1/raw_slope)
+
+        mid_x, mid_y = ((sx + ex)/2, (sy + ey)/2) #start x, y (can treat as origin)
+
+        slope_angle = math.atan(orth_slope)
+
+        tx1 = 24*math.cos(slope_angle) + mid_x
+        tx2 = -24*math.cos(slope_angle) + mid_x
+
+        test_orthslope = round(orth_slope,2)
+
+        ty = abs(24*math.sin(slope_angle)) + mid_y
+
+        slope_tx1 = round( (mid_y-ty) / (mid_x-tx1) , 2)
+        slope_tx2 = round( (mid_y-ty) / (mid_x-tx2) , 2)
+
+        if slope_tx1 == test_orthslope:
+            tx = tx1
+        elif slope_tx2 == test_orthslope:
+            tx = tx2
+        
+
+
+
+        if visualizer is not None:
+            visualizer.circle((tx, ty), (100,50,220))
+
+        xs.append(tx)
+        ys.append(ty)
+
+
+    if len(xs) == 0:
+        return(False, None, None)
+
+    target_x = sum(xs)/len(xs)
+    target_y = sum(ys)/len(ys)
+
+    raw_angle = math.degrees(math.atan(target_x/target_y))
+    raw_dist = math.sqrt(target_x**2 + target_y**2)
+
+    if dampen is not None:
+        prev_angle, prev_dist = prev
+        
+        target_angle = dampen*raw_angle + (1-dampen)*prev_angle
+        target_dist = dampen*raw_dist + (1-dampen)*prev_dist
+    else:
+        target_angle = raw_angle
+        target_dist = raw_dist
+
+    
+    target_wvec = (target_x, target_y, z_offset)
+
+    if visualizer is not None:
+        visualizer.circle((target_x, target_y), (255,0,0), radius=24, thickness=1)
+        visualizer.circle((target_x, target_y), (0,255,0))
+        visualizer.line((0,0), (target_x, target_y), (100,0,0))
+
+    cvec = reverse_point(target_wvec, round=True)
+    
+    if draw_target is not None:
+        #crosshairs
+        u, v = cvec
+        cv2.circle(draw_target, cvec, 3, color) #circle
+        cv2.line(draw_target, (u, v+crosshair_scale), (u, v-crosshair_scale), color, thickness=1) #vertical crosshair
+        cv2.line(draw_target, (u-crosshair_scale, v), (u+crosshair_scale, v), color, thickness=1) #horizontal crosshair
 
     return(True, target_angle, target_dist)
 
