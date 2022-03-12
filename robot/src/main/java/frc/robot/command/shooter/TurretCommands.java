@@ -44,7 +44,7 @@ public class TurretCommands {
 
         private void turretControlAngle(double relativeAngleToHub) {
             double currentAngle = turret.getAngle();
-            double requestedAngle = currentAngle - turretTrackingController.calculate(relativeAngleToHub);
+            double requestedAngle = currentAngle + relativeAngleToHub;
 
             turret.setAngle(requestedAngle);
         }

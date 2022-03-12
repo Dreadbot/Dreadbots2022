@@ -36,6 +36,7 @@ public class FlywheelCommands {
             distanceToHub = Units.inchesToMeters(distanceToHub);
             double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
 
+            SmartDashboard.putNumber("COMMANDED RPM", currentCommandedRPM);
             if(distanceToHub != lastDistanceToHub) velocityControl(velocity);
             lastDistanceToHub = distanceToHub;
         }
@@ -50,6 +51,28 @@ public class FlywheelCommands {
             currentCommandedRPM *= SmartDashboard.getNumber("DEBUG RPM CONV", 1.0d);
 
             flywheel.setVelocity(currentCommandedRPM);
+        }
+    }
+
+    public static class Spool extends CommandBase {
+        private Flywheel flywheel;
+        private double velocity;
+
+        public Spool(Flywheel flywheel, double velocity) {
+            this.flywheel = flywheel;
+            this.velocity = velocity;
+
+            addRequirements(flywheel);
+        }
+
+        @Override
+        public void execute() {
+            flywheel.setVelocity(velocity);
+        }
+
+        @Override
+        public boolean isFinished() {
+            return Math.abs(velocity - flywheel.getVelocity()) <= 50.0d;
         }
     }
 
@@ -68,7 +91,7 @@ public class FlywheelCommands {
 
         @Override
         public void execute() {
-            velocityControl(8d);
+            velocityControl(8.5d);
         }
 
         @Override

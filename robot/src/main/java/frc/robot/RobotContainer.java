@@ -148,7 +148,9 @@ public class RobotContainer {
         VisionInterface.selectCamera(2);
         // Shooter Commands
         secondaryController.getBButton().whileHeld(new ShooterCommands.LowShoot(shooter));
+        SmartDashboard.putNumber("COMMANDED RPM", 0);
         secondaryController.getYButton().whileHeld(new ShooterCommands.HighShoot(shooter));
+        secondaryController.getStartButton().whileHeld(new ShooterCommands.PresetShoot(shooter, 155, 71.862, 3436.0d));
 //        secondaryController.getBButton().whileHeld(new ShootCommand(shooter, dreadbotColorSensor, teamColorChooser::getSelected));
 
         // Climber Commands

@@ -34,7 +34,7 @@ public class ShooterCommands {
     public static class PresetShoot extends SequentialCommandGroup {
         private Shooter shooter;
 
-        public PresetShoot(Shooter shooter, double turretAngle, double hoodAngle) {
+        public PresetShoot(Shooter shooter, double turretAngle, double hoodAngle, double flywheelSpeed) {
             this.shooter = shooter;
 
             addRequirements(shooter);
@@ -44,7 +44,7 @@ public class ShooterCommands {
                     new TurretCommands.TurnToAngle(shooter.getTurret(), turretAngle),
                     new HoodCommands.TurnToAngle(shooter.getHood(), hoodAngle)
                 ),
-                new FlywheelCommands.PrepareBlindShot(shooter.getFlywheel()),
+                new FlywheelCommands.Spool(shooter.getFlywheel(), flywheelSpeed),
                 new FeedBallCommand(shooter),
                 new WaitCommand(1.0)
             );
@@ -89,7 +89,7 @@ public class ShooterCommands {
 
             addRequirements(shooter);
             addCommands(
-                new PresetShoot(shooter, 155.0, 70.0d)
+                new PresetShoot(shooter, 155.0, 60.0d, 3436.0d)
             );
         }
     }
