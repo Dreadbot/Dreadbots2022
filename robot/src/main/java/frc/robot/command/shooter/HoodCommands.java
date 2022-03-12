@@ -150,6 +150,8 @@ public class HoodCommands {
 
         @Override
         public boolean isFinished() {
+            if(!Constants.HOOD_ENABLED) return true;
+
             return upperCalibrated;
         }
     }
@@ -174,6 +176,8 @@ public class HoodCommands {
 
         @Override
         public boolean isFinished() {
+            if(!Constants.HOOD_ENABLED) return true;
+
             return Math.abs(hood.getAngle() - angle) <= 1.0d;
         }
     }
