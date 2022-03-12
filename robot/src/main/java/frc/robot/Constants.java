@@ -8,13 +8,13 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 
 public abstract class Constants {
-    public static final boolean DRIVE_ENABLED = true;
+    public static final boolean DRIVE_ENABLED = false;
     public static final boolean INTAKE_ENABLED = true;
     public static final boolean CLIMB_ENABLED = true;
     public static final boolean SHOOTER_ENABLED = true;
     public static final boolean FEEDER_ENABLED = true;
     public static final boolean FLYWHEEL_ENABLED = true;
-    public static final boolean HOOD_ENABLED = true;
+    public static final boolean HOOD_ENABLED = false;
     public static final boolean TURRET_ENABLED = true;
     public static final boolean COLOR_SENSOR_ENABLED = true;
 
@@ -43,7 +43,7 @@ public abstract class Constants {
     public static final double TURRET_CALIBRATION_SPEED = 0.3d;
 
     public static final int FLYWHEEL_MOTOR_PORT = 8;
-    public static final double FLYWHEEL_P_GAIN = 1e-4d;
+    public static final double FLYWHEEL_P_GAIN = 2e-4d; // 1e-4
     public static final double FLYWHEEL_I_GAIN = 0.0d;
     public static final double FLYWHEEL_D_GAIN = 0.0d;
     public static final double FLYWHEEL_I_ZONE = 2.0d;
