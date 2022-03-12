@@ -14,73 +14,8 @@ import rw_visualizer
 
 import time
 
-dataDir = os.path.join("vision", "Targeting", "Data")
 
-hue = [25, 90]
-sat = [75, 255]
-lum = [35, 150]
-
-def getData():
-    return json.load(open(os.path.join(dataDir, "data.json")))
-
-
-def updateData(lower: tuple, upper: tuple, erode, dilate, blur):
-    data = getData()
-
-    data["lower"] = lower
-    data["upper"] = upper
-    data["erode"] = erode
-    data["dilate"] = dilate
-    data["blur"] = blur
-
-    with open(os.path.join(dataDir, "data.json"), "w") as outfile:
-        json.dump(data, outfile)
-
-    return data
-
-
-def setupTrackbars(windowName, mode="hsv"):
-    cv2.namedWindow(windowName)
-
-    data = getData()
-
-    def callback(value):
-        pass
-
-    for i in ["MIN", "MAX"]:
-        for c in mode:
-            ind = mode.index(c)
-            if i == "MIN":
-                v = data["lower"][ind]
-            else:
-                v = data["upper"][ind]
-
-            cv2.createTrackbar(f"{c.upper()}_{i}",
-                               windowName, v, 255, callback)
-
-    for i in ["Erode", "Dilate"]:
-        v = data[i.lower()]
-
-        cv2.createTrackbar(f"{i}_Iterations", windowName, v, 30, callback)
-
-    cv2.createTrackbar("Blur", windowName, data["blur"], 30, callback)
-    cv2.setTrackbarMin("Blur", windowName, 1)
-
-
-def getSliderValues(windowName, mode="hsv"):
-    values = []
-    for i in ["MIN", "MAX"]:
-        for c in mode:
-            values.append(cv2.getTrackbarPos(f"{c.upper()}_{i}", windowName))
-
-    for i in ["Erode", "Dilate"]:
-        values.append(cv2.getTrackbarPos(f"{i}_Iterations", windowName))
-
-    values.append(cv2.getTrackbarPos("Blur", windowName))
-
-    return values
-
-
+# OpenCV Processing
 def getMask(frame, lower: tuple, upper: tuple, eIts: int, dIts: int, blurK: int, colorSpace: int = cv2.COLOR_BGR2HSV):
     hsv = cv2.cvtColor(frame, colorSpace)
     
@@ -89,29 +24,28 @@ def getMask(frame, lower: tuple, upper: tuple, eIts: int, dIts: int, blurK: int,
     erode = cv2.erode(inRange, None, iterations=eIts)
     dilate = cv2.dilate(erode, None, iterations=dIts)
     
-    return dilate
+    return dilate #Convert to the defined colorSpace, blur the image, threshold, erode white pixels, dilate what's left, return that image
 
-def resImg(frame):
+
+# Halve the image (for faster upload)
+def res_img(frame):
     h,w,_ = frame.shape
-    dstW = w//2
-    dstH = h//2
-    resFrame = cv2.resize(frame, (dstW, dstH))
-    return resFrame
 
+    dst_w = w//2
+    dst_h = h//2
+
+    resFrame = cv2.resize(frame, (dst_w, dst_h))
+
+    return resFrame 
+
+# Sort a 2D array low-to-high based on the first entry of each contained array
 def pt_sort(e):
     return(e[0])
 
+
+# main block
 def main():
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument('-p', '--data-path',
-                           action='store', dest='datapath')
-    args = argparser.parse_args()
-
-
-    if args.datapath is not None:
-        global dataDir
-        dataDir = args.datapath
-
+    # Establish connection to networktables and publish related info to terminal
     logging.basicConfig(level=logging.DEBUG)
 
     ip = "10.36.56.2"
@@ -125,191 +59,172 @@ def main():
 
     table = NetworkTables.getTable('SmartDashboard')
     
-    if table is not None:
-        cs = CameraServer.getInstance()
-        cs.enableLogging()
 
-        outputStream = cs.putVideo("Turret Camera", 640, 480)
-    else:
-        cs = None
+    # Enable the camera server to send images to SmartDashboard
+    cam_server = CameraServer.getInstance()
+    cam_server.enableLogging()
 
-    cs = cv2.VideoCapture(0)
-
-    cs.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.75)
-    cs.set(cv2.CAP_PROP_EXPOSURE, 0.01)
-
-    focalLength = 667
-
-    if table is not None:
-        table.putNumber("TargetHLowerValue", 50)
-        table.putNumber("TargetHUpperValue", 150)
-        table.putNumber("TargetLLowerValue", 100)
-        table.putNumber("TargetLUpperValue", 255)
-        table.putNumber("TargetSLowerValue", 200)
-        table.putNumber("TargetSUpperValue", 255)
-        table.putNumber("CameraSelection", 1)
-        table.putNumber("DampenWeight", 1)
-        table.putNumber("YIgnore", 1)
+    outputStream = cam_server.putVideo("Turret Camera", 640, 480)
 
 
-    dampen_weight = table.getNumber("DampenWeight", 1)
 
+    # Create capture object out of camera 0
+    cap = cv2.VideoCapture(0)
+
+    # Disable the webcam's auto exposure (w/ 0.75) and set the exposure to 0.01
+    cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.75)
+    cap.set(cv2.CAP_PROP_EXPOSURE, 0.01)
+
+
+    # preload networktables with the last saved settings
+    with open('/home/pi/vision/saved_monitors.json', 'r') as f:
+        preload = json.load(f)
+
+    for entry in preload:
+        table.putNumber(entry, preload[entry])
+
+
+    # Create real world visualizer object
     rw_vis = rw_visualizer.space(800,800)
 
-    prev_angle = 0
-    prev_distance = 0
 
+    # Init angle & distance vars
     angle = 0
     distance = 0
 
+
+    # Main loop
     while True:
+        cap_ret, frame = cap.read() # Read from camera
 
-        ret, frame = cs.read()
+        center_ret = False # Reset target found flag to False every loop
 
 
-        if not ret:
+        # If the webcam does not return anything, kill the loop and exit the code
+        if not cap_ret:
             break
 
-        # hL, sL, vL, hU, sU, vU, erode, dilate, blur = getSliderValues(
-        #     "Trackbars")
+
+        # Update HSL & OpenCV ranges with most recent NT entries
         hue = [table.getNumber("TargetHLowerValue", 0), table.getNumber("TargetHUpperValue", 255)]
         sat = [table.getNumber("TargetSLowerValue", 0), table.getNumber("TargetSUpperValue", 255)]
         lum = [table.getNumber("TargetLLowerValue", 0), table.getNumber("TargetSUpperValue", 255)]
-        blur = max([int(table.getNumber("TurretBlurKernel", 1)), 1])
-        erode = int(table.getNumber("TurretErodeKernel", 1))
-        dilate = int(table.getNumber("TurretErodeKernel", 1))
-        y_ignore = int(table.getNumber("YIgnore", 0))
-        data = getData()
-        #(hL, sL, vL) = data["lower"]
-        #(hU, sU, vU) = data["upper"]
-        #erode = data["erode"]
-        #dilate = data["dilate"]
-        #blur = data["blur"]
 
-        mask = getMask(frame, (hue[0], lum[0], sat[0]), (hue[1], lum[1], sat[1]), erode, dilate, blur, colorSpace=cv2.COLOR_BGR2HLS)
-        cnts = cv2.findContours(mask, cv2.RETR_EXTERNAL,
-                                cv2.CHAIN_APPROX_SIMPLE)
-        cnts = imutils.grab_contours(cnts)
-        frame[::] += 50
-        xs = []
-        ys = []
+        mask_lower_bound = (hue[0], lum[0], sat[0])
+        mask_upper_bound = (hue[1], lum[1], sat[1])
+        
+        blur   = max([int(table.getNumber("TurretBlurKernel", 1)),  1]) #max([var, 1]) is used to ensure the entered var is always positive
+        erode  = max([int(table.getNumber("TurretErodeKernel", 1)), 1])
+        dilate = max([int(table.getNumber("TurretErodeKernel", 1)), 1])
+        
+        y_ignore = int(table.getNumber("YIgnore", 0)) # Y coordinate at which to ignore any result below
+        
+        dampen_weight = max([table.getNumber("DampenWeight", 1), 0]) # Filter dampening weight (IIR Filter)
 
-        true_xs = []
-        true_ys = []
+        
+        # Process raw image from the webcam through OpenCV processing to output binary image
+        mask = getMask(frame, mask_lower_bound, mask_upper_bound, erode, dilate, blur, colorSpace=cv2.COLOR_BGR2HLS)
 
-        scale_step = 30
+        # Find contours (areas of low values to high values) in the binary image
+        contours = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours = imutils.grab_contours(contours)
 
-        cv2.line(frame, (0, y_ignore), (640, y_ignore), (255,255,255))
-        # print("---")
-        for c in cnts:
-            x, y, w, h = cv2.boundingRect(c)
 
-            if y >= y_ignore:
+        # Initialize image point array
+        imgpoints = []
+
+        for contour in contours: #Loop through each found contour
+            x, y, w, h = cv2.boundingRect(contour) # Return bounding box parameters of the contour
+
+
+            # Ignore values below defined Y ignore level
+            if y >= y_ignore: 
                 continue
 
+
+            # Center the X & Y coordinates to the center of the bounding box
             x += (w//2)
             y += (h//2)
-            # cv2.putText(mask, str(p), (x + 30, y + 30),
-            #             cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2, cv2.LINE_AA)
-            if 0 < w < 30 and 0 < h < 15:
-                cv2.circle(frame, (x, y), 3, (0,0,255), thickness=-1)
-                xs.append(x)
-                ys.append(y)
-                # # wvec = projection_math.pinhole_angle_calculation((x, y), frame, scale_step)
-                # # wvec = projection_math.camera_to_world(x, y)
-                # wvec = projection_math.similar_triangles_calculation(x, y)
-                # u, v = projection_math.reverse_point(wvec, round=True)
-                # cvec = (u, v)
-                # # print(cvec)
-                # test_wvec = projection_math.pinhole_angle_calculation((x,y), frame, scale_step)
-                # # print(f"u,v[ {x, y} ]   wvec[ {test_wvec[::]} ]  triangle_wvec[ {wvec[::]} ]")
-                # print(wvec)
-                # cv2.circle(frame, cvec, 5, (0,255,255), thickness=-1)
-                # scale_step += 15
-                # # time.sleep(0.5) #REMOVE THIS LATER
 
-                cv2.circle(frame, (x, y), 3, (0,0,0), thickness=-1)
 
-        center_ret = False
-        y_range = 15
-        x_range = 50
-        add_cnt = 2
-        
-        
-#        for point in range(len(xs)):
-#            px, py = xs[point], ys[point]
-#            
-#            cv2.circle(frame, (px, py), 3, (0,255,255), thickness=-1)
-#            cv2.line(frame, (px-x_range, py), (px+x_range, py), (0,255,255), thickness=3)
-        imgpoints = []
-        for i in range(len(xs)):
-            imgpoints.append([xs[i], ys[i]])
-        
+            # If the contour's bounding box is more than 30px wide or tall ignore it
+            if w < 30 and h < 30:
+                cv2.circle(frame, (x, y), 3, (0,0,255), thickness=-1) #Draw contour dot
+
+
+                # Create current point array and append to image points array
+                pt = [x, y]
+                imgpoints.append(pt)
+
+
+        # Sort the image points array to index points left-to-right based on X position
         imgpoints.sort(reverse=True, key=pt_sort)
 
+
+        # Unwrap each point to draw on real-world visualizer
         for pt in imgpoints:
             u, v = pt
-            x, y, z = projection_math.similar_triangles_calculation(u, v)
+            x, y, _ = projection_math.similar_triangles_calculation(u, v)
             rw_vis.circle((x,y), (0,0,255))
 
-        if len(xs) > 2:
-            # angle, distance = projection_math.point_center(xs, ys, frame)
-            # p1 = (xs[0], ys[0])
-            # p2 = (xs[1], ys[1])
-            # center_ret, angle, distance = projection_math.geometric_true_center(p1, p2, draw_target=frame)
-            cvec = projection_math.orth_bisector_calculation(imgpoints, draw_target=frame, visualizer=rw_vis)
 
-            # rw_vis.circle(cvec, (0,255,0))
-            cv2.circle(frame, cvec, 5, (255,0,0), thickness=-1)
-
-            table.putBoolean("TargetFoundInFrame", True)
+        # If enough image points exist, process the target center using the orthogonal bisector intersection method
+        # If not, attempt single point calculation
+        # If none, update target found bool accordingly
+        if len(imgpoints) > 2:
+            center_ret, angle, distance = projection_math.orth_bisector_calculation(imgpoints, 
+                                                            dampen=dampen_weight, 
+                                                            prev=(angle, distance), 
+                                                            draw_target=frame, 
+                                                            visualizer=rw_vis)
+        elif len(imgpoints) == 1:
+            center_ret, angle, distance = projection_math.single_point(imgpoints[0])
         else:
-            table.putBoolean("TargetFoundInFrame", False)
+            center_ret = False
 
-            # cv2.circle(frame, (int(ax), int(ay)), 3, (123,213,150), thickness=-1)
-        
-        # center_ret = (angle is not 0)
 
-        # if not center_ret:
-        #     angle = 0
-        #     distance = 0
-        #     table.putBoolean("TargetFoundInFrame", False)
+        # If a target center is not succesfully returned, set angle & distance to 0 and tell SmartDashboard no targets were found
+        if not center_ret:
+            angle = 0
+            distance = 0
 
-        if table is not None:
-            # table.putBoolean("TargetFoundInFrame", center_ret)
-            # if center_ret:
-            table.putNumber("RelativeDistanceToHub", distance)
-            table.putNumber("RelativeAngleToHub", angle)
 
-        if cs is not None:
-            # frame = np.concatenate((frame, mask), axis=1)
-            # frame = mask
-            # frame[::] += 50
-            if table.getNumber("CameraSelection", 0) == 0:
-                cv2.line(frame, (320, 0), (320,480), (0,0,255))
-                frame = resImg(frame)
-                outputStream.putFrame(frame)
-            elif table.getNumber("CameraSelection", 0) == 1:
-                mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
-                mask = cv2.addWeighted(mask, 0.8, frame, 0.2, 0.0)
-                mask = resImg(mask)
-                w, h, _ = mask.shape
-                cv2.line(mask, (w//2,0), (w//2,h), (0,0,255))
-                outputStream.putFrame(mask)
-            elif table.getNumber("CameraSelection", 0) == 2:
-                frame = rw_vis.retrieve_img()
-                outputStream.putFrame(frame)
+        # Update NT
+        table.putBoolean("TargetFoundInFrame", center_ret)
+        table.putNumber("RelativeDistanceToHub", distance)
+        table.putNumber("RelativeAngleToHub", angle)
 
-        # cv2.imshow("Frame", frame)
-        # cv2.imshow("Binary", mask)
 
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            updateData((hL, sL, vL), (hU, sU, vU), erode, dilate, blur)
-            break
+        # Set the output of the camera server to the selected camera
+        # 0 - "clean" image
+        # 1 - binary mask w/ "clean" underlay
+        # 2 - Real-world visualizer
+        if table.getNumber("CameraSelection", 0) == 0:
+            frame[0:y_ignore, :] += 50
+            frame[y_ignore:480, :] += 25
+            cv2.line(frame, (320, 0), (320,480), (255,255,255))
+            cv2.line(frame, (0,240), (640, 240), (255,255,255))
+            frame = res_img(frame)
+            outputStream.putFrame(frame)
 
-    cs.release()
-    cv2.destroyAllWindows()
+        elif table.getNumber("CameraSelection", 0) == 1:
+            mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
+            mask = cv2.addWeighted(mask, 0.6, frame, 0.4, 1.0)
+            mask = res_img(mask)
 
+            w, h, _ = mask.shape
+
+            cv2.line(mask, (w//2,0), (w//2,h), (0,0,255))
+
+            outputStream.putFrame(mask)
+
+        elif table.getNumber("CameraSelection", 0) == 2:
+            frame = rw_vis.retrieve_img()
+            outputStream.putFrame(frame)
+
+
+    # Release capture object
+    cap.release()
 
 if __name__ == "__main__":
     main()
