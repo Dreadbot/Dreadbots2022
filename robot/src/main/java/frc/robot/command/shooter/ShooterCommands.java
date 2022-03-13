@@ -76,14 +76,14 @@ public class ShooterCommands {
                 ),
                 new FlywheelCommands.Spool(shooter.getFlywheel(), flywheelSpeed),
                 new FeedBallCommand(shooter),
-                new WaitCommand(1.0),
+                new WaitCommand(3.0),
                 new TurretCommands.TurnToAngle(shooter.getTurret(), afterAngle)
             );
         }
 
         @Override
         public void end(boolean interrupted) {
-//            shooter.getTurret().setAngle(afterAngle);
+            shooter.getFeeder().idle();
             shooter.getFlywheel().idle();
         }
     }
@@ -125,7 +125,7 @@ public class ShooterCommands {
             addCommands(
                 new IntakeCommand(intake),
                 new ConditionalCommand(
-                    new PresetShoot(shooter, 155.0, 65.0d, 1600.0d, 155.0d),
+                    new PresetShoot(shooter, 155.0, 65.0d, 1200.0d, 155.0d),
                     new PresetShoot(shooter, 65.0, 65.0d, 1600.0d, 155.0d),
                     shooter.getColorSensor()::isCorrectColor
                 )

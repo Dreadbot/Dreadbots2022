@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.command.autonomous.VelocityControlTestCommand;
 import frc.robot.command.climber.*;
@@ -135,7 +136,7 @@ public class RobotContainer {
         secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
 
         // Feeder Commands
-        feeder.setDefaultCommand(new RunCommand(feeder::idle, feeder));
+//        feeder.setDefaultCommand(new RunCommand(feeder::idle, feeder));
 
         // Flywheel Commands
 //        flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
@@ -145,6 +146,8 @@ public class RobotContainer {
         turret.setDefaultCommand(new TurretCommands.PassiveTrack(turret));
         secondaryController.getStartButton().whenPressed(TurretCommands::swapManualAutomaticControls);
         SmartDashboard.putBoolean("TURRET AUTOMATION", true);
+
+        secondaryController.getBackButton().whileHeld(new InstantCommand(feeder::feed));
 
         VisionInterface.selectCamera(2);
         // Shooter Commands
@@ -170,10 +173,10 @@ public class RobotContainer {
     }  
 
     public void calibrate() {
-        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, false)
+        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, true)
             .andThen(new TurretCommands.TurnToAngle(turret, 155.0d)));
 
-        CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, false)
+        CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, true)
             .andThen(new HoodCommands.TurnToAngle(hood, Constants.MIN_HOOD_ANGLE)));
     }
 

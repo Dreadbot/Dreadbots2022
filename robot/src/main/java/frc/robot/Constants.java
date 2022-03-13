@@ -9,14 +9,14 @@ import edu.wpi.first.wpilibj.util.Color;
 
 public abstract class Constants {
     public static final boolean DRIVE_ENABLED = true;
-    public static final boolean INTAKE_ENABLED = false;
+    public static final boolean INTAKE_ENABLED = true;
     public static final boolean CLIMB_ENABLED = false;
-    public static final boolean SHOOTER_ENABLED = false;
-    public static final boolean FEEDER_ENABLED = false;
-    public static final boolean FLYWHEEL_ENABLED = false;
-    public static final boolean HOOD_ENABLED = false;
-    public static final boolean TURRET_ENABLED = false;
-    public static final boolean COLOR_SENSOR_ENABLED = false;
+    public static final boolean SHOOTER_ENABLED = true;
+    public static final boolean FEEDER_ENABLED = true;
+    public static final boolean FLYWHEEL_ENABLED = true;
+    public static final boolean HOOD_ENABLED = true;
+    public static final boolean TURRET_ENABLED = true;
+    public static final boolean COLOR_SENSOR_ENABLED = true;
 
     // Joysticks
     public static final int PRIMARY_JOYSTICK_PORT = 0;
@@ -40,10 +40,10 @@ public abstract class Constants {
     public static final double MAX_TURRET_ANGLE = 300.0d;
     public static final double MIN_TURRET_ANGLE = 0.0d;
     public static final double TURRET_RANGE = 56.452d;
-    public static final double TURRET_CALIBRATION_SPEED = 0.3d;
+    public static final double TURRET_CALIBRATION_SPEED = 0.2d;
 
     public static final int FLYWHEEL_MOTOR_PORT = 8;
-    public static final double FLYWHEEL_P_GAIN = 2e-4d; // 1e-4
+    public static final double FLYWHEEL_P_GAIN = 2e-3d; // 1e-4
     public static final double FLYWHEEL_I_GAIN = 0.0d;
     public static final double FLYWHEEL_D_GAIN = 0.0d;
     public static final double FLYWHEEL_I_ZONE = 2.0d;
@@ -59,7 +59,7 @@ public abstract class Constants {
     public static final double UPPER_HOOD_ANGLE = 70.0d;
     public static final double MIN_HOOD_ANGLE = 60.0d;
     public static final double HOOD_RANGE = 75.717d;
-    public static final double HOOD_CALIBRATION_SPEED = 0.3d;
+    public static final double HOOD_CALIBRATION_SPEED = 0.2d;
     
     // Climber constants
     public static final int WINCH_MOTOR_PORT = 10;
