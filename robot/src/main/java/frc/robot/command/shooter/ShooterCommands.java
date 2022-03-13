@@ -58,6 +58,14 @@ public class ShooterCommands {
         }
     }
 
+    public static class ResetBallShot extends ParallelCommandGroup {
+        public ResetBallShot(Shooter shooter) {
+            addCommands(
+                new FlywheelCommands.ReverseBall(shooter)
+            );
+        }
+    }
+
     public static class PresetShoot extends SequentialCommandGroup {
         private Shooter shooter;
 
@@ -113,7 +121,7 @@ public class ShooterCommands {
         }
     }
 
-    public static class LowShoot extends ParallelCommandGroup {
+    public static class LowShoot extends SequentialCommandGroup {
         private Shooter shooter;
         private Intake intake;
 
@@ -123,7 +131,10 @@ public class ShooterCommands {
 
             addRequirements();
             addCommands(
-                new IntakeCommand(intake),
+                new ParallelCommandGroup(
+                    new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
+                    new IntakeCommand(intake)
+                ),
                 new ConditionalCommand(
                     new PresetShoot(shooter, 155.0, 65.0d, 1200.0d, 155.0d),
                     new PresetShoot(shooter, 65.0, 65.0d, 1600.0d, 155.0d),

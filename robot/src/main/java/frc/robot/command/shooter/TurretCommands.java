@@ -67,7 +67,7 @@ public class TurretCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(requestedAngle - turret.getAngle()) <= 1.0d;
+            return turret.isAtSetAngle();
         }
 
         private void turretControlAngle(double relativeAngleToHub) {
@@ -102,7 +102,7 @@ public class TurretCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(requestedAngle - turret.getAngle()) <= 1.0d;
+            return turret.isAtSetAngle();
         }
 
         private void turretControlAngle(double relativeAngleToHub) {
@@ -131,9 +131,7 @@ public class TurretCommands {
 
         @Override
         public boolean isFinished() {
-            if(!Constants.TURRET_ENABLED) return true;
-
-            return Math.abs(turret.getAngle() - angle) <= 1.0d;
+            return turret.isAtSetAngle();
         }
     }
 
@@ -165,9 +163,7 @@ public class TurretCommands {
 
         @Override
         public boolean isFinished() {
-            if(!Constants.TURRET_ENABLED) return true;
-
-            return Math.abs(turret.getAngle() - (initialTurretAngle + angle)) <= 1.0d;
+            return turret.isAtSetAngle();
         }
     }
 

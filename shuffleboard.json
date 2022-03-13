@@ -973,7 +973,15 @@
               "_source0": "network_table:///LiveWindow/Flywheel",
               "_title": "Flywheel",
               "Layout/Label position": "BOTTOM",
-              "_children": []
+              "_children": [
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///LiveWindow/Flywheel/IsAtSetVelocity",
+                  "_title": "IsAtSetVelocity",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                }
+              ]
             }
           },
           "4,0": {
@@ -999,7 +1007,15 @@
               "_source0": "network_table:///LiveWindow/Hood",
               "_title": "Hood",
               "Layout/Label position": "BOTTOM",
-              "_children": []
+              "_children": [
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///LiveWindow/Hood/IsAtAngle",
+                  "_title": "IsAtAngle",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                }
+              ]
             }
           },
           "8,0": {
@@ -1078,6 +1094,19 @@
                 }
               ]
             }
+          },
+          "12,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///LiveWindow/Turret/IsAtAngle",
+              "_title": "Turret/IsAtAngle",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
           }
         }
       }
@@ -1091,57 +1120,9 @@
         "showGrid": true,
         "hgap": 16.0,
         "vgap": 16.0,
-        "titleType": 0,
+        "titleType": 1,
         "tiles": {
-          "5,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/Turret Lower Limit Switch",
-              "_title": "SmartDashboard/Turret Lower Limit Switch",
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
-          "5,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/Turret Upper Limit Switch",
-              "_title": "SmartDashboard/Turret Upper Limit Switch",
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
           "4,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Turret Range",
-              "_title": "SmartDashboard/Turret Range"
-            }
-          },
-          "4,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Turret Angle",
-              "_title": "SmartDashboard/Turret Angle"
-            }
-          },
-          "7,0": {
             "size": [
               5,
               5
@@ -1160,85 +1141,59 @@
               "imageHeight": -1
             }
           },
-          "5,2": {
+          "9,0": {
             "size": [
-              1,
-              1
+              4,
+              2
             ],
             "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/YIgnore",
-              "_title": "SmartDashboard/YIgnore"
+              "_type": "Mecanum Drivebase",
+              "_source0": "network_table:///LiveWindow/Ungrouped/MecanumDrive[1]",
+              "_title": "LiveWindow/Ungrouped/MecanumDrive[1]",
+              "Visuals/Show velocity vectors": true
             }
           },
-          "3,2": {
+          "0,0": {
             "size": [
-              1,
-              1
+              4,
+              3
             ],
             "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Hood Angle",
-              "_title": "SmartDashboard/Hood Angle"
-            }
-          },
-          "1,0": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/Hood Lower Limit Switch",
-              "_title": "SmartDashboard/Hood Lower Limit Switch",
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
-          "1,1": {
-            "size": [
-              2,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/Hood Upper Limit Switch",
-              "_title": "SmartDashboard/Hood Upper Limit Switch",
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
-          "3,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Color:",
-              "_title": "SmartDashboard/Color:"
-            }
-          },
-          "4,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/ColorSerialized",
-              "_title": "SmartDashboard/ColorSerialized"
-            }
-          },
-          "5,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Flywheel Velocity",
-              "_title": "SmartDashboard/Flywheel Velocity"
+              "_type": "Grid Layout",
+              "_title": "Grid Layout",
+              "Layout/Number of columns": 3,
+              "Layout/Number of rows": 3,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "1,0": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/BallDetected",
+                  "_title": "SmartDashboard/BallDetected",
+                  "Colors/Color when true": "#FFFFFFFF",
+                  "Colors/Color when false": "#661A33FF"
+                },
+                "0,1": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///LiveWindow/Turret/IsAtAngle",
+                  "_title": "LiveWindow/Turret/IsAtAngle",
+                  "Colors/Color when true": "#FFFFFFFF",
+                  "Colors/Color when false": "#661A33FF"
+                },
+                "2,1": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///LiveWindow/Hood/IsAtAngle",
+                  "_title": "LiveWindow/Hood/IsAtAngle",
+                  "Colors/Color when true": "#FFFFFFFF",
+                  "Colors/Color when false": "#661A33FF"
+                },
+                "1,1": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///LiveWindow/Flywheel/IsAtSetVelocity",
+                  "_title": "LiveWindow/Flywheel/IsAtSetVelocity",
+                  "Colors/Color when true": "#FFFFFFFF",
+                  "Colors/Color when false": "#661A33FF"
+                }
+              }
             }
           }
         }

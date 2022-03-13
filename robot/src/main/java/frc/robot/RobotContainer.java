@@ -147,7 +147,7 @@ public class RobotContainer {
         secondaryController.getStartButton().whenPressed(TurretCommands::swapManualAutomaticControls);
         SmartDashboard.putBoolean("TURRET AUTOMATION", true);
 
-        secondaryController.getBackButton().whileHeld(new InstantCommand(feeder::feed));
+        secondaryController.getBackButton().whileHeld(new ShooterCommands.ResetBallShot(shooter));
 
         VisionInterface.selectCamera(2);
         // Shooter Commands

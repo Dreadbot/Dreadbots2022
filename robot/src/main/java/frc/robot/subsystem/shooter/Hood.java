@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -19,6 +20,8 @@ public class Hood extends DreadbotSubsystem {
 
     private double lowerMotorLimit;
     private double upperMotorLimit;
+
+    private double setAngle;
 
     /**
      * Disabled constructor
@@ -49,6 +52,15 @@ public class Hood extends DreadbotSubsystem {
     }
 
     @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.setSmartDashboardType("DreadbotHood");
+        builder.setActuator(true);
+        builder.setSafeState(this::stopMotors);
+
+        builder.addBooleanProperty("IsAtAngle", this::isAtSetAngle, null);
+    }
+
+    @Override
     public void periodic() {
         if(isDisabled()) return;
 
@@ -69,6 +81,12 @@ public class Hood extends DreadbotSubsystem {
         try {
             pidController.setReference(rotations, CANSparkMax.ControlType.kPosition);
         } catch (IllegalStateException ignored) { disable(); }
+    }
+
+    public boolean isAtSetAngle() {
+        if(isDisabled()) return true;
+
+        return Math.abs(getAngle() - setAngle) <= 1.0d;
     }
 
     public void setPosition(double rotations) {

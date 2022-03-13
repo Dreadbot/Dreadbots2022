@@ -55,7 +55,6 @@ public class HoodCommands {
         private final CargoKinematics cargoKinematics;
 
         private double lastDistanceToHub;
-        private double commandedAngle;
 
         public ActiveTrack(Hood hood) {
             this.hood = hood;
@@ -70,7 +69,6 @@ public class HoodCommands {
 
             double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
             double hoodAngle = cargoKinematics.getBallDirectionAngle(distanceToHub);
-            commandedAngle = hoodAngle;
 
             if(distanceToHub != lastDistanceToHub) hoodControlAngle(hoodAngle);
             lastDistanceToHub = distanceToHub;
@@ -78,7 +76,7 @@ public class HoodCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(hood.getAngle() - commandedAngle) <= 2.0d;
+            return hood.isAtSetAngle();
         }
 
         private void hoodControlAngle(double relativeHoodAngle) {
@@ -176,9 +174,7 @@ public class HoodCommands {
 
         @Override
         public boolean isFinished() {
-            if(!Constants.HOOD_ENABLED) return true;
-
-            return Math.abs(hood.getAngle() - angle) <= 1.0d;
+            return hood.isAtSetAngle();
         }
     }
 }
