@@ -41,19 +41,19 @@ public class DriveCommand extends CommandBase {
     public void execute() {
         // Calculate the forward/backward axis gain
         double forwardAxis = joystickForwardAxis.getAsDouble();
-        forwardAxis = MathUtil.applyDeadband(forwardAxis, 0.05d);
-        forwardAxis = forwardSensitivityFilter.calculate(forwardAxis);
-        forwardAxis = slewRateLimiter.calculate(forwardAxis);
+//        forwardAxis = MathUtil.applyDeadband(forwardAxis, 0.05d);
+//        forwardAxis = forwardSensitivityFilter.calculate(forwardAxis);
+//        forwardAxis = slewRateLimiter.calculate(forwardAxis);
 
         // Calculate the side-to-side axis gain
         double lateralAxis = -joystickLateralAxis.getAsDouble();
-        lateralAxis = MathUtil.applyDeadband(lateralAxis, 0.05d);
-        lateralAxis = lateralSensitivityFilter.calculate(lateralAxis);
+//        lateralAxis = MathUtil.applyDeadband(lateralAxis, 0.05d);
+//        lateralAxis = lateralSensitivityFilter.calculate(lateralAxis);
 
         // Calculate the rotational gain
         double rotationalAxis = -joystickRotationalAxis.getAsDouble();
-        rotationalAxis = MathUtil.applyDeadband(rotationalAxis, 0.05d);
-        rotationalAxis = rotationalSensitivityFilter.calculate(rotationalAxis);
+//        rotationalAxis = MathUtil.applyDeadband(rotationalAxis, 0.05d);
+//        rotationalAxis = rotationalSensitivityFilter.calculate(rotationalAxis);
 
         // Input the drive code
         drive.driveCartesian(forwardAxis, lateralAxis, rotationalAxis);

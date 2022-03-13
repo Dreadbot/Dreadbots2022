@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ColorSensorV3;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -155,8 +156,8 @@ public class RobotContainer {
 
         // Climber Commands
         climber.setDefaultCommand(new RunCommand(climber::idle, climber));
-        primaryController.getAButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
-        primaryController.getBButton().whenPressed(new RotateNeutralHookDownCommand(climber));
+        primaryController.getBButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
+        primaryController.getAButton().whenPressed(new RotateNeutralHookDownCommand(climber));
         primaryController.getXButton().whenPressed(new RotateClimbingArmVerticalCommand(climber));
         primaryController.getYButton().whenPressed(new RotateClimbingArmDownCommand(climber));
         primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber));
@@ -174,6 +175,10 @@ public class RobotContainer {
 
         CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, false)
             .andThen(new HoodCommands.TurnToAngle(hood, Constants.MIN_HOOD_ANGLE)));
+    }
+
+    public void preservePneumaticState() {
+        climber.preservePneumaticState();
     }
 
     /*

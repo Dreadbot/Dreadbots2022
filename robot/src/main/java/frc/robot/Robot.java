@@ -70,7 +70,9 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+        robotContainer.preservePneumaticState();
+    }
 
     @Override
     public void disabledPeriodic() {}
