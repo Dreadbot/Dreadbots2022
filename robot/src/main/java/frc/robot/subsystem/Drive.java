@@ -19,6 +19,7 @@ import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -42,6 +43,8 @@ public class Drive extends DreadbotSubsystem {
     public static final double wheelCircumferenceMeters = 0.4787;
     public static final double wheelRotationsPerMotorRotations = 14.0d / 70.0d;
     public static final double metersTraveledPerMotorRotations = wheelCircumferenceMeters * wheelRotationsPerMotorRotations;
+    public static final double motorRPMToMetersPerSecond = 7.98e-3;
+    public static final double velocityConversionFactor = wheelRotationsPerMotorRotations * motorRPMToMetersPerSecond;
 
     private static final TrapezoidProfile.Constraints MAX_ROTATION =
         new TrapezoidProfile.Constraints(Units.degreesToRadians(360.0d), Units.degreesToRadians(180));
@@ -115,23 +118,41 @@ public class Drive extends DreadbotSubsystem {
         rightBackMotor.setIdleMode(IdleMode.kBrake);
 
         // According to the docs, motors must be inverted before they are passed into the MecanumDrive utility.
-        rightFrontMotor.setInverted(true);
-        rightBackMotor.setInverted(true);
+        leftFrontMotor.setInverted(true);
+        rightFrontMotor.setInverted(false);
+        leftBackMotor.setInverted(true);
+        rightBackMotor.setInverted(false);
 
         leftFrontMotor.getEncoder().setPositionConversionFactor(Drive.metersTraveledPerMotorRotations);
         rightFrontMotor.getEncoder().setPositionConversionFactor(Drive.metersTraveledPerMotorRotations);
         leftBackMotor.getEncoder().setPositionConversionFactor(Drive.metersTraveledPerMotorRotations);
         rightBackMotor.getEncoder().setPositionConversionFactor(Drive.metersTraveledPerMotorRotations);
 
-        leftFrontMotor.getEncoder().setVelocityConversionFactor(Drive.wheelRotationsPerMotorRotations);
-        rightFrontMotor.getEncoder().setVelocityConversionFactor(Drive.wheelRotationsPerMotorRotations);
-        leftBackMotor.getEncoder().setVelocityConversionFactor(Drive.wheelRotationsPerMotorRotations);
-        rightBackMotor.getEncoder().setVelocityConversionFactor(Drive.wheelRotationsPerMotorRotations);
+        leftFrontMotor.getEncoder().setVelocityConversionFactor(Drive.velocityConversionFactor);
+        rightFrontMotor.getEncoder().setVelocityConversionFactor(Drive.velocityConversionFactor);
+        leftBackMotor.getEncoder().setVelocityConversionFactor(Drive.velocityConversionFactor);
+        rightBackMotor.getEncoder().setVelocityConversionFactor(Drive.velocityConversionFactor);
 
         resetEncoders();
         odometry = new MecanumDriveOdometry(kinematics, gyroscope.getRotation2d());
 
         this.mecanumDrive = new MecanumDrive(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.setSmartDashboardType("DreadbotDrive");
+
+        builder.setActuator(true);
+        builder.setSafeState(this::stopMotors);
+        builder.addDoubleProperty("leftFrontVelocity", leftFrontMotor.getEncoder()::getVelocity, null);
+        builder.addDoubleProperty("rightFrontVelocity", rightFrontMotor.getEncoder()::getVelocity, null);
+        builder.addDoubleProperty("leftBackVelocity", leftBackMotor.getEncoder()::getVelocity, null);
+        builder.addDoubleProperty("rightBackVelocity", rightBackMotor.getEncoder()::getVelocity, null);
+
+        builder.addDoubleProperty("chassisSpeedsX", () -> getChassisSpeeds().vxMetersPerSecond, null);
+        builder.addDoubleProperty("chassisSpeedsY", () -> getChassisSpeeds().vyMetersPerSecond, null);
+        builder.addDoubleProperty("chassisSpeedsOmega", () -> getChassisSpeeds().omegaRadiansPerSecond, null);
     }
 
     /**
@@ -147,6 +168,7 @@ public class Drive extends DreadbotSubsystem {
 
         try {
             mecanumDrive.driveCartesian(joystickForwardAxis, joystickLateralAxis, zRotation);
+            mecanumDrive.feed();
         } catch (IllegalStateException ignored) { disable(); }
     }
 
