@@ -32,8 +32,9 @@ public class Drive extends DreadbotSubsystem {
     public static final SimpleMotorFeedforward FEEDFORWARD =
         new SimpleMotorFeedforward(0.09185, 3.1899, 0.17172);
 
-//    public static final double DRIVE_KP = 3.0028;
-    public static final double DRIVE_KP = 0;
+    public static final double DRIVE_KP = 3.6109;
+    public static final double MOTOR_PID = 1;
+//    public static final double DRIVE_KP = 0;
 
     public static final double MAX_SPEED_METERS_PER_SECOND = 8.0d;
     public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 5.0;
@@ -58,10 +59,10 @@ public class Drive extends DreadbotSubsystem {
     private CANSparkMax rightBackMotor;
 
     // Input is current velocity, output is voltage, setpoint is target velocity
-    private PIDController leftFrontVelocityPID = new PIDController(DRIVE_KP, 0, 0);
-    private PIDController rightFrontVelocityPID = new PIDController(DRIVE_KP, 0, 0);
-    private PIDController leftBackVelocityPID = new PIDController(DRIVE_KP, 0, 0);
-    private PIDController rightBackVelocityPID = new PIDController(DRIVE_KP, 0, 0);
+    private PIDController leftFrontVelocityPID = new PIDController(MOTOR_PID, 0, 0);
+    private PIDController rightFrontVelocityPID = new PIDController(MOTOR_PID, 0, 0);
+    private PIDController leftBackVelocityPID = new PIDController(MOTOR_PID, 0, 0);
+    private PIDController rightBackVelocityPID = new PIDController(MOTOR_PID, 0, 0);
 
 
     private AHRS gyroscope;

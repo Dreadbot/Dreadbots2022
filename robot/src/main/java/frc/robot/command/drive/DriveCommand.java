@@ -46,24 +46,25 @@ public class DriveCommand extends CommandBase {
     public void execute() {
         // Calculate the forward/backward axis gain
         double forwardAxis = -joystickForwardAxis.getAsDouble();
+        forwardAxis = MathUtil.applyDeadband(forwardAxis, 0.03d);
 //        forwardAxis = forwardSensitivityFilter.calculate(forwardAxis);
 //        forwardAxis = slewRateLimiter.calculate(forwardAxis);
 
         // Calculate the side-to-side axis gain
-        double lateralAxis = joystickLateralAxis.getAsDouble();
-//        lateralAxis = MathUtil.applyDeadband(lateralAxis, 0.05d);
+        double lateralAxis = -joystickLateralAxis.getAsDouble();
+        lateralAxis = MathUtil.applyDeadband(lateralAxis, 0.03d);
 //        lateralAxis = lateralSensitivityFilter.calculate(lateralAxis);
 
         // Calculate the rotational gain
-        double rotationalAxis = joystickRotationalAxis.getAsDouble();
-//        rotationalAxis = MathUtil.applyDeadband(rotationalAxis, 0.05d);
+        double rotationalAxis = -joystickRotationalAxis.getAsDouble();
+        rotationalAxis = MathUtil.applyDeadband(rotationalAxis, 0.03d);
 //        rotationalAxis = rotationalSensitivityFilter.calculate(rotationalAxis);
 
         System.out.println("forwardAxis = " + forwardAxis);
 
-        commandedChassisSpeeds.vxMetersPerSecond = forwardAxis * 3;
-        commandedChassisSpeeds.vyMetersPerSecond = lateralAxis * 2;
-        commandedChassisSpeeds.omegaRadiansPerSecond = rotationalAxis * 2 * Math.PI;
+        commandedChassisSpeeds.vxMetersPerSecond = forwardAxis * 3 * .55;
+        commandedChassisSpeeds.vyMetersPerSecond = lateralAxis * 2 * .55;
+        commandedChassisSpeeds.omegaRadiansPerSecond = rotationalAxis * 2 * .55 * Math.PI;
 
         // Input the drive code
 //        drive.driveCartesian(forwardAxis, lateralAxis, rotationalAxis);
