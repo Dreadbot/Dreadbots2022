@@ -4,6 +4,7 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystem.Drive;
@@ -15,6 +16,8 @@ public class DriveCommand extends CommandBase {
     private final DoubleSupplier joystickForwardAxis;
     private final DoubleSupplier joystickLateralAxis;
     private final DoubleSupplier joystickRotationalAxis;
+
+    private ChassisSpeeds commandedChassisSpeeds;
 
     private SensitivityController forwardSensitivityFilter;
     private SensitivityController lateralSensitivityFilter;
@@ -28,6 +31,8 @@ public class DriveCommand extends CommandBase {
         this.joystickForwardAxis = joystickForwardAxis;
         this.joystickLateralAxis = joystickLateralAxis;
         this.joystickRotationalAxis = joystickRotationalAxis;
+
+        this.commandedChassisSpeeds = new ChassisSpeeds();
 
         setupFilters();
 
@@ -54,8 +59,15 @@ public class DriveCommand extends CommandBase {
 //        rotationalAxis = MathUtil.applyDeadband(rotationalAxis, 0.05d);
 //        rotationalAxis = rotationalSensitivityFilter.calculate(rotationalAxis);
 
+        System.out.println("forwardAxis = " + forwardAxis);
+
+        commandedChassisSpeeds.vxMetersPerSecond = forwardAxis * 3;
+        commandedChassisSpeeds.vyMetersPerSecond = lateralAxis * 2;
+        commandedChassisSpeeds.omegaRadiansPerSecond = rotationalAxis * 2 * Math.PI;
+
         // Input the drive code
-        drive.driveCartesian(forwardAxis, lateralAxis, rotationalAxis);
+//        drive.driveCartesian(forwardAxis, lateralAxis, rotationalAxis);
+        drive.setChassisSpeeds(commandedChassisSpeeds);
     }
 
     private void setupFilters() {

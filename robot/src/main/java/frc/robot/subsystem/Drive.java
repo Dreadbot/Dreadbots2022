@@ -30,9 +30,10 @@ import frc.robot.util.DreadbotMath;
  */
 public class Drive extends DreadbotSubsystem {
     public static final SimpleMotorFeedforward FEEDFORWARD =
-        new SimpleMotorFeedforward(0.22d, 1.98d, 0.2d);
+        new SimpleMotorFeedforward(0.09185, 3.1899, 0.17172);
 
-    public static final double DRIVE_KP = 1;
+//    public static final double DRIVE_KP = 3.0028;
+    public static final double DRIVE_KP = 0;
 
     public static final double MAX_SPEED_METERS_PER_SECOND = 8.0d;
     public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 5.0;
@@ -46,6 +47,8 @@ public class Drive extends DreadbotSubsystem {
     public static final double motorRPMToMetersPerSecond = 7.98e-3;
     public static final double velocityConversionFactor = wheelRotationsPerMotorRotations * motorRPMToMetersPerSecond;
 
+    private ChassisSpeeds targetChassisSpeeds;
+
     private static final TrapezoidProfile.Constraints MAX_ROTATION =
         new TrapezoidProfile.Constraints(Units.degreesToRadians(360.0d), Units.degreesToRadians(180));
 
@@ -55,10 +58,10 @@ public class Drive extends DreadbotSubsystem {
     private CANSparkMax rightBackMotor;
 
     // Input is current velocity, output is voltage, setpoint is target velocity
-    private PIDController leftFrontVelocityPID = new PIDController(3, 0, 0);
-    private PIDController rightFrontVelocityPID = new PIDController(3, 0, 0);
-    private PIDController leftBackVelocityPID = new PIDController(3, 0, 0);
-    private PIDController rightBackVelocityPID = new PIDController(3, 0, 0);
+    private PIDController leftFrontVelocityPID = new PIDController(DRIVE_KP, 0, 0);
+    private PIDController rightFrontVelocityPID = new PIDController(DRIVE_KP, 0, 0);
+    private PIDController leftBackVelocityPID = new PIDController(DRIVE_KP, 0, 0);
+    private PIDController rightBackVelocityPID = new PIDController(DRIVE_KP, 0, 0);
 
 
     private AHRS gyroscope;
@@ -76,10 +79,10 @@ public class Drive extends DreadbotSubsystem {
         );
 
     private final MecanumDriveKinematics kinematics = new MecanumDriveKinematics(
-        new Translation2d(-0.4191d, 0.1905d),
-        new Translation2d(0.4191d, 0.1905d),
-        new Translation2d(-0.4191d, -0.1905d),
-        new Translation2d(0.4191d, -0.1905d)
+        new Translation2d(0.19d, 0.4191d),
+        new Translation2d(0.19d, -0.4191d),
+        new Translation2d(-0.19d, 0.4191d),
+        new Translation2d(-0.19d, -0.4191d)
     );
 
     private MecanumDriveOdometry odometry;
@@ -107,6 +110,8 @@ public class Drive extends DreadbotSubsystem {
 
         this.gyroscope = new AHRS(I2C.Port.kMXP);
 
+        this.targetChassisSpeeds = new ChassisSpeeds();
+
         leftFrontMotor.restoreFactoryDefaults();
         rightFrontMotor.restoreFactoryDefaults();
         leftBackMotor.restoreFactoryDefaults();
@@ -116,6 +121,7 @@ public class Drive extends DreadbotSubsystem {
         rightFrontMotor.setIdleMode(IdleMode.kBrake);
         leftBackMotor.setIdleMode(IdleMode.kBrake);
         rightBackMotor.setIdleMode(IdleMode.kBrake);
+
 
         // According to the docs, motors must be inverted before they are passed into the MecanumDrive utility.
         leftFrontMotor.setInverted(true);
@@ -153,6 +159,10 @@ public class Drive extends DreadbotSubsystem {
         builder.addDoubleProperty("chassisSpeedsX", () -> getChassisSpeeds().vxMetersPerSecond, null);
         builder.addDoubleProperty("chassisSpeedsY", () -> getChassisSpeeds().vyMetersPerSecond, null);
         builder.addDoubleProperty("chassisSpeedsOmega", () -> getChassisSpeeds().omegaRadiansPerSecond, null);
+
+        builder.addDoubleProperty("targetChassisSpeedsX", () -> targetChassisSpeeds.vxMetersPerSecond, null);
+        builder.addDoubleProperty("targetChassisSpeedsY", () -> targetChassisSpeeds.vyMetersPerSecond, null);
+        builder.addDoubleProperty("targetChassisSpeedsOmega", () -> targetChassisSpeeds.omegaRadiansPerSecond, null);
     }
 
     /**
@@ -200,6 +210,7 @@ public class Drive extends DreadbotSubsystem {
     public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
         if(isDisabled()) return;
 
+        targetChassisSpeeds = chassisSpeeds;
         final var wheelSpeeds = kinematics.toWheelSpeeds(chassisSpeeds);
 
         setWheelSpeeds(wheelSpeeds);
@@ -243,6 +254,8 @@ public class Drive extends DreadbotSubsystem {
         rightFrontMotor.setVoltage(velocityToVoltage(rightFrontVelocityPID, rightFrontMotor.getEncoder().getVelocity()));
         leftBackMotor.setVoltage(velocityToVoltage(leftBackVelocityPID, leftBackMotor.getEncoder().getVelocity()));
         rightBackMotor.setVoltage(velocityToVoltage(rightBackVelocityPID, rightBackMotor.getEncoder().getVelocity()));
+
+        mecanumDrive.feed();
     }
 
     private double velocityToVoltage(PIDController velocityController, double currentVelocity) {
