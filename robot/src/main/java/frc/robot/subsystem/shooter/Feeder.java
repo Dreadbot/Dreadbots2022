@@ -38,6 +38,18 @@ public class Feeder extends DreadbotSubsystem {
     }
 
     /**
+     * Spins the motor to return a failed ball to the shooter staging area.
+     */
+    public void intake() {
+        if(isDisabled()) return;
+
+        // Spins the motor to a high negative speed.
+        try {
+            motor.set(-1.0d);
+        } catch (IllegalStateException ignored) { disable(); }
+    }
+
+    /**
      * Stops the motor while the feeder is not required.
      */
     public void idle() {

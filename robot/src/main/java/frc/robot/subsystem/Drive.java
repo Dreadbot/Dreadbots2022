@@ -12,6 +12,7 @@ import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
@@ -24,6 +25,8 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.DreadbotMath;
+
+import java.util.function.Supplier;
 
 /**
  * The drive is the mechanism that moves the robot across the field. We are using a mecanum drive.
@@ -68,6 +71,10 @@ public class Drive extends DreadbotSubsystem {
     private AHRS gyroscope;
 
     private MecanumDrive mecanumDrive;
+
+    private PIDController xController = new PIDController(DRIVE_KP, 0, 0);
+    private PIDController yController = new PIDController(DRIVE_KP, 0, 0);
+    private ProfiledPIDController thetaController = new ProfiledPIDController(1, 0, 0, MAX_ROTATION);
 
     private final HolonomicDriveController driveController =
         new HolonomicDriveController(
@@ -320,5 +327,25 @@ public class Drive extends DreadbotSubsystem {
         SmartDashboard.putNumber("FrontLeftEncoder", frontLeftEncoder.getPosition());
         SmartDashboard.putNumber("AvgEncoder", getEncoderAvg);
         return getEncoderAvg;
+    }
+
+    public Pose2d getPose() {
+        return odometry.getPoseMeters();
+    }
+
+    public MecanumDriveKinematics getKinematics() {
+        return kinematics;
+    }
+
+    public PIDController getXController() {
+        return xController;
+    }
+
+    public PIDController getYController() {
+        return yController;
+    }
+
+    public ProfiledPIDController getThetaController() {
+        return thetaController;
     }
 }

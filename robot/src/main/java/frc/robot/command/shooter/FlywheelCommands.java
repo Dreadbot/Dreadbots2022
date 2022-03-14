@@ -2,8 +2,11 @@ package frc.robot.command.shooter;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystem.shooter.Feeder;
 import frc.robot.subsystem.shooter.Flywheel;
+import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.util.CargoKinematics;
 import frc.robot.util.VisionInterface;
 
@@ -33,8 +36,6 @@ public class FlywheelCommands {
             if(!VisionInterface.canTrackHub()) return;
 
             double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
-            // We don't need to convert inches to meters twice...  this causes a NaN error
-            // distanceToHub = Units.inchesToMeters(distanceToHub);
             double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
 
             SmartDashboard.putNumber("COMMANDED RPM", currentCommandedRPM);
@@ -44,7 +45,7 @@ public class FlywheelCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(currentCommandedRPM - flywheel.getVelocity()) <= 20.0d;
+            return flywheel.isAtSetVelocity();
         }
 
         private void velocityControl(double velocity) {
@@ -73,7 +74,25 @@ public class FlywheelCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(velocity - flywheel.getVelocity()) <= 50.0d;
+            return flywheel.isAtSetVelocity();
+        }
+    }
+
+    public static class ReverseBall extends CommandBase {
+        private Flywheel flywheel;
+        private Feeder feeder;
+
+        public ReverseBall(Shooter shooter) {
+            this.flywheel = shooter.getFlywheel();
+            this.feeder = shooter.getFeeder();
+
+            addRequirements(flywheel);
+        }
+
+        @Override
+        public void execute() {
+            flywheel.intake();
+            feeder.intake();
         }
     }
 
@@ -97,7 +116,7 @@ public class FlywheelCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(currentCommandedRPM - flywheel.getVelocity()) <= 100.0d;
+            return flywheel.isAtSetVelocity();
         }
 
         private void velocityControl(double velocity) {

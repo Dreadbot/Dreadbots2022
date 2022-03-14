@@ -60,8 +60,6 @@ public class DriveCommand extends CommandBase {
         rotationalAxis = MathUtil.applyDeadband(rotationalAxis, 0.03d);
 //        rotationalAxis = rotationalSensitivityFilter.calculate(rotationalAxis);
 
-        System.out.println("forwardAxis = " + forwardAxis);
-
         commandedChassisSpeeds.vxMetersPerSecond = forwardAxis * 3 * .55;
         commandedChassisSpeeds.vyMetersPerSecond = lateralAxis * 2 * .55;
         commandedChassisSpeeds.omegaRadiansPerSecond = rotationalAxis * 2 * .55 * Math.PI;

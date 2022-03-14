@@ -40,6 +40,7 @@ public class ColorSensor extends DreadbotSubsystem {
         colorName = getColorSerialized(ballColor);
 
         SmartDashboard.putString("ColorSerialized", getColorSerialized(ballColor));
+        SmartDashboard.putBoolean("BallDetected", isBallDetected());
         SmartDashboard.putBoolean("ColorAllianceMatch", isCorrectColor());
         SmartDashboard.putString("EnumToString", DriverStation.getAlliance().name());
         SmartDashboard.putString("Color:", colorName);

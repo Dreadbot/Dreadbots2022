@@ -1,8 +1,12 @@
 package frc.robot;
 
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPMecanumControllerCommand;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ColorSensorV3;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -14,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.command.autonomous.TrajectoryAuton;
 import frc.robot.command.autonomous.VelocityControlTestCommand;
 import frc.robot.command.climber.*;
 import frc.robot.command.drive.DriveCommand;
@@ -147,7 +152,7 @@ public class RobotContainer {
         secondaryController.getStartButton().whenPressed(TurretCommands::swapManualAutomaticControls);
         SmartDashboard.putBoolean("TURRET AUTOMATION", true);
 
-        secondaryController.getBackButton().whileHeld(new InstantCommand(feeder::feed));
+        secondaryController.getBackButton().whileHeld(new ShooterCommands.ResetBallShot(shooter));
 
         VisionInterface.selectCamera(2);
         // Shooter Commands
@@ -169,7 +174,24 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand(){
-        return new VelocityControlTestCommand(drive);
+//        return new VelocityControlTestCommand(drive);
+
+        PathPlannerTrajectory examplePath = PathPlanner.loadPath("FirstPathAuton", 3, 2);
+        PathPlannerTrajectory.PathPlannerState exampleState = (PathPlannerTrajectory.PathPlannerState) examplePath.sample(1.2);
+
+        TrajectoryAuton command = new TrajectoryAuton(
+            examplePath,
+            drive::getPose,
+            drive.getKinematics(),
+            drive.getXController(),
+            drive.getYController(),
+            drive.getThetaController(),
+            3.0,
+            drive::setWheelSpeeds,
+            drive
+        );
+
+        return command;
     }  
 
     public void calibrate() {
