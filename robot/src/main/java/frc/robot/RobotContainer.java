@@ -179,7 +179,7 @@ public class RobotContainer {
         PathPlannerTrajectory examplePath = PathPlanner.loadPath("FirstPathAuton", 3, 2);
         PathPlannerTrajectory.PathPlannerState exampleState = (PathPlannerTrajectory.PathPlannerState) examplePath.sample(1.2);
 
-        TrajectoryAuton command = new TrajectoryAuton(
+        return new TrajectoryAuton(
             examplePath,
             drive::getPose,
             drive.getKinematics(),
@@ -190,8 +190,6 @@ public class RobotContainer {
             drive::setWheelSpeeds,
             drive
         );
-
-        return command;
     }  
 
     public void calibrate() {
