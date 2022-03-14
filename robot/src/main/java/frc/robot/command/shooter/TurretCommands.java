@@ -1,6 +1,5 @@
 package frc.robot.command.shooter;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -9,16 +8,9 @@ import frc.robot.util.RobotControlMode;
 import frc.robot.util.VisionInterface;
 
 public class TurretCommands {
-    private static final PIDController turretTrackingController = new PIDController(0.75d, 0.0d, 0.0d);
     private static RobotControlMode turretControlMode;
     static {
         turretControlMode = RobotControlMode.AUTOMATIC;
-
-        turretTrackingController.setSetpoint(0.0d);
-        turretTrackingController.disableContinuousInput();
-        turretTrackingController.setTolerance(1.0d);
-
-        SmartDashboard.putData("TurretTrackingPID", turretTrackingController);
     }
 
     public static class PassiveTrack extends CommandBase {
@@ -44,7 +36,7 @@ public class TurretCommands {
 
         private void turretControlAngle(double relativeAngleToHub) {
             double currentAngle = turret.getAngle();
-            double requestedAngle = currentAngle - turretTrackingController.calculate(relativeAngleToHub);
+            double requestedAngle = currentAngle + relativeAngleToHub;
 
             turret.setAngle(requestedAngle);
         }
@@ -54,6 +46,8 @@ public class TurretCommands {
         private final Turret turret;
 
         private double lastRelativeAngleToHub;
+
+        private double requestedAngle;
 
         public ActiveTrack(Turret turret) {
             this.turret = turret;
@@ -73,12 +67,47 @@ public class TurretCommands {
 
         @Override
         public boolean isFinished() {
-            return turretTrackingController.atSetpoint();
+            return turret.isAtSetAngle();
         }
 
         private void turretControlAngle(double relativeAngleToHub) {
             double currentAngle = turret.getAngle();
-            double requestedAngle = currentAngle - turretTrackingController.calculate(relativeAngleToHub);
+            requestedAngle = currentAngle + relativeAngleToHub;
+
+            turret.setAngle(requestedAngle);
+        }
+    }
+
+    public static class EjectTrack extends CommandBase {
+        private final Turret turret;
+
+        private double lastRelativeAngleToHub;
+        private double requestedAngle;
+
+        public EjectTrack(Turret turret) {
+            this.turret = turret;
+
+            addRequirements(turret);
+        }
+
+        @Override
+        public void execute() {
+//            if(!VisionInterface.canTrackHub()) return;
+
+            double relativeAngleToHub = VisionInterface.getRelativeAngleToHub() + 45;
+
+            if(relativeAngleToHub != lastRelativeAngleToHub) turretControlAngle(relativeAngleToHub);
+            lastRelativeAngleToHub = relativeAngleToHub;
+        }
+
+        @Override
+        public boolean isFinished() {
+            return turret.isAtSetAngle();
+        }
+
+        private void turretControlAngle(double relativeAngleToHub) {
+            double currentAngle = turret.getAngle();
+            requestedAngle = currentAngle + relativeAngleToHub;
 
             turret.setAngle(requestedAngle);
         }
@@ -102,7 +131,39 @@ public class TurretCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(turret.getAngle() - angle) <= 1.0d;
+            return turret.isAtSetAngle();
+        }
+    }
+
+    public static class TurnToRelativeAngle extends CommandBase {
+        private final Turret turret;
+        private final double angle;
+
+        private double initialTurretAngle;
+
+        public TurnToRelativeAngle(Turret turret, double angle) {
+            this.turret = turret;
+            this.angle = angle;
+
+            addRequirements(turret);
+        }
+
+        /**
+         * The initial subroutine of a command. Called once when the command is initially scheduled.
+         */
+        @Override
+        public void initialize() {
+            this.initialTurretAngle = turret.getAngle();
+        }
+
+        @Override
+        public void execute() {
+            turret.setAngle(initialTurretAngle + angle);
+        }
+
+        @Override
+        public boolean isFinished() {
+            return turret.isAtSetAngle();
         }
     }
 

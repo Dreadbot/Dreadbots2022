@@ -1,8 +1,12 @@
 package frc.robot;
 
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPMecanumControllerCommand;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ColorSensorV3;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -12,7 +16,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.command.autonomous.TrajectoryAuton;
 import frc.robot.command.autonomous.VelocityControlTestCommand;
 import frc.robot.command.climber.*;
 import frc.robot.command.drive.DriveCommand;
@@ -135,10 +141,10 @@ public class RobotContainer {
         secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
 
         // Feeder Commands
-        feeder.setDefaultCommand(new RunCommand(feeder::idle, feeder));
+//        feeder.setDefaultCommand(new RunCommand(feeder::idle, feeder));
 
         // Flywheel Commands
-        flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
+//        flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
 
         hood.setDefaultCommand(new HoodCommands.PassiveTrack(hood));
 
@@ -146,15 +152,20 @@ public class RobotContainer {
         secondaryController.getStartButton().whenPressed(TurretCommands::swapManualAutomaticControls);
         SmartDashboard.putBoolean("TURRET AUTOMATION", true);
 
+        secondaryController.getBackButton().whileHeld(new ShooterCommands.ResetBallShot(shooter));
+
         VisionInterface.selectCamera(2);
         // Shooter Commands
-        secondaryController.getBButton().whileHeld(new ShooterCommands.BlindShoot(shooter));
+        secondaryController.getBButton().whileHeld(new ShooterCommands.LowShoot(shooter, intake));
+        SmartDashboard.putNumber("COMMANDED RPM", 0);
+        secondaryController.getYButton().whileHeld(new ShooterCommands.HighShoot(shooter, intake), false);
+        secondaryController.getStartButton().whileHeld(new ShooterCommands.PresetShoot(shooter, 155, 71.862, 3436.0d, 155.0d));
 //        secondaryController.getBButton().whileHeld(new ShootCommand(shooter, dreadbotColorSensor, teamColorChooser::getSelected));
 
         // Climber Commands
         climber.setDefaultCommand(new RunCommand(climber::idle, climber));
-        primaryController.getAButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
-        primaryController.getBButton().whenPressed(new RotateNeutralHookDownCommand(climber));
+        primaryController.getBButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
+        primaryController.getAButton().whenPressed(new RotateNeutralHookDownCommand(climber));
         primaryController.getXButton().whenPressed(new RotateClimbingArmVerticalCommand(climber));
         primaryController.getYButton().whenPressed(new RotateClimbingArmDownCommand(climber));
         primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber));
@@ -163,15 +174,36 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand(){
-        return new VelocityControlTestCommand(drive);
+//        return new VelocityControlTestCommand(drive);
+
+        PathPlannerTrajectory examplePath = PathPlanner.loadPath("FirstPathAuton", 3, 2);
+        PathPlannerTrajectory.PathPlannerState exampleState = (PathPlannerTrajectory.PathPlannerState) examplePath.sample(1.2);
+
+        TrajectoryAuton command = new TrajectoryAuton(
+            examplePath,
+            drive::getPose,
+            drive.getKinematics(),
+            drive.getXController(),
+            drive.getYController(),
+            drive.getThetaController(),
+            3.0,
+            drive::setWheelSpeeds,
+            drive
+        );
+
+        return command;
     }  
 
     public void calibrate() {
-        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, false)
+        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, true)
             .andThen(new TurretCommands.TurnToAngle(turret, 155.0d)));
 
-        CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, false)
+        CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, true)
             .andThen(new HoodCommands.TurnToAngle(hood, Constants.MIN_HOOD_ANGLE)));
+    }
+
+    public void preservePneumaticState() {
+        climber.preservePneumaticState();
     }
 
     /*

@@ -14,27 +14,17 @@ import rw_visualizer
 
 import time
 
+
 # OpenCV Processing
-def get_target_mask(frame, lower, upper, eIts, dIts, blurK, colorSpace=cv2.COLOR_BGR2HSV):
+def getMask(frame, lower: tuple, upper: tuple, eIts: int, dIts: int, blurK: int, colorSpace: int = cv2.COLOR_BGR2HSV):
     hsv = cv2.cvtColor(frame, colorSpace)
     
     blurred = cv2.blur(hsv, (blurK, blurK))
     inRange = cv2.inRange(blurred, lower, upper)
     erode = cv2.erode(inRange, None, iterations=eIts)
     dilate = cv2.dilate(erode, None, iterations=dIts)
-
+    
     return dilate #Convert to the defined colorSpace, blur the image, threshold, erode white pixels, dilate what's left, return that image
-
-
-def get_light_mask(frame, lower, upper, e_its, d_its, blur_k):
-    blurred = cv2.blur(frame, (blur_k, blur_k))
-    inRange = cv2.inRange(blurred, lower, upper)
-    erode = cv2.erode(inRange, None, iterations=e_its)
-    dilate = cv2.dilate(erode, None, iterations=d_its)
-
-    inverted = cv2.bitwise_not(dilate)
-
-    return(inverted)
 
 
 # Halve the image (for faster upload)
@@ -44,34 +34,16 @@ def res_img(frame):
     dst_w = w//2
     dst_h = h//2
 
-    resFrame = cv2.resize(frame, (dst_w, dst_h))
+    res_frame = cv2.resize(res_frame, (dst_w, dst_h))
 
-    return resFrame 
+    return res_frame
 
-def ranging_selection(imgpoints, pt_range=80):
-    ranged_pts = []
-    for pt in imgpoints:
-        cur_x, cur_y = pt
+def res_coords(pt):
+    u, v = pt
+    u = u // 2
+    h = h // 2
 
-        successes = 0
-
-        for ref_pt in imgpoints:
-            if ref_pt == pt:
-                continue
-            
-            ref_x, ref_y = ref_pt
-
-            dx = abs(cur_x-ref_x)
-            dy = abs(cur_y-ref_y)
-
-            if dx < pt_range and dy < pt_range:
-                successes += 1
-        
-        if successes >= 1:
-            ranged_pts.append(pt)
-
-    return ranged_pts
-
+    
 
 # Sort a 2D array low-to-high based on the first entry of each contained array
 def pt_sort(e):
@@ -127,10 +99,23 @@ def main():
     angle = 0
     distance = 0
 
+    # Init y_ignore
+    y_ignore = table.getNumber("YIgnore", 0)
 
     # Main loop
     while True:
-        cap_ret, frame = cap.read() # Read from camera
+        cap_ret, proc_frame = cap.read() # Read from camera, create a processing image and a drawing image
+        draw_frame = proc_frame.copy()
+
+        # Highlight the area above the YIgnore more than the area below it
+        draw_frame[0:y_ignore, :] += 50
+        draw_frame[y_ignore:480, :] += 25
+
+        # Draw image crosshairs
+        cv2.line(draw_frame, (320, 0), (320, 480), (255, 255, 255))
+        cv2.line(draw_frame, (0, 240), (640, 240), (255, 255, 255))
+
+        draw_frame = res_img(draw_frame) # Halve drawing image
 
         center_ret = False # Reset target found flag to False every loop
 
@@ -141,28 +126,16 @@ def main():
 
 
         # Update HSL & OpenCV ranges with most recent NT entries
-        target_hue = [table.getNumber("TargetHLowerValue", 0), table.getNumber("TargetHUpperValue", 255)]
-        target_sat = [table.getNumber("TargetSLowerValue", 0), table.getNumber("TargetSUpperValue", 255)]
-        target_lum = [table.getNumber("TargetLLowerValue", 0), table.getNumber("TargetSUpperValue", 255)]
+        hue = [table.getNumber("TargetHLowerValue", 0), table.getNumber("TargetHUpperValue", 255)]
+        sat = [table.getNumber("TargetSLowerValue", 0), table.getNumber("TargetSUpperValue", 255)]
+        lum = [table.getNumber("TargetLLowerValue", 0), table.getNumber("TargetSUpperValue", 255)]
 
-        light_B = [table.getNumber("LightBLowerValue", 0), table.getNumber("LightBUpperValue", 255)]
-        light_G = [table.getNumber("LightGLowerValue", 0), table.getNumber("LightGUpperValue", 255)]
-        light_R = [table.getNumber("LightRLowerValue", 0), table.getNumber("LightRUpperValue", 255)]
-
-        target_mask_lower_bound = (target_hue[0], target_lum[0], target_sat[0])
-        target_mask_upper_bound = (target_hue[1], target_lum[1], target_sat[1])
-
-        light_mask_lower_bound = (light_B[0], light_G[0], light_R[0])
-        light_mask_upper_bound = (light_B[1], light_G[1], light_R[1])
+        mask_lower_bound = (hue[0], lum[0], sat[0])
+        mask_upper_bound = (hue[1], lum[1], sat[1])
         
-        target_blur   = max([int(table.getNumber("TurretBlurKernel", 1)),  1]) #max([var, 1]) is used to ensure the entered var is always positive
-        target_erode  = max([int(table.getNumber("TurretErodeKernel", 1)), 0])
-        target_dilate = max([int(table.getNumber("TurretErodeKernel", 1)), 0])
-
-        light_blur   = max([int(table.getNumber("LightBlurKernel", 1)),  1]) #max([var, 1]) is used to ensure the entered var is always positive
-        light_erode  = max([int(table.getNumber("LightErodeKernel", 1)), 0])
-        light_dilate = max([int(table.getNumber("LightErodeKernel", 1)), 0])
-        
+        blur   = max([int(table.getNumber("TurretBlurKernel", 1)),  1]) #max([var, 1]) is used to ensure the entered var is always positive
+        erode  = max([int(table.getNumber("TurretErodeKernel", 1)), 1])
+        dilate = max([int(table.getNumber("TurretErodeKernel", 1)), 1])
         
         y_ignore = int(table.getNumber("YIgnore", 0)) # Y coordinate at which to ignore any result below
         
@@ -170,25 +143,10 @@ def main():
 
         
         # Process raw image from the webcam through OpenCV processing to output binary image
-        target_mask = get_target_mask(frame, 
-                                      target_mask_lower_bound, 
-                                      target_mask_upper_bound, 
-                                      target_erode, target_dilate, 
-                                      target_blur, 
-                                      colorSpace=cv2.COLOR_BGR2HLS)
-
-        light_mask  = get_light_mask(frame, 
-                                     light_mask_lower_bound, 
-                                     light_mask_upper_bound, 
-                                     light_erode, 
-                                     light_dilate, 
-                                     light_blur)
-
-        full_mask = cv2.bitwise_and(target_mask, light_mask)
-
+        mask = getMask(proc_frame, mask_lower_bound, mask_upper_bound, erode, dilate, blur, colorSpace=cv2.COLOR_BGR2HLS)
 
         # Find contours (areas of low values to high values) in the binary image
-        contours = cv2.findContours(full_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         contours = imutils.grab_contours(contours)
 
 
@@ -210,8 +168,8 @@ def main():
 
 
             # If the contour's bounding box is more than 30px wide or tall ignore it
-            if True:
-                cv2.circle(frame, (x, y), 3, (0,0,255), thickness=-1) #Draw contour dot
+            if w < 30 and h < 30:
+                cv2.circle(draw_frame, (x, y), 3, (0,0,255), thickness=-1) #Draw contour dot
 
 
                 # Create current point array and append to image points array
@@ -221,6 +179,7 @@ def main():
 
         # Sort the image points array to index points left-to-right based on X position
         imgpoints.sort(reverse=True, key=pt_sort)
+
 
         # Unwrap each point to draw on real-world visualizer
         for pt in imgpoints:
@@ -232,18 +191,12 @@ def main():
         # If enough image points exist, process the target center using the orthogonal bisector intersection method
         # If not, attempt single point calculation
         # If none, update target found bool accordingly
-        if len(imgpoints) >= 2:
-            center_ret, angle, distance = projection_math.leg_calculation(imgpoints, 
+        if len(imgpoints) > 2:
+            center_ret, angle, distance = projection_math.orth_bisector_calculation(imgpoints, 
                                                             dampen=dampen_weight, 
                                                             prev=(angle, distance), 
-                                                            draw_target=frame, 
+                                                            draw_target=draw_frame, 
                                                             visualizer=rw_vis)
-            # center_ret, angle, distance = projection_math.orth_bisector_calculation(imgpoints, 
-            #                                                 dampen=dampen_weight, 
-            #                                                 prev=(angle, distance), 
-            #                                                 draw_target=frame, 
-            #                                                 visualizer=rw_vis)
-
         elif len(imgpoints) == 1:
             center_ret, angle, distance = projection_math.single_point(imgpoints[0])
         else:
@@ -267,27 +220,18 @@ def main():
         # 1 - binary mask w/ "clean" underlay
         # 2 - Real-world visualizer
         if table.getNumber("CameraSelection", 0) == 0:
-            frame[0:y_ignore, :] += 50
-            frame[y_ignore:480, :] += 25
-
-            cv2.line(frame, (320, 0), (320,480), (255,255,255))
-            cv2.line(frame, (0,240), (640, 240), (255,255,255))
-
-            frame = res_img(frame)
-
-            outputStream.putFrame(frame)
+            outputStream.putFrame(draw_frame)
 
         elif table.getNumber("CameraSelection", 0) == 1:
-            full_mask = cv2.cvtColor(full_mask, cv2.COLOR_GRAY2BGR)
-            
-            push_frame = cv2.addWeighted(full_mask, 0.8, frame, 0.2, 1.0)
-            push_frame = res_img(push_frame)
+            mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
+            mask = cv2.addWeighted(mask, 0.6, frame, 0.4, 1.0)
+            mask = res_img(mask)
 
-            w, h, _ = push_frame.shape
+            w, h, _ = mask.shape
 
-            cv2.line(push_frame, (w//2,0), (w//2,h), (0,0,255))
+            cv2.line(mask, (w//2,0), (w//2,h), (0,0,255))
 
-            outputStream.putFrame(push_frame)
+            outputStream.putFrame(mask)
 
         elif table.getNumber("CameraSelection", 0) == 2:
             frame = rw_vis.retrieve_img()

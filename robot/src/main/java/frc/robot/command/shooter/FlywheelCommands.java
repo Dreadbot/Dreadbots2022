@@ -2,8 +2,11 @@ package frc.robot.command.shooter;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystem.shooter.Feeder;
 import frc.robot.subsystem.shooter.Flywheel;
+import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.util.CargoKinematics;
 import frc.robot.util.VisionInterface;
 
@@ -23,7 +26,7 @@ public class FlywheelCommands {
 
         public PrepareShot(Flywheel flywheel) {
             this.flywheel = flywheel;
-            this.cargoKinematics = new CargoKinematics(s -> 3.048, 0.5715, 2.6416);
+            this.cargoKinematics = new CargoKinematics(s -> 0.306*s + 2.6, 0.5715, 2.6416);
 
             addRequirements(flywheel);
         }
@@ -32,17 +35,17 @@ public class FlywheelCommands {
         public void execute() {
             if(!VisionInterface.canTrackHub()) return;
 
-            double distanceToHub = VisionInterface.getRelativeDistanceToHub();
-            distanceToHub = Units.inchesToMeters(distanceToHub);
+            double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
             double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
 
+            SmartDashboard.putNumber("COMMANDED RPM", currentCommandedRPM);
             if(distanceToHub != lastDistanceToHub) velocityControl(velocity);
             lastDistanceToHub = distanceToHub;
         }
 
         @Override
         public boolean isFinished() {
-            return Math.abs(currentCommandedRPM - flywheel.getVelocity()) <= 20.0d;
+            return flywheel.isAtSetVelocity();
         }
 
         private void velocityControl(double velocity) {
@@ -50,6 +53,46 @@ public class FlywheelCommands {
             currentCommandedRPM *= SmartDashboard.getNumber("DEBUG RPM CONV", 1.0d);
 
             flywheel.setVelocity(currentCommandedRPM);
+        }
+    }
+
+    public static class Spool extends CommandBase {
+        private Flywheel flywheel;
+        private double velocity;
+
+        public Spool(Flywheel flywheel, double velocity) {
+            this.flywheel = flywheel;
+            this.velocity = velocity;
+
+            addRequirements(flywheel);
+        }
+
+        @Override
+        public void execute() {
+            flywheel.setVelocity(velocity);
+        }
+
+        @Override
+        public boolean isFinished() {
+            return flywheel.isAtSetVelocity();
+        }
+    }
+
+    public static class ReverseBall extends CommandBase {
+        private Flywheel flywheel;
+        private Feeder feeder;
+
+        public ReverseBall(Shooter shooter) {
+            this.flywheel = shooter.getFlywheel();
+            this.feeder = shooter.getFeeder();
+
+            addRequirements(flywheel);
+        }
+
+        @Override
+        public void execute() {
+            flywheel.intake();
+            feeder.intake();
         }
     }
 
@@ -61,19 +104,19 @@ public class FlywheelCommands {
 
         public PrepareBlindShot(Flywheel flywheel) {
             this.flywheel = flywheel;
-            this.cargoKinematics = new CargoKinematics(s -> 3.048, 0.5715, 2.6416);
+            this.cargoKinematics = new CargoKinematics(s -> 0.306*s + 2.6, 0.5715, 2.6416);
 
             addRequirements(flywheel);
         }
 
         @Override
         public void execute() {
-            velocityControl(18d);
+            velocityControl(8.5d);
         }
 
         @Override
         public boolean isFinished() {
-            return Math.abs(currentCommandedRPM - flywheel.getVelocity()) <= 20.0d;
+            return flywheel.isAtSetVelocity();
         }
 
         private void velocityControl(double velocity) {

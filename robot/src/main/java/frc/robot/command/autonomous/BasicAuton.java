@@ -31,7 +31,6 @@ class AutonDrive extends CommandBase {
     }
     @Override
     public void initialize(){
-        System.out.println("Started");
         drive.resetEncoders();
         orginalEncoderValue = 0; //drive.getFrontEncoderAvg();
         SmartDashboard.putNumber("Orginal Encoder Value", orginalEncoderValue);
@@ -41,7 +40,6 @@ class AutonDrive extends CommandBase {
     public void execute(){
         //System.out.println("Orginal value" + orginalEncoderValue + "Value Now" + drive.getFrontEncoderAvg());
         drive.driveCartesian(.2, 0, 0);
-        System.out.println("executing");
     }
 
     @Override
@@ -51,7 +49,6 @@ class AutonDrive extends CommandBase {
 
     @Override
     public void end(boolean isIntertupted){
-        System.out.println("End");
         drive.resetEncoders();
         drive.drivePolar(0, 0, 0);
     }
