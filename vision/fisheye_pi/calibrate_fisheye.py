@@ -1,4 +1,4 @@
-import projection_math as pm
+import dreadbot_fisheye as df
 import cv2
 from cscore import CameraServer
 import threading
@@ -33,10 +33,8 @@ def main():
 
     outputStream = cs.putVideo("Source", 640, 480)
 
-    pm.calibrate_intrinsic(0, outputStream, table)
-    
+    df.calibrate_intrinsic_for_table(0, outputStream, table)
+
 
 if __name__ == "__main__":
     main()
-
-
