@@ -24,6 +24,7 @@ import frc.robot.command.climber.*;
 import frc.robot.command.drive.DriveCommand;
 import frc.robot.command.intake.IntakeCommand;
 import frc.robot.command.intake.OuttakeCommand;
+import frc.robot.command.shooter.FlywheelCommands;
 import frc.robot.command.shooter.HoodCommands;
 import frc.robot.command.shooter.ShooterCommands;
 import frc.robot.command.shooter.TurretCommands;
@@ -33,6 +34,7 @@ import frc.robot.subsystem.Intake;
 import frc.robot.subsystem.shooter.*;
 import frc.robot.util.DreadbotController;
 import frc.robot.util.VisionInterface;
+import frc.robot.util.tuning.SparkMaxTuningUtility;
 
 public class RobotContainer {
     private final DreadbotController primaryController;
@@ -140,6 +142,8 @@ public class RobotContainer {
         secondaryController.getAButton().whileHeld(new OuttakeCommand(intake));
         secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
 
+        primaryController.getLeftTrigger().whileHeld(new FlywheelCommands.TuneFlywheel(flywheel));
+
         // Feeder Commands
 //        feeder.setDefaultCommand(new RunCommand(feeder::idle, feeder));
 
@@ -163,21 +167,20 @@ public class RobotContainer {
 //        secondaryController.getBButton().whileHeld(new ShootCommand(shooter, dreadbotColorSensor, teamColorChooser::getSelected));
 
         // Climber Commands
-        climber.setDefaultCommand(new RunCommand(climber::idle, climber));
-        primaryController.getBButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
-        primaryController.getAButton().whenPressed(new RotateNeutralHookDownCommand(climber));
-        primaryController.getXButton().whenPressed(new RotateClimbingArmVerticalCommand(climber));
-        primaryController.getYButton().whenPressed(new RotateClimbingArmDownCommand(climber));
-        primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber));
-        primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
-        primaryController.getRightBumper().whenPressed(new AutonomousClimberCommand(climber));
+//        climber.setDefaultCommand(new RunCommand(climber::idle, climber));
+//        primaryController.getBButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
+//        primaryController.getAButton().whenPressed(new RotateNeutralHookDownCommand(climber));
+//        primaryController.getXButton().whenPressed(new RotateClimbingArmVerticalCommand(climber));
+//        primaryController.getYButton().whenPressed(new RotateClimbingArmDownCommand(climber));
+//        primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber));
+//        primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
+//        primaryController.getRightBumper().whenPressed(new AutonomousClimberCommand(climber));
     }
 
     public Command getAutonomousCommand(){
 //        return new VelocityControlTestCommand(drive);
 
-        PathPlannerTrajectory examplePath = PathPlanner.loadPath("FirstPathAuton", 3, 2);
-        PathPlannerTrajectory.PathPlannerState exampleState = (PathPlannerTrajectory.PathPlannerState) examplePath.sample(1.2);
+        PathPlannerTrajectory examplePath = PathPlanner.loadPath("TaxiAuton1", 3, 2);
 
         return new TrajectoryAuton(
             examplePath,

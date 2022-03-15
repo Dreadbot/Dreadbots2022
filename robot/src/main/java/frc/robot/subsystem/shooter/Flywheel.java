@@ -9,6 +9,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystem.DreadbotSubsystem;
+import frc.robot.util.tuning.SparkMaxTuningUtility;
 
 /**
  * The flywheel is the mechanism that shoots the ball out of the robot.
@@ -22,6 +23,8 @@ public class Flywheel extends DreadbotSubsystem {
     private SparkMaxPIDController pidController;
 
     private double setVelocity;
+
+    private SparkMaxTuningUtility tuner;
 
     /**
      * Disabled constructor
@@ -48,6 +51,9 @@ public class Flywheel extends DreadbotSubsystem {
 
         SmartDashboard.putNumber("Requested Flywheel RPM", 0.0d);
         SmartDashboard.putNumber("Target Flywheel Velocity", 0.0d);
+
+        this.tuner = new SparkMaxTuningUtility(motor);
+        SmartDashboard.putData("tuner", tuner);
     }
 
     @Override
@@ -140,5 +146,9 @@ public class Flywheel extends DreadbotSubsystem {
 
     public void intake() {
         motor.set(-0.25);
+    }
+
+    public SparkMaxTuningUtility getTuner() {
+        return tuner;
     }
 }

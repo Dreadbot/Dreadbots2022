@@ -9,6 +9,7 @@ import frc.robot.subsystem.shooter.Flywheel;
 import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.util.CargoKinematics;
 import frc.robot.util.VisionInterface;
+import frc.robot.util.tuning.SparkMaxTuningUtility;
 
 public class FlywheelCommands {
     public static final double LOB_RPM = 200.0d;
@@ -75,6 +76,24 @@ public class FlywheelCommands {
         @Override
         public boolean isFinished() {
             return Math.abs(flywheel.getVelocity() - velocity) <= 50.0d;
+        }
+    }
+
+    public static class TuneFlywheel extends CommandBase {
+        private SparkMaxTuningUtility tuner;
+
+        public TuneFlywheel(Flywheel flywheel) {
+            this.tuner = flywheel.getTuner();
+        }
+
+        @Override
+        public void initialize() {
+            tuner.tune();
+        }
+
+        @Override
+        public void end(boolean interrupted) {
+            tuner.stop();
         }
     }
 
