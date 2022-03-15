@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.command.intake.IntakeCommand;
 import frc.robot.subsystem.Intake;
 import frc.robot.subsystem.shooter.ColorSensor;
+import frc.robot.subsystem.shooter.Feeder;
 import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.util.VisionInterface;
 
@@ -83,9 +84,7 @@ public class ShooterCommands {
                     new HoodCommands.TurnToAngle(shooter.getHood(), hoodAngle)
                 ),
                 new FlywheelCommands.Spool(shooter.getFlywheel(), flywheelSpeed),
-                new FeedBallCommand(shooter),
-                new WaitCommand(3.0),
-                new TurretCommands.TurnToAngle(shooter.getTurret(), afterAngle)
+                new FeedBallCommand(shooter)
             );
         }
 
@@ -97,27 +96,35 @@ public class ShooterCommands {
     }
 
     public static class FeedBallCommand extends CommandBase {
-        private Shooter shooter;
+        private Feeder feeder;
         private ColorSensor colorSensor;
 
+        private double feedPosition = 0;
+
         public FeedBallCommand(Shooter shooter) {
-            this.shooter = shooter;
+            this.feeder = shooter.getFeeder();
             this.colorSensor = shooter.getColorSensor();
 
             addRequirements(colorSensor);
         }
 
         @Override
+        public void initialize() {
+            feedPosition = feeder.getFeederPosition();
+        }
+
+        @Override
         public void execute() {
-            shooter.feedBall();
+            feeder.feed();
             SmartDashboard.putString("Ball fed", "Ball is being fed");
         }
 
         @Override
         public boolean isFinished() {
-            Color currentBallColor = colorSensor.getBallColor();
-            // Return true if different color ball, or if no ball is detected
-            return currentBallColor == null || currentBallColor != colorSensor.getInitialBallColor();
+//            Color currentBallColor = colorSensor.getBallColor();
+//            // Return true if different color ball, or if no ball is detected
+//            return currentBallColor == null || currentBallColor != colorSensor.getInitialBallColor();
+            return Math.abs(feeder.getFeederPosition() - feedPosition) > 100.0d;
         }
     }
 
