@@ -131,7 +131,7 @@ public class ShooterCommands {
 
             addRequirements();
             addCommands(
-                new ParallelCommandGroup(
+                new ParallelRaceGroup(
                     new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
                     new IntakeCommand(intake)
                 ),
