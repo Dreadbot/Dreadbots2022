@@ -74,7 +74,7 @@ public class FlywheelCommands {
 
         @Override
         public boolean isFinished() {
-            return flywheel.isAtSetVelocity();
+            return Math.abs(flywheel.getVelocity() - velocity) <= 50.0d;
         }
     }
 
