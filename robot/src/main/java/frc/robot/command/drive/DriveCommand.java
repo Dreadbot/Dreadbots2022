@@ -62,7 +62,7 @@ public class DriveCommand extends CommandBase {
 
         commandedChassisSpeeds.vxMetersPerSecond = forwardAxis * 3 * .55;
         commandedChassisSpeeds.vyMetersPerSecond = lateralAxis * 2 * .55;
-        commandedChassisSpeeds.omegaRadiansPerSecond = rotationalAxis * 2 * .55 * Math.PI;
+        commandedChassisSpeeds.omegaRadiansPerSecond = rotationalAxis * .55 * Math.PI;
 
         // Input the drive code
 //        drive.driveCartesian(forwardAxis, lateralAxis, rotationalAxis);

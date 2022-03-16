@@ -175,6 +175,8 @@ public class Drive extends DreadbotSubsystem {
         builder.addDoubleProperty("targetChassisSpeedsX", () -> targetChassisSpeeds.vxMetersPerSecond, null);
         builder.addDoubleProperty("targetChassisSpeedsY", () -> targetChassisSpeeds.vyMetersPerSecond, null);
         builder.addDoubleProperty("targetChassisSpeedsOmega", () -> targetChassisSpeeds.omegaRadiansPerSecond, null);
+
+        builder.addDoubleProperty("gyroYawRate", gyroscope::getRate, null);
     }
 
     /**
@@ -351,5 +353,9 @@ public class Drive extends DreadbotSubsystem {
 
     public ProfiledPIDController getThetaController() {
         return thetaController;
+    }
+
+    public void resetRobotPose(Pose2d poseMeters) {
+        odometry.resetPosition(poseMeters, gyroscope.getRotation2d());
     }
 }

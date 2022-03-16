@@ -84,7 +84,8 @@ public class ShooterCommands {
                     new HoodCommands.TurnToAngle(shooter.getHood(), hoodAngle)
                 ),
                 new FlywheelCommands.Spool(shooter.getFlywheel(), flywheelSpeed),
-                new FeedBallCommand(shooter)
+                new FeedBallCommand(shooter),
+                new WaitCommand(1.0)
             );
         }
 

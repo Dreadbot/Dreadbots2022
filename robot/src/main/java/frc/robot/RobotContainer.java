@@ -142,7 +142,7 @@ public class RobotContainer {
         secondaryController.getAButton().whileHeld(new OuttakeCommand(intake));
         secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
 
-        primaryController.getLeftTrigger().whileHeld(new FlywheelCommands.TuneFlywheel(flywheel));
+//        primaryController.getLeftTrigger().whileHeld(new FlywheelCommands.TuneFlywheel(flywheel));
 
         // Feeder Commands
 //        feeder.setDefaultCommand(new RunCommand(feeder::idle, feeder));
@@ -163,24 +163,24 @@ public class RobotContainer {
         secondaryController.getBButton().whileHeld(new ShooterCommands.LowShoot(shooter, intake));
         SmartDashboard.putNumber("COMMANDED RPM", 0);
         secondaryController.getYButton().whileHeld(new ShooterCommands.HighShoot(shooter, intake), false);
-        secondaryController.getStartButton().whileHeld(new ShooterCommands.PresetShoot(shooter, 155, 71.862, 3436.0d, 155.0d));
+        secondaryController.getStartButton().whileHeld(new ShooterCommands.PresetShoot(shooter, 155, 71.862, 4100.0d, 155.0d));
 //        secondaryController.getBButton().whileHeld(new ShootCommand(shooter, dreadbotColorSensor, teamColorChooser::getSelected));
 
         // Climber Commands
-//        climber.setDefaultCommand(new RunCommand(climber::idle, climber));
-//        primaryController.getBButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
-//        primaryController.getAButton().whenPressed(new RotateNeutralHookDownCommand(climber));
-//        primaryController.getXButton().whenPressed(new RotateClimbingArmVerticalCommand(climber));
-//        primaryController.getYButton().whenPressed(new RotateClimbingArmDownCommand(climber));
-//        primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber));
-//        primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
-//        primaryController.getRightBumper().whenPressed(new AutonomousClimberCommand(climber));
+        climber.setDefaultCommand(new RunCommand(climber::idle, climber));
+        primaryController.getBButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
+        primaryController.getAButton().whenPressed(new RotateNeutralHookDownCommand(climber));
+        primaryController.getXButton().whenPressed(new RotateClimbingArmVerticalCommand(climber));
+        primaryController.getYButton().whenPressed(new RotateClimbingArmDownCommand(climber));
+        primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber));
+        primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
+        primaryController.getRightBumper().whenPressed(new AutonomousClimberCommand(climber));
     }
 
     public Command getAutonomousCommand(){
 //        return new VelocityControlTestCommand(drive);
 
-        PathPlannerTrajectory examplePath = PathPlanner.loadPath("TaxiAuton1", 3, 2);
+        PathPlannerTrajectory examplePath = PathPlanner.loadPath("TaxiAuton1", 1.5, 1);
 
         return new TrajectoryAuton(
             examplePath,
@@ -189,7 +189,7 @@ public class RobotContainer {
             drive.getXController(),
             drive.getYController(),
             drive.getThetaController(),
-            3.0,
+            1.5,
             drive::setWheelSpeeds,
             drive
         );
