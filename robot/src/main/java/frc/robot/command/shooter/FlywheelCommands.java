@@ -60,7 +60,7 @@ public class FlywheelCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(flywheel.getTangentialVelocity() - velocity) <= 0.25d;
+            return Math.abs(flywheel.getTangentialVelocity() - velocity) <= 0.1d;
         }
     }
 }

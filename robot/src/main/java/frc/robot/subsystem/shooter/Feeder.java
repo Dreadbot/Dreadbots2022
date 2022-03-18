@@ -2,6 +2,7 @@ package frc.robot.subsystem.shooter;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystem.DreadbotSubsystem;
 
 /**
@@ -23,6 +24,11 @@ public class Feeder extends DreadbotSubsystem {
         motor.restoreFactoryDefaults();
         motor.setIdleMode(IdleMode.kCoast);
         motor.setInverted(true);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("feederPosition", motor.getEncoder().getPosition());
     }
 
     /**

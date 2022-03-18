@@ -1,6 +1,7 @@
 package frc.robot.command.shooter;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.command.intake.IntakeCommand;
 import frc.robot.subsystem.Intake;
@@ -75,9 +76,8 @@ public class ShooterCommands {
                     new HoodCommands.TurnToAngle(shooter.getHood(), hoodAngle)
                 ),
                 new FlywheelCommands.PreparePresetShot(shooter.getFlywheel(), flywheelSpeed),
-                new WaitCommand(1.0),
                 new FeedBallCommand(shooter),
-                new WaitCommand(1.0)
+                new WaitCommand(0.5)
             );
         }
 
@@ -92,7 +92,8 @@ public class ShooterCommands {
         private Feeder feeder;
         private ColorSensor colorSensor;
 
-        private double feedPosition = 0;
+        private Color colorFeeding;
+        private double initialPosition;
 
         public FeedBallCommand(Shooter shooter) {
             this.feeder = shooter.getFeeder();
@@ -103,7 +104,7 @@ public class ShooterCommands {
 
         @Override
         public void initialize() {
-            feedPosition = feeder.getFeederPosition();
+            colorFeeding = colorSensor.getBallColor();
         }
 
         @Override
@@ -113,7 +114,9 @@ public class ShooterCommands {
 
         @Override
         public boolean isFinished() {
-            return !colorSensor.isBallDetected();
+            if(Math.abs(feeder.getFeederPosition() - initialPosition) >= 140.0) return true;
+
+            return !colorSensor.isBallDetected() || colorSensor.getBallColor() != colorFeeding;
         }
     }
 
@@ -132,12 +135,23 @@ public class ShooterCommands {
                     new IntakeCommand(intake)
                 ),
                 new ConditionalCommand(
-                    new PresetShoot(shooter, 155.0, 60.0d, 7.0d, 155.0d),
-                    new PresetShoot(shooter, 65.0, 60.0d, 7.0d, 155.0d),
+                    new PresetShoot(shooter, 155.0, 60.0d, 7.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
+                    new PresetShoot(shooter, 65.0, 60.0d, 7.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
                     shooter.getColorSensor()::isCorrectColor
                 )
             );
         }
+
+//        @Override
+//        public void end(boolean interrupted) {
+//            shooter.getFeeder().idle();
+//            shooter.getFlywheel().idle();
+//        }
+//
+//        @Override
+//        public boolean isFinished() {
+//            return !shooter.getColorSensor().isBallDetected();
+//        }
     }
 
     public static class HighShoot extends ParallelCommandGroup {
