@@ -75,8 +75,20 @@ def show_monitors(screen, table, monitors, start_y, start_x, stop_x, padding, ou
 
 def nt_update(table, selection, monitors, buffer):
     monitor_type = monitors[selection]['type']
+
+    trues = ['True', 'true', 1]
+    falses = ['False', 'false', 0]
+
     if monitor_type == 'num' or monitor_type == 'number':
         table.putNumber(selection, buffer)
+    
+    elif monitor_type == 'bool' or monitor_type == 'boolean':
+        if buffer in trues:
+            table.putBoolean(selection, True)
+        elif buffer in falses:
+            table.putBoolean(selection, False)
+        else:
+            pass
 
 def restore_values(monitors, table):
     with open('saved_monitors.json', 'r') as f:
@@ -87,17 +99,9 @@ def restore_values(monitors, table):
 
 
 def nt_connect():
-    #    logging.basicConfig(level=logging.DEBUG)
-
     ip = "10.36.56.2"
 
     NetworkTables.initialize(server=ip)
-
-    def connection_listener(connected, info):
-        #print(info, "; connected=%s" % connected)
-        pass
-
-    NetworkTables.addConnectionListener(connection_listener, immediateNotify=True)
 
     table = NetworkTables.getTable('SmartDashboard')
 
@@ -154,26 +158,53 @@ def main(screen):
         key = screen.getch()
 
         if key == curses.KEY_DOWN:
-            my = min([my+2, stop_y-2])
+            my += 2
+            if my > stop_y-1:
+                my = 1
+
         elif key == curses.KEY_UP:
-            my = max([my-2, 1])
+            my -= 2
+            if my <= 1:
+                my = stop_y-2
+
         elif key == ord('q'):
             break
+
         elif key == curses.KEY_ENTER or key == ord('\n'):
             selection_index = (my-1) // 2
             selection = list(monitors)[selection_index]
-            quick_log(str(type(selection)))
-            buffer = float(''.join(map(str, buffer)))
+
+            if buffer == []:
+                continue
+
+            try:
+                buffer = float(''.join(map(str, buffer)))
+            except ValueError:
+                buffer = ''.join(map(str, buffer))
+
             nt_update(table, selection, monitors, buffer)
+
             buffer = []
+
+            curses.flash()
+
         elif key == ord('s'):
             write_values(monitors, table)
+            curses.flash()
+
         elif key == ord('r'):
             restore_values(monitors, table)
+            curses.flash()
+
+        elif key == ord('.'):
+            buffer.append(chr(key))
+
+        elif key == curses.KEY_BACKSPACE or key == ord('\b'):
+            buffer.pop()
+
         else:
             if key is not curses.ERR and chr(key).isalnum():
                 buffer.append(chr(key))
 
 
 wrapper(main)
-print(log)

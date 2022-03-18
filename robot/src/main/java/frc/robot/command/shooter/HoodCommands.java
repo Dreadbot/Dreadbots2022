@@ -1,8 +1,8 @@
 package frc.robot.command.shooter;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystem.shooter.Hood;
@@ -24,10 +24,11 @@ public class HoodCommands {
         private final CargoKinematics cargoKinematics;
 
         private double lastDistanceToHub;
+        private double commandedAngle;
 
         public PassiveTrack(Hood hood) {
             this.hood = hood;
-            this.cargoKinematics = new CargoKinematics(s -> 3.048, 0.5715, 2.6416);
+            this.cargoKinematics = new CargoKinematics(s -> 0.306*s + 2.6, 0.5715, 2.6416);
 
             addRequirements(hood);
         }
@@ -36,18 +37,16 @@ public class HoodCommands {
         public void execute() {
             if(!VisionInterface.canTrackHub()) return;
 
-            double distanceToHub = VisionInterface.getRelativeDistanceToHub();
+            double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
             double hoodAngle = cargoKinematics.getBallDirectionAngle(distanceToHub);
+            commandedAngle = hoodAngle;
 
             if(distanceToHub != lastDistanceToHub) hoodControlAngle(hoodAngle);
             lastDistanceToHub = distanceToHub;
         }
 
         private void hoodControlAngle(double relativeHoodAngle) {
-            double currentAngle = hood.getAngle();
-            double requestedAngle = currentAngle - hoodTrackingController.calculate(relativeHoodAngle);
-
-            hood.setAngle(requestedAngle);
+            hood.setAngle(relativeHoodAngle);
         }
     }
 
@@ -59,7 +58,7 @@ public class HoodCommands {
 
         public ActiveTrack(Hood hood) {
             this.hood = hood;
-            this.cargoKinematics = new CargoKinematics(s -> 3.048, 0.5715, 2.6416);
+            this.cargoKinematics = new CargoKinematics(s -> 0.306*s + 2.6, 0.5715, 2.6416);
 
             addRequirements(hood);
         }
@@ -68,7 +67,7 @@ public class HoodCommands {
         public void execute() {
             if(!VisionInterface.canTrackHub()) return;
 
-            double distanceToHub = VisionInterface.getRelativeDistanceToHub();
+            double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
             double hoodAngle = cargoKinematics.getBallDirectionAngle(distanceToHub);
 
             if(distanceToHub != lastDistanceToHub) hoodControlAngle(hoodAngle);
@@ -77,14 +76,11 @@ public class HoodCommands {
 
         @Override
         public boolean isFinished() {
-            return hoodTrackingController.atSetpoint();
+            return hood.isAtSetAngle();
         }
 
         private void hoodControlAngle(double relativeHoodAngle) {
-            double currentAngle = hood.getAngle();
-            double requestedAngle = currentAngle - hoodTrackingController.calculate(relativeHoodAngle);
-
-            hood.setAngle(requestedAngle);
+            hood.setAngle(relativeHoodAngle);
         }
     }
 
@@ -152,6 +148,8 @@ public class HoodCommands {
 
         @Override
         public boolean isFinished() {
+            if(!Constants.HOOD_ENABLED) return true;
+
             return upperCalibrated;
         }
     }
@@ -176,7 +174,7 @@ public class HoodCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(hood.getAngle() - angle) <= 1.0d;
+            return hood.isAtSetAngle();
         }
     }
 }

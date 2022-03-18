@@ -3,6 +3,7 @@ package frc.robot.subsystem.shooter;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.Constants;
@@ -13,6 +14,7 @@ public class ColorSensor extends DreadbotSubsystem {
     private ColorMatch colorMatch;
 
     private Color initialBallColor;
+    private DriverStation.Alliance alliance;
 
     private final double colorConfidence = 0.9;
     private double currentConfidence;
@@ -35,15 +37,26 @@ public class ColorSensor extends DreadbotSubsystem {
         String colorName;
         Color ballColor = getBallColor();
 
+        colorName = getColorSerialized(ballColor);
+
+        SmartDashboard.putString("ColorSerialized", getColorSerialized(ballColor));
+        SmartDashboard.putBoolean("BallDetected", isBallDetected());
+        SmartDashboard.putBoolean("ColorAllianceMatch", isCorrectColor());
+        SmartDashboard.putString("EnumToString", DriverStation.getAlliance().name());
+        SmartDashboard.putString("Color:", colorName);
+    }
+
+    private String getColorSerialized(Color ballColor) {
+        String colorName;
         if (ballColor == Constants.COLOR_RED) {
-            colorName = "RED";
+            colorName = "Red";
         } else if (ballColor == Constants.COLOR_BLUE) {
-            colorName = "BLUE";
+            colorName = "Blue";
+            alliance = DriverStation.Alliance.Blue;
         } else {
             colorName = "NO MATCH";
         }
-
-        SmartDashboard.putString("Color:", colorName);
+        return colorName;
     }
 
     public Color getBallColor()
@@ -82,5 +95,9 @@ public class ColorSensor extends DreadbotSubsystem {
 
     public Color getInitialBallColor() {
         return initialBallColor;
+    }
+
+    public boolean isCorrectColor() {
+        return getColorSerialized(getBallColor()).equals(DriverStation.getAlliance().name());
     }
 }

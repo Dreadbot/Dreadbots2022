@@ -1,8 +1,11 @@
 import cv2
 import numpy as np
 import json
+from networktables import NetworkTable
+import os
 
-#Blend two images together with linear transparency gradient
+
+# Blend two images together with linear transparency gradient
 def image_blend(src1, src2, overlap_width):
     assert src1.shape == src2.shape, "Blend inputs must match shape"
 
@@ -46,13 +49,14 @@ def image_blend(src1, src2, overlap_width):
         # If for some reason either src image's current column doesn't exist create a blank strip
         if not src1_strip.any():
             src1_strip = np.zeros([base_h, 1, 3], dtype=np.uint8)
-        
+
         if not src2_strip.any():
             src2_strip = np.zeros([base_h, 1, 3], dtype=np.uint8)
 
         # cv2.addWeighted outputs the overlapped strip with transparency
         # Copy the new overlapped strip over to the full overlap portion
-        overlapped_region[0:base_h, col:col+1] = cv2.addWeighted(src1_strip, src1_weight, src2_strip, src2_weight, 0)
+        overlapped_region[0:base_h, col:col+1] = cv2.addWeighted(
+            src1_strip, src1_weight, src2_strip, src2_weight, 0)
 
         # Adjust the transparency weights with respect to the gradient slope
         src1_weight -= transparency_step
@@ -65,31 +69,113 @@ def image_blend(src1, src2, overlap_width):
     return(sum_img)
 
 
+def calibrate_intrinsic_for_table(cam_id, outputStream, table: NetworkTable, img_count=20):
+    cap = cv2.VideoCapture(cam_id)
+
+    base_path = "calibrating_imgs"
+
+    table.putBoolean("FisheyeCalibration", False)
+    table.putBoolean("ExitFisheyeCalibration", False)
+
+    for i in range(img_count):
+        path = "calibrating_imgs/{0}.png".format(i)
+        while True:
+            ret, img = cap.read()
+            outputStream.putFrame(img)
+
+            if table.getBoolean("FisheyeCalibration", False):
+                print(f"Image {i + 1} Taken")
+                table.putBoolean("FisheyeCalibration", False)
+                cv2.imwrite(path, img)
+                break
+
+            if table.getBoolean("ExitFisheyeCalibration", False):
+                print("among us")
+                exit()
+
+    CHECKERBOARD = (7, 9)
+
+    subpix_criteria = (cv2.TERM_CRITERIA_EPS +
+                       cv2.TERM_CRITERIA_MAX_ITER, 30, 0.1)
+
+    objp = np.zeros((1, CHECKERBOARD[0]*CHECKERBOARD[1], 3), np.float32)
+    objp[0, :, :2] = np.mgrid[0:CHECKERBOARD[0],
+                              0:CHECKERBOARD[1]].T.reshape(-1, 2)
+
+    _img_shape = None
+
+    objpoints = []
+    imgpoints = []
+
+    images = os.listdir(base_path)
+
+    for i in range(0, len(images)):
+        images[i] = base_path+"/{0}".format(images[i])
+
+    for file in images:
+        img = cv2.imread(file)
+        if _img_shape == None:
+            _img_shape = img.shape[:2]
+        else:
+            assert _img_shape == img.shape[:2], "All images must share the same size."
+
+        gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        ret, corners = cv2.findChessboardCorners(
+            gray_img, CHECKERBOARD, cv2.CALIB_CB_ADAPTIVE_THRESH+cv2.CALIB_CB_FAST_CHECK+cv2.CALIB_CB_NORMALIZE_IMAGE)
+
+        if ret == True:
+            objpoints.append(objp)
+            cv2.cornerSubPix(gray_img, corners, (3, 3),
+                             (-1, -1), subpix_criteria)
+            imgpoints.append(corners)
+
+    N_OK = len(objpoints)
+
+    K = np.zeros((3, 3))
+    D = np.zeros((4, 1))
+
+    rvecs = [np.zeros((1, 1, 3), dtype=np.float64) for i in range(N_OK)]
+    tvecs = [np.zeros((1, 1, 3), dtype=np.float64) for i in range(N_OK)]
+
+    calibrated_rms = cv2.fisheye.calibrate(
+        objpoints, imgpoints, gray_img.shape[::-1], K, D, rvecs, tvecs)
+
+    print("Found " + str(N_OK) + " valid images for calibration")
+    print("DIM=" + str(_img_shape[::-1]))
+    print("K=np.array(" + str(K.tolist()) + ")")
+    print("D=np.array(" + str(D.tolist()) + ")")
+
+
 class Fisheye:
     def __init__(self, capture_id, fisheye_id, adj_exposure=None):
         # JSON Recognizes the camera IDs as strings, so convert the integer input into a string
         self.cam_id = str(fisheye_id)
-        
+
         # Load the fisheye calibration file in as confs_loaded
         with open('calibrations.json', 'r') as f:
             confs_loaded = json.load(f)
-        
+
         # Define a bunch of camera attributes according to the loaded configuration
-        self.K = np.array(confs_loaded[self.cam_id]['K']) # Camera Intrinsic Matrix
-        self.D = np.array(confs_loaded[self.cam_id]['D']) # Camera Distortion Matrix
+        # Camera Intrinsic Matrix
+        self.K = np.array(confs_loaded[self.cam_id]['K'])
+        # Camera Distortion Matrix
+        self.D = np.array(confs_loaded[self.cam_id]['D'])
 
-        self.fx = self.K[0,0] # Focal X
-        self.fy = self.K[1,1] # Focal Y
+        self.fx = self.K[0, 0]  # Focal X
+        self.fy = self.K[1, 1]  # Focal Y
 
-        self.x = self.K[0,2] # X Offset
-        self.y = self.K[1,2] # Y Offset
+        self.x = self.K[0, 2]  # X Offset
+        self.y = self.K[1, 2]  # Y Offset
 
-        self.axis_skew = self.K[0,1] # Axis Skew
+        self.axis_skew = self.K[0, 1]  # Axis Skew
 
-        self.DIM = (confs_loaded[self.cam_id]['DIM'][0], confs_loaded[self.cam_id]['DIM'][1]) # Output dimensions
+        self.DIM = (confs_loaded[self.cam_id]['DIM'][0],
+                    confs_loaded[self.cam_id]['DIM'][1])  # Output dimensions
 
         # Calculate the undistortion maps
-        self.map1, self.map2 = cv2.fisheye.initUndistortRectifyMap(self.K, self.D, np.eye(3), self.K, self.DIM, cv2.CV_16SC2)
+        self.map1, self.map2 = cv2.fisheye.initUndistortRectifyMap(
+            self.K, self.D, np.eye(3), self.K, self.DIM, cv2.CV_16SC2)
 
         # Create OpenCV capture object
         self.cap = cv2.VideoCapture(capture_id)
@@ -114,11 +200,13 @@ class Fisheye:
     def reverse_project_point(self, x, y):
         rotation_vector = np.array([[[0., 0., 0.]]])
         translation_vector = np.array([[[0., 0., 0.]]])
-        
+
         obj_point = np.array([[[(x-self.x)/self.fx, (y-self.y)/self.fy, 0]]])
 
-        projected_points, _ = cv2.fisheye.projectPoints(obj_point, rotation_vector, translation_vector, self.K, self.D)
-        unwrapped_points = (int(projected_points[0, 0, 0]), int(projected_points[0, 0, 1]))
+        projected_points, _ = cv2.fisheye.projectPoints(
+            obj_point, rotation_vector, translation_vector, self.K, self.D)
+        unwrapped_points = (int(projected_points[0, 0, 0]), int(
+            projected_points[0, 0, 1]))
 
         return(unwrapped_points)
 
@@ -128,19 +216,21 @@ class Fisheye:
         found_x, found_y = self.reverse_project_point(x, y)
 
         # Define center variables
-        center_x, center_y = (320,240)
+        center_x, center_y = (320, 240)
 
         # Define and undistort the horizontal calibrated point for the horizontal axis
-        horizontal_calibrated_point = self.reverse_project_point(87,255)
-        horizontal_calibrated_x, _ = horizontal_calibrated_point # Second value (Y coordinate) ignored as it is not used
+        horizontal_calibrated_point = self.reverse_project_point(87, 255)
+        # Second value (Y coordinate) ignored as it is not used
+        horizontal_calibrated_x, _ = horizontal_calibrated_point
 
-        horizontal_calibrated_angle = 47.897 # Degrees
+        horizontal_calibrated_angle = 47.897  # Degrees
 
         # Define and undistort the vertical calibrated point for the vertical axis
         vertical_calibrated_point = self.reverse_project_point(330, 18)
-        _, vertical_calibrated_y = vertical_calibrated_point # First value (X coordinate) ignored as it is not used
+        # First value (X coordinate) ignored as it is not used
+        _, vertical_calibrated_y = vertical_calibrated_point
 
-        vertical_calibrated_angle = 41.139 # Degrees
+        vertical_calibrated_angle = 41.139  # Degrees
 
         # Calculate the calibrated points' distances from the center of the image
         calibrated_dx = abs(horizontal_calibrated_x-center_x)
@@ -151,7 +241,8 @@ class Fisheye:
         found_dy = abs(found_y-center_y)
 
         # Calculate the horizontal and vertical angle to the given point with respect to the optical axis
-        horizontal_angle = (horizontal_calibrated_angle/calibrated_dx) * found_dx
+        horizontal_angle = (horizontal_calibrated_angle /
+                            calibrated_dx) * found_dx
         vertical_angle = (vertical_calibrated_angle/calibrated_dy) * found_dy
 
         '''
@@ -161,7 +252,6 @@ class Fisheye:
         angle_1 = (angle_2 / pixel_distance_2) * pixel_distance_1
         '''
 
-        
         # Output calculated angles
         return horizontal_angle, vertical_angle
 
