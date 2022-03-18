@@ -983,6 +983,11 @@
                   "Visuals/Starting angle": 180.0,
                   "Visuals/Show tick mark ring": true,
                   "Visuals/Counter clockwise": false
+                },
+                {
+                  "_type": "PID Controller",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/PIDController[11]",
+                  "_title": "PIDController[11]"
                 }
               ]
             }
@@ -1004,6 +1009,31 @@
                   "_title": "IsAtSetVelocity",
                   "Colors/Color when true": "#7CFC00FF",
                   "Colors/Color when false": "#8B0000FF"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Flywheel/Velocity (tan)",
+                  "_title": "Velocity (tan)"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Flywheel/controllerI",
+                  "_title": "controllerI"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Flywheel/controllerD",
+                  "_title": "controllerD"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Flywheel/controllerP",
+                  "_title": "controllerP"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Flywheel/Motor RPM",
+                  "_title": "Motor RPM"
                 }
               ]
             }
@@ -1522,7 +1552,7 @@
                 "0,0": {
                   "_type": "Boolean Box",
                   "_source0": "network_table:///SmartDashboard/TargetFoundInFrame",
-                  "_title": "/SmartDashboard/TargetFoundInFrame",
+                  "_title": "/SmartDashboard/IsTargetFoundInFrame",
                   "Colors/Color when true": "#7CFC00FF",
                   "Colors/Color when false": "#8B0000FF"
                 },
@@ -1596,22 +1626,90 @@
               "_title": "/SmartDashboard/FeederCommandLock"
             }
           },
-          "1,3": {
+          "11,1": {
             "size": [
               1,
               1
             ],
             "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/IsTargetFoundInFrame",
+              "_title": "SmartDashboard/IsTargetFoundInFrame",
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "3,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/CurrentCameraNumber",
+              "_title": "/SmartDashboard/CurrentCameraNumber"
+            }
+          },
+          "3,3": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/CameraSelection",
+              "_title": "SmartDashboard/CameraSelection"
+            }
+          },
+          "11,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/DampenWeight",
+              "_title": "SmartDashboard/DampenWeight"
+            }
+          },
+          "3,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Hood Angle",
+              "_title": "SmartDashboard/Hood Angle"
+            }
+          },
+          "0,2": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
               "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/Flywheel Velocity",
-              "_title": "SmartDashboard/Flywheel Velocity",
+              "_source0": "network_table:///LiveWindow/Flywheel/Velocity (tan)",
+              "_title": "LiveWindow/Flywheel/Velocity (tan)",
               "Graph/Visible time": 30.0,
               "Graph/X-axis auto scrolling": true,
               "Y-axis/Automatic bounds": true,
               "Y-axis/Upper bound": 1.0,
               "Y-axis/Lower bound": -1.0,
               "Y-axis/Unit": "ul",
-              "Visible data/SmartDashboard/Flywheel Velocity": true
+              "Visible data/LiveWindow/Flywheel/Velocity (tan)": true
+            }
+          },
+          "0,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///LiveWindow/Flywheel/Motor RPM",
+              "_title": "LiveWindow/Flywheel/Motor RPM"
             }
           }
         }
@@ -2074,8 +2172,7 @@
               "Y-axis/Automatic bounds": true,
               "Y-axis/Upper bound": 1.0,
               "Y-axis/Lower bound": -1.0,
-              "Y-axis/Unit": "ul",
-              "Visible data/SmartDashboard/Flywheel Velocity": true
+              "Y-axis/Unit": "ul"
             }
           }
         }
