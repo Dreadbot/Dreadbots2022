@@ -133,7 +133,7 @@ public class RobotContainer {
 
         // Intake Commands
         intake.setDefaultCommand(new RunCommand(intake::idle, intake));
-        secondaryController.getAButton().whileHeld(new OuttakeCommand(intake));
+        secondaryController.getAButton().whileHeld(new OuttakeCommand(intake, feeder));
         secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
 
         // Shooter Commands

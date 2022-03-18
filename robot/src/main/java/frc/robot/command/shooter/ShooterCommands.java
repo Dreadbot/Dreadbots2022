@@ -119,14 +119,6 @@ public class ShooterCommands {
             feeder.feed();
             SmartDashboard.putString("Ball fed", "Ball is being fed");
         }
-
-//        @Override
-//        public boolean isFinished() {
-////            Color currentBallColor = colorSensor.getBallColor();
-////            // Return true if different color ball, or if no ball is detected
-////            return currentBallColor == null || currentBallColor != colorSensor.getInitialBallColor();
-//            return Math.abs(feeder.getFeederPosition() - feedPosition) > 100.0d;
-//        }
     }
 
     public static class LowShoot extends SequentialCommandGroup {
@@ -144,8 +136,8 @@ public class ShooterCommands {
                     new IntakeCommand(intake)
                 ),
                 new ConditionalCommand(
-                    new PresetShoot(shooter, 155.0, 65.0d, 3.0d, 155.0d),
-                    new PresetShoot(shooter, 65.0, 65.0d, 3.0d, 155.0d),
+                    new PresetShoot(shooter, 155.0, 60.0d, 2.0d, 155.0d),
+                    new PresetShoot(shooter, 65.0, 60.0d, 2.0d, 155.0d),
                     shooter.getColorSensor()::isCorrectColor
                 )
             );

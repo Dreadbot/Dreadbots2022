@@ -55,6 +55,14 @@ public class Feeder extends DreadbotSubsystem {
         return motor.getEncoder().getPosition();
     }
 
+    public void outtake() {
+        if(isDisabled()) return;
+
+        try {
+            motor.set(-0.25);
+        } catch (IllegalStateException ignored) { disable(); }
+    }
+
     /**
      * Stops the motor while the feeder is not required.
      */
