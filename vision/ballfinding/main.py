@@ -5,6 +5,7 @@ import circularity
 import hough
 import threading
 import argparse
+import dreadbot_fisheye as df
 from networktables import NetworkTables
 from cscore import CameraServer
 
@@ -19,6 +20,8 @@ def main():
     argparser.add_argument('-r', '--range', action='store', dest='colorrange')
     argparser.add_argument('-p', '--data-path',
                            action='store', dest='datapath')
+    argparser.add_argument('-0', '--fisheye-id-0', action='store', type=int, dest='fisheyeid0')
+    argparser.add_argument('-1', '--fisheye-id-1', action='store', type=int, dest='fisheyeid1')
     # argparser.add_argument(
     #     '-v', '--visual', action='store_true', dest='visualmode')
     args = argparser.parse_args()
@@ -78,10 +81,15 @@ def main():
     else:
         cs = None
 
-    cameras = cv2.VideoCapture(0), cv2.VideoCapture(1)
+    fisheyeid0, fisheyeid1 = 9, 9
 
-    for cam in cameras:
-        cam.set(cv2.CAP_PROP_EXPOSURE, -4)
+    if args.fisheyeid0 is not None:
+        fisheyeid0 = args.fisheyeid0
+    
+    if args.fisheyeid1 is not None:
+        fisheyeid1 = args.fisheyeid1
+
+    cameras = df.Fisheye(0, fisheyeid0, -4), df.Fisheye(1, fisheyeid1, -4)
 
     while True:
         vc = cameras[0]
@@ -94,10 +102,7 @@ def main():
 
             vc = cameras[tableCam]
 
-        ret, frame = vc.read()
-
-        if not ret:
-            break
+        frame = vc.retrieve_undistorted_img()
 
         if table is None:
             util.setupDefaultSliderWindow("hsv", "Trackbars", "blue")
@@ -170,12 +175,14 @@ def main():
                 if betterC[2] > bestCircle[2]:
                     bestCircle = betterC
 
-            dX, dZ, distance, angle = util.getDistance(
-                frame, bestCircle[0], bestCircle[2], util.focalLength, util.ballDiameter)
+            # dX, dZ, distance, angle = util.getDistance(
+            #    frame, bestCircle[0], bestCircle[2], util.focalLength, util.ballDiameter)
+
+            angle, _ = vc.calculate_angle(bestCircle[0], bestCircle[1])
 
             if table is not None:
-                table.putNumber("RelativeDistanceToBallX", dX)
-                table.putNumber("RelativeDistanceToBallZ", dZ)
+                # table.putNumber("RelativeDistanceToBallX", dX)
+                # table.putNumber("RelativeDistanceToBallZ", dZ)
                 table.putNumber("RelativeAngleToBall", angle)
 
         if cs is not None:
