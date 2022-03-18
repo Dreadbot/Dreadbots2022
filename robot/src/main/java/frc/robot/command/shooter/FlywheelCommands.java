@@ -2,14 +2,12 @@ package frc.robot.command.shooter;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystem.shooter.Feeder;
 import frc.robot.subsystem.shooter.Flywheel;
 import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.util.CargoKinematics;
 import frc.robot.util.VisionInterface;
-import frc.robot.util.tuning.SparkMaxTuningUtility;
 
 public class FlywheelCommands {
     public static final double LOB_RPM = 200.0d;
@@ -75,7 +73,7 @@ public class FlywheelCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(flywheel.getVelocity() - velocity) <= 0.25d;
+            return Math.abs(flywheel.getTangentialVelocity() - velocity) <= 0.25d;
         }
     }
 

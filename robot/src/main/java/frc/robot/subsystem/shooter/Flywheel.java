@@ -3,15 +3,12 @@ package frc.robot.subsystem.shooter;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax.ControlType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystem.DreadbotSubsystem;
-import frc.robot.util.tuning.SparkMaxTuningUtility;
 
 /**
  * The flywheel is the mechanism that shoots the ball out of the robot.
@@ -24,12 +21,10 @@ public class Flywheel extends DreadbotSubsystem {
     @SuppressWarnings("FieldMayBeFinal")
     private SparkMaxPIDController pidController;
 
-    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.46501, 0.26802 * 3, 0.032936);
+    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.46501, 0.26802 * 4.5, 0.032936);
     private PIDController controller = new PIDController(0.3, 0.05, 0);
 
-    private double setVelocity;
-
-//    private SparkMaxTuningUtility tuner;
+    private double setVelocity = 0.0d;
 
     /**
      * Disabled constructor
@@ -53,12 +48,6 @@ public class Flywheel extends DreadbotSubsystem {
         pidController.setIZone(Constants.FLYWHEEL_I_ZONE);
         pidController.setFF(Constants.FLYWHEEL_FF_GAIN);
         pidController.setOutputRange(Constants.FLYWHEEL_MIN_OUTPUT, Constants.FLYWHEEL_MAX_OUTPUT);
-
-        SmartDashboard.putNumber("Requested Flywheel RPM", 0.0d);
-        SmartDashboard.putNumber("Target Flywheel Velocity", 0.0d);
-
-//        this.tuner = new SparkMaxTuningUtility(motor);
-//        SmartDashboard.putData("tuner", tuner);
     }
 
     @Override
@@ -71,7 +60,7 @@ public class Flywheel extends DreadbotSubsystem {
         builder.setSafeState(this::stopMotors);
 
         builder.addBooleanProperty("IsAtSetVelocity", this::isAtSetVelocity, null);
-        builder.addDoubleProperty("Velocity (tan)", this::getVelocity, null);
+        builder.addDoubleProperty("Velocity (tan)", this::getTangentialVelocity, null);
         builder.addDoubleProperty("Motor RPM", this::getMotorAngularVelocity, null);
 
         builder.addDoubleProperty("controllerP", this.controller::getP, this.controller::setP);
@@ -88,22 +77,13 @@ public class Flywheel extends DreadbotSubsystem {
         this.setVelocity = velocity;
         if(isDisabled()) return;
 
-        // Prevents the motor from going beyond its maximum 5700RPM
-//        final double finalVelocity = Math.min(velocity, Constants.FLYWHEEL_MAX_RPM);
-//        SmartDashboard.putNumber("Target Flywheel Velocity", finalVelocity);
-//
-//        // Commands the motor to approach the requested angular speed.
-//        try {
-//            pidController.setReference(finalVelocity, ControlType.kVelocity);
-//        } catch (IllegalStateException ignored) { disable(); }
-
         try {
-            motor.setVoltage(feedforward.calculate(velocity, 1.0) + controller.calculate(getVelocity(), velocity));
+            motor.setVoltage(feedforward.calculate(velocity, 1.0) + controller.calculate(getTangentialVelocity(), velocity));
         } catch (IllegalStateException ignored) { disable(); }
     }
 
     public boolean isAtSetVelocity() {
-        return Math.abs(getVelocity() - setVelocity) <= 50.0d;
+        return Math.abs(getTangentialVelocity() - setVelocity) <= 20.0d;
     }
 
     /**
@@ -124,14 +104,14 @@ public class Flywheel extends DreadbotSubsystem {
      *
      * @return the motor shaft angular velocity, in RPM
      */
-    public double getVelocity() {
+    public double getTangentialVelocity() {
         if(isDisabled()) return 0.0d;
 
         // Get the current commanded velocity. If there is a failure,
         // the output is considered zero.
         double velocity = 0.0d;
         try {
-            velocity = getMotorAngularVelocity() / (115.60 * 5);
+            velocity = getMotorAngularVelocity() * 0.00932;
         } catch (IllegalStateException ignored) { disable(); }
 
         return velocity;
