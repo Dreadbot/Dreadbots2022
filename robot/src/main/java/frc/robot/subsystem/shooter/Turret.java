@@ -45,7 +45,7 @@ public class Turret extends DreadbotSubsystem {
         pidController.setD(0);
         pidController.setIZone(2.85);
         pidController.setFF(0.000015);
-        pidController.setOutputRange(-.2, .2);
+        pidController.setOutputRange(-.3, .3);
     }
 
     @Override
