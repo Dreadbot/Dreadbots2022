@@ -75,27 +75,27 @@ public class FlywheelCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(flywheel.getVelocity() - velocity) <= 50.0d;
+            return Math.abs(flywheel.getVelocity() - velocity) <= 0.25d;
         }
     }
 
-    public static class TuneFlywheel extends CommandBase {
-        private SparkMaxTuningUtility tuner;
-
-        public TuneFlywheel(Flywheel flywheel) {
-            this.tuner = flywheel.getTuner();
-        }
-
-        @Override
-        public void initialize() {
-            tuner.tune();
-        }
-
-        @Override
-        public void end(boolean interrupted) {
-            tuner.stop();
-        }
-    }
+//    public static class TuneFlywheel extends CommandBase {
+//        private SparkMaxTuningUtility tuner;
+//
+//        public TuneFlywheel(Flywheel flywheel) {
+//            this.tuner = flywheel.getTuner();
+//        }
+//
+//        @Override
+//        public void initialize() {
+//            tuner.tune();
+//        }
+//
+//        @Override
+//        public void end(boolean interrupted) {
+//            tuner.stop();
+//        }
+//    }
 
     public static class ReverseBall extends CommandBase {
         private Flywheel flywheel;

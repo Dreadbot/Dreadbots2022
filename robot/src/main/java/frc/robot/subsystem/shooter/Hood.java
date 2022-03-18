@@ -73,6 +73,7 @@ public class Hood extends DreadbotSubsystem {
     }
 
     public void setAngle(double angle) {
+        this.setAngle = angle;
         if(isDisabled()) return;
 
         angle = DreadbotMath.clampValue(angle, Constants.MIN_HOOD_ANGLE, Constants.MAX_HOOD_ANGLE);
