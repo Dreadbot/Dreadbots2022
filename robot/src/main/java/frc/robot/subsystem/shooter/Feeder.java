@@ -2,6 +2,7 @@ package frc.robot.subsystem.shooter;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.REVLibError;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystem.DreadbotSubsystem;
 
@@ -22,7 +23,7 @@ public class Feeder extends DreadbotSubsystem {
         this.motor = motor;
 
         motor.restoreFactoryDefaults();
-        motor.setIdleMode(IdleMode.kCoast);
+        motor.setIdleMode(IdleMode.kBrake);
         motor.setInverted(true);
     }
 
@@ -59,6 +60,16 @@ public class Feeder extends DreadbotSubsystem {
         if(isDisabled()) return 0.0d;
 
         return motor.getEncoder().getPosition();
+    }
+
+    /**
+     * Sets the idle mode setting for the SPARK MAX.
+     *
+     * @param mode Idle mode (coast or brake).
+     * @return {@link REVLibError#kOk} if successful
+     */
+    public REVLibError setIdleMode(IdleMode mode) {
+        return motor.setIdleMode(mode);
     }
 
     public void outtake() {

@@ -1,5 +1,6 @@
 package frc.robot.command.shooter;
 
+import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.*;
@@ -114,7 +115,7 @@ public class ShooterCommands {
 
         @Override
         public boolean isFinished() {
-            if(Math.abs(feeder.getFeederPosition() - initialPosition) >= 140.0) return true;
+            if(Math.abs(feeder.getFeederPosition() - initialPosition) >= 100.0) return true;
 
             return !colorSensor.isBallDetected() || colorSensor.getBallColor() != colorFeeding;
         }
@@ -130,10 +131,12 @@ public class ShooterCommands {
 
             addRequirements();
             addCommands(
+                new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kCoast)),
                 new ParallelRaceGroup(
                     new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
                     new IntakeCommand(intake)
                 ),
+                new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kBrake)),
                 new ConditionalCommand(
                     new PresetShoot(shooter, 155.0, 60.0d, 7.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
                     new PresetShoot(shooter, 65.0, 60.0d, 7.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
