@@ -153,7 +153,7 @@ class Fisheye:
         self.cam_id = str(fisheye_id)
 
         # Load the fisheye calibration file in as confs_loaded
-        with open('calibrations.json', 'r') as f:
+        with open(os.path.join(os.path.dirname(os.path.realname(__file__)), 'calibrations.json'), 'r') as f:
             confs_loaded = json.load(f)
 
         # Define a bunch of camera attributes according to the loaded configuration
