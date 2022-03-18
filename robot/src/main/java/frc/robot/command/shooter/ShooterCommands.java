@@ -75,8 +75,9 @@ public class ShooterCommands {
                     new HoodCommands.TurnToAngle(shooter.getHood(), hoodAngle)
                 ),
                 new FlywheelCommands.PreparePresetShot(shooter.getFlywheel(), flywheelSpeed),
-                new WaitCommand(2.0),
-                new FeedBallCommand(shooter)
+                new WaitCommand(1.0),
+                new FeedBallCommand(shooter),
+                new WaitCommand(1.0)
             );
         }
 
@@ -108,7 +109,11 @@ public class ShooterCommands {
         @Override
         public void execute() {
             feeder.feed();
-            SmartDashboard.putString("Ball fed", "Ball is being fed");
+        }
+
+        @Override
+        public boolean isFinished() {
+            return !colorSensor.isBallDetected();
         }
     }
 

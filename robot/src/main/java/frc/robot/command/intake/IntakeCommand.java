@@ -19,4 +19,9 @@ public class IntakeCommand extends CommandBase {
         
         intake.intake();
     }
+
+    @Override
+    public void end(boolean interrupted) {
+        intake.idle();
+    }
 }
