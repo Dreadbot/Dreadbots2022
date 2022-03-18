@@ -21,8 +21,8 @@ public class Flywheel extends DreadbotSubsystem {
     @SuppressWarnings("FieldMayBeFinal")
     private SparkMaxPIDController pidController;
 
-    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.46501, 0.26802 * 4.5, 0.032936);
-    private PIDController controller = new PIDController(0.3, 0.05, 0);
+    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.36518, 0.24261 * 2.5, 0.099094);
+    private PIDController controller = new PIDController(0.16677, 0, 0);
 
     private double setVelocity = 0.0d;
 
@@ -83,7 +83,7 @@ public class Flywheel extends DreadbotSubsystem {
     }
 
     public boolean isAtSetVelocity() {
-        return Math.abs(getTangentialVelocity() - setVelocity) <= 20.0d;
+        return Math.abs(getTangentialVelocity() - setVelocity) <= 0.25d;
     }
 
     /**

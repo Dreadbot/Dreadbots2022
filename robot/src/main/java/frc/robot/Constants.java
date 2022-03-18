@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 
 public abstract class Constants {
-    public static final boolean DRIVE_ENABLED = true;
+    public static final boolean DRIVE_ENABLED = false;
     public static final boolean INTAKE_ENABLED = true;
     public static final boolean CLIMB_ENABLED = false;
     public static final boolean SHOOTER_ENABLED = true;

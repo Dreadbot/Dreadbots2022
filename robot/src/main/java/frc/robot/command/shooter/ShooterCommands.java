@@ -1,7 +1,6 @@
 package frc.robot.command.shooter;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.command.intake.IntakeCommand;
 import frc.robot.subsystem.Intake;
@@ -24,7 +23,7 @@ public class ShooterCommands {
                     new TurretCommands.ActiveTrack(shooter.getTurret()),
                     new HoodCommands.ActiveTrack(shooter.getHood())
                 ),
-                new FlywheelCommands.PrepareShot(shooter.getFlywheel()),
+                new FlywheelCommands.PrepareVisionShot(shooter.getFlywheel()),
                 new FeedBallCommand(shooter)
             );
         }
@@ -48,7 +47,7 @@ public class ShooterCommands {
 //                    new TurretCommands.EjectTrack(shooter.getTurret()),
                     new HoodCommands.TurnToAngle(shooter.getHood(), 65.0)
                 ),
-                new FlywheelCommands.Spool(shooter.getFlywheel(), 1000.0),
+                new FlywheelCommands.PreparePresetShot(shooter.getFlywheel(), 1000.0),
                 new FeedBallCommand(shooter)
             );
         }
@@ -56,14 +55,6 @@ public class ShooterCommands {
         @Override
         public void end(boolean interrupted) {
             shooter.getFlywheel().idle();
-        }
-    }
-
-    public static class ResetBallShot extends ParallelCommandGroup {
-        public ResetBallShot(Shooter shooter) {
-            addCommands(
-                new FlywheelCommands.ReverseBall(shooter)
-            );
         }
     }
 
@@ -83,7 +74,7 @@ public class ShooterCommands {
                     new TurretCommands.TurnToAngle(shooter.getTurret(), turretAngle),
                     new HoodCommands.TurnToAngle(shooter.getHood(), hoodAngle)
                 ),
-                new FlywheelCommands.Spool(shooter.getFlywheel(), flywheelSpeed),
+                new FlywheelCommands.PreparePresetShot(shooter.getFlywheel(), flywheelSpeed),
                 new WaitCommand(2.0),
                 new FeedBallCommand(shooter)
             );
@@ -136,8 +127,8 @@ public class ShooterCommands {
                     new IntakeCommand(intake)
                 ),
                 new ConditionalCommand(
-                    new PresetShoot(shooter, 155.0, 60.0d, 2.0d, 155.0d),
-                    new PresetShoot(shooter, 65.0, 60.0d, 2.0d, 155.0d),
+                    new PresetShoot(shooter, 155.0, 60.0d, 3.0d, 155.0d),
+                    new PresetShoot(shooter, 65.0, 60.0d, 3.0d, 155.0d),
                     shooter.getColorSensor()::isCorrectColor
                 )
             );
