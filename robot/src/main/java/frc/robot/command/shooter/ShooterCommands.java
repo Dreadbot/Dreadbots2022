@@ -132,8 +132,8 @@ public class ShooterCommands {
                     new IntakeCommand(intake)
                 ),
                 new ConditionalCommand(
-                    new PresetShoot(shooter, 155.0, 60.0d, 3.0d, 155.0d),
-                    new PresetShoot(shooter, 65.0, 60.0d, 3.0d, 155.0d),
+                    new PresetShoot(shooter, 155.0, 60.0d, 7.0d, 155.0d),
+                    new PresetShoot(shooter, 65.0, 60.0d, 7.0d, 155.0d),
                     shooter.getColorSensor()::isCorrectColor
                 )
             );
