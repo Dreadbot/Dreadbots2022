@@ -126,6 +126,9 @@ robot/.sonarlint/
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij,sonarqube
 
+# Vision Image Calibrations
+*.png
+
 ### C++ ###
 # Prerequisites
 *.d

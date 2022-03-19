@@ -81,7 +81,7 @@ def main():
     else:
         cs = None
 
-    fisheyeid0, fisheyeid1 = 9, 9
+    fisheyeid0, fisheyeid1 = 0, 2
 
     if args.fisheyeid0 is not None:
         fisheyeid0 = args.fisheyeid0
@@ -89,107 +89,106 @@ def main():
     if args.fisheyeid1 is not None:
         fisheyeid1 = args.fisheyeid1
 
-    cameras = df.Fisheye(0, fisheyeid0, -4), df.Fisheye(1, fisheyeid1, -4)
+    cameras = df.Fisheye(fisheyeid0, 0, -4), df.Fisheye(fisheyeid1, 0, -4)
 
     while True:
-        vc = cameras[0]
+        for vc in cameras:
+#            if table is not None:
+#                tableCam = table.getNumber("CurrentCameraNumber", 0)
+#
+#            if tableCam > 1:  # CHANGE LATER, THIS RESTRICTS TO TWO CAMERA
+#                table.putNumber("CurrentCameraNumber", 0)
+#
+#            vc = cameras[tableCam]
 
-        if table is not None:
-            tableCam = table.getNumber("CurrentCameraNumber", 0)
+            frame = vc.retrieve_undistorted_img()
 
-            if tableCam > 1:  # CHANGE LATER, THIS RESTRICTS TO TWO CAMERA
-                table.putNumber("CurrentCameraNumber", 0)
+            if table is None:
+                util.setupDefaultSliderWindow("hsv", "Trackbars", "blue")
+                hL, sL, vL, hU, sU, vU, erode, dilate, blur, minArea, circ = util.getSliderValues(
+                        "hsv", "Trackbars")
+            else:
+                hL = table.getNumber("HLowerValue", 0)
+                hU = table.getNumber("HUpperValue", 255)
 
-            vc = cameras[tableCam]
+                sL = table.getNumber("SLowerValue", 0)
+                sU = table.getNumber("SUpperValue", 255)
 
-        frame = vc.retrieve_undistorted_img()
+                vL = table.getNumber("VLowerValue", 0)
+                vU = table.getNumber("VUpperValue", 255)
 
-        if table is None:
-            util.setupDefaultSliderWindow("hsv", "Trackbars", "blue")
-            hL, sL, vL, hU, sU, vU, erode, dilate, blur, minArea, circ = util.getSliderValues(
-                "hsv", "Trackbars")
-        else:
-            hL = table.getNumber("HLowerValue", 0)
-            hU = table.getNumber("HUpperValue", 255)
+                manip = util.getManipulation()
+                erode = manip["erode"]
+                dilate = manip["dilate"]
+                blur = manip["blur"]
+                minArea = manip["area"]
+                circ = manip["circ"]
 
-            sL = table.getNumber("SLowerValue", 0)
-            sU = table.getNumber("SUpperValue", 255)
+            lower = (hL, sL, vL)
+            upper = (hU, sU, vU)
+            minCirc = circ / 100
 
-            vL = table.getNumber("VLowerValue", 0)
-            vU = table.getNumber("VUpperValue", 255)
+            mask = util.getMask(frame, lower, upper, erode, dilate, blur)
 
-            manip = util.getManipulation()
-            erode = manip["erode"]
-            dilate = manip["dilate"]
-            blur = manip["blur"]
-            minArea = manip["area"]
-            circ = manip["circ"]
+            circle = circularity.getBall(mask, minCirc, minArea)
+            h = hough.getBall(cv2.blur(mask, (blur + 8, blur + 8), 0))
+            circles = []
+            if circle is not None:
+                circles.append((circle[0], circle[1], circle[2]))
 
-        lower = (hL, sL, vL)
-        upper = (hU, sU, vU)
-        minCirc = circ / 100
+            if h is not None:
+                circles.append((h[0], h[1], h[2]))
 
-        mask = util.getMask(frame, lower, upper, erode, dilate, blur)
+            # print(circles)
+            radiusError = 10  # In Pixels
+            xyError = 10  # In Pixels
 
-        circle = circularity.getBall(mask, minCirc, minArea)
-        h = hough.getBall(cv2.blur(mask, (blur + 8, blur + 8), 0))
-        circles = []
-        if circle is not None:
-            circles.append((circle[0], circle[1], circle[2]))
+            filteredCircles = []
 
-        if h is not None:
-            circles.append((h[0], h[1], h[2]))
+            for circle in circles:
+                i = circles.index(circle)
+                if i + 1 == len(circles):
+                    continue
 
-        # print(circles)
-        radiusError = 10  # In Pixels
-        xyError = 10  # In Pixels
+                nextCircle = circles[i + 1]
 
-        filteredCircles = []
+                if abs(circle[2] - nextCircle[2]) < radiusError \
+                        and abs(circle[0] - nextCircle[0]) < xyError \
+                        and abs(circle[1] - nextCircle[1]) < xyError:
 
-        for circle in circles:
-            i = circles.index(circle)
-            if i + 1 == len(circles):
-                continue
+                    avgX = (circle[0] + nextCircle[0]) / 2
+                    avgY = (circle[1] + nextCircle[1]) / 2
+                    avgR = (circle[2] + nextCircle[2]) / 2
+                    c = (avgX, avgY, avgR)
 
-            nextCircle = circles[i + 1]
+                    filteredCircles.append(c)
+                    cv2.circle(frame, (int(c[0]), int(c[1])),
+                            int(c[2]), (255, 255, 0), 2)
 
-            if abs(circle[2] - nextCircle[2]) < radiusError \
-                    and abs(circle[0] - nextCircle[0]) < xyError \
-                    and abs(circle[1] - nextCircle[1]) < xyError:
+                    if table is not None:
+                        table.putNumber("TotalBallsFoundInFrame", len(filteredCircles))
 
-                avgX = (circle[0] + nextCircle[0]) / 2
-                avgY = (circle[1] + nextCircle[1]) / 2
-                avgR = (circle[2] + nextCircle[2]) / 2
-                c = (avgX, avgY, avgR)
+            if len(filteredCircles) > 0:
+                bestCircle = filteredCircles[0]
+                for betterC in filteredCircles:
+                    if betterC[2] > bestCircle[2]:
+                        bestCircle = betterC
 
-                filteredCircles.append(c)
-                cv2.circle(frame, (int(c[0]), int(c[1])),
-                           int(c[2]), (255, 255, 0), 2)
+                # dX, dZ, distance, angle = util.getDistance(
+                #    frame, bestCircle[0], bestCircle[2], util.focalLength, util.ballDiameter)
 
-        if table is not None:
-            table.putNumber("TotalBallsFoundInFrame", len(filteredCircles))
+                angle, _ = vc.calculate_angle(bestCircle[0], bestCircle[1])
 
-        if len(filteredCircles) > 0:
-            bestCircle = filteredCircles[0]
-            for betterC in filteredCircles:
-                if betterC[2] > bestCircle[2]:
-                    bestCircle = betterC
+                if table is not None:
+                    # table.putNumber("RelativeDistanceToBallX", dX)
+                    # table.putNumber("RelativeDistanceToBallZ", dZ)
+                    table.putNumber("RelativeAngleToBall", angle)
 
-            # dX, dZ, distance, angle = util.getDistance(
-            #    frame, bestCircle[0], bestCircle[2], util.focalLength, util.ballDiameter)
+            if cs is not None:
+                outputStream.putFrame(frame)
 
-            angle, _ = vc.calculate_angle(bestCircle[0], bestCircle[1])
-
-            if table is not None:
-                # table.putNumber("RelativeDistanceToBallX", dX)
-                # table.putNumber("RelativeDistanceToBallZ", dZ)
-                table.putNumber("RelativeAngleToBall", angle)
-
-        if cs is not None:
-            outputStream.putFrame(frame)
-
-        # if cv2.waitKey(1) & 0xFF == ord("q"):
-        #     break
+            # if cv2.waitKey(1) & 0xFF == ord("q"):
+            #     break
 
     if args.colorrange is not None:
         util.updateLiveRange(cRange, (hL, sL, vL), (hU, sU, vU))
