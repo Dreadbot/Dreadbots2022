@@ -56,9 +56,9 @@ public abstract class Constants {
     public static final int HOOD_MOTOR_PORT = 9;
     public static final int LOWER_HOOD_LIMIT_SWITCH_ID = 2;
     public static final int UPPER_HOOD_LIMIT_SWITCH_ID = 3;
-    public static final double MAX_HOOD_ANGLE = 82.0d;
+    public static final double MAX_HOOD_ANGLE = 75.2d;
     public static final double UPPER_HOOD_ANGLE = 70.0d;
-    public static final double MIN_HOOD_ANGLE = 47.4d;
+    public static final double MIN_HOOD_ANGLE = 57.0d;
     public static final double HOOD_RANGE = 75.717d;
     public static final double HOOD_CALIBRATION_SPEED = 0.2d;
     

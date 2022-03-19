@@ -57,6 +57,11 @@ public class Hood extends DreadbotSubsystem {
         builder.setActuator(true);
         builder.setSafeState(this::stopMotors);
 
+        builder.addStringProperty(
+            "Current Command",
+            () -> getCurrentCommand() != null ? getCurrentCommand().getName() : "none",
+            null);
+
         builder.addBooleanProperty("IsAtAngle", this::isAtSetAngle, null);
     }
 

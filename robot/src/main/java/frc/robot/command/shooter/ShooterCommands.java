@@ -191,7 +191,7 @@ public class ShooterCommands {
                     // SHOOT
                     new ConditionalCommand(
                         new TargetShoot(shooter),
-                        new PresetShoot(shooter, 155, 71.862, 17.0d, 155.0d),
+                        new PresetShoot(shooter, 155.0, 76.087d, 22.0d, 155.0d),
                         VisionInterface::canTrackHub
                     ),
                     // EJECT

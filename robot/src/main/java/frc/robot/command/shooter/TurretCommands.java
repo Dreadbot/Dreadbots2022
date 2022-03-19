@@ -23,7 +23,8 @@ public class TurretCommands {
 
             double relativeAngleToHub = VisionInterface.getRelativeAngleToHub();
 
-            if(relativeAngleToHub != lastRelativeAngleToHub) turretControlAngle(relativeAngleToHub);
+//            if(relativeAngleToHub != lastRelativeAngleToHub) turretControlAngle(relativeAngleToHub);
+            turretControlAngle(relativeAngleToHub);
             lastRelativeAngleToHub = relativeAngleToHub;
         }
 

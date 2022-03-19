@@ -13,7 +13,7 @@ public class VisionInterface {
      * @return Calculated distance from the hub (inches)
      */
     public static double getRelativeDistanceToHub() {
-        return SmartDashboard.getNumber("RelativeDistanceToHub", -1.0d);
+        return SmartDashboard.getNumber("RelativeDistanceToHub", -1.0d) - 6.0d;
     }
 
     /**
@@ -31,7 +31,7 @@ public class VisionInterface {
     }
 
     public static boolean canTrackHub() {
-        return SmartDashboard.getBoolean("IsTargetFoundInFrame", false);
+        return SmartDashboard.getNumber("IsTargetFoundInFrame", 0.0d) == 1.0d;
     }
 
     private VisionInterface() {
