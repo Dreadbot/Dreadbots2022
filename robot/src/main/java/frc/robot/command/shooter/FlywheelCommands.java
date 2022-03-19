@@ -13,6 +13,7 @@ public class FlywheelCommands {
         private final CargoKinematics cargoKinematics;
 
         private double lastDistanceToHub;
+        private double lastVelocity;
 
         public PrepareVisionShot(Flywheel flywheel) {
             this.flywheel = flywheel;
@@ -34,10 +35,12 @@ public class FlywheelCommands {
 
         @Override
         public boolean isFinished() {
-            return flywheel.isAtSetVelocity();
+            return Math.abs(flywheel.getTangentialVelocity() - lastVelocity) <= 1.0d;
         }
 
         private void velocityControl(double velocity) {
+            lastVelocity = velocity;
+
             flywheel.setVelocity(velocity);
         }
     }

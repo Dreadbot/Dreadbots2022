@@ -29,7 +29,7 @@ public class TurretCommands {
 
         private void turretControlAngle(double relativeAngleToHub) {
             double currentAngle = turret.getAngle();
-            double requestedAngle = currentAngle - relativeAngleToHub;
+            double requestedAngle = currentAngle + relativeAngleToHub;
 
             turret.setAngle(requestedAngle);
         }
@@ -60,7 +60,7 @@ public class TurretCommands {
 
         @Override
         public boolean isFinished() {
-            return turret.isAtSetAngle();
+            return Math.abs(turret.getAngle() - requestedAngle) <= 1.0d;
         }
 
         private void turretControlAngle(double relativeAngleToHub) {
