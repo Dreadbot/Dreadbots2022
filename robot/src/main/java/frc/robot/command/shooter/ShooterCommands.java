@@ -26,12 +26,14 @@ public class ShooterCommands {
                     new HoodCommands.ActiveTrack(shooter.getHood())
                 ),
                 new FlywheelCommands.PrepareVisionShot(shooter.getFlywheel()),
-                new FeedBallCommand(shooter)
+                new FeedBallCommand(shooter),
+                new WaitCommand(0.5)
             );
         }
 
         @Override
         public void end(boolean interrupted) {
+            shooter.getFeeder().idle();
             shooter.getFlywheel().idle();
         }
     }
@@ -138,23 +140,37 @@ public class ShooterCommands {
                 ),
                 new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kBrake)),
                 new ConditionalCommand(
-                    new PresetShoot(shooter, 155.0, 60.0d, 7.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
-                    new PresetShoot(shooter, 65.0, 60.0d, 7.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
+                    new PresetShoot(shooter, 155.0, 60.0d, 15.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
+                    new PresetShoot(shooter, 65.0, 60.0d, 15.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
                     shooter.getColorSensor()::isCorrectColor
                 )
             );
         }
+    }
 
-//        @Override
-//        public void end(boolean interrupted) {
-//            shooter.getFeeder().idle();
-//            shooter.getFlywheel().idle();
-//        }
-//
-//        @Override
-//        public boolean isFinished() {
-//            return !shooter.getColorSensor().isBallDetected();
-//        }
+    public static class TarmacPresetShoot extends SequentialCommandGroup {
+        private Shooter shooter;
+        private Intake intake;
+
+        public TarmacPresetShoot(Shooter shooter, Intake intake) {
+            this.shooter = shooter;
+            this.intake = intake;
+
+            addRequirements();
+            addCommands(
+                new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kCoast)),
+                new ParallelRaceGroup(
+                    new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
+                    new IntakeCommand(intake)
+                ),
+                new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kBrake)),
+                new ConditionalCommand(
+                    new PresetShoot(shooter, 155.0, 76.087d, 22.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
+                    new PresetShoot(shooter, 65.0, 76.087d, 12.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
+                    shooter.getColorSensor()::isCorrectColor
+                )
+            );
+        }
     }
 
     public static class HighShoot extends ParallelCommandGroup {
@@ -165,18 +181,23 @@ public class ShooterCommands {
 
             addRequirements();
             addCommands(
-                new IntakeCommand(intake),
+                new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kCoast)),
+                new ParallelRaceGroup(
+                    new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
+                    new IntakeCommand(intake)
+                ),
+                new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kBrake)),
                 new ConditionalCommand(
                     // SHOOT
                     new ConditionalCommand(
                         new TargetShoot(shooter),
-                        new PresetShoot(shooter, 155, 71.862, 3436.0d, 155.0d),
+                        new PresetShoot(shooter, 155, 71.862, 17.0d, 155.0d),
                         VisionInterface::canTrackHub
                     ),
                     // EJECT
                     new ConditionalCommand(
                         new EjectShoot(shooter),
-                        new PresetShoot(shooter, 110, 71.862, 1500.0d, 155.0d),
+                        new PresetShoot(shooter, 110, 71.862, 17.0d, 155.0d),
                         VisionInterface::canTrackHub
                     ),
                     shooter.getColorSensor()::isCorrectColor

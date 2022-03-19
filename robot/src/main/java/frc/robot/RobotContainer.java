@@ -142,7 +142,7 @@ public class RobotContainer {
         flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
         secondaryController.getBButton().whileHeld(new ShooterCommands.LowShoot(shooter, intake));
         secondaryController.getYButton().whileHeld(new ShooterCommands.HighShoot(shooter, intake));
-        secondaryController.getStartButton().whileHeld(new ShooterCommands.PresetShoot(shooter, 155, 71.862, 7.96d, 155.0d));
+        secondaryController.getStartButton().whileHeld(new ShooterCommands.TarmacPresetShoot(shooter, intake));
 
         // Climber Commands
         climber.setDefaultCommand(new RunCommand(climber::idle, climber));

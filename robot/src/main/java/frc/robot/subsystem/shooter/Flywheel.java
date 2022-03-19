@@ -22,7 +22,7 @@ public class Flywheel extends DreadbotSubsystem {
     private SparkMaxPIDController pidController;
 
     private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.36518, 0.24261, 0.099094); // * 2.5
-    private PIDController controller = new PIDController(0.16677, 0.15, 0);
+    private PIDController controller = new PIDController(0.16677, 0.4, 0);
 
     private double setVelocity = 0.0d;
 
@@ -64,6 +64,7 @@ public class Flywheel extends DreadbotSubsystem {
         builder.addBooleanProperty("IsAtSetVelocity", this::isAtSetVelocity, null);
         builder.addDoubleProperty("Velocity (tan)", this::getTangentialVelocity, null);
         builder.addDoubleProperty("Motor RPM", this::getMotorAngularVelocity, null);
+        builder.addDoubleProperty("Set Velocity", this::getSetVelocity, null);
 
         builder.addDoubleProperty("controllerP", this.controller::getP, this.controller::setP);
         builder.addDoubleProperty("controllerI", this.controller::getI, this.controller::setI);
@@ -154,7 +155,7 @@ public class Flywheel extends DreadbotSubsystem {
         motor.set(-0.25);
     }
 
-//    public SparkMaxTuningUtility getTuner() {
-//        return tuner;
-//    }
+    public double getSetVelocity() {
+        return setVelocity;
+    }
 }
