@@ -31,7 +31,7 @@ public class VisionInterface {
     }
 
     public static boolean canTrackHub() {
-        return SmartDashboard.getBoolean("TargetFoundInFrame", false);
+        return SmartDashboard.getBoolean("IsTargetFoundInFrame", false);
     }
 
     private VisionInterface() {

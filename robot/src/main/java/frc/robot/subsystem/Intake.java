@@ -27,14 +27,22 @@ public class Intake extends DreadbotSubsystem {
     }
 
     /**
-     * Spins the motor to deliver the ground cargo to the feeder mechanism.
+     * Spins the motor to deliver the ground cargo to the feeder mechanism.  
      */
     public void intake() {
+        intake(1.0d);
+    }
+
+    /**
+     * Spins the motor to deliver the ground cargo to the feeder mechanism.
+     * @param power
+     */
+    public void intake(double power) {
         if(isDisabled()) return;
 
         // Set the motor to a high positive speed.
         try {
-            motor.set(1.0d);
+            motor.set(power);
         } catch (IllegalStateException ignored) { disable(); }
     }
 

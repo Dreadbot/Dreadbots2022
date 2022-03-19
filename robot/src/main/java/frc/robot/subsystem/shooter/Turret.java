@@ -41,11 +41,11 @@ public class Turret extends DreadbotSubsystem {
         motor.setInverted(true);
 
         pidController.setP(0.14);
-        pidController.setI(1e-4);
+        pidController.setI(2e-4);
         pidController.setD(0);
         pidController.setIZone(2.85);
         pidController.setFF(0.000015);
-        pidController.setOutputRange(-.2, .2);
+        pidController.setOutputRange(-.3, .3);
     }
 
     @Override

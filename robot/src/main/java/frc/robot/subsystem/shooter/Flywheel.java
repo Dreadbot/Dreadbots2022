@@ -3,10 +3,10 @@ package frc.robot.subsystem.shooter;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax.ControlType;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystem.DreadbotSubsystem;
 
@@ -21,7 +21,10 @@ public class Flywheel extends DreadbotSubsystem {
     @SuppressWarnings("FieldMayBeFinal")
     private SparkMaxPIDController pidController;
 
-    private double setVelocity;
+    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.36518, 0.24261, 0.099094); // * 2.5
+    private PIDController controller = new PIDController(0.16677, 0.15, 0);
+
+    private double setVelocity = 0.0d;
 
     /**
      * Disabled constructor
@@ -46,14 +49,11 @@ public class Flywheel extends DreadbotSubsystem {
         pidController.setFF(Constants.FLYWHEEL_FF_GAIN);
         pidController.setOutputRange(Constants.FLYWHEEL_MIN_OUTPUT, Constants.FLYWHEEL_MAX_OUTPUT);
 
-        SmartDashboard.putNumber("Requested Flywheel RPM", 0.0d);
-        SmartDashboard.putNumber("Target Flywheel Velocity", 0.0d);
+        controller.enableContinuousInput(0.0, 1.0);
     }
 
     @Override
-    public void periodic() {
-        SmartDashboard.putNumber("Flywheel Velocity", getVelocity());
-    }
+    public void periodic() { }
 
     @Override
     public void initSendable(SendableBuilder builder) {
@@ -62,6 +62,12 @@ public class Flywheel extends DreadbotSubsystem {
         builder.setSafeState(this::stopMotors);
 
         builder.addBooleanProperty("IsAtSetVelocity", this::isAtSetVelocity, null);
+        builder.addDoubleProperty("Velocity (tan)", this::getTangentialVelocity, null);
+        builder.addDoubleProperty("Motor RPM", this::getMotorAngularVelocity, null);
+
+        builder.addDoubleProperty("controllerP", this.controller::getP, this.controller::setP);
+        builder.addDoubleProperty("controllerI", this.controller::getI, this.controller::setI);
+        builder.addDoubleProperty("controllerD", this.controller::getD, this.controller::setD);
     }
 
     /**
@@ -73,18 +79,13 @@ public class Flywheel extends DreadbotSubsystem {
         this.setVelocity = velocity;
         if(isDisabled()) return;
 
-        // Prevents the motor from going beyond its maximum 5700RPM
-        final double finalVelocity = Math.min(velocity, Constants.FLYWHEEL_MAX_RPM);
-        SmartDashboard.putNumber("Target Flywheel Velocity", finalVelocity);
-
-        // Commands the motor to approach the requested angular speed.
         try {
-            pidController.setReference(finalVelocity, ControlType.kVelocity);
+            motor.setVoltage(feedforward.calculate(velocity, 2.0) + controller.calculate(getTangentialVelocity(), velocity));
         } catch (IllegalStateException ignored) { disable(); }
     }
 
     public boolean isAtSetVelocity() {
-        return Math.abs(getVelocity() - setVelocity) <= 50.0d;
+        return Math.abs(getTangentialVelocity() - setVelocity) <= 0.25d;
     }
 
     /**
@@ -95,7 +96,7 @@ public class Flywheel extends DreadbotSubsystem {
 
         // Commands the motor to coast down to stop.
         try {
-            motor.set(0.0d);
+            setVelocity(7.0);
         } catch (IllegalStateException ignored) { disable(); }
     }
 
@@ -105,17 +106,28 @@ public class Flywheel extends DreadbotSubsystem {
      *
      * @return the motor shaft angular velocity, in RPM
      */
-    public double getVelocity() {
+    public double getTangentialVelocity() {
         if(isDisabled()) return 0.0d;
 
         // Get the current commanded velocity. If there is a failure,
         // the output is considered zero.
         double velocity = 0.0d;
         try {
-            velocity = encoder.getVelocity();
+            velocity = getMotorAngularVelocity() * 0.00932;
         } catch (IllegalStateException ignored) { disable(); }
 
         return velocity;
+    }
+
+    public double getMotorAngularVelocity() {
+        if(isDisabled()) return 0.0d;
+
+        double rpm = 0.0d;
+        try {
+            rpm = encoder.getVelocity();
+        } catch(IllegalStateException ignored) { disable(); }
+
+        return rpm;
     }
 
     @Override
@@ -141,4 +153,8 @@ public class Flywheel extends DreadbotSubsystem {
     public void intake() {
         motor.set(-0.25);
     }
+
+//    public SparkMaxTuningUtility getTuner() {
+//        return tuner;
+//    }
 }

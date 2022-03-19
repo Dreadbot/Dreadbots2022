@@ -22,6 +22,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.DreadbotMath;
@@ -116,7 +117,7 @@ public class Drive extends DreadbotSubsystem {
         this.leftBackMotor = leftBackMotor;
         this.rightBackMotor = rightBackMotor;
 
-        this.gyroscope = new AHRS(I2C.Port.kMXP);
+        this.gyroscope = new AHRS(SerialPort.Port.kUSB);
 
         this.targetChassisSpeeds = new ChassisSpeeds();
 
@@ -151,6 +152,9 @@ public class Drive extends DreadbotSubsystem {
         odometry = new MecanumDriveOdometry(kinematics, gyroscope.getRotation2d());
 
         this.mecanumDrive = new MecanumDrive(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
+        SmartDashboard.putData("DriveVisual", mecanumDrive);
+
+        mecanumDrive.setSafetyEnabled(false);
     }
 
     @Override
@@ -171,6 +175,8 @@ public class Drive extends DreadbotSubsystem {
         builder.addDoubleProperty("targetChassisSpeedsX", () -> targetChassisSpeeds.vxMetersPerSecond, null);
         builder.addDoubleProperty("targetChassisSpeedsY", () -> targetChassisSpeeds.vyMetersPerSecond, null);
         builder.addDoubleProperty("targetChassisSpeedsOmega", () -> targetChassisSpeeds.omegaRadiansPerSecond, null);
+
+        builder.addDoubleProperty("gyroYawRate", gyroscope::getRate, null);
     }
 
     /**
@@ -347,5 +353,9 @@ public class Drive extends DreadbotSubsystem {
 
     public ProfiledPIDController getThetaController() {
         return thetaController;
+    }
+
+    public void resetRobotPose(Pose2d poseMeters) {
+        odometry.resetPosition(poseMeters, gyroscope.getRotation2d());
     }
 }

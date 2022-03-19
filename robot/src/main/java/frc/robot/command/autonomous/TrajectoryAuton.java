@@ -8,8 +8,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.subsystem.Drive;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -22,6 +24,7 @@ public class TrajectoryAuton extends CommandBase {
     private final HolonomicDriveController m_controller;
     private final double m_maxWheelVelocityMetersPerSecond;
     private final Consumer<MecanumDriveWheelSpeeds> m_outputWheelSpeeds;
+    private final Drive drive;
 
     /**
      * Constructs a new PPMecanumControllerCommand that when executed will follow the provided
@@ -50,10 +53,11 @@ public class TrajectoryAuton extends CommandBase {
         ProfiledPIDController thetaController,
         double maxWheelVelocityMetersPerSecond,
         Consumer<MecanumDriveWheelSpeeds> outputWheelSpeeds,
-        Subsystem... requirements) {
+        Drive drive) {
         m_trajectory = trajectory;
         m_pose = pose;
         m_kinematics = kinematics;
+        this.drive = drive;
 
         m_controller = new HolonomicDriveController(xController, yController, thetaController);
 
@@ -61,11 +65,13 @@ public class TrajectoryAuton extends CommandBase {
 
         m_outputWheelSpeeds = outputWheelSpeeds;
 
-        addRequirements(requirements);
+        addRequirements(drive);
     }
 
     @Override
     public void initialize() {
+        drive.resetRobotPose(m_trajectory.sample(0.0).poseMeters);
+
         m_timer.reset();
         m_timer.start();
     }
@@ -86,6 +92,8 @@ public class TrajectoryAuton extends CommandBase {
         targetWheelSpeeds.desaturate(m_maxWheelVelocityMetersPerSecond);
 
         m_outputWheelSpeeds.accept(targetWheelSpeeds);
+
+
     }
 
     @Override
