@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.util.Color;
 public abstract class Constants {
     public static final boolean DRIVE_ENABLED = false;
     public static final boolean INTAKE_ENABLED = true;
-    public static final boolean CLIMB_ENABLED = false;
+    public static final boolean CLIMB_ENABLED = true;
     public static final boolean SHOOTER_ENABLED = true;
     public static final boolean FEEDER_ENABLED = true;
     public static final boolean FLYWHEEL_ENABLED = true;
@@ -66,9 +66,9 @@ public abstract class Constants {
     public static final int WINCH_MOTOR_PORT = 10;
     public static final int NEUTRAL_HOOK_ACTUATOR_ID = 0;
     public static final int CLIMBING_HOOK_ACTUATOR_ID = 1;
-    public static final int BOTTOM_CLIMBER_LIMIT_SWITCH_ID = 4;
-    public static final int TOP_CLIMBER_LIMIT_SWITCH_ID = 5;
+    public static final int CLIMBER_LIMIT_SWITCH_ID = 4;
     public static final double MAX_ARM_DISTANCE = 50; //Later change this to phyisical distance
+    public static final double CLIMBER_RANGE = 135.0d;
 
     // Robot Constants
     public static final double GRAVITY = -9.81d;
