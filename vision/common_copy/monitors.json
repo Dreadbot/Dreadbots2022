@@ -3,93 +3,20 @@
 		"type" : "number",
 		"default" : 0
 	},
-	"RelativeDistanceToHub" : {
-		"type" : "number",
-		"default" : 0
-	},
-	"RelativeAngleToHub" : { 
-		"type" : "number",
-		"default" : 0
-	},
-	"TurretBlurKernel" : {
-		"type" : "number",
-		"default" : 1
-	},
-	"TurretErodeKernel" : {
-		"type" : "number",
-		"default" : 1
-	},
-	"TurretDilateKernel" : {
-		"type" : "number",
-		"default" : 1
-	},
-	"LightBlurKernel" : {
-		"type" : "number",
-		"default" : 1
-	},
-	"LightErodeKernel" : {
-		"type" : "number",
-		"default" : 1
-	},
-	"LightDilateKernel" : {
-		"type" : "number",
-		"default" : 1
-	},
-	"TargetHLowerValue" : {
-		"type" : "number",
-		"default" : 50
-	},
-	"TargetHUpperValue" : {
-		"type" : "number",
-		"default" : 150
-	},
-	"TargetSLowerValue" : {
-		"type" : "number",
-		"default" : 100
-	},
-	"TargetSUpperValue" : {
-		"type" : "number",
-		"default" : 255
-	},
-	"TargetLLowerValue" : {
-		"type" : "number",
-		"default" : 200
-	},
-	"TargetLUpperValue" : {
-		"type" : "number",
-		"default" : 255
-	},
-	"LightBLowerValue" : {
-		"type" : "number",
-		"default" : 150
-	},
-	"LightGLowerValue" : {
-		"type" : "number",
-		"default" : 150
-	},
-	"LightRLowerValue" : {
-		"type" : "number",
-		"default" : 150
-	},
-	"LightBUpperValue" : {
-		"type" : "number",
-		"default" : 255
-	},
-	"LightGUpperValue" : {
-		"type" : "number",
-		"default" : 255
-	},
-	"LightRUpperValue" : {
-		"type" : "number",
-		"default" : 255
-	},
-	"DampenWeight" : {
-		"type" : "number",
-		"default" : 1
-	},
-	"YIgnore" : {
-		"type" : "number",
-		"default" : 1
-	}
-
+    "RelativeDistanceToBallX" : {
+        "type" : "number",
+        "default" : 0
+    },
+    "BallFound" : {
+        "type" : "number",
+        "default" : 0
+    },
+    "RelativeAngleToBall0" : {
+        "type" : "number",
+        "default" : 0
+    },
+    "RelativeAngleToBall1" : {
+        "type" : "number",
+        "default" : 0
+    }
 }

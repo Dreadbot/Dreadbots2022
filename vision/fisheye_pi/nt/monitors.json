@@ -1,0 +1,10 @@
+{
+    "CameraSelection" : {
+        "type" : "number",
+        "default" : 0
+    },
+    "RelativeDistanceToBallX" : {
+        "type": "number",
+        "default": 0
+    }
+}

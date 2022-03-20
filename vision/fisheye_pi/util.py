@@ -5,7 +5,7 @@ import json
 import math
 import os
 
-dataDir = os.path.join("vision", "ballfinding", "Data")
+dataDir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Data")
 rangesFile = os.path.join(dataDir, "ranges.json")
 manipFile = os.path.join(dataDir, "manipulation.json")
 

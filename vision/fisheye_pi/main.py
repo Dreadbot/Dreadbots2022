@@ -8,7 +8,23 @@ import argparse
 import dreadbot_fisheye as df
 from networktables import NetworkTables
 from cscore import CameraServer
+import math
 
+def asa_to_distance(a1, a2, s3):
+    a3 = 180 - a1 - a2
+    s2 = (s3/math.sin(a3)) * math.sin(a2)
+    #      a3
+    #      /\
+    #   s2/  \s1
+    #    /    \
+    #   /______\
+    # a1   s3   a2
+    d = 0
+    try:
+        d = (s3*math.tan(a1))/(1+(math.tan(a1)/math.tan(a2)))
+    except:
+        return False, d
+    return True, d
 
 def main():
     argparser = argparse.ArgumentParser(
@@ -91,7 +107,12 @@ def main():
 
     cameras = df.Fisheye(fisheyeid0, 0, -4), df.Fisheye(fisheyeid1, 0, -4)
 
+    cam_angles = [0,0]
+    cam_distance = 27 # 27 inches, the holy number
+    cam_angle_to_straight = 20
+
     while True:
+        cam_num = 0
         for vc in cameras:
 #            if table is not None:
 #                tableCam = table.getNumber("CurrentCameraNumber", 0)
@@ -177,18 +198,29 @@ def main():
                 # dX, dZ, distance, angle = util.getDistance(
                 #    frame, bestCircle[0], bestCircle[2], util.focalLength, util.ballDiameter)
 
-                angle, _ = vc.calculate_angle(bestCircle[0], bestCircle[1])
+                cam_angles[cam_num], _ = vc.calculate_angle(bestCircle[0], bestCircle[1])
 
                 if table is not None:
                     # table.putNumber("RelativeDistanceToBallX", dX)
                     # table.putNumber("RelativeDistanceToBallZ", dZ)
-                    table.putNumber("RelativeAngleToBall", angle)
+                    # table.putNumber("RelativeAngleToBall", angle)
+                    table.putNumber("RelativeAngleToBall" + str(cam_num), cam_angles[cam_num])
 
-            if cs is not None:
-                outputStream.putFrame(frame)
+            if cs is not None and table is not None:
+                if table.getNumber("CameraSelection", 1) == 3:
+                    outputStream.putFrame(mask)
+
+            cam_num += 1
 
             # if cv2.waitKey(1) & 0xFF == ord("q"):
             #     break
+        ret, dX = asa_to_distance(cam_angles[0], cam_angles[1], cam_distance)
+        if table is not None:
+            if ret:
+                table.putNumber("BallFound", 1)
+            else:
+                table.putNumber("BallFound", 0)
+            table.putNumber("RelativeDistanceToBallX", dX)
 
     if args.colorrange is not None:
         util.updateLiveRange(cRange, (hL, sL, vL), (hU, sU, vU))
