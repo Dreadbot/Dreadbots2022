@@ -2,6 +2,8 @@ import curses
 from curses import wrapper
 import random
 import json
+import argparse
+import os
 from networktables import NetworkTables
 import time, sys, logging       
 
@@ -114,9 +116,11 @@ def main(screen):
 
     h, w = screen.getmaxyx()
 
-    
+    argparser = argparse.ArgumentParser(description="Network Tables interface for terminal")
+    argparser.add_argument('-m', '--monitors', action='store', default="monitors.json", dest="monitors")
+    args = argparser.parse_args()
 
-    with open("monitors.json", 'r') as f:
+    with open(args.monitors, 'r') as f:
         monitors = json.load(f)
 
 
@@ -207,4 +211,7 @@ def main(screen):
                 buffer.append(chr(key))
 
 
-wrapper(main)
+try:
+    wrapper(main)
+except KeyboardInterrupt:
+    pass
