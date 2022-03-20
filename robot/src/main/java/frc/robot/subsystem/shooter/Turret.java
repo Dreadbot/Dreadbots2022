@@ -40,8 +40,8 @@ public class Turret extends DreadbotSubsystem {
         motor.setIdleMode(IdleMode.kBrake);
         motor.setInverted(true);
 
-        pidController.setP(0.14);
-        pidController.setI(3e-4);
+        pidController.setP(0.15);
+        pidController.setI(4e-4);
         pidController.setD(0);
         pidController.setIZone(2.85);
         pidController.setFF(0.000015);

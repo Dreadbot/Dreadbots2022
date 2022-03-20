@@ -136,8 +136,8 @@ public class RobotContainer {
         secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
 
         // Shooter Commands
-        hood.setDefaultCommand(new HoodCommands.PassiveTrack(hood));
-        turret.setDefaultCommand(new TurretCommands.PassiveTrack(turret));
+        //hood.setDefaultCommand(new HoodCommands.PassiveTrack(hood));
+        //turret.setDefaultCommand(new TurretCommands.PassiveTrack(turret));
         flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
         secondaryController.getBButton().whileHeld(new ShooterCommands.LowShoot(shooter, intake));
         secondaryController.getYButton().whileHeld(new ShooterCommands.HighShoot(shooter, intake));
@@ -171,7 +171,7 @@ public class RobotContainer {
     }  
 
     public void calibrate() {
-        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, true)
+        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, false)
             .andThen(new TurretCommands.TurnToAngle(turret, 155.0d)));
 
         CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, true)
