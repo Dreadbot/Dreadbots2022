@@ -358,4 +358,8 @@ public class Drive extends DreadbotSubsystem {
     public void resetRobotPose(Pose2d poseMeters) {
         odometry.resetPosition(poseMeters, gyroscope.getRotation2d());
     }
+
+    public double getYaw() {
+        return gyroscope.getYaw();
+    }
 }

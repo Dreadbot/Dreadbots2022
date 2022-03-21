@@ -48,11 +48,17 @@ public class ColorSensor extends DreadbotSubsystem {
 
     private String getColorSerialized(Color ballColor) {
         String colorName;
-        if (ballColor == Constants.COLOR_RED) {
+
+        System.out.println("ballColor = " + ballColor);
+        System.out.println("Constants.COLOR_RED = " + Constants.COLOR_RED);
+        System.out.println("Constants.COLOR_BLUE = " + Constants.COLOR_BLUE);
+
+        if(ballColor == null) return "NO MATCH";
+
+        if (ballColor.equals(Constants.COLOR_RED)) {
             colorName = "Red";
-        } else if (ballColor == Constants.COLOR_BLUE) {
+        } else if (ballColor.equals(Constants.COLOR_BLUE)) {
             colorName = "Blue";
-            alliance = DriverStation.Alliance.Blue;
         } else {
             colorName = "NO MATCH";
         }
@@ -98,6 +104,8 @@ public class ColorSensor extends DreadbotSubsystem {
     }
 
     public boolean isCorrectColor() {
+        System.out.println("getColorSerialized(getBallColor()) = " + getColorSerialized(getBallColor()));
+        System.out.println("DriverStation.getAlliance().name() = " + DriverStation.getAlliance().name());
         return getColorSerialized(getBallColor()).equals(DriverStation.getAlliance().name());
     }
 }

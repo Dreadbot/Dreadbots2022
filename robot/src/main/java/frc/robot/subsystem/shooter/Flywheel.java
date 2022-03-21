@@ -6,14 +6,19 @@ import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystem.DreadbotSubsystem;
+import frc.robot.util.CargoKinematics;
+import frc.robot.util.VisionInterface;
 
 /**
  * The flywheel is the mechanism that shoots the ball out of the robot.
  */
 public class Flywheel extends DreadbotSubsystem {
+    private CargoKinematics cargoKinematics;
     private CANSparkMax motor;
 
     @SuppressWarnings("FieldMayBeFinal")
@@ -39,6 +44,8 @@ public class Flywheel extends DreadbotSubsystem {
         this.encoder = motor.getEncoder();
         this.pidController = motor.getPIDController();
 
+        this.cargoKinematics = new CargoKinematics(s -> 3.2, 0.5715, 2.6416);
+
         motor.restoreFactoryDefaults();
         motor.setIdleMode(CANSparkMax.IdleMode.kCoast);
 
@@ -53,13 +60,23 @@ public class Flywheel extends DreadbotSubsystem {
     }
 
     @Override
-    public void periodic() { }
+    public void periodic() {
+        double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
+        SmartDashboard.putNumber("VS DistanceToHubMeters", distanceToHub);
+        double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
+        SmartDashboard.putNumber("VS FinalCommandVelocity", velocity);
+    }
 
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("DreadbotFlywheel");
         builder.setActuator(true);
         builder.setSafeState(this::stopMotors);
+
+        builder.addStringProperty(
+            "Current Command",
+            () -> getCurrentCommand() != null ? getCurrentCommand().getName() : "none",
+            null);
 
         builder.addBooleanProperty("IsAtSetVelocity", this::isAtSetVelocity, null);
         builder.addDoubleProperty("Velocity (tan)", this::getTangentialVelocity, null);
@@ -77,7 +94,7 @@ public class Flywheel extends DreadbotSubsystem {
      * @param velocity the motor shaft angular velocity, in RPM
      */
     public void setVelocity(double velocity) {
-        velocity += 2;
+//        velocity += 2;
         this.setVelocity = velocity;
         if(isDisabled()) return;
 

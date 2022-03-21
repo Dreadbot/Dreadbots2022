@@ -12,8 +12,7 @@ public class FlywheelCommands {
         private final Flywheel flywheel;
         private final CargoKinematics cargoKinematics;
 
-        private double lastDistanceToHub;
-        private double lastVelocity;
+        private double commandedVelocity;
 
         public PrepareVisionShot(Flywheel flywheel) {
             this.flywheel = flywheel;
@@ -24,26 +23,19 @@ public class FlywheelCommands {
 
         @Override
         public void execute() {
-            if(!VisionInterface.canTrackHub()) return;
-
             double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
-            SmartDashboard.putNumber("VS DistanceToHubMeters", distanceToHub);
+//            SmartDashboard.putNumber("VS DistanceToHubMeters", distanceToHub);
             double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
-            SmartDashboard.putNumber("VS FinalCommandVelocity", velocity);
+//            SmartDashboard.putNumber("VS FinalCommandVelocity", velocity);
 
-            if(distanceToHub != lastDistanceToHub) velocityControl(velocity);
-            lastDistanceToHub = distanceToHub;
+            commandedVelocity = velocity;
+            SmartDashboard.putNumber("OUT VIP TEMP", velocity);
+            flywheel.setVelocity(velocity * 4);
         }
 
         @Override
         public boolean isFinished() {
-            return flywheel.getTangentialVelocity() > lastVelocity;
-        }
-
-        private void velocityControl(double velocity) {
-            lastVelocity = velocity;
-
-            flywheel.setVelocity(velocity * 4);
+            return flywheel.getTangentialVelocity() >= commandedVelocity;
         }
     }
 

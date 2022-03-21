@@ -31,6 +31,11 @@ public class ShooterCommands {
             );
         }
 
+//        @Override
+//        public void execute() {
+//            System.out.println("TARGET SHOT");
+//        }
+
         @Override
         public void end(boolean interrupted) {
             shooter.getFeeder().idle();
@@ -48,10 +53,10 @@ public class ShooterCommands {
             addCommands(
                 new ParallelCommandGroup(
                     new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
-//                    new TurretCommands.EjectTrack(shooter.getTurret()),
+                    new TurretCommands.EjectTrack(shooter.getTurret()),
                     new HoodCommands.TurnToAngle(shooter.getHood(), 65.0)
                 ),
-                new FlywheelCommands.PreparePresetShot(shooter.getFlywheel(), 1000.0),
+                new FlywheelCommands.PreparePresetShot(shooter.getFlywheel(), 10.0),
                 new FeedBallCommand(shooter)
             );
         }
@@ -59,6 +64,7 @@ public class ShooterCommands {
         @Override
         public void end(boolean interrupted) {
             shooter.getFlywheel().idle();
+            shooter.getFeeder().idle();
         }
     }
 
@@ -83,6 +89,11 @@ public class ShooterCommands {
                 new WaitCommand(0.5)
             );
         }
+
+//        @Override
+//        public void execute() {
+//            System.out.println("PRESET SHOT");
+//        }
 
         @Override
         public void end(boolean interrupted) {
