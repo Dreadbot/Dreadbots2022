@@ -16,8 +16,11 @@ class space:
         self.img = np.zeros([w,h,3], dtype=np.uint8)
         self.img[::] = [255,255,255]
 
-        cv2.line(self.img, (0, self.origin_y), (self.w, self.origin_y), (0,0,0)) #x-axis
-        cv2.line(self.img, (self.origin_x, 0), (self.origin_x, self.h), (0,0,0)) #y-axis
+        try:
+            cv2.line(self.img, (0, self.origin_y), (self.w, self.origin_y), (0,0,0)) #x-axis
+            cv2.line(self.img, (self.origin_x, 0), (self.origin_x, self.h), (0,0,0)) #y-axis
+        except Exception as e:
+            print(e)
 
     def world_img(self, pt):
         u, v = pt
