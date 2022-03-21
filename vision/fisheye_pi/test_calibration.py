@@ -4,9 +4,17 @@ import dreadbot_fisheye as df
 import cv2
 import imutils
 import panning
+import argparse
 import threading
+import numpy as np
+
+def combine_imgs(img1, img2):
+    return np.concatenate((img1, np.zeros([2, img1.shape[1], 3]), img2), axis=1)
 
 def main(fisheye1: df.Fisheye, fisheye2: df.Fisheye):
+    argparser = argparse.ArgumentParser(name="DriverCams", description="Pushes driver cams to CameraServer")
+    argparser.add_argument('-s', '--scale', action='store', type=int, default=2, dest='scale', help="Scale factor for the image being pushed")
+    args = argparser.parse_args()
     cond = threading.Condition()
     notified = [False]
 
@@ -33,19 +41,16 @@ def main(fisheye1: df.Fisheye, fisheye2: df.Fisheye):
     cs = CameraServer.getInstance()
     cs.enableLogging()
 
-    ow = 450 # Overlap width
-    sc = 2 # Scale factor
-    pw = 480
+    sc = args.scale # Scale factor
     
-    panner = panning.Panner(pw)
-    firstblend = df.image_blend(fisheye2.retrieve_undistorted_img(), fisheye1.retrieve_undistorted_img(), ow)
-    outputStream = cs.putVideo("Source", panner.width//sc, 480//sc)
+    img1, img2 = fisheye2.retrieve_undistorted_img(), fisheye1.retrieve_undistorted_img()
+    combinedimg = combine_imgs(img1, img2)
+    w, h = combinedimg.shape[0] // sc, combinedimg.shape[1] // sc
+    outputStream = cs.putVideo("Source", w, h)
     
     while True:
-        img = df.image_blend(fisheye1.retrieve_undistorted_img(), fisheye2.retrieve_undistorted_img(), ow)
-        panner.position = table.getNumber("FisheyePanningPosition", 0)
-        panned_img = panner.get_panned_image(img)
-        outputStream.putFrame(cv2.resize(panned_img, (panner.width//sc, 480//sc)))
+        img = combine_imgs(fisheye1.retrieve_undistorted_img(), fisheye2.retrieve_undistorted_img())
+        outputStream.putFrame(cv2.resize(img, (w, h)))
         # outputStream.putFrame(img)
         
 
