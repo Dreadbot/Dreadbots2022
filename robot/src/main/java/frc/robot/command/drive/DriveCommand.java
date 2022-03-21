@@ -4,6 +4,7 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystem.Drive;
@@ -15,6 +16,8 @@ public class DriveCommand extends CommandBase {
     private final DoubleSupplier joystickForwardAxis;
     private final DoubleSupplier joystickLateralAxis;
     private final DoubleSupplier joystickRotationalAxis;
+
+    private ChassisSpeeds commandedChassisSpeeds;
 
     private SensitivityController forwardSensitivityFilter;
     private SensitivityController lateralSensitivityFilter;
@@ -29,6 +32,8 @@ public class DriveCommand extends CommandBase {
         this.joystickLateralAxis = joystickLateralAxis;
         this.joystickRotationalAxis = joystickRotationalAxis;
 
+        this.commandedChassisSpeeds = new ChassisSpeeds();
+
         setupFilters();
 
         addRequirements(drive);
@@ -40,23 +45,28 @@ public class DriveCommand extends CommandBase {
     @Override
     public void execute() {
         // Calculate the forward/backward axis gain
-        double forwardAxis = joystickForwardAxis.getAsDouble();
-        forwardAxis = MathUtil.applyDeadband(forwardAxis, 0.05d);
-        forwardAxis = forwardSensitivityFilter.calculate(forwardAxis);
-        forwardAxis = slewRateLimiter.calculate(forwardAxis);
+        double forwardAxis = -joystickForwardAxis.getAsDouble();
+        forwardAxis = MathUtil.applyDeadband(forwardAxis, 0.03d);
+//        forwardAxis = forwardSensitivityFilter.calculate(forwardAxis);
+//        forwardAxis = slewRateLimiter.calculate(forwardAxis);
 
         // Calculate the side-to-side axis gain
         double lateralAxis = -joystickLateralAxis.getAsDouble();
-        lateralAxis = MathUtil.applyDeadband(lateralAxis, 0.05d);
-        lateralAxis = lateralSensitivityFilter.calculate(lateralAxis);
+        lateralAxis = MathUtil.applyDeadband(lateralAxis, 0.03d);
+//        lateralAxis = lateralSensitivityFilter.calculate(lateralAxis);
 
         // Calculate the rotational gain
         double rotationalAxis = -joystickRotationalAxis.getAsDouble();
-        rotationalAxis = MathUtil.applyDeadband(rotationalAxis, 0.05d);
-        rotationalAxis = rotationalSensitivityFilter.calculate(rotationalAxis);
+        rotationalAxis = MathUtil.applyDeadband(rotationalAxis, 0.03d);
+//        rotationalAxis = rotationalSensitivityFilter.calculate(rotationalAxis);
+
+        commandedChassisSpeeds.vxMetersPerSecond = forwardAxis * 3.5 * .55;
+        commandedChassisSpeeds.vyMetersPerSecond = lateralAxis * 2.5 * .55;
+        commandedChassisSpeeds.omegaRadiansPerSecond = rotationalAxis * .55 * Math.PI;
 
         // Input the drive code
-        drive.driveCartesian(forwardAxis, lateralAxis, rotationalAxis);
+//        drive.driveCartesian(forwardAxis, lateralAxis, rotationalAxis);
+        drive.setChassisSpeeds(commandedChassisSpeeds);
     }
 
     private void setupFilters() {

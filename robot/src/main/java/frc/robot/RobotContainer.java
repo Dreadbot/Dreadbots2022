@@ -1,5 +1,7 @@
 package frc.robot;
 
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ColorSensorV3;
@@ -12,7 +14,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.robot.command.autonomous.VelocityControlTestCommand;
+import frc.robot.command.autonomous.TrajectoryAuton;
 import frc.robot.command.climber.*;
 import frc.robot.command.drive.DriveCommand;
 import frc.robot.command.intake.IntakeCommand;
@@ -45,6 +47,8 @@ public class RobotContainer {
     SendableChooser<Color> teamColorChooser;
     
     public RobotContainer() {
+        VisionInterface.selectCamera(2);
+
         primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
         secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);
 
@@ -103,8 +107,6 @@ public class RobotContainer {
         } else dreadbotColorSensor = new ColorSensor();
 
         if (Constants.SHOOTER_ENABLED) {
-
-
             shooter = new Shooter(feeder, flywheel, hood, turret, dreadbotColorSensor);
         } else shooter = new Shooter();
 
@@ -115,6 +117,7 @@ public class RobotContainer {
             CANSparkMax winchMotor = new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless);
             DigitalInput bottomLimitSwitch = new DigitalInput(Constants.BOTTOM_CLIMBER_LIMIT_SWITCH_ID);
             DigitalInput topLimitSwitch = new DigitalInput(Constants.TOP_CLIMBER_LIMIT_SWITCH_ID);
+
             climber = new Climber(neutralHookActuator, climbingHookActuator, winchMotor, bottomLimitSwitch, topLimitSwitch);
         } else climber = new Climber();
 
@@ -130,33 +133,21 @@ public class RobotContainer {
 
         // Intake Commands
         intake.setDefaultCommand(new RunCommand(intake::idle, intake));
-        secondaryController.getAButton().whileHeld(new OuttakeCommand(intake));
+        secondaryController.getAButton().whileHeld(new OuttakeCommand(intake, feeder));
         secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
 
-        // Feeder Commands
-        feeder.setDefaultCommand(new RunCommand(feeder::idle, feeder));
-
-        // Flywheel Commands
-//        flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
-
-        hood.setDefaultCommand(new HoodCommands.PassiveTrack(hood));
-
-        turret.setDefaultCommand(new TurretCommands.PassiveTrack(turret));
-        secondaryController.getStartButton().whenPressed(TurretCommands::swapManualAutomaticControls);
-        SmartDashboard.putBoolean("TURRET AUTOMATION", true);
-
-        VisionInterface.selectCamera(2);
         // Shooter Commands
+        hood.setDefaultCommand(new HoodCommands.PassiveTrack(hood));
+        turret.setDefaultCommand(new TurretCommands.PassiveTrack(turret));
+        flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
         secondaryController.getBButton().whileHeld(new ShooterCommands.LowShoot(shooter, intake));
-        SmartDashboard.putNumber("COMMANDED RPM", 0);
-        secondaryController.getYButton().whileHeld(new ShooterCommands.HighShoot(shooter, intake), false);
-        secondaryController.getStartButton().whileHeld(new ShooterCommands.PresetShoot(shooter, 155, 71.862, 3436.0d, 155.0d));
-//        secondaryController.getBButton().whileHeld(new ShootCommand(shooter, dreadbotColorSensor, teamColorChooser::getSelected));
+        secondaryController.getYButton().whileHeld(new ShooterCommands.HighShoot(shooter, intake));
+        secondaryController.getStartButton().whileHeld(new ShooterCommands.PresetShoot(shooter, 155, 71.862, 7.96d, 155.0d));
 
         // Climber Commands
         climber.setDefaultCommand(new RunCommand(climber::idle, climber));
-        primaryController.getAButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
-        primaryController.getBButton().whenPressed(new RotateNeutralHookDownCommand(climber));
+        primaryController.getBButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
+        primaryController.getAButton().whenPressed(new RotateNeutralHookDownCommand(climber));
         primaryController.getXButton().whenPressed(new RotateClimbingArmVerticalCommand(climber));
         primaryController.getYButton().whenPressed(new RotateClimbingArmDownCommand(climber));
         primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber));
@@ -165,15 +156,31 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand(){
-        return new VelocityControlTestCommand(drive);
+        PathPlannerTrajectory examplePath = PathPlanner.loadPath("TaxiAuton1", 1.5, 1);
+
+        return new TrajectoryAuton(
+            examplePath,
+            drive::getPose,
+            drive.getKinematics(),
+            drive.getXController(),
+            drive.getYController(),
+            drive.getThetaController(),
+            1.5,
+            drive::setWheelSpeeds,
+            drive
+        );
     }  
 
     public void calibrate() {
-        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, false)
+        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, true)
             .andThen(new TurretCommands.TurnToAngle(turret, 155.0d)));
 
-        CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, false)
-            .andThen(new HoodCommands.TurnToAngle(hood, Constants.MIN_HOOD_ANGLE)));
+        CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, true)
+            .andThen(new HoodCommands.TurnToAngle(hood, Constants.MAX_HOOD_ANGLE)));
+    }
+
+    public void preservePneumaticState() {
+        climber.preservePneumaticState();
     }
 
     /*

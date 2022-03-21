@@ -54,7 +54,7 @@ public class Shooter extends DreadbotSubsystem {
     public double getFlywheelVelocity() {
         if(isDisabled()) return 0.0d;
 
-        return flywheel.getVelocity();
+        return flywheel.getTangentialVelocity();
     }
 
     public double getHoodAngle() {

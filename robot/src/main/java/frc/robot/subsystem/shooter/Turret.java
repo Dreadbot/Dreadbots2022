@@ -4,12 +4,12 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystem.DreadbotSubsystem;
 import frc.robot.util.DreadbotMath;
-import frc.robot.util.VisionInterface;
 
 public class Turret extends DreadbotSubsystem {
     private CANSparkMax motor;
@@ -20,6 +20,8 @@ public class Turret extends DreadbotSubsystem {
     private DigitalInput upperSwitch;
     private double lowerMotorLimit;
     private double upperMotorLimit;
+
+    private double setAngle;
 
     /**
      * Disabled Constructor
@@ -39,11 +41,20 @@ public class Turret extends DreadbotSubsystem {
         motor.setInverted(true);
 
         pidController.setP(0.14);
-        pidController.setI(1e-4);
+        pidController.setI(2e-4);
         pidController.setD(0);
         pidController.setIZone(2.85);
         pidController.setFF(0.000015);
         pidController.setOutputRange(-.3, .3);
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.setSmartDashboardType("DreadbotTurret");
+        builder.setActuator(true);
+        builder.setSafeState(this::stopMotors);
+
+        builder.addBooleanProperty("IsAtAngle", this::isAtSetAngle, null);
     }
 
     @Override
@@ -59,12 +70,19 @@ public class Turret extends DreadbotSubsystem {
     }
 
     public void setAngle(double angle) {
+        this.setAngle = angle;
         if(isDisabled()) return;
 
         angle = DreadbotMath.clampValue(angle, Constants.MIN_TURRET_ANGLE, Constants.MAX_TURRET_ANGLE);
         double rotations = convertDegreesToRotations(angle);
 
         pidController.setReference(rotations, CANSparkMax.ControlType.kPosition);
+    }
+
+    public boolean isAtSetAngle() {
+        if(isDisabled()) return true;
+
+        return Math.abs(getAngle() - setAngle) <= 1.0d;
     }
 
     public void setPosition(double rotations) {

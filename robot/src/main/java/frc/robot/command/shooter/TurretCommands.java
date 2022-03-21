@@ -1,18 +1,11 @@
 package frc.robot.command.shooter;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystem.shooter.Turret;
-import frc.robot.util.RobotControlMode;
 import frc.robot.util.VisionInterface;
 
 public class TurretCommands {
-    private static RobotControlMode turretControlMode;
-    static {
-        turretControlMode = RobotControlMode.AUTOMATIC;
-    }
-
     public static class PassiveTrack extends CommandBase {
         private final Turret turret;
 
@@ -36,7 +29,7 @@ public class TurretCommands {
 
         private void turretControlAngle(double relativeAngleToHub) {
             double currentAngle = turret.getAngle();
-            double requestedAngle = currentAngle + relativeAngleToHub;
+            double requestedAngle = currentAngle - relativeAngleToHub;
 
             turret.setAngle(requestedAngle);
         }
@@ -67,7 +60,7 @@ public class TurretCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(requestedAngle - turret.getAngle()) <= 1.0d;
+            return turret.isAtSetAngle();
         }
 
         private void turretControlAngle(double relativeAngleToHub) {
@@ -102,7 +95,7 @@ public class TurretCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(requestedAngle - turret.getAngle()) <= 1.0d;
+            return turret.isAtSetAngle();
         }
 
         private void turretControlAngle(double relativeAngleToHub) {
@@ -131,9 +124,7 @@ public class TurretCommands {
 
         @Override
         public boolean isFinished() {
-            if(!Constants.TURRET_ENABLED) return true;
-
-            return Math.abs(turret.getAngle() - angle) <= 1.0d;
+            return turret.isAtSetAngle();
         }
     }
 
@@ -165,9 +156,7 @@ public class TurretCommands {
 
         @Override
         public boolean isFinished() {
-            if(!Constants.TURRET_ENABLED) return true;
-
-            return Math.abs(turret.getAngle() - (initialTurretAngle + angle)) <= 1.0d;
+            return turret.isAtSetAngle();
         }
     }
 
@@ -235,16 +224,6 @@ public class TurretCommands {
     }
 
     private TurretCommands() { }
-
-    public static void swapManualAutomaticControls() {
-        if(turretControlMode == RobotControlMode.AUTOMATIC) {
-            turretControlMode = RobotControlMode.MANUAL;
-        } else {
-            turretControlMode = RobotControlMode.AUTOMATIC;
-        }
-
-        SmartDashboard.putBoolean("TURRET AUTOMATION", turretControlMode == RobotControlMode.AUTOMATIC);
-    }
 }
 
 

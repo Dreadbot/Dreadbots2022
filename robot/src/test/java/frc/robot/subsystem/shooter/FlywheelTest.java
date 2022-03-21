@@ -2,8 +2,6 @@ package frc.robot.subsystem.shooter;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.hal.HAL;
 import frc.robot.Constants;
 import frc.robot.Robot;
@@ -72,7 +70,7 @@ public class FlywheelTest {
         // throw an exception. This test case is another check to ensure calls
         // to closed motors do not crash the robot.
         flywheel.setVelocity(3000.0d);
-        flywheel.getVelocity();
+        flywheel.getTangentialVelocity();
         flywheel.idle();
         flywheel.stopMotors();
         flywheel.close();
