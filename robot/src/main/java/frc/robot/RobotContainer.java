@@ -151,7 +151,7 @@ public class RobotContainer {
         primaryController.getYButton().whenPressed(new RotateClimbingArmDownCommand(climber));
         primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber));
         primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
-        primaryController.getRightBumper().whenPressed(new AutonomousClimberCommand(climber));
+        primaryController.getRightBumper().whileHeld(new AutonomousClimberCommand(climber));
     }
 
     public Command getAutonomousCommand(){
