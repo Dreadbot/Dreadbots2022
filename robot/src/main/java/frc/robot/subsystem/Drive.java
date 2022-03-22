@@ -162,7 +162,7 @@ public class Drive extends DreadbotSubsystem {
         builder.setSmartDashboardType("DreadbotDrive");
 
         builder.setActuator(true);
-        builder.setSafeState(this::stopMotors);
+        builder.setSafeState(this::stopMotors); 
         builder.addDoubleProperty("leftFrontVelocity", leftFrontMotor.getEncoder()::getVelocity, null);
         builder.addDoubleProperty("rightFrontVelocity", rightFrontMotor.getEncoder()::getVelocity, null);
         builder.addDoubleProperty("leftBackVelocity", leftBackMotor.getEncoder()::getVelocity, null);
@@ -295,7 +295,7 @@ public class Drive extends DreadbotSubsystem {
     }
 
     public void resetEncoders() {
-        if(isDisabled())return;
+        if(isDisabled()) return;
         rightFrontMotor.getEncoder().setPosition(0.0d);
         leftFrontMotor.getEncoder().setPosition(0.0d);
         rightBackMotor.getEncoder().setPosition(0.0d);
