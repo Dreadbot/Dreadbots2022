@@ -11,7 +11,6 @@ public class RotateNeutralHookVerticalCommand extends CommandBase {
     }
     @Override
     public void initialize() {
-        System.out.println("Neutral Verticalling!");
         climber.rotateNeutralHookVertical();
     }
     @Override

@@ -38,7 +38,6 @@ class AutonDrive extends CommandBase {
 
     @Override
     public void execute(){
-        //System.out.println("Orginal value" + orginalEncoderValue + "Value Now" + drive.getFrontEncoderAvg());
         drive.driveCartesian(.2, 0, 0);
     }
 

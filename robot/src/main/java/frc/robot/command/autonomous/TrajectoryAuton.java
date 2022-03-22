@@ -8,9 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.subsystem.Drive;
 
 import java.util.function.Consumer;
@@ -26,34 +24,21 @@ public class TrajectoryAuton extends CommandBase {
     private final Consumer<MecanumDriveWheelSpeeds> m_outputWheelSpeeds;
     private final Drive drive;
 
-    /**
-     * Constructs a new PPMecanumControllerCommand that when executed will follow the provided
-     * trajectory. The user should implement a velocity PID on the desired output wheel velocities.
-     *
-     * <p>Note: The controllers will *not* set the outputVolts to zero upon completion of the path -
-     * this is left to the user, since it is not appropriate for paths with non-stationary end-states.
-     *
-     * @param trajectory The Pathplanner trajectory to follow.
-     * @param pose A function that supplies the robot pose - use one of the odometry classes to
-     *     provide this.
-     * @param kinematics The kinematics for the robot drivetrain.
-     * @param xController The Trajectory Tracker PID controller for the robot's x position.
-     * @param yController The Trajectory Tracker PID controller for the robot's y position.
-     * @param thetaController The Trajectory Tracker PID controller for angle for the robot.
-     * @param maxWheelVelocityMetersPerSecond The maximum velocity of a drivetrain wheel.
-     * @param outputWheelSpeeds A MecanumDriveWheelSpeeds object containing the output wheel speeds.
-     * @param requirements The subsystems to require.
-     */
-    public TrajectoryAuton(
-        PathPlannerTrajectory trajectory,
-        Supplier<Pose2d> pose,
-        MecanumDriveKinematics kinematics,
-        PIDController xController,
-        PIDController yController,
-        ProfiledPIDController thetaController,
-        double maxWheelVelocityMetersPerSecond,
-        Consumer<MecanumDriveWheelSpeeds> outputWheelSpeeds,
-        Drive drive) {
+    public TrajectoryAuton(Drive drive, PathPlannerTrajectory trajectory, double maxWheelVelocityMetersPerSecond) {
+        this.drive = drive;
+        this.m_trajectory = trajectory;
+        this.m_maxWheelVelocityMetersPerSecond = maxWheelVelocityMetersPerSecond;
+
+        this.m_pose = drive::getPose;
+        this.m_kinematics = drive.getKinematics();
+        this.m_controller = drive.getDriveController();
+        this.m_outputWheelSpeeds = drive::setWheelSpeeds;
+
+        addRequirements(drive);
+    }
+
+    @Deprecated(since = "Dumb and lots of parameters")
+    public TrajectoryAuton(PathPlannerTrajectory trajectory, Supplier<Pose2d> pose, MecanumDriveKinematics kinematics, PIDController xController, PIDController yController, ProfiledPIDController thetaController, double maxWheelVelocityMetersPerSecond, Consumer<MecanumDriveWheelSpeeds> outputWheelSpeeds, Drive drive) {
         m_trajectory = trajectory;
         m_pose = pose;
         m_kinematics = kinematics;
@@ -92,8 +77,6 @@ public class TrajectoryAuton extends CommandBase {
         targetWheelSpeeds.desaturate(m_maxWheelVelocityMetersPerSecond);
 
         m_outputWheelSpeeds.accept(targetWheelSpeeds);
-
-
     }
 
     @Override

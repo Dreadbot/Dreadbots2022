@@ -155,18 +155,12 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand(){
-        PathPlannerTrajectory examplePath = PathPlanner.loadPath("TaxiAuton1", 1.5, 1);
+        PathPlannerTrajectory examplePath = PathPlanner.loadPath("scarce_first_leg", 5.0, 3.00);
 
         return new TrajectoryAuton(
+            drive,
             examplePath,
-            drive::getPose,
-            drive.getKinematics(),
-            drive.getXController(),
-            drive.getYController(),
-            drive.getThetaController(),
-            1.5,
-            drive::setWheelSpeeds,
-            drive
+            8.0
         );
     }  
 

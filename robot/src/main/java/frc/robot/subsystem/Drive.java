@@ -355,6 +355,10 @@ public class Drive extends DreadbotSubsystem {
         return thetaController;
     }
 
+    public HolonomicDriveController getDriveController() {
+        return driveController;
+    }
+
     public void resetRobotPose(Pose2d poseMeters) {
         odometry.resetPosition(poseMeters, gyroscope.getRotation2d());
     }

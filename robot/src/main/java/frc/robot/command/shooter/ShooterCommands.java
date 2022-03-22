@@ -1,7 +1,6 @@
 package frc.robot.command.shooter;
 
 import com.revrobotics.CANSparkMax;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.command.intake.IntakeCommand;
@@ -30,11 +29,6 @@ public class ShooterCommands {
                 new WaitCommand(0.5)
             );
         }
-
-//        @Override
-//        public void execute() {
-//            System.out.println("TARGET SHOT");
-//        }
 
         @Override
         public void end(boolean interrupted) {
@@ -89,11 +83,6 @@ public class ShooterCommands {
                 new WaitCommand(0.5)
             );
         }
-
-//        @Override
-//        public void execute() {
-//            System.out.println("PRESET SHOT");
-//        }
 
         @Override
         public void end(boolean interrupted) {
@@ -176,7 +165,7 @@ public class ShooterCommands {
                 ),
                 new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kBrake)),
                 new ConditionalCommand(
-                    new PresetShoot(shooter, 155.0, 76.087d, 22.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
+                    new PresetShoot(shooter, 155.0, 72.193d, 35d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
                     new PresetShoot(shooter, 65.0, 76.087d, 12.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
                     shooter.getColorSensor()::isCorrectColor
                 )

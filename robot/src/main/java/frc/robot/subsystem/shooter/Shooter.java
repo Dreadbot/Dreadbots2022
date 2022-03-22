@@ -27,10 +27,7 @@ public class Shooter extends DreadbotSubsystem {
     }
 
     public void feedBall() {
-        System.out.println("SHOOTER CLASS CALL");
         if(isDisabled()) return;
-
-        System.out.println("SHOOTER CLASS CALL ENABLED");
 
         feeder.feed();
     }

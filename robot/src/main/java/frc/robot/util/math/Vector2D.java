@@ -44,7 +44,6 @@ public class Vector2D {
      * @param original Vector to copy
      */
     Vector2D(Vector2D original) {
-        System.out.println("vector copied");
         this.x1 = original.x1;
         this.x2 = original.x2;
     }

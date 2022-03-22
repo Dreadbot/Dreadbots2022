@@ -23,7 +23,6 @@ public class IntakeCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        System.out.println("intaking");
         if(intake.isOuttaking()) return;
         
         intake.intake(power);
