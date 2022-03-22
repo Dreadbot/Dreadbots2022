@@ -988,6 +988,27 @@
                   "_type": "PID Controller",
                   "_source0": "network_table:///LiveWindow/Ungrouped/PIDController[11]",
                   "_title": "PIDController[11]"
+                },
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/Solenoid[21,0]/Value",
+                  "_title": "/LiveWindow/Ungrouped/Solenoid[21,0]/Value",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/DigitalInput[4]/Value",
+                  "_title": "/LiveWindow/Ungrouped/DigitalInput[4]/Value",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/Solenoid[21,1]/Value",
+                  "_title": "/LiveWindow/Ungrouped/Solenoid[21,1]/Value",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
                 }
               ]
             }
@@ -1034,6 +1055,16 @@
                   "_type": "Text View",
                   "_source0": "network_table:///LiveWindow/Flywheel/Motor RPM",
                   "_title": "Motor RPM"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Flywheel/Set Velocity",
+                  "_title": "Set Velocity"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Flywheel/Current Command",
+                  "_title": "/LiveWindow/Flywheel/Current Command"
                 }
               ]
             }
@@ -1083,6 +1114,11 @@
                   "_title": "IsAtAngle",
                   "Colors/Color when true": "#7CFC00FF",
                   "Colors/Color when false": "#8B0000FF"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Hood/Current Command",
+                  "_title": "Current Command"
                 }
               ]
             }
@@ -1443,6 +1479,28 @@
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
+          },
+          "3,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///LiveWindow/Turret/Current Command",
+              "_title": "Turret/Current Command"
+            }
+          },
+          "4,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///LiveWindow/Shooter/Current Command",
+              "_title": "Shooter/Current Command"
+            }
           }
         }
       }
@@ -1582,50 +1640,6 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "9,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/TurretCommandLock",
-              "_title": "/SmartDashboard/TurretCommandLock"
-            }
-          },
-          "10,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/HoodCommandLock",
-              "_title": "/SmartDashboard/HoodCommandLock"
-            }
-          },
-          "11,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/FlywheelCommandLock",
-              "_title": "/SmartDashboard/FlywheelCommandLock"
-            }
-          },
-          "12,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/FeederCommandLock",
-              "_title": "/SmartDashboard/FeederCommandLock"
-            }
-          },
           "11,1": {
             "size": [
               1,
@@ -1689,16 +1703,9 @@
               2
             ],
             "content": {
-              "_type": "Graph",
+              "_type": "Text View",
               "_source0": "network_table:///LiveWindow/Flywheel/Velocity (tan)",
-              "_title": "LiveWindow/Flywheel/Velocity (tan)",
-              "Graph/Visible time": 30.0,
-              "Graph/X-axis auto scrolling": true,
-              "Y-axis/Automatic bounds": true,
-              "Y-axis/Upper bound": 1.0,
-              "Y-axis/Lower bound": -1.0,
-              "Y-axis/Unit": "ul",
-              "Visible data/LiveWindow/Flywheel/Velocity (tan)": true
+              "_title": "LiveWindow/Flywheel/Velocity (tan)"
             }
           },
           "0,4": {
@@ -1710,6 +1717,28 @@
               "_type": "Text View",
               "_source0": "network_table:///LiveWindow/Flywheel/Motor RPM",
               "_title": "LiveWindow/Flywheel/Motor RPM"
+            }
+          },
+          "2,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Turret Angle",
+              "_title": "/SmartDashboard/Turret Angle"
+            }
+          },
+          "9,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/IsTargetFoundInFrame",
+              "_title": "/SmartDashboard/IsTargetFoundInFrame"
             }
           }
         }
@@ -2091,7 +2120,7 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "8,0": {
+          "0,3": {
             "size": [
               4,
               2
@@ -2158,7 +2187,7 @@
               "_title": "/SmartDashboard/tuner/SetPoint"
             }
           },
-          "8,2": {
+          "0,0": {
             "size": [
               4,
               3
@@ -2173,6 +2202,58 @@
               "Y-axis/Upper bound": 1.0,
               "Y-axis/Lower bound": -1.0,
               "Y-axis/Unit": "ul"
+            }
+          },
+          "8,0": {
+            "size": [
+              2,
+              4
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/Turret",
+              "_title": "LiveWindow/Turret",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Turret/Current Command",
+                  "_title": "Current Command"
+                },
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///LiveWindow/Turret/IsAtAngle",
+                  "_title": "IsAtAngle",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                }
+              ]
+            }
+          },
+          "10,0": {
+            "size": [
+              2,
+              4
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/Hood",
+              "_title": "LiveWindow/Hood",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Hood/Current Command",
+                  "_title": "Current Command"
+                },
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///LiveWindow/Hood/IsAtAngle",
+                  "_title": "IsAtAngle",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                }
+              ]
             }
           }
         }
