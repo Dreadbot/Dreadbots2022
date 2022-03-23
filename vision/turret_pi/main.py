@@ -151,6 +151,10 @@ def main():
 
     white_img = np.zeros([frame_h//2, frame_w//2, frame_d], dtype=np.uint8)
 
+    prev_time = 0
+
+    fps = 18
+
     # Main loop
     while True:
         cap_ret, frame = cap.read() # Read from camera
@@ -227,17 +231,8 @@ def main():
 
         average_size = 0
 
-        for contour in contours:
-            _, _, w, h = cv2.boundingRect(contour)
-            area = w*h
-            average_size += area
-        if len(contours) > 0:
-            average_size /= len(contours)
-        
         for contour in contours: #Loop through each found contour
             x, y, w, h = cv2.boundingRect(contour) # Return bounding box parameters of the contour
-
-            area = w*h
 
             # Ignore values below defined Y ignore level
             if y >= y_ignore: 
@@ -248,12 +243,8 @@ def main():
             x += (w//2)
             y += (h//2)
 
-            area_d = abs(area-average_size)
             # If the contour's bounding box is more than 30px wide or tall ignore it
-            #if area_d < 40:
             if w > 5 and h > 5:
-                cv2.circle(draw_frame, (x//2, y//2), 2, (0,0,255), thickness=-1) #Draw contour dot
-
                 # Create current point array and append to image points array
                 pt = [x, y]
                 imgpoints.append(pt)
@@ -262,9 +253,36 @@ def main():
         # Sort the image points array to index points left-to-right based on X position
         imgpoints.sort(reverse=True, key=pt_sort)
 
+        try:
+            for i in range(len(imgpoints)):
+                pt = imgpoints[i]
+                u, v = pt
+                
+                successes = 0
+
+                for ref_pt in imgpoints:
+                    ref_u, ref_v = ref_pt
+                    
+                    if ref_pt == pt:
+                        continue
+                    
+                    dy = abs(ref_v - v)
+
+                    if dy < 30:
+                        successes += 1
+
+                if successes < max([len(imgpoints)-2, 1]):
+                    imgpoints.pop(i)
+        except IndexError:
+            pass
+
+
         # Unwrap each point to draw on real-world visualizer
         for pt in imgpoints:
             u, v = pt
+            
+            cv2.circle(draw_frame, (u//2, v//2), 1, (0,0,255), thickness=-1)
+
             x, y, _ = projection_math.similar_triangles_calculation(u, v)
             rw_vis.circle((x,y), (0,0,255))
 
@@ -296,30 +314,35 @@ def main():
         table.putNumber("RelativeDistanceToHub", distance)
         table.putNumber("RelativeAngleToHub", angle)
 
-        # Set the output of the camera server to the selected camera
-        # 0 - "clean" image
-        # 1 - binary mask w/ "clean" underlay
-        # 2 - Real-world visualizer
-        if table.getNumber("CameraSelection", 0) == 0:
-            
-            cv2.line(draw_frame, res_pt(320, 0), res_pt(320,480), (255,255,255), thickness=2)
-            cv2.line(draw_frame, res_pt(0,240), res_pt(640, 240), (255,255,255), thickness=2)
-            outputStream.putFrame(draw_frame)
+        time_elapsed = time.time() - prev_time
+        
+        if time_elapsed >= 1/fps:
+            prev_time = time.time()
+        
+            # Set the output of the camera server to the selected camera
+            # 0 - "clean" image
+            # 1 - binary mask w/ "clean" underlay
+            # 2 - Real-world visualizer
+            if table.getNumber("CameraSelection", 0) == 0:
+                
+                cv2.line(draw_frame, res_pt(320, 0), res_pt(320,480), (255,255,255), thickness=2)
+                cv2.line(draw_frame, res_pt(0,240), res_pt(640, 240), (255,255,255), thickness=2)
+                outputStream.putFrame(draw_frame)
 
-        elif table.getNumber("CameraSelection", 0) == 1:
-            full_mask = cv2.cvtColor(full_mask, cv2.COLOR_GRAY2BGR)
-            
-            push_frame = res_img(full_mask)
+            elif table.getNumber("CameraSelection", 0) == 1:
+                full_mask = cv2.cvtColor(full_mask, cv2.COLOR_GRAY2BGR)
+                
+                push_frame = res_img(full_mask)
 
-            h, w, _ = push_frame.shape
+                h, w, _ = push_frame.shape
 
-            cv2.line(push_frame, (w//2,0), (w//2,h), (0,0,255))
+                cv2.line(push_frame, (w//2,0), (w//2,h), (0,0,255))
 
-            outputStream.putFrame(push_frame)
+                outputStream.putFrame(push_frame)
 
-        elif table.getNumber("CameraSelection", 0) == 2:
-            frame = rw_vis.retrieve_img()
-            outputStream.putFrame(frame)
+            elif table.getNumber("CameraSelection", 0) == 2:
+                frame = rw_vis.retrieve_img()
+                outputStream.putFrame(frame)
 
 
     # Release capture object

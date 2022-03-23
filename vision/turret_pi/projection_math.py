@@ -34,6 +34,7 @@ elif bot == 'crackle':
 elif bot == 'competition':
     angle_offset = 26
     roll = 0
+    yaw = 8
     z_offset = target_height - 37.5
 
 angle_offset_radians = math.radians(angle_offset)
@@ -68,7 +69,7 @@ def rotation_matrix(yaw, pitch, roll):
     return output_rotation_matrix
 
 
-R = rotation_matrix(0, angle_offset, roll)
+R = rotation_matrix(yaw, angle_offset, roll)
 inv_R = np.linalg.inv(R)
 
 
@@ -240,8 +241,12 @@ def leg_calculation(imgpoints, dampen=1.0, prev=None, draw_target=None, visualiz
 
     raw_angle = math.degrees(math.atan(target_x/target_y))
     raw_dist = math.sqrt(target_x**2 + target_y**2)
-    #107
-    raw_dist = (107/131.7) * raw_dist
+    
+    #raw_dist = (107/131.7) * raw_dist
+    
+    distance_adjustment = 0.001307*(raw_dist**1.931)
+
+    raw_dist -= distance_adjustment
 
     if dampen is not None:
         prev_angle, prev_dist = prev
