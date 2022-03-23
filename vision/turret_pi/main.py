@@ -48,6 +48,9 @@ def res_img(frame):
 
     return resFrame 
 
+def res_pt(u, v):
+    return((u//2, v//2))
+
 def ranging_selection(imgpoints, pt_range=80):
     ranged_pts = []
     for pt in imgpoints:
@@ -77,6 +80,26 @@ def ranging_selection(imgpoints, pt_range=80):
 def pt_sort(e):
     return(e[0])
 
+def init_camera():
+    cap = None
+    for i in range(10):
+        try:
+            cap = cv2.VideoCapture(i)
+            break
+        except:
+            continue
+
+    if cap is None:
+        print("NO CAMERAS FOUND")
+        exit()
+
+    # Disable the webcam's auto exposure (w/ 0.75) and set the exposure to 0.01
+    cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.75)
+    cap.set(cv2.CAP_PROP_EXPOSURE, 0.01)
+
+
+    return(cap)
+
 
 # main block
 def main():
@@ -104,13 +127,9 @@ def main():
 
 
     # Create capture object out of camera 0
-    cap = cv2.VideoCapture(0)
+    cap = init_camera() 
 
-    # Disable the webcam's auto exposure (w/ 0.75) and set the exposure to 0.01
-    cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.75)
-    cap.set(cv2.CAP_PROP_EXPOSURE, 0.01)
-
-
+    
     # preload networktables with the last saved settings
     with open('/home/pi/vision/saved_monitors.json', 'r') as f:
         preload = json.load(f)
@@ -127,10 +146,27 @@ def main():
     angle = 0
     distance = 0
 
+    ref_ret, ref_frame = cap.read()
+    frame_h, frame_w, frame_d = ref_frame.shape
+
+    white_img = np.zeros([frame_h//2, frame_w//2, frame_d], dtype=np.uint8)
+
+    prev_time = 0
+
+    fps = 18
 
     # Main loop
     while True:
         cap_ret, frame = cap.read() # Read from camera
+        
+        draw_frame = frame.copy()
+
+        y_ignore = int(table.getNumber("YIgnore", 0)) # Y coordinate at which to ignore any result below
+
+        draw_frame = res_img(draw_frame)
+        draw_frame = cv2.addWeighted(draw_frame, 0.7, white_img, 0.3, 25)
+        
+
 
         center_ret = False # Reset target found flag to False every loop
 
@@ -164,7 +200,6 @@ def main():
         light_dilate = max([int(table.getNumber("LightErodeKernel", 1)), 0])
         
         
-        y_ignore = int(table.getNumber("YIgnore", 0)) # Y coordinate at which to ignore any result below
         
         dampen_weight = max([table.getNumber("DampenWeight", 1), 0]) # Filter dampening weight (IIR Filter)
 
@@ -191,13 +226,13 @@ def main():
         contours = cv2.findContours(full_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         contours = imutils.grab_contours(contours)
 
-
         # Initialize image point array
         imgpoints = []
 
+        average_size = 0
+
         for contour in contours: #Loop through each found contour
             x, y, w, h = cv2.boundingRect(contour) # Return bounding box parameters of the contour
-
 
             # Ignore values below defined Y ignore level
             if y >= y_ignore: 
@@ -208,12 +243,8 @@ def main():
             x += (w//2)
             y += (h//2)
 
-
             # If the contour's bounding box is more than 30px wide or tall ignore it
-            if True:
-                cv2.circle(frame, (x, y), 3, (0,0,255), thickness=-1) #Draw contour dot
-
-
+            if w > 5 and h > 5:
                 # Create current point array and append to image points array
                 pt = [x, y]
                 imgpoints.append(pt)
@@ -222,9 +253,36 @@ def main():
         # Sort the image points array to index points left-to-right based on X position
         imgpoints.sort(reverse=True, key=pt_sort)
 
+        try:
+            for i in range(len(imgpoints)):
+                pt = imgpoints[i]
+                u, v = pt
+                
+                successes = 0
+
+                for ref_pt in imgpoints:
+                    ref_u, ref_v = ref_pt
+                    
+                    if ref_pt == pt:
+                        continue
+                    
+                    dy = abs(ref_v - v)
+
+                    if dy < 30:
+                        successes += 1
+
+                if successes < max([len(imgpoints)-2, 1]):
+                    imgpoints.pop(i)
+        except IndexError:
+            pass
+
+
         # Unwrap each point to draw on real-world visualizer
         for pt in imgpoints:
             u, v = pt
+            
+            cv2.circle(draw_frame, (u//2, v//2), 1, (0,0,255), thickness=-1)
+
             x, y, _ = projection_math.similar_triangles_calculation(u, v)
             rw_vis.circle((x,y), (0,0,255))
 
@@ -236,16 +294,11 @@ def main():
             center_ret, angle, distance = projection_math.leg_calculation(imgpoints, 
                                                             dampen=dampen_weight, 
                                                             prev=(angle, distance), 
-                                                            draw_target=frame, 
+                                                            draw_target=draw_frame, 
                                                             visualizer=rw_vis)
-            # center_ret, angle, distance = projection_math.orth_bisector_calculation(imgpoints, 
-            #                                                 dampen=dampen_weight, 
-            #                                                 prev=(angle, distance), 
-            #                                                 draw_target=frame, 
-            #                                                 visualizer=rw_vis)
 
         elif len(imgpoints) == 1:
-            center_ret, angle, distance = projection_math.single_point(imgpoints[0])
+            center_ret, angle, distance = projection_math.single_point(imgpoints[0], draw_target=draw_frame)
         else:
             center_ret = False
 
@@ -257,41 +310,39 @@ def main():
 
 
         # Update NT
-        table.putBoolean("TargetFoundInFrame", center_ret)
+        table.putNumber("IsTargetFoundInFrame", int(center_ret))
         table.putNumber("RelativeDistanceToHub", distance)
         table.putNumber("RelativeAngleToHub", angle)
 
+        time_elapsed = time.time() - prev_time
+        
+        if time_elapsed >= 1/fps:
+            prev_time = time.time()
+        
+            # Set the output of the camera server to the selected camera
+            # 0 - "clean" image
+            # 1 - binary mask w/ "clean" underlay
+            # 2 - Real-world visualizer
+            if table.getNumber("CameraSelection", 0) == 0:
+                
+                cv2.line(draw_frame, res_pt(320, 0), res_pt(320,480), (255,255,255), thickness=2)
+                cv2.line(draw_frame, res_pt(0,240), res_pt(640, 240), (255,255,255), thickness=2)
+                outputStream.putFrame(draw_frame)
 
-        # Set the output of the camera server to the selected camera
-        # 0 - "clean" image
-        # 1 - binary mask w/ "clean" underlay
-        # 2 - Real-world visualizer
-        if table.getNumber("CameraSelection", 0) == 0:
-            frame[0:y_ignore, :] += 50
-            frame[y_ignore:480, :] += 25
+            elif table.getNumber("CameraSelection", 0) == 1:
+                full_mask = cv2.cvtColor(full_mask, cv2.COLOR_GRAY2BGR)
+                
+                push_frame = res_img(full_mask)
 
-            cv2.line(frame, (320, 0), (320,480), (255,255,255))
-            cv2.line(frame, (0,240), (640, 240), (255,255,255))
+                h, w, _ = push_frame.shape
 
-            frame = res_img(frame)
+                cv2.line(push_frame, (w//2,0), (w//2,h), (0,0,255))
 
-            outputStream.putFrame(frame)
+                outputStream.putFrame(push_frame)
 
-        elif table.getNumber("CameraSelection", 0) == 1:
-            full_mask = cv2.cvtColor(full_mask, cv2.COLOR_GRAY2BGR)
-            
-            push_frame = cv2.addWeighted(full_mask, 0.8, frame, 0.2, 1.0)
-            push_frame = res_img(push_frame)
-
-            w, h, _ = push_frame.shape
-
-            cv2.line(push_frame, (w//2,0), (w//2,h), (0,0,255))
-
-            outputStream.putFrame(push_frame)
-
-        elif table.getNumber("CameraSelection", 0) == 2:
-            frame = rw_vis.retrieve_img()
-            outputStream.putFrame(frame)
+            elif table.getNumber("CameraSelection", 0) == 2:
+                frame = rw_vis.retrieve_img()
+                outputStream.putFrame(frame)
 
 
     # Release capture object
