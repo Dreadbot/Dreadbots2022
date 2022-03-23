@@ -40,8 +40,8 @@ public class Turret extends DreadbotSubsystem {
         motor.setIdleMode(IdleMode.kBrake);
         motor.setInverted(true);
 
-        pidController.setP(0.14);
-        pidController.setI(2e-4);
+        pidController.setP(0.04);
+        pidController.setI(1e-4);
         pidController.setD(0);
         pidController.setIZone(2.85);
         pidController.setFF(0.000015);
@@ -53,6 +53,11 @@ public class Turret extends DreadbotSubsystem {
         builder.setSmartDashboardType("DreadbotTurret");
         builder.setActuator(true);
         builder.setSafeState(this::stopMotors);
+
+        builder.addStringProperty(
+            "Current Command",
+            () -> getCurrentCommand() != null ? getCurrentCommand().getName() : "none",
+            null);
 
         builder.addBooleanProperty("IsAtAngle", this::isAtSetAngle, null);
     }
@@ -82,7 +87,7 @@ public class Turret extends DreadbotSubsystem {
     public boolean isAtSetAngle() {
         if(isDisabled()) return true;
 
-        return Math.abs(getAngle() - setAngle) <= 1.0d;
+        return Math.abs(getAngle() - setAngle) <= 2.0d;
     }
 
     public void setPosition(double rotations) {

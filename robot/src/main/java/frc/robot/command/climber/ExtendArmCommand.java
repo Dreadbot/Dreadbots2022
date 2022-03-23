@@ -5,19 +5,23 @@ import frc.robot.subsystem.Climber;
 
 public class ExtendArmCommand extends CommandBase {
     private Climber climber;
+
     public ExtendArmCommand(Climber climber) {
         this.climber = climber;
         addRequirements(climber);
     }
+
     @Override
     public void initialize() {
-        if(!climber.getTopLimitSwitch())
+        if(!climber.isPowerArmExtended())
             climber.extendArm();
     }
+
     @Override
     public boolean isFinished() {
-        return climber.getTopLimitSwitch();
+        return climber.isPowerArmExtended();
     }
+
     @Override
     public void end(boolean interupted) {
         climber.stopMotors();

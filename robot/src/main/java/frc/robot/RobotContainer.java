@@ -11,9 +11,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.command.autonomous.TrajectoryAuton;
 import frc.robot.command.climber.*;
 import frc.robot.command.drive.DriveCommand;
@@ -115,10 +113,9 @@ public class RobotContainer {
             Solenoid neutralHookActuator = pneumaticHub.makeSolenoid(Constants.NEUTRAL_HOOK_ACTUATOR_ID);
             Solenoid climbingHookActuator = pneumaticHub.makeSolenoid(Constants.CLIMBING_HOOK_ACTUATOR_ID);
             CANSparkMax winchMotor = new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless);
-            DigitalInput bottomLimitSwitch = new DigitalInput(Constants.BOTTOM_CLIMBER_LIMIT_SWITCH_ID);
-            DigitalInput topLimitSwitch = new DigitalInput(Constants.TOP_CLIMBER_LIMIT_SWITCH_ID);
+            DigitalInput bottomLimitSwitch = new DigitalInput(Constants.CLIMBER_LIMIT_SWITCH_ID);
 
-            climber = new Climber(neutralHookActuator, climbingHookActuator, winchMotor, bottomLimitSwitch, topLimitSwitch);
+            climber = new Climber(neutralHookActuator, climbingHookActuator, winchMotor, bottomLimitSwitch);
         } else climber = new Climber();
 
         configureButtonBindings();
@@ -132,13 +129,13 @@ public class RobotContainer {
             primaryController::getZAxis));
 
         // Intake Commands
-        intake.setDefaultCommand(new RunCommand(intake::idle, intake));
+//        intake.setDefaultCommand(new RunCommand(intake::idle, intake));
         secondaryController.getAButton().whileHeld(new OuttakeCommand(intake, feeder));
         secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
 
         // Shooter Commands
         hood.setDefaultCommand(new HoodCommands.PassiveTrack(hood));
-        turret.setDefaultCommand(new TurretCommands.PassiveTrack(turret));
+        turret.setDefaultCommand(new TurretCommands.PassiveTrack(turret, drive));
         flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
         secondaryController.getBButton().whileHeld(new ShooterCommands.LowShoot(shooter, intake));
         secondaryController.getYButton().whileHeld(new ShooterCommands.HighShoot(shooter, intake));
@@ -152,30 +149,37 @@ public class RobotContainer {
         primaryController.getYButton().whenPressed(new RotateClimbingArmDownCommand(climber));
         primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber));
         primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
-        primaryController.getRightBumper().whenPressed(new AutonomousClimberCommand(climber));
+        primaryController.getRightBumper().whileHeld(new AutonomousClimberCommand(climber));
     }
 
     public Command getAutonomousCommand(){
-        PathPlannerTrajectory examplePath = PathPlanner.loadPath("TaxiAuton1", 1.5, 1);
+        PathPlannerTrajectory examplePath = PathPlanner.loadPath("scarce_first_leg", 5.0, 3.00);
 
-        return new TrajectoryAuton(
-            examplePath,
-            drive::getPose,
-            drive.getKinematics(),
-            drive.getXController(),
-            drive.getYController(),
-            drive.getThetaController(),
-            1.5,
-            drive::setWheelSpeeds,
-            drive
+        return new SequentialCommandGroup(
+            new ParallelCommandGroup(
+                new TurretCommands.Calibrate(turret, false)
+                    .andThen(new TurretCommands.TurnToAngle(turret, 155.0d)),
+                new HoodCommands.Calibrate(hood, false)
+                    .andThen(new HoodCommands.TurnToAngle(hood, Constants.MAX_HOOD_ANGLE)),
+                new TrajectoryAuton(
+                    drive,
+                    examplePath,
+                    8.0
+                ),
+                new InstantCommand(intake::intake, intake)
+            ),
+            new ShooterCommands.HighShoot(shooter, intake),
+            new WaitCommand(2.0),
+            new ShooterCommands.HighShoot(shooter, intake),
+            new InstantCommand(intake::idle, intake)
         );
-    }  
+    }
 
     public void calibrate() {
-        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, true)
+        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, false)
             .andThen(new TurretCommands.TurnToAngle(turret, 155.0d)));
 
-        CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, true)
+        CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, false)
             .andThen(new HoodCommands.TurnToAngle(hood, Constants.MAX_HOOD_ANGLE)));
     }
 

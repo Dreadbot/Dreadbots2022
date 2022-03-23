@@ -12,36 +12,30 @@ public class FlywheelCommands {
         private final Flywheel flywheel;
         private final CargoKinematics cargoKinematics;
 
-        private double lastDistanceToHub;
-        private double lastVelocity;
+        private double commandedVelocity;
 
         public PrepareVisionShot(Flywheel flywheel) {
             this.flywheel = flywheel;
-            this.cargoKinematics = new CargoKinematics(s -> 0.306*s + 2.6, 0.5715, 2.6416);
+            this.cargoKinematics = new CargoKinematics(s -> 3.2, 0.5715, 2.6416);
 
             addRequirements(flywheel);
         }
 
         @Override
         public void execute() {
-            if(!VisionInterface.canTrackHub()) return;
-
             double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
             double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
 
-            if(distanceToHub != lastDistanceToHub) velocityControl(velocity);
-            lastDistanceToHub = distanceToHub;
+            commandedVelocity = velocity * 3.55;
+            SmartDashboard.putNumber("OUT VIP TEMP", commandedVelocity);
+            flywheel.setVelocity(commandedVelocity);
         }
 
         @Override
         public boolean isFinished() {
-            return Math.abs(flywheel.getTangentialVelocity() - lastVelocity) <= 1.0d;
-        }
+//            return flywheel.getTangentialVelocity() >= commandedVelocity;
 
-        private void velocityControl(double velocity) {
-            lastVelocity = velocity;
-
-            flywheel.setVelocity(velocity);
+            return Math.abs(flywheel.getTangentialVelocity() - commandedVelocity) <= 0.15d;
         }
     }
 
@@ -63,7 +57,7 @@ public class FlywheelCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(flywheel.getTangentialVelocity() - velocity) <= 0.1d;
+            return Math.abs(flywheel.getTangentialVelocity() - velocity) <= 1.0d;
         }
     }
 }

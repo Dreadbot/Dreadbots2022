@@ -2,19 +2,28 @@ package frc.robot.command.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.shooter.Turret;
 import frc.robot.util.VisionInterface;
 
 public class TurretCommands {
     public static class PassiveTrack extends CommandBase {
         private final Turret turret;
+        private final Drive drive;
 
         private double lastRelativeAngleToHub;
+        private double lastRobotAngle = 0.0d;
 
-        public PassiveTrack(Turret turret) {
+        public PassiveTrack(Turret turret, Drive drive) {
             this.turret = turret;
+            this.drive = drive;
 
             addRequirements(turret);
+        }
+
+        @Override
+        public void initialize() {
+            lastRobotAngle = drive.getYaw();
         }
 
         @Override
@@ -22,9 +31,12 @@ public class TurretCommands {
             if(!VisionInterface.canTrackHub()) return;
 
             double relativeAngleToHub = VisionInterface.getRelativeAngleToHub();
+//            relativeAngleToHub += -drive.getYaw() - lastRobotAngle;
 
             if(relativeAngleToHub != lastRelativeAngleToHub) turretControlAngle(relativeAngleToHub);
+
             lastRelativeAngleToHub = relativeAngleToHub;
+            lastRobotAngle = drive.getYaw();
         }
 
         private void turretControlAngle(double relativeAngleToHub) {
@@ -60,42 +72,7 @@ public class TurretCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(turret.getAngle() - requestedAngle) <= 1.0d;
-        }
-
-        private void turretControlAngle(double relativeAngleToHub) {
-            double currentAngle = turret.getAngle();
-            requestedAngle = currentAngle + relativeAngleToHub;
-
-            turret.setAngle(requestedAngle);
-        }
-    }
-
-    public static class EjectTrack extends CommandBase {
-        private final Turret turret;
-
-        private double lastRelativeAngleToHub;
-        private double requestedAngle;
-
-        public EjectTrack(Turret turret) {
-            this.turret = turret;
-
-            addRequirements(turret);
-        }
-
-        @Override
-        public void execute() {
-//            if(!VisionInterface.canTrackHub()) return;
-
-            double relativeAngleToHub = VisionInterface.getRelativeAngleToHub() + 45;
-
-            if(relativeAngleToHub != lastRelativeAngleToHub) turretControlAngle(relativeAngleToHub);
-            lastRelativeAngleToHub = relativeAngleToHub;
-        }
-
-        @Override
-        public boolean isFinished() {
-            return turret.isAtSetAngle();
+            return Math.abs(turret.getAngle() - requestedAngle) <= 2.0d;
         }
 
         private void turretControlAngle(double relativeAngleToHub) {
@@ -128,7 +105,40 @@ public class TurretCommands {
         }
     }
 
+    public static class EjectTrack extends CommandBase {
+        private final Turret turret;
+
+        private double lastRelativeAngleToHub;
+        private double requestedAngle;
+
+        public EjectTrack(Turret turret) {
+            this.turret = turret;
+
+            addRequirements(turret);
+        }
+
+        @Override
+        public void execute() {
+            double relativeAngleToHub = VisionInterface.getRelativeAngleToHub() + 20;
+
+            if(relativeAngleToHub != lastRelativeAngleToHub) turretControlAngle(relativeAngleToHub);
+            lastRelativeAngleToHub = relativeAngleToHub;
+        }
+
+        @Override
+        public boolean isFinished() {
+            return turret.isAtSetAngle();
+        }
+
+        private void turretControlAngle(double relativeAngleToHub) {
+            double currentAngle = turret.getAngle();
+            requestedAngle = currentAngle + relativeAngleToHub;
+
+            turret.setAngle(requestedAngle);
+        }
+    }
     public static class TurnToRelativeAngle extends CommandBase {
+
         private final Turret turret;
         private final double angle;
 

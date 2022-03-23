@@ -48,11 +48,13 @@ public class ColorSensor extends DreadbotSubsystem {
 
     private String getColorSerialized(Color ballColor) {
         String colorName;
-        if (ballColor == Constants.COLOR_RED) {
+
+        if(ballColor == null) return "NO MATCH";
+
+        if (ballColor.equals(Constants.COLOR_RED)) {
             colorName = "Red";
-        } else if (ballColor == Constants.COLOR_BLUE) {
+        } else if (ballColor.equals(Constants.COLOR_BLUE)) {
             colorName = "Blue";
-            alliance = DriverStation.Alliance.Blue;
         } else {
             colorName = "NO MATCH";
         }

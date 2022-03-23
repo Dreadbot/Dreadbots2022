@@ -9,14 +9,12 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Climber extends DreadbotSubsystem {
     private Solenoid leftNeutralHookActuator;
     private Solenoid climbingHookActuator;
     private DigitalInput bottomLimitSwitch;
-    private DigitalInput topLimitSwitch;
     private CANSparkMax winchMotor;
     private RelativeEncoder winchEncoder;
     private SparkMaxPIDController winchPid;
@@ -30,12 +28,11 @@ public class Climber extends DreadbotSubsystem {
         disable();
     }
 
-    public Climber(Solenoid neutralHookActuator, Solenoid climbingHookActuator, CANSparkMax winchMotor, DigitalInput bottomLimitSwitch, DigitalInput topLimitSwitch) {
+    public Climber(Solenoid neutralHookActuator, Solenoid climbingHookActuator, CANSparkMax winchMotor, DigitalInput bottomLimitSwitch) {
         this.leftNeutralHookActuator = neutralHookActuator;
         this.climbingHookActuator = climbingHookActuator;
         this.winchMotor = winchMotor;
         this.bottomLimitSwitch = bottomLimitSwitch;
-        this.topLimitSwitch = topLimitSwitch;
 
         this.winchPid = winchMotor.getPIDController();
         this.winchEncoder = winchMotor.getEncoder();
@@ -52,17 +49,20 @@ public class Climber extends DreadbotSubsystem {
         winchPid.setFF(0.000015);
         winchPid.setOutputRange(-0.1, 0.1);
 
+        winchEncoder.setPosition(0.0d);
         this.retractedPosition = winchEncoder.getPosition();
         
-        SmartDashboard.putNumber("WinchPosition", 0);
+        SmartDashboard.putNumber("WinchPosition", retractedPosition);
     }
 
     @Override
     public void periodic() {
         if(isDisabled()) return;
-        SmartDashboard.putBoolean("Lower Limit", getBottomLimitSwitch());
-        SmartDashboard.putBoolean("Upper Limit", getTopLimitSwitch());
+        SmartDashboard.putBoolean("Climber Lower Limit", getBottomLimitSwitch());
         SmartDashboard.putNumber("WinchPosition", winchEncoder.getPosition());
+        SmartDashboard.putNumber("RetractedPosition", retractedPosition);
+        SmartDashboard.putString("Current Command",
+            getCurrentCommand() != null ? getCurrentCommand().getName() : "none");
     }
     public void zeroEncoderPosition() {
         if(isDisabled()) return;
@@ -153,17 +153,6 @@ public class Climber extends DreadbotSubsystem {
         return limitSwitchValue;
     }
     
-    public boolean getTopLimitSwitch() {
-        if(isDisabled()) return false;
-
-        boolean limitSwitchValue = false;
-        try {
-            limitSwitchValue = !topLimitSwitch.get();
-        } catch (IllegalStateException ignored) { disable(); }
-
-        return limitSwitchValue;
-    }
-    
     @Override
     public void stopMotors() {
         if(isDisabled()) return;
@@ -193,5 +182,13 @@ public class Climber extends DreadbotSubsystem {
 
         climbingHookActuator.set(climbingHookActuator.get());
         leftNeutralHookActuator.set(leftNeutralHookActuator.get());
+    }
+
+    public boolean isPowerArmExtended() {
+        return Math.abs(winchEncoder.getPosition() - retractedPosition) >= Constants.CLIMBER_RANGE;
+    }
+
+    public double getWinchPosition() {
+        return winchEncoder.getPosition();
     }
 }

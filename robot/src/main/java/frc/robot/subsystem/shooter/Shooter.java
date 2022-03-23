@@ -1,5 +1,7 @@
 package frc.robot.subsystem.shooter;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystem.DreadbotSubsystem;
 
 public class Shooter extends DreadbotSubsystem {
@@ -25,12 +27,17 @@ public class Shooter extends DreadbotSubsystem {
     }
 
     public void feedBall() {
-        System.out.println("SHOOTER CLASS CALL");
         if(isDisabled()) return;
 
-        System.out.println("SHOOTER CLASS CALL ENABLED");
-
         feeder.feed();
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addStringProperty(
+            "Current Command",
+            () -> getCurrentCommand() != null ? getCurrentCommand().getName() : "none",
+            null);
     }
 
     public void setFlywheelVelocity(double velocity) {

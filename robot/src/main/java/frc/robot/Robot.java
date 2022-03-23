@@ -34,7 +34,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         robotContainer.setTeamColor();
-        //robotContainer.calibrate();
+//        robotContainer.calibrate();
         autonomousCommand = robotContainer.getAutonomousCommand();
 
         // schedule the autonomous command (example)
