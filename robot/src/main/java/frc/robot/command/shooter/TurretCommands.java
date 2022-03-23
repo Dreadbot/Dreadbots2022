@@ -72,7 +72,7 @@ public class TurretCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(turret.getAngle() - requestedAngle) <= 1.0d;
+            return Math.abs(turret.getAngle() - requestedAngle) <= 2.0d;
         }
 
         private void turretControlAngle(double relativeAngleToHub) {

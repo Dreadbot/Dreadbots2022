@@ -11,9 +11,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.command.autonomous.TrajectoryAuton;
 import frc.robot.command.climber.*;
 import frc.robot.command.drive.DriveCommand;
@@ -131,7 +129,7 @@ public class RobotContainer {
             primaryController::getZAxis));
 
         // Intake Commands
-        intake.setDefaultCommand(new RunCommand(intake::idle, intake));
+//        intake.setDefaultCommand(new RunCommand(intake::idle, intake));
         secondaryController.getAButton().whileHeld(new OuttakeCommand(intake, feeder));
         secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
 
@@ -157,12 +155,25 @@ public class RobotContainer {
     public Command getAutonomousCommand(){
         PathPlannerTrajectory examplePath = PathPlanner.loadPath("scarce_first_leg", 5.0, 3.00);
 
-        return new TrajectoryAuton(
-            drive,
-            examplePath,
-            8.0
+        return new SequentialCommandGroup(
+            new ParallelCommandGroup(
+                new TurretCommands.Calibrate(turret, false)
+                    .andThen(new TurretCommands.TurnToAngle(turret, 155.0d)),
+                new HoodCommands.Calibrate(hood, false)
+                    .andThen(new HoodCommands.TurnToAngle(hood, Constants.MAX_HOOD_ANGLE)),
+                new TrajectoryAuton(
+                    drive,
+                    examplePath,
+                    8.0
+                ),
+                new InstantCommand(intake::intake, intake)
+            ),
+            new ShooterCommands.HighShoot(shooter, intake),
+            new WaitCommand(2.0),
+            new ShooterCommands.HighShoot(shooter, intake),
+            new InstantCommand(intake::idle, intake)
         );
-    }  
+    }
 
     public void calibrate() {
         CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, false)

@@ -87,7 +87,7 @@ public class Turret extends DreadbotSubsystem {
     public boolean isAtSetAngle() {
         if(isDisabled()) return true;
 
-        return Math.abs(getAngle() - setAngle) <= 1.0d;
+        return Math.abs(getAngle() - setAngle) <= 2.0d;
     }
 
     public void setPosition(double rotations) {

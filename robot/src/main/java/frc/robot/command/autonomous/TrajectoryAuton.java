@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystem.Drive;
 
@@ -33,6 +34,8 @@ public class TrajectoryAuton extends CommandBase {
         this.m_kinematics = drive.getKinematics();
         this.m_controller = drive.getDriveController();
         this.m_outputWheelSpeeds = drive::setWheelSpeeds;
+
+        SmartDashboard.putNumber("CurrentTrajectoryTime", 0);
 
         addRequirements(drive);
     }
@@ -65,13 +68,14 @@ public class TrajectoryAuton extends CommandBase {
     @SuppressWarnings("LocalVariableName")
     public void execute() {
         double curTime = m_timer.get();
+        SmartDashboard.putNumber("CurrentTrajectoryTime", curTime);
         var desiredState = (PathPlannerTrajectory.PathPlannerState) m_trajectory.sample(curTime);
 
         var targetChassisSpeeds =
             m_controller.calculate(m_pose.get(), desiredState, desiredState.holonomicRotation);
-        targetChassisSpeeds.omegaRadiansPerSecond *= .55;
-        targetChassisSpeeds.vyMetersPerSecond *= .55;
-        targetChassisSpeeds.vxMetersPerSecond *= .55;
+//        targetChassisSpeeds.omegaRadiansPerSecond *= .55;
+//        targetChassisSpeeds.vyMetersPerSecond *= .55;
+//        targetChassisSpeeds.vxMetersPerSecond *= .55;
         var targetWheelSpeeds = m_kinematics.toWheelSpeeds(targetChassisSpeeds);
 
         targetWheelSpeeds.desaturate(m_maxWheelVelocityMetersPerSecond);
@@ -82,6 +86,7 @@ public class TrajectoryAuton extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         m_timer.stop();
+        drive.stopMotors();
     }
 
     @Override

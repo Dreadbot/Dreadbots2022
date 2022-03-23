@@ -19,6 +19,7 @@ public class ShooterCommands {
 
             addRequirements(shooter);
             addCommands(
+                new InstantCommand(() -> System.out.println("TARGET SHOOT")),
                 new ParallelCommandGroup(
                     new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
                     new TurretCommands.ActiveTrack(shooter.getTurret()),
@@ -50,7 +51,7 @@ public class ShooterCommands {
                     new TurretCommands.EjectTrack(shooter.getTurret()),
                     new HoodCommands.TurnToAngle(shooter.getHood(), 65.0)
                 ),
-                new FlywheelCommands.PreparePresetShot(shooter.getFlywheel(), 10.0),
+                new FlywheelCommands.PreparePresetShot(shooter.getFlywheel(), 20.0),
                 new FeedBallCommand(shooter)
             );
         }
@@ -73,6 +74,7 @@ public class ShooterCommands {
 
             addRequirements(shooter);
             addCommands(
+                new InstantCommand(() -> System.out.println("PRESET SHOOT")),
                 new ParallelCommandGroup(
                     new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
                     new TurretCommands.TurnToAngle(shooter.getTurret(), turretAngle),
@@ -196,7 +198,8 @@ public class ShooterCommands {
                     ),
                     // EJECT
                     new ConditionalCommand(
-                        new EjectShoot(shooter),
+//                        new EjectShoot(shooter),
+                        new TargetShoot(shooter),
                         new PresetShoot(shooter, 110, 71.862, 17.0d, 155.0d),
                         VisionInterface::canTrackHub
                     ),
