@@ -200,7 +200,7 @@ public class ShooterCommands {
         }
     }
 
-    public static class HighShoot extends ParallelCommandGroup {
+    public static class HighShoot extends SequentialCommandGroup {
         private Shooter shooter;
 
         public HighShoot(Shooter shooter, Intake intake) {

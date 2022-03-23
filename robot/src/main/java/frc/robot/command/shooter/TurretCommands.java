@@ -28,10 +28,13 @@ public class TurretCommands {
 
         @Override
         public void execute() {
-            if(!VisionInterface.canTrackHub()) return;
+            double relativeAngleToHub = 0.0d;
 
-            double relativeAngleToHub = VisionInterface.getRelativeAngleToHub();
-//            relativeAngleToHub += -drive.getYaw() - lastRobotAngle;
+            // Vision Corrections
+            relativeAngleToHub += VisionInterface.canTrackHub() ? VisionInterface.getRelativeAngleToHub() : 0.0d;
+
+            // Gyro corrections
+//            relativeAngleToHub -= lastRobotAngle - drive.getYaw();
 
             if(relativeAngleToHub != lastRelativeAngleToHub) turretControlAngle(relativeAngleToHub);
 
