@@ -24,79 +24,63 @@ color = (150, 150, 150)
 radius = 24
 
 if bot == 'practice':
-    angle_offset = 22
-    roll = 0
+    yaw   = 0
+    pitch = 22
+    roll  = 0
+
     z_offset = target_height - 28.5
 elif bot == 'crackle':
-    angle_offset = 14
-    roll = 0
+    yaw   = 0
+    pitch = 14
+    roll  = 0
+
     z_offset = target_height - 22.325
 elif bot == 'competition':
-    angle_offset = 26
-    roll = 0
-    yaw = 8
-    z_offset = target_height - 37.5
+    yaw   = 8
+    pitch = 26
+    roll  = 0
 
-angle_offset_radians = math.radians(angle_offset)
+    z_offset = target_height - 37.5
 
 
 def rotation_matrix(yaw, pitch, roll):
-    yaw = math.radians(yaw)
+    yaw   = math.radians(yaw)
     pitch = math.radians(pitch)
-    roll = math.radians(roll)
+    roll  = math.radians(roll)
 
     z_rotation_matrix = np.array([
         [math.cos(yaw), -math.sin(yaw), 0],
-        [math.sin(yaw), math.cos(yaw), 0],
-        [0, 0, 1]
+        [math.sin(yaw),  math.cos(yaw), 0],
+        [0,              0,             1]
     ])
 
     x_rotation_matrix = np.array([
-        [1, 0, 0],
+        [1, 0,               0              ],
         [0, math.cos(pitch), math.sin(pitch)],
         [0, math.sin(pitch), math.cos(pitch)]
     ])
 
     y_rotation_matrix = np.array([
-        [math.cos(roll), 0, math.sin(roll)],
-        [0, 1, 0],
+        [ math.cos(roll), 0, math.sin(roll)],
+        [ 0,              1, 0             ],
         [-math.sin(roll), 0, math.cos(roll)]
     ])
 
-    zx_multiplied = np.matmul(z_rotation_matrix, x_rotation_matrix)
+    zx_multiplied          = np.matmul(z_rotation_matrix, x_rotation_matrix)
     output_rotation_matrix = np.matmul(zx_multiplied, y_rotation_matrix)
 
     return output_rotation_matrix
 
 
-R = rotation_matrix(yaw, angle_offset, roll)
+R     = rotation_matrix(yaw, pitch, roll)
 inv_R = np.linalg.inv(R)
-
-
-def rotate_2d(vec, theta, origin, round=False):
-    theta = math.radians(theta)
-
-    vec = vec - origin
-
-    R = np.array([
-        [math.cos(theta), -math.sin(theta)],
-        [math.sin(theta),  math.cos(theta)]
-    ])
-
-    rotated_vector = R.dot(vec) + origin
-
-    if round:
-        rotated_vector[0] = int(rotated_vector[0])
-        rotated_vector[1] = int(rotated_vector[1])
-
-    return(rotated_vector)
 
 
 def similar_triangles_calculation(u,v):
     y = 1
 
     z = (v - cam_cy) / f
-    x = (u-cam_cx) / f
+    x = (u-cam_cx)   / f
 
     wvec = np.array([negate_x*x, negate_y*y, negate_z*z])
     wvec = R.dot(wvec)
@@ -105,12 +89,10 @@ def similar_triangles_calculation(u,v):
 
     wvec *= s
 
-    wvec = np.array([wvec[0], wvec[1], wvec[2]])
-
     return wvec
 
 
-def reverse_point(wvec, round=False, halve=False): #fix convention later
+def reverse_point(wvec, round=False):
     s = wvec[1]
     wvec /= s
 
@@ -129,15 +111,8 @@ def reverse_point(wvec, round=False, halve=False): #fix convention later
         u = int(u)
         v = int(v)
 
-    if halve:
-        u = u//2
-        v = v//2
-
     return (u,v)
 
-
-def res_pt(u, v):
-    return((u//2, v//2))
 
 def crosshair(draw_target, cvec, halve=True):
     u, v = cvec
@@ -159,17 +134,17 @@ def crosshair(draw_target, cvec, halve=True):
     color = (b, g, r)
     
     cv2.circle(draw_target, (u, v), 15, color, thickness=2)
-    cv2.line(draw_target, (u, 0), (u, h), color, thickness=2)
-    cv2.line(draw_target, (0, v), (w, v), color, thickness=2)
+
+    cv2.line(draw_target,   (u, 0), (u, h), color, thickness=2)
+    cv2.line(draw_target,   (0, v), (w, v), color, thickness=2)
 
 
-
-def single_point(pt, draw_target=None): # FIX TO USE SIM TRI
+def single_point(pt, draw_target=None):
     u, v = pt
 
     x, y, z = similar_triangles_calculation(u, v)
 
-    distance = math.sqrt(x**2 + y**2)
+    distance         = math.sqrt(x**2 + y**2)
     horizontal_angle = math.degrees(math.atan(x/y))
 
     if draw_target is not None:
@@ -179,7 +154,7 @@ def single_point(pt, draw_target=None): # FIX TO USE SIM TRI
 
 
 def leg_calculation(imgpoints, dampen=1.0, prev=None, draw_target=None, visualizer=None):
-    # imgpoints = np.array([ [x1,y1], [x2,y2], ... , [xn, yn] ])
+    # imgpoints = np.array([ [u1,v1], [u2,v2], ... , [un, vn] ])
 
     xs = []
     ys = []
@@ -192,84 +167,99 @@ def leg_calculation(imgpoints, dampen=1.0, prev=None, draw_target=None, visualiz
         except IndexError:
             break
 
-        sx, sy, _ = similar_triangles_calculation(start_u, start_v) #s - START
-        ex, ey, _ = similar_triangles_calculation(end_u, end_v) #e - END  IM SORRY OK I  LIKE TYPING SHORT VARIABLES SUE ME
+
+        start_x, start_y, _ = similar_triangles_calculation(start_u, start_v) #s - START
+        end_x,   end_y,   _ = similar_triangles_calculation(end_u,   end_v) #e - END  IM SORRY OK I  LIKE TYPING SHORT VARIABLES SUE ME
+
 
         if visualizer is not None:
-            visualizer.line((sx, sy), (ex, ey), (0,0,0))
+            visualizer.line((start_x, start_y), (end_x, end_y), (0,0,0))
 
-        raw_slope = (sy - ey) / (sx - ex)
+
+        raw_slope = (start_y - end_y) / (start_x - end_x)
 
         if raw_slope == 0.0:
             orth_slope = 10**4
         else:
             orth_slope = -(1/raw_slope)
 
-        mid_x, mid_y = ((sx + ex)/2, (sy + ey)/2) #start x, y (can treat as origin)
+
+        midpt_x, midpt_y = ((start_x + end_x)/2, (start_y + end_y)/2)
+
 
         slope_angle = math.atan(orth_slope)
 
-        tx1 = radius*math.cos(slope_angle) + mid_x
-        tx2 = -radius*math.cos(slope_angle) + mid_x
+
+        target_x1 =  radius*math.cos(slope_angle) + midpt_x
+        target_x2 = -radius*math.cos(slope_angle) + midpt_x
+
 
         test_orthslope = round(orth_slope,2)
 
-        ty = abs(radius*math.sin(slope_angle)) + mid_y
+        target_y = abs(radius*math.sin(slope_angle)) + midpt_y
 
-        slope_tx1 = round( (mid_y-ty) / (mid_x-tx1) , 2)
-        slope_tx2 = round( (mid_y-ty) / (mid_x-tx2) , 2)
+        slope_target_x1 = round( (midpt_y-target_y) / (midpt_x-target_x1) , 2)
+        slope_target_x2 = round( (midpt_y-target_y) / (midpt_x-target_x2) , 2)
 
-        if slope_tx1 == test_orthslope:
-            tx = tx1
-        elif slope_tx2 == test_orthslope:
-            tx = tx2
+
+        if slope_target_x1 == test_orthslope:
+            tx = target_x1
+
+        elif slope_target_x2 == test_orthslope:
+            tx = target_x2
+
         else:
             break
         
+
         if visualizer is not None:
-            visualizer.circle((tx, ty), (100,50,220))
+            visualizer.circle((tx, target_y), (100,50,220))
+
 
         xs.append(tx)
-        ys.append(ty)
+        ys.append(target_y)
 
 
     if len(xs) == 0:
         return(False, None, None)
 
+
     target_x = sum(xs)/len(xs)
     target_y = sum(ys)/len(ys)
 
-    raw_angle = math.degrees(math.atan(target_x/target_y))
-    raw_dist = math.sqrt(target_x**2 + target_y**2)
-    
-    #raw_dist = (107/131.7) * raw_dist
-    
-    distance_adjustment = 0.001307*(raw_dist**1.931)
 
-    raw_dist -= distance_adjustment
+    raw_angle = math.degrees(math.atan(target_x/target_y))
+    target_distance  = math.sqrt(target_x**2 + target_y**2)
+
+    error_adjustment = 0.001307*(target_distance**1.931)
+
+    target_distance -= error_adjustment
+
 
     if dampen is not None:
         prev_angle, prev_dist = prev
         
         target_angle = dampen*raw_angle + (1-dampen)*prev_angle
-        target_dist = dampen*raw_dist + (1-dampen)*prev_dist
+        target_dist  = dampen*target_distance + (1-dampen)*prev_dist
     else:
         target_angle = raw_angle
-        target_dist = raw_dist
+        target_dist  = target_distance
 
     
     target_wvec = np.array([target_x, target_y, z_offset])
+
 
     if visualizer is not None:
         visualizer.circle((target_x, target_y), (255,0,0), radius=24, thickness=1)
         visualizer.circle((target_x, target_y), (0,255,0))
         visualizer.line((0,0), (target_x, target_y), (100,0,0))
 
-    cvec = reverse_point(target_wvec, round=True, halve=False)
-    u, v = cvec
+
+    cvec = reverse_point(target_wvec, round=True)
 
     if draw_target is not None:
         crosshair(draw_target, cvec)
+
 
     return(True, target_angle, target_dist)
 

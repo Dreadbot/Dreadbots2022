@@ -48,8 +48,6 @@ def res_img(frame):
 
     return resFrame 
 
-def res_pt(u, v):
-    return((u//2, v//2))
 
 def ranging_selection(imgpoints, pt_range=80):
     ranged_pts = []
@@ -325,8 +323,8 @@ def main():
             # 2 - Real-world visualizer
             if table.getNumber("CameraSelection", 0) == 0:
                 
-                cv2.line(draw_frame, res_pt(320, 0), res_pt(320,480), (255,255,255), thickness=2)
-                cv2.line(draw_frame, res_pt(0,240), res_pt(640, 240), (255,255,255), thickness=2)
+                cv2.line(draw_frame, (320//2, 0), (320//2,480//2), (255,255,255), thickness=2)
+                cv2.line(draw_frame, (0,240), (640//2, 240//2), (255,255,255), thickness=2)
                 outputStream.putFrame(draw_frame)
 
             elif table.getNumber("CameraSelection", 0) == 1:
