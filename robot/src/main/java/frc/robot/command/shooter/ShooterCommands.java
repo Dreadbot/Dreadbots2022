@@ -175,6 +175,31 @@ public class ShooterCommands {
         }
     }
 
+    public static class LongPresetShoot extends SequentialCommandGroup {
+        private Shooter shooter;
+        private Intake intake;
+
+        public LongPresetShoot(Shooter shooter, Intake intake) {
+            this.shooter = shooter;
+            this.intake = intake;
+
+            addRequirements();
+            addCommands(
+                new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kCoast)),
+                new ParallelRaceGroup(
+                    new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
+                    new IntakeCommand(intake)
+                ),
+                new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kBrake)),
+                new ConditionalCommand(
+                    new PresetShoot(shooter, 155.0, 59.0609d, 38.03d / 2, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
+                    new PresetShoot(shooter, 65.0, 76.087d, 12.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
+                    shooter.getColorSensor()::isCorrectColor
+                )
+            );
+        }
+    }
+
     public static class HighShoot extends ParallelCommandGroup {
         private Shooter shooter;
 

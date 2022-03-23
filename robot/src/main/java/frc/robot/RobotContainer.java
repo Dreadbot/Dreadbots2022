@@ -140,6 +140,7 @@ public class RobotContainer {
         secondaryController.getBButton().whileHeld(new ShooterCommands.LowShoot(shooter, intake));
         secondaryController.getYButton().whileHeld(new ShooterCommands.HighShoot(shooter, intake));
         secondaryController.getStartButton().whileHeld(new ShooterCommands.TarmacPresetShoot(shooter, intake));
+        secondaryController.getBackButton().whileHeld(new ShooterCommands.LongPresetShoot(shooter, intake));
 
         // Climber Commands
         climber.setDefaultCommand(new RunCommand(climber::idle, climber));

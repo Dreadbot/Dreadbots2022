@@ -27,7 +27,7 @@ public class Flywheel extends DreadbotSubsystem {
     private SparkMaxPIDController pidController;
 
     private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.36518, 0.24261, 0.099094); // * 2.5
-    private PIDController controller = new PIDController(0.16677 * 2.2, 1, 0);
+    private PIDController controller = new PIDController(0.16677 * 2, 1, 0);
 
     private double setVelocity = 0.0d;
 
