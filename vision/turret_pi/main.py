@@ -157,14 +157,20 @@ def main():
     while True:
         cap_ret, frame = cap.read() # Read from camera
         
+        # Create a copy of the frame purely for drawing & pushing
         draw_frame = frame.copy()
 
-        y_ignore = int(table.getNumber("YIgnore", 0)) # Y coordinate at which to ignore any result below
+        # Y coordinate at which to ignore any result below
+        y_ignore = int(table.getNumber("YIgnore", 0)) 
 
+        # Size down the pushed image and mix it with a white image to brighten
         draw_frame = res_img(draw_frame)
         draw_frame = cv2.addWeighted(draw_frame, 0.7, white_img, 0.3, 25)
         
-
+        """
+        Image is resized before any drawing because resizing after drawing makes the image hard
+        to read driver-side
+        """
 
         center_ret = False # Reset target found flag to False every loop
 
@@ -227,8 +233,6 @@ def main():
         # Initialize image point array
         imgpoints = []
 
-        average_size = 0
-
         for contour in contours: #Loop through each found contour
             x, y, w, h = cv2.boundingRect(contour) # Return bounding box parameters of the contour
 
@@ -252,6 +256,7 @@ def main():
         imgpoints.sort(reverse=True, key=pt_sort)
 
         try:
+            # Loop through and remove any points that are outside of a defined range of Y value
             for i in range(len(imgpoints)):
                 pt = imgpoints[i]
                 u, v = pt
@@ -259,7 +264,7 @@ def main():
                 successes = 0
 
                 for ref_pt in imgpoints:
-                    ref_u, ref_v = ref_pt
+                    _, ref_v = ref_pt
                     
                     if ref_pt == pt:
                         continue
@@ -312,8 +317,11 @@ def main():
         table.putNumber("RelativeDistanceToHub", distance)
         table.putNumber("RelativeAngleToHub", angle)
 
+        # Calculate time elapsed since last image push
         time_elapsed = time.time() - prev_time
         
+        # If the time elapsed since the last image push equals or exceeds the time of one frame per second
+        # then push a new frame and reset the time of the last image push
         if time_elapsed >= 1/fps:
             prev_time = time.time()
         
@@ -322,18 +330,23 @@ def main():
             # 1 - binary mask w/ "clean" underlay
             # 2 - Real-world visualizer
             if table.getNumber("CameraSelection", 0) == 0:
-                
+                # Center image lines
                 cv2.line(draw_frame, (320//2, 0), (320//2,480//2), (255,255,255), thickness=2)
                 cv2.line(draw_frame, (0,240), (640//2, 240//2), (255,255,255), thickness=2)
+
                 outputStream.putFrame(draw_frame)
 
             elif table.getNumber("CameraSelection", 0) == 1:
+                # Convert the mixed light & turret mask to BGR
                 full_mask = cv2.cvtColor(full_mask, cv2.COLOR_GRAY2BGR)
                 
+                # Size the combined mask down
                 push_frame = res_img(full_mask)
 
+                # Define width and height of sized down combined mask
                 h, w, _ = push_frame.shape
 
+                # Draw center vertical line
                 cv2.line(push_frame, (w//2,0), (w//2,h), (0,0,255))
 
                 outputStream.putFrame(push_frame)
