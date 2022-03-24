@@ -26,16 +26,16 @@ public class FlywheelCommands {
             double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
             double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
 
-            commandedVelocity = velocity * 3.3;
+            commandedVelocity = velocity * 3.5;
             SmartDashboard.putNumber("OUT VIP TEMP", commandedVelocity);
             flywheel.setVelocity(commandedVelocity);
         }
 
         @Override
         public boolean isFinished() {
-//            return flywheel.getTangentialVelocity() >= commandedVelocity;
+            return flywheel.getTangentialVelocity() >= commandedVelocity;
 
-            return Math.abs(flywheel.getTangentialVelocity() - commandedVelocity) <= 0.15d;
+//            return Math.abs(flywheel.getTangentialVelocity() - commandedVelocity) <= 0.15d;
         }
     }
 

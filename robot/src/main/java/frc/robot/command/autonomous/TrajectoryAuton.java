@@ -57,9 +57,9 @@ public class TrajectoryAuton extends CommandBase {
 
         var targetChassisSpeeds =
             m_controller.calculate(m_pose.get(), desiredState, desiredState.holonomicRotation);
-//        targetChassisSpeeds.omegaRadiansPerSecond *= .55;
-//        targetChassisSpeeds.vyMetersPerSecond *= .55;
-//        targetChassisSpeeds.vxMetersPerSecond *= .55;
+        targetChassisSpeeds.omegaRadiansPerSecond *= .55;
+        targetChassisSpeeds.vyMetersPerSecond *= .55;
+        targetChassisSpeeds.vxMetersPerSecond *= .55;
         var targetWheelSpeeds = m_kinematics.toWheelSpeeds(targetChassisSpeeds);
 
         targetWheelSpeeds.desaturate(m_maxWheelVelocityMetersPerSecond);

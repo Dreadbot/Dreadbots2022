@@ -26,5 +26,6 @@ public class OuttakeCommand extends CommandBase{
     @Override
     public void end(boolean interrupted) {
         feeder.idle();
+        intake.idle();
     }
 }

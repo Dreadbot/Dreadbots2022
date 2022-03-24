@@ -26,8 +26,8 @@ public class Flywheel extends DreadbotSubsystem {
     @SuppressWarnings("FieldMayBeFinal")
     private SparkMaxPIDController pidController;
 
-    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.36518, 0.24261, 0.099094); // * 2.5
-    private PIDController controller = new PIDController(0.16677 * 2, 1, 0);
+    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.36518, 0.24261 * 1, 0.099094); // * 2.5
+    private PIDController controller = new PIDController(0.16677 * 2, 3, 0);
 
     private double setVelocity = 0.0d;
 
@@ -99,7 +99,8 @@ public class Flywheel extends DreadbotSubsystem {
         if(isDisabled()) return;
 
         try {
-            motor.setVoltage(feedforward.calculate(velocity, 2.0) + controller.calculate(getTangentialVelocity(), velocity));
+//            motor.setVoltage(feedforward.calculate(velocity, 2.0) + controller.calculate(getTangentialVelocity(), velocity));
+            motor.getPIDController().setReference(velocity * 120 / 0.279, CANSparkMax.ControlType.kVelocity);
         } catch (IllegalStateException ignored) { disable(); }
     }
 
@@ -115,7 +116,7 @@ public class Flywheel extends DreadbotSubsystem {
 
         // Commands the motor to coast down to stop.
         try {
-            setVelocity(7.0);
+            setVelocity(1.0);
         } catch (IllegalStateException ignored) { disable(); }
     }
 
