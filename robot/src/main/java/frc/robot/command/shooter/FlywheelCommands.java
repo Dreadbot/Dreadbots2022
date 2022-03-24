@@ -26,7 +26,7 @@ public class FlywheelCommands {
             double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
             double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
 
-            commandedVelocity = velocity * 3.5;
+            commandedVelocity = velocity;
             SmartDashboard.putNumber("OUT VIP TEMP", commandedVelocity);
             flywheel.setVelocity(commandedVelocity);
         }
