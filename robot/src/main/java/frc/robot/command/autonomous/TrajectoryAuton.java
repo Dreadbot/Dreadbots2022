@@ -40,22 +40,6 @@ public class TrajectoryAuton extends CommandBase {
         addRequirements(drive);
     }
 
-    @Deprecated(since = "Dumb and lots of parameters")
-    public TrajectoryAuton(PathPlannerTrajectory trajectory, Supplier<Pose2d> pose, MecanumDriveKinematics kinematics, PIDController xController, PIDController yController, ProfiledPIDController thetaController, double maxWheelVelocityMetersPerSecond, Consumer<MecanumDriveWheelSpeeds> outputWheelSpeeds, Drive drive) {
-        m_trajectory = trajectory;
-        m_pose = pose;
-        m_kinematics = kinematics;
-        this.drive = drive;
-
-        m_controller = new HolonomicDriveController(xController, yController, thetaController);
-
-        m_maxWheelVelocityMetersPerSecond = maxWheelVelocityMetersPerSecond;
-
-        m_outputWheelSpeeds = outputWheelSpeeds;
-
-        addRequirements(drive);
-    }
-
     @Override
     public void initialize() {
         drive.resetRobotPose(m_trajectory.sample(0.0).poseMeters);
@@ -73,9 +57,9 @@ public class TrajectoryAuton extends CommandBase {
 
         var targetChassisSpeeds =
             m_controller.calculate(m_pose.get(), desiredState, desiredState.holonomicRotation);
-//        targetChassisSpeeds.omegaRadiansPerSecond *= .55;
-//        targetChassisSpeeds.vyMetersPerSecond *= .55;
-//        targetChassisSpeeds.vxMetersPerSecond *= .55;
+        targetChassisSpeeds.omegaRadiansPerSecond *= .55;
+        targetChassisSpeeds.vyMetersPerSecond *= .55;
+        targetChassisSpeeds.vxMetersPerSecond *= .55;
         var targetWheelSpeeds = m_kinematics.toWheelSpeeds(targetChassisSpeeds);
 
         targetWheelSpeeds.desaturate(m_maxWheelVelocityMetersPerSecond);

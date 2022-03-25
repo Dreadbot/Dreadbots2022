@@ -26,8 +26,8 @@ public class Flywheel extends DreadbotSubsystem {
     @SuppressWarnings("FieldMayBeFinal")
     private SparkMaxPIDController pidController;
 
-    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.36518, 0.24261, 0.099094); // * 2.5
-    private PIDController controller = new PIDController(0.16677 * 2.2, 1, 0);
+    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.36518, 0.24261 * 1, 0.099094); // * 2.5
+    private PIDController controller = new PIDController(0.16677 * 2, 3, 0);
 
     private double setVelocity = 0.0d;
 
@@ -44,7 +44,7 @@ public class Flywheel extends DreadbotSubsystem {
         this.encoder = motor.getEncoder();
         this.pidController = motor.getPIDController();
 
-        this.cargoKinematics = new CargoKinematics(s -> 3.2, 0.5715, 2.6416);
+        this.cargoKinematics = new CargoKinematics(s -> 0.6888 * s + 0.75, 0.5715, 2.6416);
 
         motor.restoreFactoryDefaults();
         motor.setIdleMode(CANSparkMax.IdleMode.kCoast);
@@ -99,12 +99,15 @@ public class Flywheel extends DreadbotSubsystem {
         if(isDisabled()) return;
 
         try {
-            motor.setVoltage(feedforward.calculate(velocity, 2.0) + controller.calculate(getTangentialVelocity(), velocity));
+//            motor.setVoltage(feedforward.calculate(velocity, 2.0) + controller.calculate(getTangentialVelocity(), velocity));
+            motor.getPIDController().setReference(velocity * 120 / 0.279, CANSparkMax.ControlType.kVelocity);
         } catch (IllegalStateException ignored) { disable(); }
     }
 
     public boolean isAtSetVelocity() {
-        return Math.abs(getTangentialVelocity() - setVelocity) <= 0.15d;
+        return getTangentialVelocity() >= setVelocity;
+
+//        return Math.abs(getTangentialVelocity() - setVelocity) <= 0.15d;
     }
 
     /**
@@ -115,7 +118,7 @@ public class Flywheel extends DreadbotSubsystem {
 
         // Commands the motor to coast down to stop.
         try {
-            setVelocity(7.0);
+            setVelocity(1.0);
         } catch (IllegalStateException ignored) { disable(); }
     }
 
@@ -175,5 +178,9 @@ public class Flywheel extends DreadbotSubsystem {
 
     public double getSetVelocity() {
         return setVelocity;
+    }
+
+    public CargoKinematics getCargoKinematics() {
+        return cargoKinematics;
     }
 }
