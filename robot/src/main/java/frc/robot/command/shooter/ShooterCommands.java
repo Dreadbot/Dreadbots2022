@@ -167,8 +167,8 @@ public class ShooterCommands {
                 ),
                 new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kBrake)),
                 new ConditionalCommand(
-                    new PresetShoot(shooter, 155.0, 67.710d, 26.388d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
-                    new PresetShoot(shooter, 65.0, 76.087d, 12.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
+                    new PresetShoot(shooter, 155.0, 67.710d, 7.539d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
+                    new PresetShoot(shooter, 65.0, 76.087d, 3.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
                     shooter.getColorSensor()::isCorrectColor
                 )
             );
