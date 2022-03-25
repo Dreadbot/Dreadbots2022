@@ -44,7 +44,7 @@ public class Flywheel extends DreadbotSubsystem {
         this.encoder = motor.getEncoder();
         this.pidController = motor.getPIDController();
 
-        this.cargoKinematics = new CargoKinematics(s -> 0.6888 * s + 0.75, 0.5715, 2.6416);
+        this.cargoKinematics = new CargoKinematics(s -> 0.5667 * s + 1.21, 0.5715, 2.6416);
 
         motor.restoreFactoryDefaults();
         motor.setIdleMode(CANSparkMax.IdleMode.kCoast);
