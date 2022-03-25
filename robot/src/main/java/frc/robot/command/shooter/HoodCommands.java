@@ -59,7 +59,7 @@ public class HoodCommands {
 
         public ActiveTrack(Hood hood) {
             this.hood = hood;
-            this.cargoKinematics = new CargoKinematics(s -> 3.3, 0.5715, 2.6416);
+            this.cargoKinematics = new CargoKinematics(s -> 0.19685 * s + 2.5, 0.5715, 2.6416);
 
             addRequirements(hood);
         }

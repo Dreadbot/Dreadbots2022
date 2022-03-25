@@ -16,7 +16,7 @@ public class FlywheelCommands {
 
         public PrepareVisionShot(Flywheel flywheel) {
             this.flywheel = flywheel;
-            this.cargoKinematics = new CargoKinematics(s -> 3.3, 0.5715, 2.6416);
+            this.cargoKinematics = flywheel.getCargoKinematics();
 
             addRequirements(flywheel);
         }
