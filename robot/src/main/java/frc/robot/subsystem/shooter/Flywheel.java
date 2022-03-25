@@ -105,7 +105,9 @@ public class Flywheel extends DreadbotSubsystem {
     }
 
     public boolean isAtSetVelocity() {
-        return Math.abs(getTangentialVelocity() - setVelocity) <= 0.15d;
+        return getTangentialVelocity() >= setVelocity;
+
+//        return Math.abs(getTangentialVelocity() - setVelocity) <= 0.15d;
     }
 
     /**
