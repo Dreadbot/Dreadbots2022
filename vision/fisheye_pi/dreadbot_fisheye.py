@@ -189,12 +189,12 @@ class Fisheye:
     # Returns raw image from camera (with fisheye distortion)
     def retrieve_distorted_img(self):
         ret, img = self.cap.read()
-        return img
+        return ret, img
 
     # Returns undistorted image from camera using undistort maps defined earlier
     def retrieve_undistorted_img(self):
-        img = self.retrieve_distorted_img()
-        return cv2.remap(img, self.map1, self.map2, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
+        ret, img = self.retrieve_distorted_img()
+        return ret, cv2.remap(img, self.map1, self.map2, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
 
     # Converts undistorted image coordinates back to distorted coordinates
     def reverse_project_point(self, x, y):

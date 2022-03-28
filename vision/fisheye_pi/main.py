@@ -10,6 +10,7 @@ from networktables import NetworkTables
 from cscore import CameraServer
 import math
 
+
 def asa_to_distance(a1, a2, s3):
     a3 = 180 - a1 - a2
     s2 = (s3/math.sin(a3)) * math.sin(a2)
@@ -26,6 +27,7 @@ def asa_to_distance(a1, a2, s3):
         return False, d
     return True, d
 
+
 def main():
     argparser = argparse.ArgumentParser(
         description="Tracks balls using circularity and hough circles.")
@@ -36,8 +38,10 @@ def main():
     argparser.add_argument('-r', '--range', action='store', dest='colorrange')
     argparser.add_argument('-p', '--data-path',
                            action='store', dest='datapath')
-    argparser.add_argument('-0', '--fisheye-id-0', action='store', type=int, dest='fisheyeid0')
-    argparser.add_argument('-1', '--fisheye-id-1', action='store', type=int, dest='fisheyeid1')
+    argparser.add_argument('-0', '--fisheye-id-0',
+                           action='store', type=int, dest='fisheyeid0')
+    argparser.add_argument('-1', '--fisheye-id-1',
+                           action='store', type=int, dest='fisheyeid1')
     # argparser.add_argument(
     #     '-v', '--visual', action='store_true', dest='visualmode')
     args = argparser.parse_args()
@@ -101,33 +105,33 @@ def main():
 
     if args.fisheyeid0 is not None:
         fisheyeid0 = args.fisheyeid0
-    
+
     if args.fisheyeid1 is not None:
         fisheyeid1 = args.fisheyeid1
 
     cameras = df.Fisheye(fisheyeid0, 0, -4), df.Fisheye(fisheyeid1, 0, -4)
 
-    cam_angles = [0,0]
-    cam_distance = 27 # 27 inches, the holy number
+    cam_angles = [0, 0]
+    cam_distance = 27  # 27 inches, the holy number
     cam_angle_to_straight = 20
 
     while True:
         cam_num = 0
         for vc in cameras:
-#            if table is not None:
-#                tableCam = table.getNumber("CurrentCameraNumber", 0)
-#
-#            if tableCam > 1:  # CHANGE LATER, THIS RESTRICTS TO TWO CAMERA
-#                table.putNumber("CurrentCameraNumber", 0)
-#
-#            vc = cameras[tableCam]
+            #            if table is not None:
+            #                tableCam = table.getNumber("CurrentCameraNumber", 0)
+            #
+            #            if tableCam > 1:  # CHANGE LATER, THIS RESTRICTS TO TWO CAMERA
+            #                table.putNumber("CurrentCameraNumber", 0)
+            #
+            #            vc = cameras[tableCam]
 
-            frame = vc.retrieve_undistorted_img()
+            ret, frame = vc.retrieve_undistorted_img()
 
             if table is None:
                 util.setupDefaultSliderWindow("hsv", "Trackbars", "blue")
                 hL, sL, vL, hU, sU, vU, erode, dilate, blur, minArea, circ = util.getSliderValues(
-                        "hsv", "Trackbars")
+                    "hsv", "Trackbars")
             else:
                 hL = table.getNumber("HLowerValue", 0)
                 hU = table.getNumber("HUpperValue", 255)
@@ -184,10 +188,11 @@ def main():
 
                     filteredCircles.append(c)
                     cv2.circle(frame, (int(c[0]), int(c[1])),
-                            int(c[2]), (255, 255, 0), 2)
+                               int(c[2]), (255, 255, 0), 2)
 
                     if table is not None:
-                        table.putNumber("TotalBallsFoundInFrame", len(filteredCircles))
+                        table.putNumber("TotalBallsFoundInFrame",
+                                        len(filteredCircles))
 
             if len(filteredCircles) > 0:
                 bestCircle = filteredCircles[0]
@@ -198,13 +203,15 @@ def main():
                 # dX, dZ, distance, angle = util.getDistance(
                 #    frame, bestCircle[0], bestCircle[2], util.focalLength, util.ballDiameter)
 
-                cam_angles[cam_num], _ = vc.calculate_angle(bestCircle[0], bestCircle[1])
+                cam_angles[cam_num], _ = vc.calculate_angle(
+                    bestCircle[0], bestCircle[1])
 
                 if table is not None:
                     # table.putNumber("RelativeDistanceToBallX", dX)
                     # table.putNumber("RelativeDistanceToBallZ", dZ)
                     # table.putNumber("RelativeAngleToBall", angle)
-                    table.putNumber("RelativeAngleToBall" + str(cam_num), cam_angles[cam_num])
+                    table.putNumber("RelativeAngleToBall" +
+                                    str(cam_num), cam_angles[cam_num])
 
             if cs is not None and table is not None:
                 if table.getNumber("CameraSelection", 1) == 3:

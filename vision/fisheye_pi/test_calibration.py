@@ -8,12 +8,16 @@ import argparse
 import threading
 import numpy as np
 
+
 def combine_imgs(img1, img2):
     return np.concatenate((img1, np.zeros([2, img1.shape[1], 3]), img2), axis=1)
 
+
 def main(fisheye1: df.Fisheye, fisheye2: df.Fisheye):
-    argparser = argparse.ArgumentParser(name="DriverCams", description="Pushes driver cams to CameraServer")
-    argparser.add_argument('-s', '--scale', action='store', type=int, default=2, dest='scale', help="Scale factor for the image being pushed")
+    argparser = argparse.ArgumentParser(
+        name="DriverCams", description="Pushes driver cams to CameraServer")
+    argparser.add_argument('-s', '--scale', action='store', type=int, default=2,
+                           dest='scale', help="Scale factor for the image being pushed")
     args = argparser.parse_args()
     cond = threading.Condition()
     notified = [False]
@@ -26,7 +30,7 @@ def main(fisheye1: df.Fisheye, fisheye2: df.Fisheye):
 
     NetworkTables.initialize(server="10.36.56.2")
     NetworkTables.addConnectionListener(
-            connectionListener, immediateNotify=True)
+        connectionListener, immediateNotify=True)
 
     with cond:
         print("Waiting")
@@ -41,25 +45,26 @@ def main(fisheye1: df.Fisheye, fisheye2: df.Fisheye):
     cs = CameraServer.getInstance()
     cs.enableLogging()
 
-    sc = args.scale # Scale factor
-    
-    img1, img2 = fisheye2.retrieve_undistorted_img(), fisheye1.retrieve_undistorted_img()
+    sc = args.scale  # Scale factor
+
+    (_, img1), (_, img2) = fisheye2.retrieve_undistorted_img(
+    ), fisheye1.retrieve_undistorted_img()
     combinedimg = combine_imgs(img1, img2)
     w, h = combinedimg.shape[0] // sc, combinedimg.shape[1] // sc
     outputStream = cs.putVideo("Source", w, h)
-    
+
     while True:
-        img = combine_imgs(fisheye1.retrieve_undistorted_img(), fisheye2.retrieve_undistorted_img())
+        img = combine_imgs(fisheye1.retrieve_undistorted_img()[1],
+                           fisheye2.retrieve_undistorted_img()[1])
         outputStream.putFrame(cv2.resize(img, (w, h)))
         # outputStream.putFrame(img)
-        
+
 
 if __name__ == "__main__":
-    fisheye1 = df.Fisheye(2,0)
-    fisheye2 = df.Fisheye(0,0)
+    fisheye1 = df.Fisheye(2, 0)
+    fisheye2 = df.Fisheye(0, 0)
     try:
         main(fisheye1, fisheye2)
     except KeyboardInterrupt:
         fisheye1.unload()
         fisheye2.unload()
-
