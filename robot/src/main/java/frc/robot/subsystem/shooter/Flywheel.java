@@ -18,6 +18,9 @@ import frc.robot.util.VisionInterface;
  * The flywheel is the mechanism that shoots the ball out of the robot.
  */
 public class Flywheel extends DreadbotSubsystem {
+    public static final double RPM_TO_TANGENTIAL_CONVERSION = 4.655E-03;
+    public static final double TANGENTIAL_TO_RPM_CONVERSION = 2.148E02;
+
     private CargoKinematics cargoKinematics;
     private CANSparkMax motor;
 
@@ -101,7 +104,7 @@ public class Flywheel extends DreadbotSubsystem {
 
         try {
 //            motor.setVoltage(feedforward.calculate(velocity, 2.0) + controller.calculate(getTangentialVelocity(), velocity));
-            motor.getPIDController().setReference(velocity * 120 / 0.279, CANSparkMax.ControlType.kVelocity);
+            motor.getPIDController().setReference(velocity * TANGENTIAL_TO_RPM_CONVERSION, CANSparkMax.ControlType.kVelocity);
         } catch (IllegalStateException ignored) { disable(); }
     }
 
@@ -136,7 +139,7 @@ public class Flywheel extends DreadbotSubsystem {
         // the output is considered zero.
         double velocity = 0.0d;
         try {
-            velocity = getMotorAngularVelocity() * 0.00932;
+            velocity = getMotorAngularVelocity() * RPM_TO_TANGENTIAL_CONVERSION;
         } catch (IllegalStateException ignored) { disable(); }
 
         return velocity;

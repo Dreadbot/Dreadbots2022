@@ -23,6 +23,8 @@ public class Turret extends DreadbotSubsystem {
 
     private double setAngle;
 
+    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
+
     /**
      * Disabled Constructor
      */
@@ -40,13 +42,39 @@ public class Turret extends DreadbotSubsystem {
         motor.setIdleMode(IdleMode.kBrake);
         motor.setInverted(true);
 
-        pidController.setP(0.04);
+//        pidController.setP(0.04);
+////        pidController.setI(1e-4);
 //        pidController.setI(1e-4);
-        pidController.setI(1e-4);
-        pidController.setD(0);
-        pidController.setIZone(2.85);
-        pidController.setFF(0.000015);
-        pidController.setOutputRange(-.3, .3);
+//        pidController.setD(0);
+//        pidController.setIZone(2.85);
+//        pidController.setFF(0.000015);
+//        pidController.setOutputRange(-.3, .3);
+
+        // PID coefficients
+        kP = 0.04;
+        kI = 1e-4;
+        kD = 0;
+        kIz = 2.85;
+        kFF = 0.000015;
+        kMaxOutput = 0.6;
+        kMinOutput = -0.6;
+
+        // set PID coefficients
+        pidController.setP(kP);
+        pidController.setI(kI);
+        pidController.setD(kD);
+        pidController.setIZone(kIz);
+        pidController.setFF(kFF);
+        pidController.setOutputRange(kMinOutput, kMaxOutput);
+
+        // display PID coefficients on SmartDashboard
+        SmartDashboard.putNumber("P Gain", kP);
+        SmartDashboard.putNumber("I Gain", kI);
+        SmartDashboard.putNumber("D Gain", kD);
+        SmartDashboard.putNumber("I Zone", kIz);
+        SmartDashboard.putNumber("Feed Forward", kFF);
+        SmartDashboard.putNumber("Max Output", kMaxOutput);
+        SmartDashboard.putNumber("Min Output", kMinOutput);
     }
 
     @Override
@@ -71,8 +99,29 @@ public class Turret extends DreadbotSubsystem {
         SmartDashboard.putBoolean("Turret Upper Limit Switch", getUpperLimitSwitch());
 
         SmartDashboard.putNumber("Turret Angle", getAngle());
+        SmartDashboard.putNumber("Turret Position", getPosition());
 
         SmartDashboard.putNumber("Turret Range", upperMotorLimit - lowerMotorLimit);
+
+        // read PID coefficients from SmartDashboard
+        double p = SmartDashboard.getNumber("P Gain", 0);
+        double i = SmartDashboard.getNumber("I Gain", 0);
+        double d = SmartDashboard.getNumber("D Gain", 0);
+        double iz = SmartDashboard.getNumber("I Zone", 0);
+        double ff = SmartDashboard.getNumber("Feed Forward", 0);
+        double max = SmartDashboard.getNumber("Max Output", 0);
+        double min = SmartDashboard.getNumber("Min Output", 0);
+
+        // if PID coefficients on SmartDashboard have changed, write new values to controller
+        if((p != kP)) { pidController.setP(p); kP = p; }
+        if((i != kI)) { pidController.setI(i); kI = i; }
+        if((d != kD)) { pidController.setD(d); kD = d; }
+        if((iz != kIz)) { pidController.setIZone(iz); kIz = iz; }
+        if((ff != kFF)) { pidController.setFF(ff); kFF = ff; }
+        if((max != kMaxOutput) || (min != kMinOutput)) {
+            pidController.setOutputRange(min, max);
+            kMinOutput = min; kMaxOutput = max;
+        }
     }
 
     public void setAngle(double angle) {

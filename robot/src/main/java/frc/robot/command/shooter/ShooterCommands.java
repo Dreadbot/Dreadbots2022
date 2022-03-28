@@ -119,9 +119,16 @@ public class ShooterCommands {
 
         @Override
         public boolean isFinished() {
-            if(Math.abs(feeder.getFeederPosition() - initialPosition) >= 100.0) return true;
+//            if(Math.abs(feeder.getFeederPosition() - initialPosition) >= 100.0) return true;
 
-            return !colorSensor.isBallDetected() || colorSensor.getBallColor() != colorFeeding;
+            if(colorSensor.getBallColor() == null) return false;
+
+            return colorSensor.getBallColor() != colorFeeding;
+        }
+
+        @Override
+        public void end(boolean interrupted) {
+            feeder.idle();
         }
     }
 
