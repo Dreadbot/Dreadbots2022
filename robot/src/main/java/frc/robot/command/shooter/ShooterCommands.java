@@ -17,7 +17,6 @@ public class ShooterCommands {
         public TargetShoot(Shooter shooter) {
             this.shooter = shooter;
 
-            addRequirements(shooter);
             addCommands(
                 new InstantCommand(() -> System.out.println("TARGET SHOOT")),
                 new ParallelCommandGroup(
@@ -44,7 +43,6 @@ public class ShooterCommands {
         public EjectShoot(Shooter shooter) {
             this.shooter = shooter;
 
-            addRequirements(shooter);
             addCommands(
                 new ParallelCommandGroup(
                     new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
@@ -72,7 +70,6 @@ public class ShooterCommands {
             this.shooter = shooter;
             this.afterAngle = afterAngle;
 
-            addRequirements(shooter);
             addCommands(
                 new InstantCommand(() -> System.out.println("PRESET SHOOT")),
                 new ParallelCommandGroup(
@@ -132,7 +129,7 @@ public class ShooterCommands {
         }
     }
 
-    public static class LowShoot extends SequentialCommandGroup {
+    public static class LowShoot extends ParallelCommandGroup {
         private Shooter shooter;
         private Intake intake;
 
@@ -140,18 +137,30 @@ public class ShooterCommands {
             this.shooter = shooter;
             this.intake = intake;
 
-            addRequirements();
+//            addCommands(
+//                new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kCoast)),
+//                new ParallelRaceGroup(
+//                    new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
+//                    new IntakeCommand(intake)
+//                ),
+//                new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kBrake)),
+//                new ConditionalCommand(
+//                    new PresetShoot(shooter, 149.0, 60.0d, 6d, 149.0d).raceWith(new IntakeCommand(intake, 1.0)),
+//                    new PresetShoot(shooter, 65.0, 60.0d, 6d, 149.0d).raceWith(new IntakeCommand(intake, 1.0)),
+//                    shooter.getColorSensor()::isCorrectColor
+//                )
+//            );
             addCommands(
-                new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kCoast)),
-                new ParallelRaceGroup(
-                    new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
-                    new IntakeCommand(intake)
-                ),
-                new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kBrake)),
-                new ConditionalCommand(
-                    new PresetShoot(shooter, 155.0, 60.0d, 4.5d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
-                    new PresetShoot(shooter, 65.0, 60.0d, 4.5d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
-                    shooter.getColorSensor()::isCorrectColor
+                new IntakeCommand(intake),
+                new PerpetualCommand(
+                    new SequentialCommandGroup(
+                        new ParallelCommandGroup(
+                            new TurretCommands.EjectShootPreset(shooter, 149, 59),
+                            new HoodCommands.EjectShootPreset(shooter, 60, 60),
+                            new FlywheelCommands.EjectShootPreset(shooter, 6, 6)
+                        ),
+                        new FeedBallCommand(shooter)
+                    )
                 )
             );
         }

@@ -44,11 +44,11 @@ public abstract class Constants {
 
     public static final int FLYWHEEL_MOTOR_PORT = 8;
 //    public static final double FLYWHEEL_P_GAIN = 2e-3d; // 1e-4
-    public static final double FLYWHEEL_P_GAIN = 1e-4d; // 1e-4
-    public static final double FLYWHEEL_I_GAIN = 0d; //1.75e-6d
+    public static final double FLYWHEEL_P_GAIN = 2e-4d; // 1e-4
+    public static final double FLYWHEEL_I_GAIN = 1.75e-6d; //1.75e-6d
     public static final double FLYWHEEL_D_GAIN = 0.0d;
     public static final double FLYWHEEL_I_ZONE = 2.0d;
-    public static final double FLYWHEEL_FF_GAIN = 2e-4d;
+    public static final double FLYWHEEL_FF_GAIN = 2.5e-4d;
     public static final double FLYWHEEL_MAX_OUTPUT = 1.0d;
     public static final double FLYWHEEL_MIN_OUTPUT = -1.0d;
     public static final double FLYWHEEL_MAX_RPM = 5700.0d;

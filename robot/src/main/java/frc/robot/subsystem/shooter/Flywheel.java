@@ -34,6 +34,8 @@ public class Flywheel extends DreadbotSubsystem {
 
     private double setVelocity = 0.0d;
 
+    private double lastVelocity;
+
     /**
      * Disabled constructor
      */
@@ -61,6 +63,8 @@ public class Flywheel extends DreadbotSubsystem {
         pidController.setOutputRange(Constants.FLYWHEEL_MIN_OUTPUT, Constants.FLYWHEEL_MAX_OUTPUT);
 
         controller.enableContinuousInput(0.0, 1.0);
+
+        lastVelocity = getTangentialVelocity();
     }
 
     @Override
@@ -69,6 +73,11 @@ public class Flywheel extends DreadbotSubsystem {
         SmartDashboard.putNumber("VS DistanceToHubMeters", distanceToHub);
         double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
         SmartDashboard.putNumber("VS FinalCommandVelocity", velocity);
+
+        double acceleration = (getTangentialVelocity() - lastVelocity) / 0.02d;
+        SmartDashboard.putNumber("Flywheel Acceleration", acceleration);
+
+        lastVelocity = getTangentialVelocity();
     }
 
     @Override

@@ -4,7 +4,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystem.DreadbotSubsystem;
 
-public class Shooter extends DreadbotSubsystem {
+public class Shooter {
     private Feeder feeder;
     private Flywheel flywheel;
     private Hood hood;
@@ -14,9 +14,7 @@ public class Shooter extends DreadbotSubsystem {
     /**
      * Disabled constructor
      */
-    public Shooter() {
-        disable();
-    }
+    public Shooter() {}
 
     public Shooter(Feeder feeder, Flywheel flywheel, Hood hood, Turret turret, ColorSensor colorSensor) {
         this.feeder = feeder;
@@ -27,56 +25,34 @@ public class Shooter extends DreadbotSubsystem {
     }
 
     public void feedBall() {
-        if(isDisabled()) return;
-
         feeder.feed();
     }
 
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        builder.addStringProperty(
-            "Current Command",
-            () -> getCurrentCommand() != null ? getCurrentCommand().getName() : "none",
-            null);
-    }
-
     public void setFlywheelVelocity(double velocity) {
-        if(isDisabled()) return;
-
         flywheel.setVelocity(velocity);
     }
 
     public void setHoodAngle(double angle) {
-        if(isDisabled()) return;
-
         hood.setAngle(angle);
     }
 
     public void setTurretAngle(double angle) {
-        if(isDisabled()) return;
-
         turret.setAngle(angle);
     }
 
     public double getFlywheelVelocity() {
-        if(isDisabled()) return 0.0d;
-
         return flywheel.getTangentialVelocity();
     }
 
     public double getHoodAngle() {
-        if(isDisabled()) return 0.0d;
-
         return hood.getAngle();
     }
 
     public double getTurretAngle() {
-        if(isDisabled()) return 0.0d;
-
         return turret.getAngle();
     }
 
-    @Override
+
     public void close() throws Exception {
         feeder.close();
         flywheel.close();
@@ -84,10 +60,7 @@ public class Shooter extends DreadbotSubsystem {
         turret.close();
     }
 
-    @Override
     public void stopMotors() {
-        if(isDisabled()) return;
-
         feeder.stopMotors();
         flywheel.stopMotors();
         hood.stopMotors();
@@ -95,32 +68,22 @@ public class Shooter extends DreadbotSubsystem {
     }
 
     public Feeder getFeeder() {
-        if(isDisabled()) return new Feeder();
-
         return feeder;
     }
     
     public Flywheel getFlywheel() {
-        if(isDisabled()) return new Flywheel();
-
         return flywheel;
     }
 
     public Hood getHood() {
-        if(isDisabled()) return new Hood();
-
         return hood;
     }
 
     public Turret getTurret() {
-        if(isDisabled()) return new Turret();
-
         return turret;
     }
 
     public ColorSensor getColorSensor() {
-        if(isDisabled()) return new ColorSensor();
-
         return colorSensor;
     }
 }
