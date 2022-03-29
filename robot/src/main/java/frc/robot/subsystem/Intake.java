@@ -6,11 +6,13 @@ package frc.robot.subsystem;
 
 import com.revrobotics.CANSparkMax;
 
+import frc.robot.util.DreadbotMotor;
+
 /**
  * The intake is the mechanism that takes cargo from the ground into the feeder mechanism.
  */
 public class Intake extends DreadbotSubsystem {
-    private CANSparkMax motor;
+    private DreadbotMotor motor;
 
     /**
      * Disabled Constructor
@@ -19,7 +21,7 @@ public class Intake extends DreadbotSubsystem {
         disable();
     }
 
-    public Intake(CANSparkMax motor) {
+    public Intake(DreadbotMotor motor) {
         this.motor = motor;
 
         motor.restoreFactoryDefaults();

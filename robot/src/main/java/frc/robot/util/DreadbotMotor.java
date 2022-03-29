@@ -76,4 +76,12 @@ public class DreadbotMotor{
     public double get(){
         return motor.get();
     }
+
+    public void set(double speed){
+        motor.set(speed);
+    }
+
+    public void stopMotor(){
+        motor.stopMotor();;
+    }
 }
