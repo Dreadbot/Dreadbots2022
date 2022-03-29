@@ -92,12 +92,14 @@ public class ShooterCommands {
 
     public static class FeedBallCommand extends CommandBase {
         private Feeder feeder;
+        private Shooter shooter;
         private ColorSensor colorSensor;
 
         private Color colorFeeding;
         private double initialPosition;
 
         public FeedBallCommand(Shooter shooter) {
+            this.shooter = shooter;
             this.feeder = shooter.getFeeder();
             this.colorSensor = shooter.getColorSensor();
 
@@ -116,11 +118,7 @@ public class ShooterCommands {
 
         @Override
         public boolean isFinished() {
-//            if(Math.abs(feeder.getFeederPosition() - initialPosition) >= 100.0) return true;
-
-            if(colorSensor.getBallColor() == null) return false;
-
-            return colorSensor.getBallColor() != colorFeeding;
+            return shooter.getFlywheel().isBallImpulseDetected();
         }
 
         @Override

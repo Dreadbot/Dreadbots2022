@@ -34,6 +34,8 @@ public class Flywheel extends DreadbotSubsystem {
 
     private double setVelocity = 0.0d;
 
+    private double acceleration;
+
     private double lastVelocity;
 
     /**
@@ -74,7 +76,7 @@ public class Flywheel extends DreadbotSubsystem {
         double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
         SmartDashboard.putNumber("VS FinalCommandVelocity", velocity);
 
-        double acceleration = (getTangentialVelocity() - lastVelocity) / 0.02d;
+        acceleration = (getTangentialVelocity() - lastVelocity) / 0.02d;
         SmartDashboard.putNumber("Flywheel Acceleration", acceleration);
 
         lastVelocity = getTangentialVelocity();
@@ -195,5 +197,9 @@ public class Flywheel extends DreadbotSubsystem {
 
     public CargoKinematics getCargoKinematics() {
         return cargoKinematics;
+    }
+
+    public boolean isBallImpulseDetected() {
+        return acceleration <= -10.0d;
     }
 }
