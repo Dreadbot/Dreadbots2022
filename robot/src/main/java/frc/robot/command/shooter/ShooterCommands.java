@@ -152,15 +152,13 @@ public class ShooterCommands {
 //            );
             addCommands(
                 new IntakeCommand(intake),
-                new PerpetualCommand(
-                    new SequentialCommandGroup(
-                        new ParallelCommandGroup(
-                            new TurretCommands.EjectShootPreset(shooter, 149, 59),
-                            new HoodCommands.EjectShootPreset(shooter, 60, 60),
-                            new FlywheelCommands.EjectShootPreset(shooter, 6, 6)
-                        ),
-                        new FeedBallCommand(shooter)
-                    )
+                new SequentialCommandGroup(
+                    new ParallelCommandGroup(
+                        new TurretCommands.EjectShootPreset(shooter, 149, 59),
+                        new HoodCommands.EjectShootPreset(shooter, 60, 60),
+                        new FlywheelCommands.EjectShootPreset(shooter, 6, 6)
+                    ),
+                    new FeedBallCommand(shooter)
                 )
             );
         }
