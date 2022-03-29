@@ -16,7 +16,7 @@ public class ColorSensor extends DreadbotSubsystem {
     private Color initialBallColor;
     private DriverStation.Alliance alliance;
 
-    private final double colorConfidence = 0.9;
+    private final double colorConfidence = 0.8625;
     private double currentConfidence;
 
     public ColorSensor() {

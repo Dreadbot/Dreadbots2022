@@ -200,6 +200,6 @@ public class Flywheel extends DreadbotSubsystem {
     }
 
     public boolean isBallImpulseDetected() {
-        return acceleration <= -10.0d;
+        return acceleration <= -2.0d;
     }
 }

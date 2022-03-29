@@ -1,7 +1,6 @@
 package frc.robot.util.controls;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class VisionSnapshot {

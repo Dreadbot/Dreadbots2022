@@ -209,7 +209,7 @@ public class HoodCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(hood.getAngle() - angle) <= 1.0d;
+            return hood.isAtSetAngle();
         }
     }
 }

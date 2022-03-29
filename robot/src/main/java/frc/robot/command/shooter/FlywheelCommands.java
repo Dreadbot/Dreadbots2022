@@ -92,7 +92,7 @@ public class FlywheelCommands {
         public boolean isFinished() {
 //            return Math.abs(flywheel.getTangentialVelocity() - velocity) <= 1.0d;
 
-            return flywheel.getTangentialVelocity() >= velocity;
+            return flywheel.isAtSetVelocity();
         }
     }
 }

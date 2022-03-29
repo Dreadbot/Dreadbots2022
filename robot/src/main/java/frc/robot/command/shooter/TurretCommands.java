@@ -1,5 +1,6 @@
 package frc.robot.command.shooter;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystem.Drive;
@@ -66,6 +67,11 @@ public class TurretCommands {
         }
 
         @Override
+        public void initialize() {
+            SmartDashboard.putString("CurrentLowShootCommand", "Configuring Shooter");
+        }
+
+        @Override
         public void execute() {
             shooter.getTurret().setAngle(getAngle());
         }
@@ -108,7 +114,7 @@ public class TurretCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(turret.getAngle() - requestedAngle) <= 2.0d;
+            return turret.isAtSetAngle();
         }
 
         private void turretControlAngle(double relativeAngleToHub) {
