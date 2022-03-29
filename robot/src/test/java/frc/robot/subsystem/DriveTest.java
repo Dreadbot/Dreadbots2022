@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import frc.robot.Robot;
+import frc.robot.util.DreadbotMotor;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,10 +21,10 @@ public class DriveTest {
     public static final double DELTA = 1e-2;
     
     private Drive drive;
-    private CANSparkMax leftFrontDriveMotor;
-    private CANSparkMax rightFrontDriveMotor;
-    private CANSparkMax leftBackDriveMotor;
-    private CANSparkMax rightBackDriveMotor;
+    private DreadbotMotor leftFrontDriveMotor;
+    private DreadbotMotor rightFrontDriveMotor;
+    private DreadbotMotor leftBackDriveMotor;
+    private DreadbotMotor rightBackDriveMotor;
 
     private double angle;
 
@@ -34,10 +36,10 @@ public class DriveTest {
         // The DreadbotSubsystem class will throw a warning while the log level is here.
         Robot.LOGGER.setLevel(Level.INFO);
 
-        leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-        rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-        leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-        rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+        leftFrontDriveMotor = new DreadbotMotor( new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless), "Left Front Drive");
+        rightFrontDriveMotor = new DreadbotMotor( new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless), "Right Front Drive");
+        leftBackDriveMotor = new DreadbotMotor( new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless), "Left Back Drive");
+        rightBackDriveMotor = new DreadbotMotor( new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless), "Right Back Drive");
 
         drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
 
