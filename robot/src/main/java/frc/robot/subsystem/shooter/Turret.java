@@ -52,9 +52,9 @@ public class Turret extends DreadbotSubsystem {
 
         // PID coefficients
         kP = 0.04;
-        kI = 1e-4;
+        kI = 0.0d;//3e-5;
         kD = 0;
-        kIz = 2.85;
+        kIz = 0.0d;
         kFF = 0.000015;
         kMaxOutput = 0.6;
         kMinOutput = -0.6;
