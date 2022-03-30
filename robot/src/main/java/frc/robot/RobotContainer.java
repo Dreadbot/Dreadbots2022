@@ -181,6 +181,8 @@ public class RobotContainer {
 
         CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, false)
             .andThen(new HoodCommands.TurnToAngle(hood, Constants.MAX_HOOD_ANGLE)));
+
+        CommandScheduler.getInstance().schedule(false, new RetractArmCommand(climber));
     }
 
     public void preservePneumaticState() {

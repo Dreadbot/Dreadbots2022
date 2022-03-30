@@ -992,21 +992,28 @@
                 {
                   "_type": "Boolean Box",
                   "_source0": "network_table:///LiveWindow/Ungrouped/Solenoid[21,0]/Value",
-                  "_title": "/LiveWindow/Ungrouped/Solenoid[21,0]/Value",
+                  "_title": "Solenoid[21,0]/Value",
                   "Colors/Color when true": "#7CFC00FF",
                   "Colors/Color when false": "#8B0000FF"
                 },
                 {
                   "_type": "Boolean Box",
                   "_source0": "network_table:///LiveWindow/Ungrouped/DigitalInput[4]/Value",
-                  "_title": "/LiveWindow/Ungrouped/DigitalInput[4]/Value",
+                  "_title": "DigitalInput[4]/Value",
                   "Colors/Color when true": "#7CFC00FF",
                   "Colors/Color when false": "#8B0000FF"
                 },
                 {
                   "_type": "Boolean Box",
                   "_source0": "network_table:///LiveWindow/Ungrouped/Solenoid[21,1]/Value",
-                  "_title": "/LiveWindow/Ungrouped/Solenoid[21,1]/Value",
+                  "_title": "Solenoid[21,1]/Value",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/DigitalInput[5]/Value",
+                  "_title": "/LiveWindow/Ungrouped/DigitalInput[5]/Value",
                   "Colors/Color when true": "#7CFC00FF",
                   "Colors/Color when false": "#8B0000FF"
                 }
@@ -1064,7 +1071,7 @@
                 {
                   "_type": "Text View",
                   "_source0": "network_table:///LiveWindow/Flywheel/Current Command",
-                  "_title": "/LiveWindow/Flywheel/Current Command"
+                  "_title": "Current Command"
                 }
               ]
             }
@@ -2254,6 +2261,89 @@
                   "Colors/Color when false": "#8B0000FF"
                 }
               ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Tab 9",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "5,1": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///SmartDashboard/Flywheel Acceleration",
+              "_title": "SmartDashboard/Flywheel Acceleration",
+              "Graph/Visible time": 30.0,
+              "Graph/X-axis auto scrolling": true,
+              "Y-axis/Automatic bounds": true,
+              "Y-axis/Upper bound": 1.0,
+              "Y-axis/Lower bound": -1.0,
+              "Y-axis/Unit": "ul",
+              "Visible data/SmartDashboard/Flywheel Acceleration": true
+            }
+          },
+          "3,1": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///LiveWindow/Flywheel/Velocity (tan)",
+              "_title": "LiveWindow/Flywheel/Velocity (tan)",
+              "Graph/Visible time": 30.0,
+              "Graph/X-axis auto scrolling": true,
+              "Y-axis/Automatic bounds": true,
+              "Y-axis/Upper bound": 1.0,
+              "Y-axis/Lower bound": -1.0,
+              "Y-axis/Unit": "ul",
+              "Visible data/LiveWindow/Flywheel/Velocity (tan)": true
+            }
+          },
+          "8,1": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/CurrentLowShootCommand",
+              "_title": "/SmartDashboard/CurrentLowShootCommand"
+            }
+          },
+          "10,1": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Color:",
+              "_title": "SmartDashboard/Color:"
+            }
+          },
+          "8,3": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/STATUS",
+              "_title": "/SmartDashboard/STATUS"
             }
           }
         }

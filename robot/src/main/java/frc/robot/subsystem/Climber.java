@@ -193,4 +193,9 @@ public class Climber extends DreadbotSubsystem {
     public double getWinchPosition() {
         return winchEncoder.getPosition();
     }
+
+    public void updateRetractedPosition() {
+        winchEncoder.setPosition(0.0d);
+        this.retractedPosition = winchEncoder.getPosition();
+    }
 }
