@@ -1,7 +1,6 @@
-package frc.robot.util;
+package frc.robot.util.math;
 
 import frc.robot.Constants;
-import frc.robot.util.math.Vector2D;
 
 /**
  * Calculations class for ball physics.

@@ -8,7 +8,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystem.Drive;
-import frc.robot.util.SensitivityController;
+import frc.robot.util.controls.SensitivityController;
 
 public class DriveCommand extends CommandBase {
     private final Drive drive;

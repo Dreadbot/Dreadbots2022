@@ -1,4 +1,4 @@
-package frc.robot.util;
+package frc.robot.util.safety;
 
 /**
  * An object that manages hardware resources (such as {@link com.revrobotics.CANSparkMax}).

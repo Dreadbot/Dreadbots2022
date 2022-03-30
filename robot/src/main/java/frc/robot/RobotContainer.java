@@ -24,8 +24,8 @@ import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
 import frc.robot.subsystem.shooter.*;
-import frc.robot.util.DreadbotController;
-import frc.robot.util.VisionInterface;
+import frc.robot.util.controls.DreadbotController;
+import frc.robot.util.controls.VisionInterface;
 
 public class RobotContainer {
     private final DreadbotController primaryController;
@@ -129,7 +129,6 @@ public class RobotContainer {
             primaryController::getZAxis));
 
         // Intake Commands
-//        intake.setDefaultCommand(new RunCommand(intake::idle, intake));
         secondaryController.getAButton().whileHeld(new OuttakeCommand(intake, feeder));
         secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
 

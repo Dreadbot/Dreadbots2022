@@ -6,7 +6,7 @@ import frc.robot.Constants;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.subsystem.shooter.Turret;
-import frc.robot.util.VisionInterface;
+import frc.robot.util.controls.VisionInterface;
 
 public class TurretCommands {
     public static class PassiveTrack extends CommandBase {

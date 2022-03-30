@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystem.DreadbotSubsystem;
-import frc.robot.util.DreadbotMath;
+import frc.robot.util.math.DreadbotMath;
 
 public class Turret extends DreadbotSubsystem {
     private CANSparkMax motor;
@@ -41,14 +41,6 @@ public class Turret extends DreadbotSubsystem {
 
         motor.setIdleMode(IdleMode.kBrake);
         motor.setInverted(true);
-
-//        pidController.setP(0.04);
-////        pidController.setI(1e-4);
-//        pidController.setI(1e-4);
-//        pidController.setD(0);
-//        pidController.setIZone(2.85);
-//        pidController.setFF(0.000015);
-//        pidController.setOutputRange(-.3, .3);
 
         // PID coefficients
         kP = 0.04;

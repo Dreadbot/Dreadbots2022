@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystem.shooter.Flywheel;
 import frc.robot.subsystem.shooter.Shooter;
-import frc.robot.util.CargoKinematics;
-import frc.robot.util.VisionInterface;
+import frc.robot.util.math.CargoKinematics;
+import frc.robot.util.controls.VisionInterface;
 
 public class FlywheelCommands {
     public static class PrepareVisionShot extends CommandBase {

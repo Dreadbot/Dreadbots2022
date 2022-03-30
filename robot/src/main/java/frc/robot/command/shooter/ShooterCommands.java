@@ -9,7 +9,7 @@ import frc.robot.subsystem.Intake;
 import frc.robot.subsystem.shooter.ColorSensor;
 import frc.robot.subsystem.shooter.Feeder;
 import frc.robot.subsystem.shooter.Shooter;
-import frc.robot.util.VisionInterface;
+import frc.robot.util.controls.VisionInterface;
 
 public class ShooterCommands {
     public static class TargetShoot extends SequentialCommandGroup {

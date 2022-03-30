@@ -1,4 +1,4 @@
-package frc.robot.util;
+package frc.robot.util.controls;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -26,10 +26,20 @@ public class VisionInterface {
         return SmartDashboard.getNumber("RelativeAngleToHub", Double.MAX_VALUE);
     }
 
+    /**
+     * Selects the camera through a request via Shuffleboard.
+     *
+     * @param camera The camera id
+     */
     public static void selectCamera(int camera) {
         SmartDashboard.putNumber("CurrentCameraNumber", camera);
     }
 
+    /**
+     * Requests the vision tracking state from the Shuffleboard.
+     *
+     * @return The state of the vision tracking.
+     */
     public static boolean canTrackHub() {
         return SmartDashboard.getNumber("IsTargetFoundInFrame", 0.0d) == 1.0d;
     }

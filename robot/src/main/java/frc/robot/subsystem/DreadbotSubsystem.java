@@ -2,7 +2,7 @@ package frc.robot.subsystem;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
-import frc.robot.util.MotorSafeSystem;
+import frc.robot.util.safety.MotorSafeSystem;
 
 /**
  * Takes all the functionality for Command Subsystems, Closeable Systems, and Motor Safety

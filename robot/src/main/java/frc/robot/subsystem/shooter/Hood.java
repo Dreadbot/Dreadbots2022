@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystem.DreadbotSubsystem;
-import frc.robot.util.DreadbotMath;
+import frc.robot.util.math.DreadbotMath;
 
 public class Hood extends DreadbotSubsystem {
     private DigitalInput lowerSwitch;
@@ -93,16 +93,6 @@ public class Hood extends DreadbotSubsystem {
         if(isDisabled()) return true;
 
         return Math.abs(getAngle() - setAngle) <= 1.0d;
-    }
-
-    public void setPosition(double rotations) {
-        if(isDisabled()) return;
-
-        rotations = DreadbotMath.clampValue(rotations, lowerMotorLimit, upperMotorLimit);
-
-        try {
-            pidController.setReference(rotations, CANSparkMax.ControlType.kPosition);
-        } catch (IllegalStateException ignored) { disable(); }
     }
 
     public void setSpeed(double speed) {

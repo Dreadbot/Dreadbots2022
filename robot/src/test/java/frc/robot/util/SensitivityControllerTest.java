@@ -1,5 +1,6 @@
 package frc.robot.util;
 
+import frc.robot.util.controls.SensitivityController;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystem.shooter.Hood;
 import frc.robot.subsystem.shooter.Shooter;
-import frc.robot.util.CargoKinematics;
-import frc.robot.util.VisionInterface;
+import frc.robot.util.math.CargoKinematics;
+import frc.robot.util.controls.VisionInterface;
 
 public class HoodCommands {
     private static final PIDController hoodTrackingController = new PIDController(1.0d, 0.0d, 0.0d);

@@ -64,12 +64,14 @@ public class Climber extends DreadbotSubsystem {
         SmartDashboard.putString("Current Command",
             getCurrentCommand() != null ? getCurrentCommand().getName() : "none");
     }
+
     public void zeroEncoderPosition() {
         if(isDisabled()) return;
         try {
             winchEncoder.setPosition(0);
         } catch (IllegalStateException ignored) { disable(); }
     }
+
     public void rotateClimbingHookDown() {
         if(isDisabled()) return;
 

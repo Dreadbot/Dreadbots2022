@@ -11,8 +11,8 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystem.DreadbotSubsystem;
-import frc.robot.util.CargoKinematics;
-import frc.robot.util.VisionInterface;
+import frc.robot.util.math.CargoKinematics;
+import frc.robot.util.controls.VisionInterface;
 
 /**
  * The flywheel is the mechanism that shoots the ball out of the robot.
@@ -29,7 +29,6 @@ public class Flywheel extends DreadbotSubsystem {
     @SuppressWarnings("FieldMayBeFinal")
     private SparkMaxPIDController pidController;
 
-    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.36518, 0.24261 * 1, 0.099094); // * 2.5
     private PIDController controller = new PIDController(0.16677 * 2, 3, 0);
 
     private double setVelocity = 0.0d;
@@ -51,7 +50,6 @@ public class Flywheel extends DreadbotSubsystem {
         this.encoder = motor.getEncoder();
         this.pidController = motor.getPIDController();
 
-//        this.cargoKinematics = new CargoKinematics(s -> 0.5667 * s + 1.31, 0.5715, 2.6416);
         this.cargoKinematics = new CargoKinematics(s -> 0.8 * s + 1.21, 0.5715, 2.6416);
 
         motor.restoreFactoryDefaults();
@@ -109,20 +107,16 @@ public class Flywheel extends DreadbotSubsystem {
      * @param velocity the motor shaft angular velocity, in RPM
      */
     public void setVelocity(double velocity) {
-//        velocity += 2;
         this.setVelocity = velocity;
         if(isDisabled()) return;
 
         try {
-//            motor.setVoltage(feedforward.calculate(velocity, 2.0) + controller.calculate(getTangentialVelocity(), velocity));
             motor.getPIDController().setReference(velocity * TANGENTIAL_TO_RPM_CONVERSION, CANSparkMax.ControlType.kVelocity);
         } catch (IllegalStateException ignored) { disable(); }
     }
 
     public boolean isAtSetVelocity() {
         return getTangentialVelocity() >= setVelocity;
-
-//        return Math.abs(getTangentialVelocity() - setVelocity) <= 0.15d;
     }
 
     /**
@@ -187,19 +181,11 @@ public class Flywheel extends DreadbotSubsystem {
         } catch (IllegalStateException ignored) { disable(); }
     }
 
-    public void intake() {
-        motor.set(-0.25);
-    }
-
     public double getSetVelocity() {
         return setVelocity;
     }
 
     public CargoKinematics getCargoKinematics() {
         return cargoKinematics;
-    }
-
-    public boolean isBallImpulseDetected() {
-        return acceleration <= -2.0d;
     }
 }
