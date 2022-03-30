@@ -5,7 +5,28 @@ import dreadbot_fisheye as df
 import ballfinding
 import json
 import os
+import math
 
+cam_distance = 1 # Inches
+# TODO : calculate NavX vector
+navx = [0, 0] # Vector between the NavX and the top camera
+
+def distance(a1, a2):
+    #   a1
+    #    |\
+    #    | \ s2
+    #    |  \ a3
+    # s3 |  /
+    #    | / s1
+    #    |/
+    #   a2
+    # https://www.desmos.com/calculator/fk8ynfncfe
+    a3 = 180 - a1 - a2
+    s3 = cam_distance
+    s2 = s3 * ( math.sin(a2) / math.sin(a3) )
+    ar = a1 - 90
+    b = [s2*math.cos(ar) + navx[1], s2*math.sin(ar) + navx[0]]
+    return math.sqrt(b[0]**2, b[1]**2)
 
 def main():
     data = os.path.join(os.getcwd(), "Data")
@@ -80,7 +101,7 @@ def main():
                 angleX, angleY = camera.calculate_angle(
                     foundBall[0], foundBall[1])
 
-                ballO = {
+                ball0 = {
                     "x": foundBall[0],
                     "y": foundBall[1],
                     "radius": foundBall[2],
@@ -88,7 +109,7 @@ def main():
                     "pitch": angleY
                 }
 
-                foundBalls.append(ballO)
+                foundBalls.append(ball0)
 
         if fisheyeReadError:
             print("Error getting feed from fisheyes.")
@@ -101,6 +122,15 @@ def main():
 
         if abs(ball1.x - ball2.x) > stereoXError:
             continue
+
+        d = distance(ball1.pitch, ball2.pitch)
+        a = (ball1.yaw + ball2.yaw) / 2 # Average the yaws
+
+        # TODO : ensure that the ball is on the ground before we track it
+        # This is really easy to do I just don't have the mental capacity rn
+        
+        table.putNumber("RelativeDistanceToBall", d)
+        table.putNumber("RelativeAngleToBall", a)
 
     for camera in cameras:
         camera.unload()
