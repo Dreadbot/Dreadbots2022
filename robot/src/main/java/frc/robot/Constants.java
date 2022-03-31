@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.util.Color;
 
+@SuppressWarnings("SpellCheckingInspection")
 public abstract class Constants {
     public static final boolean DRIVE_ENABLED        = true;
     public static final boolean INTAKE_ENABLED       = true;
@@ -49,6 +50,10 @@ public abstract class Constants {
     // Other Sensor Ports
     public static final I2C.Port        I2C_PORT       = I2C.Port.kOnboard;
     public static final SerialPort.Port GYROSCOPE_PORT = SerialPort.Port.kUSB;
+
+    // Intake Constants
+    public static final double INTAKE_INTAKING_MAX_POWER  = 1.0d;
+    public static final double INTAKE_OUTTAKING_MAX_POWER = -1.0d;
 
     public static final double MAX_TURRET_ANGLE = 300.0d;
     public static final double MIN_TURRET_ANGLE = 0.0d;

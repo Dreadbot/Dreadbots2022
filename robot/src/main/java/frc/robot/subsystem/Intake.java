@@ -5,6 +5,7 @@
 package frc.robot.subsystem;
 
 import com.revrobotics.CANSparkMax;
+import frc.robot.Constants;
 
 /**
  * The intake is the mechanism that takes cargo from the ground into the feeder mechanism.
@@ -27,15 +28,15 @@ public class Intake extends DreadbotSubsystem {
     }
 
     /**
-     * Spins the motor to deliver the ground cargo to the feeder mechanism.  
+     * Spins the motor to deliver the ground cargo to the feeder mechanism at maximum power.
      */
     public void intake() {
-        intake(1.0d);
+        intake(Constants.INTAKE_INTAKING_MAX_POWER);
     }
 
     /**
-     * Spins the motor to deliver the ground cargo to the feeder mechanism.
-     * @param power
+     * Spins the motor to deliver the ground cargo to the feeder mechanism at a set power.
+     * @param power The power of the motor
      */
     public void intake(double power) {
         if(isDisabled()) return;
@@ -54,7 +55,7 @@ public class Intake extends DreadbotSubsystem {
 
         // Set the motor to a high negative speed.
         try {
-            motor.set(-1.0d);
+            motor.set(Constants.INTAKE_OUTTAKING_MAX_POWER);
         } catch (IllegalStateException ignored) { disable(); }
     }
 

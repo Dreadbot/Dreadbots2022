@@ -3,6 +3,7 @@ package frc.robot.subsystem;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import org.junit.After;
@@ -48,7 +49,7 @@ public class IntakeTest {
         intake.intake();
 
         if (intake.isEnabled()) {
-            assertEquals(1.0d, intakeMotor.get(), DELTA);
+            assertEquals(Constants.INTAKE_INTAKING_MAX_POWER, intakeMotor.get(), DELTA);
         }
     }
 
@@ -57,7 +58,7 @@ public class IntakeTest {
         intake.outtake();
 
         if (intake.isEnabled()) {
-            assertEquals(-1.0d, intakeMotor.get(), DELTA);
+            assertEquals(Constants.INTAKE_OUTTAKING_MAX_POWER, intakeMotor.get(), DELTA);
         }
     }
 
@@ -66,7 +67,7 @@ public class IntakeTest {
         intake.idle();
 
         if (intake.isEnabled()) {
-            assertEquals(0.0, intakeMotor.get(), DELTA);
+            assertEquals(0.0d, intakeMotor.get(), DELTA);
         }
     }
 
