@@ -18,8 +18,11 @@ public class RetractArmCommand extends CommandBase{
     public boolean isFinished() {
         return climber.getBottomLimitSwitch();
     }
+
     @Override
     public void end(boolean interupted) {
         climber.stopMotors();
+
+        climber.updateRetractedPosition();
     }
 }

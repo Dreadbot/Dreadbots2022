@@ -16,15 +16,14 @@ public class ColorSensor extends DreadbotSubsystem {
     private Color initialBallColor;
     private DriverStation.Alliance alliance;
 
-    private final double colorConfidence = 0.9;
+    private final double colorConfidence = 0.8625;
     private double currentConfidence;
 
     public ColorSensor() {
         disable();
     }
 
-    public ColorSensor(ColorSensorV3 sensor)
-    {
+    public ColorSensor(ColorSensorV3 sensor) {
         this.sensor = sensor;
         colorMatch = new ColorMatch();
         colorMatch.addColorMatch(Constants.COLOR_RED);
@@ -61,8 +60,7 @@ public class ColorSensor extends DreadbotSubsystem {
         return colorName;
     }
 
-    public Color getBallColor()
-    {
+    public Color getBallColor() {
         if(isDisabled()) return null;
 
         ColorMatchResult matchColor = colorMatch.matchColor(sensor.getColor());

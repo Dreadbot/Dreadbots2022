@@ -6,8 +6,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystem.shooter.Hood;
-import frc.robot.util.CargoKinematics;
-import frc.robot.util.VisionInterface;
+import frc.robot.subsystem.shooter.Shooter;
+import frc.robot.util.math.CargoKinematics;
+import frc.robot.util.controls.VisionInterface;
 
 public class HoodCommands {
     private static final PIDController hoodTrackingController = new PIDController(1.0d, 0.0d, 0.0d);
@@ -83,6 +84,38 @@ public class HoodCommands {
 
         private void hoodControlAngle(double relativeHoodAngle) {
             hood.setAngle(relativeHoodAngle);
+        }
+    }
+
+    public static class EjectShootPreset extends CommandBase {
+        private Shooter shooter;
+        private double angleOnScore;
+        private double angleOnEject;
+
+        public EjectShootPreset(Shooter shooter, double angleOnScore, double angleOnEject) {
+            this.shooter = shooter;
+
+            this.angleOnScore = angleOnScore;
+            this.angleOnEject = angleOnEject;
+
+            addRequirements(shooter.getHood());
+        }
+
+        @Override
+        public void execute() {
+            shooter.getHood().setAngle(getAngle());
+        }
+
+        @Override
+        public boolean isFinished() {
+            return shooter.getHood().isAtSetAngle();
+        }
+
+        private double getAngle() {
+            if(!shooter.getColorSensor().isCorrectColor() &&
+                shooter.getColorSensor().getBallColor() != null) return angleOnEject;
+
+            return angleOnScore;
         }
     }
 
@@ -176,7 +209,7 @@ public class HoodCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(hood.getAngle() - angle) <= 1.0d;
+            return hood.isAtSetAngle();
         }
     }
 }

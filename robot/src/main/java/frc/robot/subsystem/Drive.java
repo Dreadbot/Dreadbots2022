@@ -21,13 +21,10 @@ import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.util.DreadbotMath;
-
-import java.util.function.Supplier;
+import frc.robot.util.math.DreadbotMath;
 
 /**
  * The drive is the mechanism that moves the robot across the field. We are using a mecanum drive.
@@ -39,12 +36,6 @@ public class Drive extends DreadbotSubsystem {
     public static final double DRIVE_KP = 3.6109;
     public static final double MOTOR_PID = 1;
 //    public static final double DRIVE_KP = 0;
-
-    public static final double MAX_SPEED_METERS_PER_SECOND = 8.0d;
-    public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 5.0;
-
-    public static final double RAMSETE_B = 2.0d;
-    public static final double RAMSETE_ZETA = 0.7d;
 
     public static final double wheelCircumferenceMeters = 0.4787;
     public static final double wheelRotationsPerMotorRotations = 14.0d / 70.0d;
@@ -68,14 +59,9 @@ public class Drive extends DreadbotSubsystem {
     private PIDController leftBackVelocityPID = new PIDController(MOTOR_PID, 0, 0);
     private PIDController rightBackVelocityPID = new PIDController(MOTOR_PID, 0, 0);
 
-
     private AHRS gyroscope;
 
     private MecanumDrive mecanumDrive;
-
-    private PIDController xController = new PIDController(DRIVE_KP, 0, 0);
-    private PIDController yController = new PIDController(DRIVE_KP, 0, 0);
-    private ProfiledPIDController thetaController = new ProfiledPIDController(1, 0, 0, MAX_ROTATION);
 
     private final HolonomicDriveController driveController =
         new HolonomicDriveController(
@@ -341,18 +327,6 @@ public class Drive extends DreadbotSubsystem {
 
     public MecanumDriveKinematics getKinematics() {
         return kinematics;
-    }
-
-    public PIDController getXController() {
-        return xController;
-    }
-
-    public PIDController getYController() {
-        return yController;
-    }
-
-    public ProfiledPIDController getThetaController() {
-        return thetaController;
     }
 
     public HolonomicDriveController getDriveController() {

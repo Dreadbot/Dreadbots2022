@@ -1,7 +1,8 @@
-package frc.robot.util;
+package frc.robot.util.controls;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import frc.robot.util.math.DreadbotMath;
 
 /**
  * A class that applies a given percentage sensitivity to an input for output.

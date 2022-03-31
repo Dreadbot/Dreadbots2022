@@ -64,12 +64,14 @@ public class Climber extends DreadbotSubsystem {
         SmartDashboard.putString("Current Command",
             getCurrentCommand() != null ? getCurrentCommand().getName() : "none");
     }
+
     public void zeroEncoderPosition() {
         if(isDisabled()) return;
         try {
             winchEncoder.setPosition(0);
         } catch (IllegalStateException ignored) { disable(); }
     }
+
     public void rotateClimbingHookDown() {
         if(isDisabled()) return;
 
@@ -190,5 +192,10 @@ public class Climber extends DreadbotSubsystem {
 
     public double getWinchPosition() {
         return winchEncoder.getPosition();
+    }
+
+    public void updateRetractedPosition() {
+        winchEncoder.setPosition(0.0d);
+        this.retractedPosition = winchEncoder.getPosition();
     }
 }

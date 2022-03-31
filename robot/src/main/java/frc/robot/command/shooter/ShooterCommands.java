@@ -1,6 +1,7 @@
 package frc.robot.command.shooter;
 
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.command.intake.IntakeCommand;
@@ -8,7 +9,7 @@ import frc.robot.subsystem.Intake;
 import frc.robot.subsystem.shooter.ColorSensor;
 import frc.robot.subsystem.shooter.Feeder;
 import frc.robot.subsystem.shooter.Shooter;
-import frc.robot.util.VisionInterface;
+import frc.robot.util.controls.VisionInterface;
 
 public class ShooterCommands {
     public static class TargetShoot extends SequentialCommandGroup {
@@ -17,7 +18,6 @@ public class ShooterCommands {
         public TargetShoot(Shooter shooter) {
             this.shooter = shooter;
 
-            addRequirements(shooter);
             addCommands(
                 new InstantCommand(() -> System.out.println("TARGET SHOOT")),
                 new ParallelCommandGroup(
@@ -44,7 +44,6 @@ public class ShooterCommands {
         public EjectShoot(Shooter shooter) {
             this.shooter = shooter;
 
-            addRequirements(shooter);
             addCommands(
                 new ParallelCommandGroup(
                     new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
@@ -72,15 +71,14 @@ public class ShooterCommands {
             this.shooter = shooter;
             this.afterAngle = afterAngle;
 
-            addRequirements(shooter);
             addCommands(
                 new InstantCommand(() -> System.out.println("PRESET SHOOT")),
                 new ParallelCommandGroup(
                     new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
                     new TurretCommands.TurnToAngle(shooter.getTurret(), turretAngle),
-                    new HoodCommands.TurnToAngle(shooter.getHood(), hoodAngle)
+                    new HoodCommands.TurnToAngle(shooter.getHood(), hoodAngle),
+                    new FlywheelCommands.PreparePresetShot(shooter.getFlywheel(), flywheelSpeed)
                 ),
-                new FlywheelCommands.PreparePresetShot(shooter.getFlywheel(), flywheelSpeed),
                 new FeedBallCommand(shooter),
                 new WaitCommand(0.5)
             );
@@ -89,18 +87,20 @@ public class ShooterCommands {
         @Override
         public void end(boolean interrupted) {
             shooter.getFeeder().idle();
-            shooter.getFlywheel().idle();
+//            shooter.getFlywheel().idle();
         }
     }
 
     public static class FeedBallCommand extends CommandBase {
         private Feeder feeder;
+        private Shooter shooter;
         private ColorSensor colorSensor;
 
         private Color colorFeeding;
         private double initialPosition;
 
         public FeedBallCommand(Shooter shooter) {
+            this.shooter = shooter;
             this.feeder = shooter.getFeeder();
             this.colorSensor = shooter.getColorSensor();
 
@@ -109,7 +109,10 @@ public class ShooterCommands {
 
         @Override
         public void initialize() {
+            SmartDashboard.putString("CurrentLowShootCommand", "Feeding");
+
             colorFeeding = colorSensor.getBallColor();
+            initialPosition = feeder.getFeederPosition();
         }
 
         @Override
@@ -119,9 +122,28 @@ public class ShooterCommands {
 
         @Override
         public boolean isFinished() {
+//            if(shooter.getColorSensor().isBallDetected() && !shooter.getColorSensor().isCorrectColor()) {
+//                SmartDashboard.putString("STATUS", "OPPONENT BALL DETECTED");
+////                feeder.idle();
+//                return true;
+//            }
+//
+//            if(shooter.getFlywheel().isBallImpulseDetected()) {
+//                SmartDashboard.putString("STATUS", "IMPULSE");
+//            } else {
+//                SmartDashboard.putString("STATUS", "NONE");
+//            }
+//
+//            return shooter.getFlywheel().isBallImpulseDetected();
+
             if(Math.abs(feeder.getFeederPosition() - initialPosition) >= 100.0) return true;
 
             return !colorSensor.isBallDetected() || colorSensor.getBallColor() != colorFeeding;
+        }
+
+        @Override
+        public void end(boolean interrupted) {
+            feeder.idle();
         }
     }
 
@@ -133,7 +155,6 @@ public class ShooterCommands {
             this.shooter = shooter;
             this.intake = intake;
 
-            addRequirements();
             addCommands(
                 new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kCoast)),
                 new ParallelRaceGroup(
@@ -142,11 +163,22 @@ public class ShooterCommands {
                 ),
                 new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kBrake)),
                 new ConditionalCommand(
-                    new PresetShoot(shooter, 155.0, 60.0d, 4.5d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
-                    new PresetShoot(shooter, 65.0, 60.0d, 4.5d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
+                    new PresetShoot(shooter, 149.0, 60.0d, 6d, 149.0d).raceWith(new IntakeCommand(intake, 1.0)),
+                    new PresetShoot(shooter, 65.0, 60.0d, 6d, 149.0d).raceWith(new IntakeCommand(intake, 1.0)),
                     shooter.getColorSensor()::isCorrectColor
                 )
             );
+//            addCommands(
+//                new IntakeCommand(intake),
+//                new SequentialCommandGroup(
+//                    new ParallelCommandGroup(
+//                        new TurretCommands.EjectShootPreset(shooter, 149, 59),
+//                        new HoodCommands.EjectShootPreset(shooter, 60, 60),
+//                        new FlywheelCommands.EjectShootPreset(shooter, 6, 6)
+//                    ),
+//                    new FeedBallCommand(shooter)
+//                )
+//            );
         }
     }
 

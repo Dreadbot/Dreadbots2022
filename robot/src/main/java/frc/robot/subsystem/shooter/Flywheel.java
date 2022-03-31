@@ -11,13 +11,16 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystem.DreadbotSubsystem;
-import frc.robot.util.CargoKinematics;
-import frc.robot.util.VisionInterface;
+import frc.robot.util.math.CargoKinematics;
+import frc.robot.util.controls.VisionInterface;
 
 /**
  * The flywheel is the mechanism that shoots the ball out of the robot.
  */
 public class Flywheel extends DreadbotSubsystem {
+    public static final double RPM_TO_TANGENTIAL_CONVERSION = 4.655E-03;
+    public static final double TANGENTIAL_TO_RPM_CONVERSION = 2.148E02;
+
     private CargoKinematics cargoKinematics;
     private CANSparkMax motor;
 
@@ -26,10 +29,13 @@ public class Flywheel extends DreadbotSubsystem {
     @SuppressWarnings("FieldMayBeFinal")
     private SparkMaxPIDController pidController;
 
-    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.36518, 0.24261 * 1, 0.099094); // * 2.5
     private PIDController controller = new PIDController(0.16677 * 2, 3, 0);
 
     private double setVelocity = 0.0d;
+
+    private double acceleration;
+
+    private double lastVelocity;
 
     /**
      * Disabled constructor
@@ -44,7 +50,6 @@ public class Flywheel extends DreadbotSubsystem {
         this.encoder = motor.getEncoder();
         this.pidController = motor.getPIDController();
 
-//        this.cargoKinematics = new CargoKinematics(s -> 0.5667 * s + 1.31, 0.5715, 2.6416);
         this.cargoKinematics = new CargoKinematics(s -> 0.8 * s + 1.21, 0.5715, 2.6416);
 
         motor.restoreFactoryDefaults();
@@ -58,6 +63,8 @@ public class Flywheel extends DreadbotSubsystem {
         pidController.setOutputRange(Constants.FLYWHEEL_MIN_OUTPUT, Constants.FLYWHEEL_MAX_OUTPUT);
 
         controller.enableContinuousInput(0.0, 1.0);
+
+        lastVelocity = getTangentialVelocity();
     }
 
     @Override
@@ -66,6 +73,11 @@ public class Flywheel extends DreadbotSubsystem {
         SmartDashboard.putNumber("VS DistanceToHubMeters", distanceToHub);
         double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
         SmartDashboard.putNumber("VS FinalCommandVelocity", velocity);
+
+        acceleration = (getTangentialVelocity() - lastVelocity) / 0.02d;
+        SmartDashboard.putNumber("Flywheel Acceleration", acceleration);
+
+        lastVelocity = getTangentialVelocity();
     }
 
     @Override
@@ -95,20 +107,16 @@ public class Flywheel extends DreadbotSubsystem {
      * @param velocity the motor shaft angular velocity, in RPM
      */
     public void setVelocity(double velocity) {
-//        velocity += 2;
         this.setVelocity = velocity;
         if(isDisabled()) return;
 
         try {
-//            motor.setVoltage(feedforward.calculate(velocity, 2.0) + controller.calculate(getTangentialVelocity(), velocity));
-            motor.getPIDController().setReference(velocity * 120 / 0.279, CANSparkMax.ControlType.kVelocity);
+            motor.getPIDController().setReference(velocity * TANGENTIAL_TO_RPM_CONVERSION, CANSparkMax.ControlType.kVelocity);
         } catch (IllegalStateException ignored) { disable(); }
     }
 
     public boolean isAtSetVelocity() {
         return getTangentialVelocity() >= setVelocity;
-
-//        return Math.abs(getTangentialVelocity() - setVelocity) <= 0.15d;
     }
 
     /**
@@ -136,7 +144,7 @@ public class Flywheel extends DreadbotSubsystem {
         // the output is considered zero.
         double velocity = 0.0d;
         try {
-            velocity = getMotorAngularVelocity() * 0.00932;
+            velocity = getMotorAngularVelocity() * RPM_TO_TANGENTIAL_CONVERSION;
         } catch (IllegalStateException ignored) { disable(); }
 
         return velocity;
@@ -171,10 +179,6 @@ public class Flywheel extends DreadbotSubsystem {
         try {
             motor.close();
         } catch (IllegalStateException ignored) { disable(); }
-    }
-
-    public void intake() {
-        motor.set(-0.25);
     }
 
     public double getSetVelocity() {

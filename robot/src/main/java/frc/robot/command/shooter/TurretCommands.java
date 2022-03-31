@@ -1,10 +1,12 @@
 package frc.robot.command.shooter;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystem.Drive;
+import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.subsystem.shooter.Turret;
-import frc.robot.util.VisionInterface;
+import frc.robot.util.controls.VisionInterface;
 
 public class TurretCommands {
     public static class PassiveTrack extends CommandBase {
@@ -50,6 +52,43 @@ public class TurretCommands {
         }
     }
 
+    public static class EjectShootPreset extends CommandBase {
+        private Shooter shooter;
+        private double angleOnScore;
+        private double angleOnEject;
+
+        public EjectShootPreset(Shooter shooter, double angleOnScore, double angleOnEject) {
+            this.shooter = shooter;
+
+            this.angleOnScore = angleOnScore;
+            this.angleOnEject = angleOnEject;
+
+            addRequirements(shooter.getTurret());
+        }
+
+        @Override
+        public void initialize() {
+            SmartDashboard.putString("CurrentLowShootCommand", "Configuring Shooter");
+        }
+
+        @Override
+        public void execute() {
+            shooter.getTurret().setAngle(getAngle());
+        }
+
+        @Override
+        public boolean isFinished() {
+            return shooter.getTurret().isAtSetAngle();
+        }
+
+        private double getAngle() {
+            if(!shooter.getColorSensor().isCorrectColor() &&
+                shooter.getColorSensor().getBallColor() != null) return angleOnEject;
+
+            return angleOnScore;
+        }
+    }
+
     public static class ActiveTrack extends CommandBase {
         private final Turret turret;
 
@@ -75,7 +114,7 @@ public class TurretCommands {
 
         @Override
         public boolean isFinished() {
-            return Math.abs(turret.getAngle() - requestedAngle) <= 2.0d;
+            return turret.isAtSetAngle();
         }
 
         private void turretControlAngle(double relativeAngleToHub) {
