@@ -21,67 +21,69 @@ import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.util.math.DreadbotMath;
+
+import java.util.stream.Stream;
 
 /**
  * The drive is the mechanism that moves the robot across the field. We are using a mecanum drive.
  */
 public class Drive extends DreadbotSubsystem {
-    public static final SimpleMotorFeedforward FEEDFORWARD =
-        new SimpleMotorFeedforward(0.09185, 3.1899, 0.17172);
-
-    public static final double DRIVE_KP = 3.6109;
-    public static final double MOTOR_PID = 1;
-//    public static final double DRIVE_KP = 0;
-
-    public static final double wheelCircumferenceMeters = 0.4787;
-    public static final double wheelRotationsPerMotorRotations = 14.0d / 70.0d;
-    public static final double metersTraveledPerMotorRotations = wheelCircumferenceMeters * wheelRotationsPerMotorRotations;
-    public static final double motorRPMToMetersPerSecond = 7.98e-3;
-    public static final double velocityConversionFactor = wheelRotationsPerMotorRotations * motorRPMToMetersPerSecond;
-
-    private ChassisSpeeds targetChassisSpeeds;
-
-    private static final TrapezoidProfile.Constraints MAX_ROTATION =
-        new TrapezoidProfile.Constraints(Units.degreesToRadians(360.0d), Units.degreesToRadians(180));
-
+    // Motor Objects
     private CANSparkMax leftFrontMotor;
     private CANSparkMax rightFrontMotor;
     private CANSparkMax leftBackMotor;
     private CANSparkMax rightBackMotor;
 
-    // Input is current velocity, output is voltage, setpoint is target velocity
-    private PIDController leftFrontVelocityPID = new PIDController(MOTOR_PID, 0, 0);
-    private PIDController rightFrontVelocityPID = new PIDController(MOTOR_PID, 0, 0);
-    private PIDController leftBackVelocityPID = new PIDController(MOTOR_PID, 0, 0);
-    private PIDController rightBackVelocityPID = new PIDController(MOTOR_PID, 0, 0);
-
+    // NavX Gyroscope
     private AHRS gyroscope;
 
+    // Target ChassisSpeeds commanded by teleop directions or
+    private ChassisSpeeds targetChassisSpeeds;
+
+    // MecanumDrive calculations classes
     private MecanumDrive mecanumDrive;
+    private MecanumDriveOdometry odometry;
 
-    private final HolonomicDriveController driveController =
-        new HolonomicDriveController(
-            // X Controller
-            new PIDController(DRIVE_KP, 0, 0),
-            // Y Controller
-            new PIDController(DRIVE_KP, 0, 0),
-            // Rotation Controller
-            new ProfiledPIDController(1, 0, 0, MAX_ROTATION)
-        );
-
+    /**
+     * To understand why we negate (-) each of the values, look at the "right-hand rule" in the attached link.
+     * X is longitudinal (forward/backward) direction, and Y is lateral (side/side) direction.
+     * http://i.stack.imgur.com/0hxY1.png
+     */
     private final MecanumDriveKinematics kinematics = new MecanumDriveKinematics(
-        new Translation2d(0.19d, 0.4191d),
-        new Translation2d(0.19d, -0.4191d),
-        new Translation2d(-0.19d, 0.4191d),
-        new Translation2d(-0.19d, -0.4191d)
+        new Translation2d( Constants.WHEEL_LONGITUDINAL_DISPLACEMENT,  Constants.WHEEL_LATERAL_DISPLACEMENT), // Left Front
+        new Translation2d( Constants.WHEEL_LONGITUDINAL_DISPLACEMENT, -Constants.WHEEL_LATERAL_DISPLACEMENT), // Right Front
+        new Translation2d(-Constants.WHEEL_LONGITUDINAL_DISPLACEMENT,  Constants.WHEEL_LATERAL_DISPLACEMENT), // Left Back
+        new Translation2d(-Constants.WHEEL_LONGITUDINAL_DISPLACEMENT, -Constants.WHEEL_LATERAL_DISPLACEMENT)  // Right Back
     );
 
-    private MecanumDriveOdometry odometry;
+    // Velocity-Based Control Feedforward
+    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(
+        Constants.WHEEL_FEED_STATIC_FRICTION_GAIN, // (volts)
+        Constants.WHEEL_FEED_VELOCITY_GAIN,        // (volt-seconds per meter)
+        Constants.WHEEL_FEED_ACCELERATION_GAIN     // (volt--seconds-squared per meter)
+    );
+
+    // Velocity-Based Control PID Error Correction:
+    // Input (measurement) is current velocity, output is voltage, setpoint is target velocity
+    private final PIDController leftFrontVelocityPID  = new PIDController(Constants.WHEEL_CONTROLLER_P, 0, 0);
+    private final PIDController rightFrontVelocityPID = new PIDController(Constants.WHEEL_CONTROLLER_P, 0, 0);
+    private final PIDController leftBackVelocityPID   = new PIDController(Constants.WHEEL_CONTROLLER_P, 0, 0);
+    private final PIDController rightBackVelocityPID  = new PIDController(Constants.WHEEL_CONTROLLER_P, 0, 0);
+
+    // Trajectory Tracking Holonomic Drive Controllers
+    private final TrapezoidProfile.Constraints rotationProfile =
+        new TrapezoidProfile.Constraints(Units.degreesToRadians(360.0d), Units.degreesToRadians(180));
+    private final HolonomicDriveController driveController = new HolonomicDriveController(
+        // X Controller
+        new PIDController(Constants.TRAJECTORY_ERROR_CONTROLLER_P, 0, 0),
+        // Y Controller
+        new PIDController(Constants.TRAJECTORY_ERROR_CONTROLLER_P, 0, 0),
+        // Rotation Controller
+        new ProfiledPIDController(1, 0, 0, rotationProfile)
+    );
 
     /**
      * Disabled Constructor
@@ -90,58 +92,32 @@ public class Drive extends DreadbotSubsystem {
         disable();
     }
 
-    @Override
-    public void periodic() {
-        if(isDisabled()) return;
-
-        odometry.update(gyroscope.getRotation2d(), getWheelSpeeds());
-    }
-
     public Drive(CANSparkMax leftFrontMotor, CANSparkMax rightFrontMotor, CANSparkMax leftBackMotor,
-            CANSparkMax rightBackMotor) {
+            CANSparkMax rightBackMotor, AHRS gyroscope) {
         this.leftFrontMotor = leftFrontMotor;
         this.rightFrontMotor = rightFrontMotor;
         this.leftBackMotor = leftBackMotor;
         this.rightBackMotor = rightBackMotor;
 
-        this.gyroscope = new AHRS(Constants.GYROSCOPE_PORT);
+        this.gyroscope = gyroscope;
 
         this.targetChassisSpeeds = new ChassisSpeeds();
 
-        leftFrontMotor.restoreFactoryDefaults();
-        rightFrontMotor.restoreFactoryDefaults();
-        leftBackMotor.restoreFactoryDefaults();
-        rightBackMotor.restoreFactoryDefaults();
-
-        leftFrontMotor.setIdleMode(IdleMode.kBrake);
-        rightFrontMotor.setIdleMode(IdleMode.kBrake);
-        leftBackMotor.setIdleMode(IdleMode.kBrake);
-        rightBackMotor.setIdleMode(IdleMode.kBrake);
-
-
-        // According to the docs, motors must be inverted before they are passed into the MecanumDrive utility.
-        leftFrontMotor.setInverted(true);
-        rightFrontMotor.setInverted(false);
-        leftBackMotor.setInverted(true);
-        rightBackMotor.setInverted(false);
-
-        leftFrontMotor.getEncoder().setPositionConversionFactor(Drive.metersTraveledPerMotorRotations);
-        rightFrontMotor.getEncoder().setPositionConversionFactor(Drive.metersTraveledPerMotorRotations);
-        leftBackMotor.getEncoder().setPositionConversionFactor(Drive.metersTraveledPerMotorRotations);
-        rightBackMotor.getEncoder().setPositionConversionFactor(Drive.metersTraveledPerMotorRotations);
-
-        leftFrontMotor.getEncoder().setVelocityConversionFactor(Drive.velocityConversionFactor);
-        rightFrontMotor.getEncoder().setVelocityConversionFactor(Drive.velocityConversionFactor);
-        leftBackMotor.getEncoder().setVelocityConversionFactor(Drive.velocityConversionFactor);
-        rightBackMotor.getEncoder().setVelocityConversionFactor(Drive.velocityConversionFactor);
-
+        // Fully-configure motors before passing them to MecanumDrive.
+        configureMotors();
         resetEncoders();
+
         odometry = new MecanumDriveOdometry(kinematics, gyroscope.getRotation2d());
 
         this.mecanumDrive = new MecanumDrive(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
-        SmartDashboard.putData("DriveVisual", mecanumDrive);
-
         mecanumDrive.setSafetyEnabled(false);
+    }
+
+    @Override
+    public void periodic() {
+        if(isDisabled()) return;
+
+        odometry.update(gyroscope.getRotation2d(), getWheelSpeeds());
     }
 
     @Override
@@ -184,46 +160,36 @@ public class Drive extends DreadbotSubsystem {
     }
 
     /**
-     * Drive method for magnitude, angle, and rotation
+     * Gets the current drivetrain speeds in terms of field-robot movement, via ChassisSpeeds.
      *
-     * <p>Angles are measured counter-clockwise from straight ahead. The speed at which the robot
-     * drives (translation) is independent from its angle or rotation rate.
-     *
-     * @param magnitude The robot's speed at a given angle [-1.0..1.0]. Forward is positive.
-     * @param angle The angle around the Z axis at which the robot drives in degrees [-180..180].
-     * @param zRotation The robot's rotation rate around the Z axis [-1.0..1.0]. Clockwise is
-     *     positive.
+     * @return current ChassisSpeeds
      */
-    public void drivePolar(double magnitude, double angle, double zRotation) {
-        if(isDisabled()) return;
-
-        try {
-            mecanumDrive.drivePolar(magnitude, angle, zRotation);
-        } catch (IllegalStateException ignored) { disable(); }
-    }
-
     public ChassisSpeeds getChassisSpeeds() {
         if(isDisabled()) return new ChassisSpeeds();
 
         return kinematics.toChassisSpeeds(getWheelSpeeds());
     }
 
+    /**
+     * Commands the drivetrain to travel at a certain ChassisSpeeds.
+     *
+     * @param chassisSpeeds The desired robot speeds
+     */
     public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
         if(isDisabled()) return;
 
         targetChassisSpeeds = chassisSpeeds;
-        final var wheelSpeeds = kinematics.toWheelSpeeds(chassisSpeeds);
 
-        setWheelSpeeds(wheelSpeeds);
+        setWheelSpeeds(kinematics.toWheelSpeeds(chassisSpeeds));
     }
 
     /**
-     * Get the wheel speeds in the MecanumDriveWheelSpeeds form.
+     * Get the wheel speeds via a MecanumDriveWheelSpeeds object.
      *
-     * @return the MecanumDriveWheelSpeeds object (0 if disabled).
+     * @return the MecanumDriveWheelSpeeds object (all 0 if disabled).
      */
     public MecanumDriveWheelSpeeds getWheelSpeeds() {
-        if(isDisabled()) return new MecanumDriveWheelSpeeds(0, 0, 0, 0);
+        if(isDisabled()) return new MecanumDriveWheelSpeeds();
 
         return new MecanumDriveWheelSpeeds(
             leftFrontMotor.getEncoder().getVelocity(),
@@ -233,6 +199,14 @@ public class Drive extends DreadbotSubsystem {
         );
     }
 
+    /**
+     * Sets the requested voltages for each of the drive motors.
+     *
+     * @param leftFrontVoltage Voltage feedforward for the left front motor.
+     * @param rightFrontVoltage Voltage feedforward for the right front motor.
+     * @param leftBackVoltage Voltage feedforward for the left back motor.
+     * @param rightBackVoltage Voltage feedforward for the right back motor.
+     */
     public void setWheelVoltages(double leftFrontVoltage, double rightFrontVoltage,
                                  double leftBackVoltage, double rightBackVoltage) {
         if(isDisabled()) return;
@@ -243,6 +217,11 @@ public class Drive extends DreadbotSubsystem {
         rightBackMotor.setVoltage(rightBackVoltage);
     }
 
+    /**
+     * Sets the requested velocities for each of the drive motors.
+     *
+     * @param wheelSpeeds The requested wheel velocities
+     */
     public void setWheelSpeeds(MecanumDriveWheelSpeeds wheelSpeeds) {
         if(isDisabled()) return;
 
@@ -260,29 +239,32 @@ public class Drive extends DreadbotSubsystem {
     }
 
     private double velocityToVoltage(PIDController velocityController, double currentVelocity) {
-        final double rawVoltage = FEEDFORWARD.calculate(velocityController.getSetpoint())
+        final double rawVoltage = feedforward.calculate(velocityController.getSetpoint())
             + velocityController.calculate(currentVelocity);
 
         return DreadbotMath.clampValue(rawVoltage, -12.0, 12.0);
     }
 
     /**
-     * Converts joystick inputs to a polar angle.
+     * Gets the average position of the front two encoders.
      *
-     * @param forwardAxis The joystick's position along the Y axis [-1.0..1.0]
-     * @param lateralAxis The joystick's position along the X axis [-1.0..1.0]
-     *
-     * @return The angle of the joystick input
+     * @return Average position of the front two encoders.
      */
-    public static double getAngleDegreesFromJoystick(double forwardAxis, double lateralAxis) {
-        double angleInRadians = Math.atan2(-forwardAxis, lateralAxis);
-        double angleInDegrees = angleInRadians * 180.0d / Math.PI;
-        angleInDegrees -= 90.0d;
-        return (angleInDegrees <= -180.0d) ? angleInDegrees + 360.0d : angleInDegrees;
+    public double getFrontEncoderAvg() {
+        if(isDisabled()) return 0.0d;
+
+        RelativeEncoder frontRightEncoder = rightFrontMotor.getEncoder();
+        RelativeEncoder frontLeftEncoder = leftFrontMotor.getEncoder();
+
+        return (frontRightEncoder.getPosition() + frontLeftEncoder.getPosition()) / 2.0d;
     }
 
+    /**
+     * Resets the encoder positions.
+     */
     public void resetEncoders() {
         if(isDisabled()) return;
+
         rightFrontMotor.getEncoder().setPosition(0.0d);
         leftFrontMotor.getEncoder().setPosition(0.0d);
         rightBackMotor.getEncoder().setPosition(0.0d);
@@ -311,34 +293,83 @@ public class Drive extends DreadbotSubsystem {
         } catch (IllegalStateException ignored) { disable(); }
     }
 
-    public double getFrontEncoderAvg(){
-        if(isDisabled()) return -3656;
-        RelativeEncoder frontRightEncoder = rightFrontMotor.getEncoder();
-        RelativeEncoder frontLeftEncoder = leftFrontMotor.getEncoder();
-        double getEncoderAvg = ((frontRightEncoder.getPosition() ) + frontLeftEncoder.getPosition())/2;
-        SmartDashboard.putNumber("FrontRightEncoder", frontRightEncoder.getPosition());
-        SmartDashboard.putNumber("FrontLeftEncoder", frontLeftEncoder.getPosition());
-        SmartDashboard.putNumber("AvgEncoder", getEncoderAvg);
-        return getEncoderAvg;
-    }
-
+    /**
+     * Gets the current robot odometry pose.
+     *
+     * @return Robot pose
+     */
     public Pose2d getPose() {
         return odometry.getPoseMeters();
     }
 
+    /**
+     * Gets the drive kinematics object.
+     *
+     * @return Drive kinematics object
+     */
     public MecanumDriveKinematics getKinematics() {
         return kinematics;
     }
 
+    /**
+     * Gets the holonomic drive controller
+     *
+     * @return Holonomic drive controller
+     */
     public HolonomicDriveController getDriveController() {
         return driveController;
     }
 
+    /**
+     * Resets the robot pose odometry.
+     *
+     * @param poseMeters The requested "zero" position of the odometry.
+     */
     public void resetRobotPose(Pose2d poseMeters) {
         odometry.resetPosition(poseMeters, gyroscope.getRotation2d());
     }
 
+    /**
+     * Returns the gyroscope yaw.
+     *
+     * @return The gyroscope yaw
+     */
     public double getYaw() {
         return gyroscope.getYaw();
+    }
+
+    private void configureMotors() {
+        Stream.of(leftFrontMotor, rightFrontMotor, leftBackMotor, rightBackMotor).forEach(motor -> {
+            motor.restoreFactoryDefaults();
+            motor.setIdleMode(IdleMode.kBrake);
+            motor.getEncoder().setPositionConversionFactor(Constants.WHEEL_ROTATIONS_TO_METERS);
+            motor.getEncoder().setVelocityConversionFactor(Constants.WHEEL_RPM_TO_METERS_PER_SECOND);
+        });
+
+        leftFrontMotor.setInverted(true);
+        leftBackMotor.setInverted(true);
+        rightFrontMotor.setInverted(false);
+        rightBackMotor.setInverted(false);
+
+//        leftFrontMotor.restoreFactoryDefaults();
+//        rightFrontMotor.restoreFactoryDefaults();
+//        leftBackMotor.restoreFactoryDefaults();
+//        rightBackMotor.restoreFactoryDefaults();
+//
+//        leftFrontMotor.setIdleMode(IdleMode.kBrake);
+//        rightFrontMotor.setIdleMode(IdleMode.kBrake);
+//        leftBackMotor.setIdleMode(IdleMode.kBrake);
+//        rightBackMotor.setIdleMode(IdleMode.kBrake);
+
+
+//        leftFrontMotor.getEncoder().setPositionConversionFactor();
+//        rightFrontMotor.getEncoder().setPositionConversionFactor(Constants.WHEEL_ROTATIONS_TO_METERS);
+//        leftBackMotor.getEncoder().setPositionConversionFactor(Constants.WHEEL_ROTATIONS_TO_METERS);
+//        rightBackMotor.getEncoder().setPositionConversionFactor(Constants.WHEEL_ROTATIONS_TO_METERS);
+//
+//        leftFrontMotor.getEncoder().setVelocityConversionFactor(Constants.WHEEL_RPM_TO_METERS_PER_SECOND);
+//        rightFrontMotor.getEncoder().setVelocityConversionFactor(Constants.WHEEL_RPM_TO_METERS_PER_SECOND);
+//        leftBackMotor.getEncoder().setVelocityConversionFactor(Constants.WHEEL_RPM_TO_METERS_PER_SECOND);
+//        rightBackMotor.getEncoder().setVelocityConversionFactor(Constants.WHEEL_RPM_TO_METERS_PER_SECOND);
     }
 }

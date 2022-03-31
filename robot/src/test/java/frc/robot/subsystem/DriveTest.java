@@ -2,6 +2,7 @@ package frc.robot.subsystem;
 
 import static org.junit.Assert.assertEquals;
 
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import frc.robot.Robot;
@@ -24,6 +25,8 @@ public class DriveTest {
     private CANSparkMax leftBackDriveMotor;
     private CANSparkMax rightBackDriveMotor;
 
+    private AHRS gyroscope;
+
     private double angle;
 
     @Before
@@ -39,7 +42,9 @@ public class DriveTest {
         leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
         rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
 
-        drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor);
+        gyroscope = new AHRS(Constants.GYROSCOPE_PORT);
+
+        drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor, gyroscope);
 
         angle = 0.0d;
 
@@ -53,53 +58,6 @@ public class DriveTest {
 
         // Return to the regular log level.
         Robot.LOGGER.setLevel(Level.INFO);
-    }
-
-    @Test
-    public void getAngleDegreesFromJoystick() {
-        // First Quadrant of the Joystick (-,+)
-        angle = Drive.getAngleDegreesFromJoystick(
-            -Math.sin(Math.PI / 3), Math.cos(Math.PI / 3));
-        assertEquals(-30.0d, angle, DELTA);
-        angle = Drive.getAngleDegreesFromJoystick(
-            -Math.sin(Math.PI / 4), Math.cos(Math.PI / 4));
-        assertEquals(-45.0d, angle, DELTA);
-        angle = Drive.getAngleDegreesFromJoystick(
-            -Math.sin(Math.PI / 6), Math.cos(Math.PI / 6));
-        assertEquals(-60.0d, angle, DELTA);
-
-        // Second Quadrant of the Joystick (-,-)
-        angle = Drive.getAngleDegreesFromJoystick(
-            -Math.sin(Math.PI / 3), -Math.cos(Math.PI / 3));
-        assertEquals(30.0d, angle, DELTA);
-        angle = Drive.getAngleDegreesFromJoystick(
-            -Math.sin(Math.PI / 4), -Math.cos(Math.PI / 4));
-        assertEquals(45.0d, angle, DELTA);
-        angle = Drive.getAngleDegreesFromJoystick(
-            -Math.sin(Math.PI / 6), -Math.cos(Math.PI / 6));
-        assertEquals(60.0d, angle, DELTA);
-
-        // Third Quadrant of the Joystick (+,-)
-        angle = Drive.getAngleDegreesFromJoystick(
-            Math.sin(Math.PI / 3), -Math.cos(Math.PI / 3));
-        assertEquals(150.0d, angle, DELTA);
-        angle = Drive.getAngleDegreesFromJoystick(
-            Math.sin(Math.PI / 4), -Math.cos(Math.PI / 4));
-        assertEquals(135.0d, angle, DELTA);
-        angle = Drive.getAngleDegreesFromJoystick(
-            Math.sin(Math.PI / 6), -Math.cos(Math.PI / 6));
-        assertEquals(120.0d, angle, DELTA);
-        
-        // Fourth Quadrant of the Joystick (+, +)
-        angle = Drive.getAngleDegreesFromJoystick(
-            Math.sin(Math.PI / 3), Math.cos(Math.PI / 3));
-        assertEquals(-150.0d, angle, DELTA);
-        angle = Drive.getAngleDegreesFromJoystick(
-            Math.sin(Math.PI / 4), Math.cos(Math.PI / 4));
-        assertEquals(-135.0d, angle, DELTA);
-        angle = Drive.getAngleDegreesFromJoystick(
-            Math.sin(Math.PI / 6), Math.cos(Math.PI / 6));
-        assertEquals(-120.0d, angle, DELTA);
     }
 
     @Test
@@ -160,63 +118,6 @@ public class DriveTest {
     }
 
     @Test
-    public void drivePolar() {
-        // Full forward
-        drive.drivePolar(1.0d, 0.0d, 0.0d);
-        if (drive.isEnabled()) {
-            assertEquals(1.0d, leftFrontDriveMotor.get(), DELTA);
-            assertEquals(1.0d, rightFrontDriveMotor.get(), DELTA);
-            assertEquals(1.0d, leftBackDriveMotor.get(), DELTA);
-            assertEquals(1.0d, rightBackDriveMotor.get(), DELTA);
-        }
-
-        // Full backward
-        drive.drivePolar(1.0d, 180.0d, 0.0d);
-        if (drive.isEnabled()) {
-            assertEquals(-1.0d, leftFrontDriveMotor.get(), DELTA);
-            assertEquals(-1.0d, rightFrontDriveMotor.get(), DELTA);
-            assertEquals(-1.0d, leftBackDriveMotor.get(), DELTA);
-            assertEquals(-1.0d, rightBackDriveMotor.get(), DELTA);
-        }
-
-        // Full strafe left
-        drive.drivePolar(1.0d, -90.0d, 0.0d);
-        if (drive.isEnabled()) {
-            assertEquals(-1.0d, leftFrontDriveMotor.get(), DELTA);
-            assertEquals(1.0d, rightFrontDriveMotor.get(), DELTA);
-            assertEquals(1.0d, leftBackDriveMotor.get(), DELTA);
-            assertEquals(-1.0d, rightBackDriveMotor.get(), DELTA);
-        }
-
-        // Full strafe right
-        drive.drivePolar(1.0d, 90.0d, 0.0d);
-        if (drive.isEnabled()) {
-            assertEquals(1.0d, leftFrontDriveMotor.get(), DELTA);
-            assertEquals(-1.0d, rightFrontDriveMotor.get(), DELTA);
-            assertEquals(-1.0d, leftBackDriveMotor.get(), DELTA);
-            assertEquals(1.0d, rightBackDriveMotor.get(), DELTA);
-        }
-
-        // Full negative rotation
-        drive.drivePolar(0.0d, 0.0d, -1.0d);
-        if (drive.isEnabled()) {
-            assertEquals(-1.0d, leftFrontDriveMotor.get(), DELTA);
-            assertEquals(1.0d, rightFrontDriveMotor.get(), DELTA);
-            assertEquals(-1.0d, leftBackDriveMotor.get(), DELTA);
-            assertEquals(1.0d, rightBackDriveMotor.get(), DELTA);
-        }
-
-        // Full positive rotation
-        drive.drivePolar(0.0d, 0.0d, 1.0d);
-        if (drive.isEnabled()) {
-            assertEquals(1.0d, leftFrontDriveMotor.get(), DELTA);
-            assertEquals(-1.0d, rightFrontDriveMotor.get(), DELTA);
-            assertEquals(1.0d, leftBackDriveMotor.get(), DELTA);
-            assertEquals(-1.0d, rightBackDriveMotor.get(), DELTA);
-        }
-    }
-
-    @Test
     public void stopMotors() {
         drive.stopMotors();
 
@@ -237,7 +138,6 @@ public class DriveTest {
         // throw an exception. This test case is another check to ensure calls
         // to closed motors do not crash the robot.
         drive.driveCartesian(1.0d, -1.0d, 0.0d);
-        drive.drivePolar(1.0d, -90.0d, 23.0d);
         drive.stopMotors();
         drive.close();
     }

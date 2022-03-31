@@ -49,6 +49,6 @@ class AutonDrive extends CommandBase {
     @Override
     public void end(boolean isIntertupted){
         drive.resetEncoders();
-        drive.drivePolar(0, 0, 0);
+        drive.driveCartesian(0, 0, 0);
     }
 }
