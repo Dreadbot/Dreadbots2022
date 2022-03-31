@@ -8,35 +8,35 @@ import frc.robot.subsystem.Climber;
 public class AutonomousClimberCommand extends SequentialCommandGroup{
     public AutonomousClimberCommand(Climber climber){
         //Asssumes we are below the bar with the power hook down and neutral hooks back
-        addCommands(
-            new ExtendArmCommand(climber),
-            new RotateClimbingArmVerticalCommand(climber),
-            new RetractArmCommand(climber),
-            new RotateNeutralHookVerticalCommand(climber)
-        );
+//        addCommands(
+//            new ExtendArmCommand(climber),
+//            new RotateClimbingArmVerticalCommand(climber),
+//            new RetractArmCommand(climber),
+//            new RotateNeutralHookVerticalCommand(climber)
+//        );
         //Old climber code 
         //Assumes we are below bar but with power hooks on the medium bar
-        // for(int i = 0; i < 2; i++){
-        //     addCommands(
-        //       new RetractArmCommand(climber),
-        //       new WaitCommand(.2),
-        //       new RotateNeutralHookVerticalCommand(climber),
-        //       new WaitCommand(.5),
-        //       new SlightArmExtend(climber), // helps with getting arm off of bar
-        //       new RotateClimbingArmDownCommand(climber),
-        //       new ExtendArmCommand(climber),// retract arm back to grab hook
-        //       new SlightArmRetract(climber),
-        //       new WaitCommand(.5),
-        //       new RotateClimbingArmVerticalCommand(climber), 
-        //       new WaitCommand(.5),
-        //       new RotateNeutralHookDownCommand(climber)
-        //     ); 
-        // }
-        // addCommands(
-        //     new RetractArmCommand(climber),
-        //     new WaitCommand(.2),
-        //     new RotateNeutralHookVerticalCommand(climber)
-        //     );
+         for(int i = 0; i < 1; i++){
+             addCommands(
+               new RetractArmCommand(climber),
+               new WaitCommand(.2),
+               new RotateNeutralHookVerticalCommand(climber),
+               new WaitCommand(.5),
+               new SlightArmExtend(climber), // helps with getting arm off of bar
+               new RotateClimbingArmDownCommand(climber),
+               new ExtendArmCommand(climber),// retract arm back to grab hook
+               new SlightArmRetract(climber),
+               new WaitCommand(.5),
+               new RotateClimbingArmVerticalCommand(climber),
+               new WaitCommand(.5),
+               new RotateNeutralHookDownCommand(climber)
+             );
+         }
+         addCommands(
+             new RetractArmCommand(climber),
+             new WaitCommand(.2),
+             new RotateNeutralHookVerticalCommand(climber)
+         );
     }
 }
 
