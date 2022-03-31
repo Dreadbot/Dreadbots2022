@@ -44,7 +44,7 @@ public class VisionInterface {
         return SmartDashboard.getNumber("IsTargetFoundInFrame", 0.0d) == 1.0d;
     }
 
-    private VisionInterface() {
-        throw new IllegalStateException("VisionInterface cannot be instantiated!");
+    private VisionInterface() throws IllegalStateException {
+        throw new IllegalStateException("VisionInterface is a utility class. It should not be instantiated.");
     }
 }

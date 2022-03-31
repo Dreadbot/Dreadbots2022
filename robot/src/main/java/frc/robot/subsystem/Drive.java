@@ -24,6 +24,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.util.math.DreadbotMath;
 
 /**
@@ -103,7 +104,7 @@ public class Drive extends DreadbotSubsystem {
         this.leftBackMotor = leftBackMotor;
         this.rightBackMotor = rightBackMotor;
 
-        this.gyroscope = new AHRS(SerialPort.Port.kUSB);
+        this.gyroscope = new AHRS(Constants.GYROSCOPE_PORT);
 
         this.targetChassisSpeeds = new ChassisSpeeds();
 
