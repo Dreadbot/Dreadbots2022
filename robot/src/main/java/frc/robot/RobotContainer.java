@@ -187,10 +187,6 @@ public class RobotContainer {
         CommandScheduler.getInstance().schedule(false, new RetractArmCommand(climber));
     }
 
-    public void preservePneumaticState() {
-        climber.preservePneumaticState();
-    }
-
     /*
      * Grab Alliance Color from the smart dashboard
      * This will be used to determine if a ball is the right color or not
