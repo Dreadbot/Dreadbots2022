@@ -212,8 +212,10 @@ def main():
             bg = (dng + (d*math.sin(a))) - br
             
             if -ground_threshold < bg < ground_threshold:
-                table.putNumber("RelativeDistanceToBallX", t[0]) # t[0] = x
-                table.putNumber("RelativeDistanceToBallY", t[1]) # t[1] = y
+                # table.putNumber("RelativeDistanceToBallX", t[0]) # t[0] = x
+                # table.putNumber("RelativeDistanceToBallY", t[1]) # t[1] = y
+                table.putNumber("RelativeAngleToBall", math.tan(t[1]/t[0]))
+                table.putNumber("RelativeDistanceToBall", math.sqrt((t[1]**2) + (t[0]**2)))
                 any_valid_balls = True
                 break
         
