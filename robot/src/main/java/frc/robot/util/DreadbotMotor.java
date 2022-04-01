@@ -36,13 +36,14 @@ public class DreadbotMotor{
         }
     }
 
-    public void setIdleMode(IdleMode mode){
-        if(isDisabled()) return;
+    public REVLibError setIdleMode(IdleMode mode){
+        if(isDisabled()) return REVLibError.kError;
         try{
-            motor.setIdleMode(mode);
+            return motor.setIdleMode(mode);
         } catch (RuntimeException ignored) {
             disable();
             printError("setIdleMode");
+            return REVLibError.kError;
         }
     }
 

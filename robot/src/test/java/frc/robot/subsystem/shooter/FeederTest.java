@@ -5,6 +5,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.hal.HAL;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.util.DreadbotMotor;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +20,7 @@ public class FeederTest {
     public static final double DELTA = 1e-2;
 
     private Feeder feeder;
-    private CANSparkMax feederMotor;
+    private DreadbotMotor feederMotor;
 
     @Before
     public void setup() {
@@ -28,7 +30,7 @@ public class FeederTest {
         // The DreadbotSubsystem class will throw a warning while the log level is here.
         Robot.LOGGER.setLevel(Level.INFO);
 
-        feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless);
+        feederMotor = new DreadbotMotor(new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless), "Feeder");
         feeder = new Feeder(feederMotor);
 
         // Set log level higher than warnings, so that tests do not log disabled warnings.

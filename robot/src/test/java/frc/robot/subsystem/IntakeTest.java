@@ -75,6 +75,7 @@ public class IntakeTest {
 
     @Test
     public void stopMotors() {
+        intake.intake();
         intake.stopMotors();
 
         if (intake.isEnabled()) {
