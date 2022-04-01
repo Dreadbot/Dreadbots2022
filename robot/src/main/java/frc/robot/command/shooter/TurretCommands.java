@@ -163,6 +163,11 @@ public class TurretCommands {
 
         @Override
         public void execute() {
+            if(Math.abs(turret.getAngle() - turret.getSetAngle()) >= 20.0d) {
+                turret.setSpeed(Constants.TURRET_SPIN_SPEED * Math.signum(turret.getSetAngle() - turret.getAngle()));
+                return;
+            }
+
             turret.setAngle(angle);
         }
 
@@ -275,7 +280,7 @@ public class TurretCommands {
         }
 
         private void calibrateUpper() {
-            turret.setSpeed(Constants.TURRET_CALIBRATION_SPEED);
+            turret.setSpeed(Constants.TURRET_SPIN_SPEED);
 
             if(!turret.getUpperLimitSwitch()) return;
             turret.stopMotors();
@@ -285,7 +290,7 @@ public class TurretCommands {
         }
 
         private void calibrateLower() {
-            turret.setSpeed(-Constants.TURRET_CALIBRATION_SPEED);
+            turret.setSpeed(-Constants.TURRET_SPIN_SPEED);
 
             if(!turret.getLowerLimitSwitch()) return;
             turret.stopMotors();

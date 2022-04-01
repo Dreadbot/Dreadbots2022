@@ -44,7 +44,7 @@ public class Turret extends DreadbotSubsystem {
         motor.setInverted(true);
 
         // PID coefficients
-        kP = 0.08;
+        kP = 0.12;
         kI = 0.0001d;//3e-5;
         kD = 0.00001;
         kIz = 10.0d;
@@ -215,6 +215,10 @@ public class Turret extends DreadbotSubsystem {
         angle += lowerMotorLimit;
 
         return angle;
+    }
+
+    public double getSetAngle() {
+        return setAngle;
     }
 
     @Override
