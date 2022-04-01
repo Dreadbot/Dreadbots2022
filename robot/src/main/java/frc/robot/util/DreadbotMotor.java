@@ -1,16 +1,20 @@
 package frc.robot.util;
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.subsystem.Drive;
 
 public class DreadbotMotor{
     private CANSparkMax motor;
     private RelativeEncoder motorEncoder;
+    private SparkMaxPIDController motorPIDController;
     private final String name;
     public boolean fullMotorInfo = false;
     private boolean isDisabled = false;
@@ -18,6 +22,7 @@ public class DreadbotMotor{
     public DreadbotMotor(CANSparkMax motor, String name){
         this.motor = motor;
         this.motorEncoder = motor.getEncoder();
+        this.motorPIDController = motor.getPIDController();
         this.name = name + " motor";
     }
 
@@ -177,6 +182,10 @@ public class DreadbotMotor{
         return motor;
     }
 
+    public SparkMaxPIDController getPIDController(){
+        return motorPIDController;
+    }
+
     public void disable(){
         isDisabled = true;
     }
@@ -187,5 +196,123 @@ public class DreadbotMotor{
 
     private void printError(String errorTrace){
         Robot.LOGGER.warning(name + "was disabled by " + errorTrace + "()");
+    }
+    
+    public REVLibError setP(double gain){
+        if(!isDisabled()) return REVLibError.kError;
+        try{
+            return motorPIDController.setP(gain);
+        } catch (RuntimeException ignored) {
+            disable();
+            printError("setP");
+            return REVLibError.kError;
+        }
+    }
+
+    public double getP(){
+        if(!isDisabled()) return -3656.0;
+        try{
+            return motorPIDController.getP();
+        } catch (RuntimeException ignored) {
+            disable();
+            printError("getP");
+            return -3656.0;
+        }
+    }
+
+    public REVLibError setI(double gain){
+        if(!isDisabled()) return REVLibError.kError;
+        try{
+            return motorPIDController.setI(gain);
+        } catch (RuntimeException ignored) {
+            disable();
+            printError("setI");
+            return REVLibError.kError;
+        }
+    }
+
+    public double getI(){
+        if(!isDisabled()) return -3656.0;
+        try{
+            return motorPIDController.getI();
+        } catch (RuntimeException ignored) {
+            disable();
+            printError("getI");
+            return -3656.0;
+        }
+    }
+
+    public REVLibError setD(double gain){
+        if(!isDisabled()) return REVLibError.kError;
+        try{
+            return motorPIDController.setD(gain);
+        } catch (RuntimeException ignored) {
+            disable();
+            printError("setD");
+            return REVLibError.kError;
+        }
+    }
+
+    public double getD(){
+        if(!isDisabled()) return -3656.0;
+        try{
+            return motorPIDController.getD();
+        } catch (RuntimeException ignored) {
+            disable();
+            printError("getD");
+            return -3656.0;
+        }
+    }
+
+    public REVLibError setIZone(double gain){
+        if(!isDisabled()) return REVLibError.kError;
+        try{
+            return motorPIDController.setIZone(gain);
+        } catch (RuntimeException ignored) {
+            disable();
+            printError("setIZone");
+            return REVLibError.kError;
+        }
+    }
+
+    public double getIZone(){
+        if(!isDisabled()) return -3656.0;
+        try{
+            return motorPIDController.getIZone();
+        } catch (RuntimeException ignored) {
+            disable();
+            printError("getIZone");
+            return -3656.0;
+        }
+    }
+
+    public REVLibError setFF(double gain){
+        if(!isDisabled()) return REVLibError.kError;
+        try{
+            return motorPIDController.setFF(gain);
+        } catch (RuntimeException ignored) {
+            disable();
+            printError("setFF");
+            return REVLibError.kError;
+        }
+    }
+
+    public double getFF(){
+        if(!isDisabled()) return -3656.0;
+        try{
+            return motorPIDController.getFF();
+        } catch (RuntimeException ignored) {
+            disable();
+            printError("getFF");
+            return -3656.0;
+        }
+    }
+
+    public void PIDTuner(){
+        setP(SmartDashboard.getNumber(name + "P value", getP()));
+        setP(SmartDashboard.getNumber(name + "I value", getI()));
+        setP(SmartDashboard.getNumber(name + "D value", getD()));
+        setP(SmartDashboard.getNumber(name + "I Zone value", getIZone()));
+        setP(SmartDashboard.getNumber(name + "FF value", getFF()));
     }
 }
