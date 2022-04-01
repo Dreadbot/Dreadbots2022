@@ -16,6 +16,9 @@ public class TurretCommands {
         private double lastRelativeAngleToHub;
         private double lastRobotAngle = 0.0d;
 
+        private boolean searching = false;
+        private double direction;
+
         public PassiveTrack(Turret turret, Drive drive) {
             this.turret = turret;
             this.drive = drive;
@@ -30,13 +33,35 @@ public class TurretCommands {
 
         @Override
         public void execute() {
+            if(VisionInterface.canTrackHub()) {
+                visionTracking();
+                return;
+            }
+
+            search();
+        }
+
+        private void search() {
+            if(!searching) {
+                searching = true;
+                direction = Math.signum(lastRelativeAngleToHub);
+            }
+
+            turret.setSpeed(direction * 0.2);
+
+            if(direction < 0 && turret.getLowerLimitSwitch()) {
+                direction = 1;
+            } else if(direction > 0 && turret.getUpperLimitSwitch()) {
+                direction = -1;
+            }
+        }
+
+        private void visionTracking() {
+            searching = false;
             double relativeAngleToHub = 0.0d;
 
             // Vision Corrections
             relativeAngleToHub += VisionInterface.canTrackHub() ? VisionInterface.getRelativeAngleToHub() : 0.0d;
-
-            // Gyro corrections
-//            relativeAngleToHub -= lastRobotAngle - drive.getYaw();
 
             if(relativeAngleToHub != lastRelativeAngleToHub) turretControlAngle(relativeAngleToHub);
 
