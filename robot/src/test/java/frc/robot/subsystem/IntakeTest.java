@@ -3,9 +3,10 @@ package frc.robot.subsystem;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.hal.HAL;
-import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.util.DreadbotMotor;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +20,8 @@ public class IntakeTest {
     public static final double DELTA = 1e-2;
 
     private Intake intake;
-    private CANSparkMax intakeMotor;
+    private DreadbotMotor intakeMotor;
+    
 
     @Before
     public void setup() {
@@ -29,7 +31,7 @@ public class IntakeTest {
         // The DreadbotSubsystem class will throw a warning while the log level is here.
         Robot.LOGGER.setLevel(Level.INFO);
 
-        intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
+        intakeMotor = new DreadbotMotor (new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless), "Intake");
         intake = new Intake(intakeMotor);
 
         // Set log level higher than warnings, so that tests do not log disabled warnings.
@@ -73,6 +75,7 @@ public class IntakeTest {
 
     @Test
     public void stopMotors() {
+        intake.intake();
         intake.stopMotors();
 
         if (intake.isEnabled()) {

@@ -9,12 +9,13 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystem.DreadbotSubsystem;
+import frc.robot.util.DreadbotMotor;
 import frc.robot.util.math.DreadbotMath;
 
 public class Turret extends DreadbotSubsystem {
-    private CANSparkMax motor;
-    private RelativeEncoder encoder;
-    private SparkMaxPIDController pidController;
+    private DreadbotMotor motor;
+    //private RelativeEncoder encoder;
+    //private SparkMaxPIDController pidController;
 
     private DigitalInput lowerSwitch;
     private DigitalInput upperSwitch;
@@ -32,18 +33,18 @@ public class Turret extends DreadbotSubsystem {
         disable();
     }
 
-    public Turret(CANSparkMax motor, DigitalInput lowerSwitch, DigitalInput upperSwitch) {
+    public Turret(DreadbotMotor motor, DigitalInput lowerSwitch, DigitalInput upperSwitch) {
         this.lowerSwitch = lowerSwitch;
         this.upperSwitch = upperSwitch;
         this.motor = motor;
-        this.encoder = motor.getEncoder();
-        this.pidController = motor.getPIDController();
+        // this.encoder = motor.getEncoder();
+        // this.pidController = motor.getPIDController();
 
         motor.setIdleMode(IdleMode.kBrake);
         motor.setInverted(true);
 
         // PID coefficients
-        kP = 0.08;
+        kP = 0.12;
         kI = 0.0001d;//3e-5;
         kD = 0.00001;
         kIz = 10.0d;
@@ -52,12 +53,12 @@ public class Turret extends DreadbotSubsystem {
         kMinOutput = -0.6;
 
         // set PID coefficients
-        pidController.setP(kP);
-        pidController.setI(kI);
-        pidController.setD(kD);
-        pidController.setIZone(kIz);
-        pidController.setFF(kFF);
-        pidController.setOutputRange(kMinOutput, kMaxOutput);
+        motor.setP(kP);
+        motor.setI(kI);
+        motor.setD(kD);
+        motor.setIZone(kIz);
+        motor.setFF(kFF);
+        motor.setOutputRange(kMinOutput, kMaxOutput);
 
         // display PID coefficients on SmartDashboard
         SmartDashboard.putNumber("Turret P Gain", kP);
@@ -107,13 +108,13 @@ public class Turret extends DreadbotSubsystem {
         double min = SmartDashboard.getNumber("Turret Min Output", 0);
 
         // if PID coefficients on SmartDashboard have changed, write new values to controller
-        if((p != kP)) { pidController.setP(p); kP = p; }
-        if((i != kI)) { pidController.setI(i); kI = i; }
-        if((d != kD)) { pidController.setD(d); kD = d; }
-        if((iz != kIz)) { pidController.setIZone(iz); kIz = iz; }
-        if((ff != kFF)) { pidController.setFF(ff); kFF = ff; }
+        if((p != kP)) { motor.setP(p); kP = p; }
+        if((i != kI)) { motor.setI(i); kI = i; }
+        if((d != kD)) { motor.setD(d); kD = d; }
+        if((iz != kIz)) { motor.setIZone(iz); kIz = iz; }
+        if((ff != kFF)) { motor.setFF(ff); kFF = ff; }
         if((max != kMaxOutput) || (min != kMinOutput)) {
-            pidController.setOutputRange(min, max);
+            motor.setOutputRange(min, max);
             kMinOutput = min; kMaxOutput = max;
         }
     }
@@ -125,7 +126,7 @@ public class Turret extends DreadbotSubsystem {
         angle = DreadbotMath.clampValue(angle, Constants.MIN_TURRET_ANGLE, Constants.MAX_TURRET_ANGLE);
         double rotations = convertDegreesToRotations(angle);
 
-        pidController.setReference(rotations, CANSparkMax.ControlType.kPosition);
+        motor.setReference(rotations, CANSparkMax.ControlType.kPosition);
     }
 
     public boolean isAtSetAngle() {
@@ -139,7 +140,7 @@ public class Turret extends DreadbotSubsystem {
 
         rotations = DreadbotMath.clampValue(rotations, lowerMotorLimit, upperMotorLimit);
         
-        pidController.setReference(rotations, CANSparkMax.ControlType.kPosition);
+        motor.setReference(rotations, CANSparkMax.ControlType.kPosition);
     }
 
     public void setSpeed(double speed) {
@@ -164,14 +165,14 @@ public class Turret extends DreadbotSubsystem {
     public double getAngle() {
         if(isDisabled()) return 0.0d;
 
-        double rotations = encoder.getPosition();
+        double rotations = motor.getPosition();
         return convertRotationsToDegrees(rotations);
     }
 
     public double getPosition() {
         if(isDisabled()) return 0.0d;
 
-        return encoder.getPosition();
+        return motor.getPosition();
     }
 
     public void setUpperMotorLimit(double rotations) {
@@ -214,6 +215,10 @@ public class Turret extends DreadbotSubsystem {
         angle += lowerMotorLimit;
 
         return angle;
+    }
+
+    public double getSetAngle() {
+        return setAngle;
     }
 
     @Override

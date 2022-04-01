@@ -179,13 +179,6 @@ public class Climber extends DreadbotSubsystem {
         } catch (IllegalStateException ignored) { disable(); }
     }
 
-    public void preservePneumaticState() {
-        if(isDisabled()) return;
-
-        climbingHookActuator.set(climbingHookActuator.get());
-        leftNeutralHookActuator.set(leftNeutralHookActuator.get());
-    }
-
     public boolean isPowerArmExtended() {
         return Math.abs(winchEncoder.getPosition() - retractedPosition) >= Constants.CLIMBER_RANGE;
     }

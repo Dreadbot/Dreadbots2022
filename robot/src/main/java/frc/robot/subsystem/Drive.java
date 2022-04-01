@@ -5,7 +5,6 @@
 package frc.robot.subsystem;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.controller.HolonomicDriveController;
@@ -23,6 +22,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import frc.robot.Constants;
+import frc.robot.util.DreadbotMotor;
 import frc.robot.util.math.DreadbotMath;
 
 import java.util.stream.Stream;
@@ -32,10 +32,10 @@ import java.util.stream.Stream;
  */
 public class Drive extends DreadbotSubsystem {
     // Motor Objects
-    private CANSparkMax leftFrontMotor;
-    private CANSparkMax rightFrontMotor;
-    private CANSparkMax leftBackMotor;
-    private CANSparkMax rightBackMotor;
+    private DreadbotMotor leftFrontMotor;
+    private DreadbotMotor rightFrontMotor;
+    private DreadbotMotor leftBackMotor;
+    private DreadbotMotor rightBackMotor;
 
     // NavX Gyroscope
     private AHRS gyroscope;
@@ -92,8 +92,8 @@ public class Drive extends DreadbotSubsystem {
         disable();
     }
 
-    public Drive(CANSparkMax leftFrontMotor, CANSparkMax rightFrontMotor, CANSparkMax leftBackMotor,
-            CANSparkMax rightBackMotor, AHRS gyroscope) {
+    public Drive(DreadbotMotor leftFrontMotor, DreadbotMotor rightFrontMotor, DreadbotMotor leftBackMotor,
+            DreadbotMotor rightBackMotor, AHRS gyroscope) {
         this.leftFrontMotor = leftFrontMotor;
         this.rightFrontMotor = rightFrontMotor;
         this.leftBackMotor = leftBackMotor;
@@ -109,7 +109,9 @@ public class Drive extends DreadbotSubsystem {
 
         odometry = new MecanumDriveOdometry(kinematics, gyroscope.getRotation2d());
 
-        this.mecanumDrive = new MecanumDrive(leftFrontMotor, leftBackMotor, rightFrontMotor, rightBackMotor);
+        this.mecanumDrive = new MecanumDrive(leftFrontMotor.getSparkMax(), leftBackMotor.getSparkMax(),
+            rightFrontMotor.getSparkMax(), rightBackMotor.getSparkMax());
+
         mecanumDrive.setSafetyEnabled(false);
     }
 
@@ -125,11 +127,11 @@ public class Drive extends DreadbotSubsystem {
         builder.setSmartDashboardType("DreadbotDrive");
 
         builder.setActuator(true);
-        builder.setSafeState(this::stopMotors); 
-        builder.addDoubleProperty("leftFrontVelocity", leftFrontMotor.getEncoder()::getVelocity, null);
-        builder.addDoubleProperty("rightFrontVelocity", rightFrontMotor.getEncoder()::getVelocity, null);
-        builder.addDoubleProperty("leftBackVelocity", leftBackMotor.getEncoder()::getVelocity, null);
-        builder.addDoubleProperty("rightBackVelocity", rightBackMotor.getEncoder()::getVelocity, null);
+        builder.setSafeState(this::stopMotors);
+        builder.addDoubleProperty("leftFrontVelocity", leftFrontMotor::getVelocity, null);
+        builder.addDoubleProperty("rightFrontVelocity", rightFrontMotor::getVelocity, null);
+        builder.addDoubleProperty("leftBackVelocity", leftBackMotor::getVelocity, null);
+        builder.addDoubleProperty("rightBackVelocity", rightBackMotor::getVelocity, null);
 
         builder.addDoubleProperty("chassisSpeedsX", () -> getChassisSpeeds().vxMetersPerSecond, null);
         builder.addDoubleProperty("chassisSpeedsY", () -> getChassisSpeeds().vyMetersPerSecond, null);
@@ -192,10 +194,10 @@ public class Drive extends DreadbotSubsystem {
         if(isDisabled()) return new MecanumDriveWheelSpeeds();
 
         return new MecanumDriveWheelSpeeds(
-            leftFrontMotor.getEncoder().getVelocity(),
-            rightFrontMotor.getEncoder().getVelocity(),
-            leftBackMotor.getEncoder().getVelocity(),
-            rightBackMotor.getEncoder().getVelocity()
+            leftFrontMotor.getVelocity(),
+            rightFrontMotor.getVelocity(),
+            leftBackMotor.getVelocity(),
+            rightBackMotor.getVelocity()
         );
     }
 
@@ -230,10 +232,10 @@ public class Drive extends DreadbotSubsystem {
         leftBackVelocityPID.setSetpoint(wheelSpeeds.rearLeftMetersPerSecond);
         rightBackVelocityPID.setSetpoint(wheelSpeeds.rearRightMetersPerSecond);
 
-        leftFrontMotor.setVoltage(velocityToVoltage(leftFrontVelocityPID, leftFrontMotor.getEncoder().getVelocity()));
-        rightFrontMotor.setVoltage(velocityToVoltage(rightFrontVelocityPID, rightFrontMotor.getEncoder().getVelocity()));
-        leftBackMotor.setVoltage(velocityToVoltage(leftBackVelocityPID, leftBackMotor.getEncoder().getVelocity()));
-        rightBackMotor.setVoltage(velocityToVoltage(rightBackVelocityPID, rightBackMotor.getEncoder().getVelocity()));
+        leftFrontMotor.setVoltage(velocityToVoltage(leftFrontVelocityPID, leftFrontMotor.getVelocity()));
+        rightFrontMotor.setVoltage(velocityToVoltage(rightFrontVelocityPID, rightFrontMotor.getVelocity()));
+        leftBackMotor.setVoltage(velocityToVoltage(leftBackVelocityPID, leftBackMotor.getVelocity()));
+        rightBackMotor.setVoltage(velocityToVoltage(rightBackVelocityPID, rightBackMotor.getVelocity()));
 
         mecanumDrive.feed();
     }
@@ -265,10 +267,8 @@ public class Drive extends DreadbotSubsystem {
     public void resetEncoders() {
         if(isDisabled()) return;
 
-        rightFrontMotor.getEncoder().setPosition(0.0d);
-        leftFrontMotor.getEncoder().setPosition(0.0d);
-        rightBackMotor.getEncoder().setPosition(0.0d);
-        leftBackMotor.getEncoder().setPosition(0.0d);
+        rightFrontMotor.resetEncoder();
+        leftFrontMotor.resetEncoder();
     }
 
     @Override
@@ -342,34 +342,13 @@ public class Drive extends DreadbotSubsystem {
         Stream.of(leftFrontMotor, rightFrontMotor, leftBackMotor, rightBackMotor).forEach(motor -> {
             motor.restoreFactoryDefaults();
             motor.setIdleMode(IdleMode.kBrake);
-            motor.getEncoder().setPositionConversionFactor(Constants.WHEEL_ROTATIONS_TO_METERS);
-            motor.getEncoder().setVelocityConversionFactor(Constants.WHEEL_RPM_TO_METERS_PER_SECOND);
+            motor.setPositionConversionFactor(Constants.WHEEL_ROTATIONS_TO_METERS);
+            motor.setVelocityConversionFactor(Constants.WHEEL_RPM_TO_METERS_PER_SECOND);
         });
 
         leftFrontMotor.setInverted(true);
         leftBackMotor.setInverted(true);
         rightFrontMotor.setInverted(false);
         rightBackMotor.setInverted(false);
-
-//        leftFrontMotor.restoreFactoryDefaults();
-//        rightFrontMotor.restoreFactoryDefaults();
-//        leftBackMotor.restoreFactoryDefaults();
-//        rightBackMotor.restoreFactoryDefaults();
-//
-//        leftFrontMotor.setIdleMode(IdleMode.kBrake);
-//        rightFrontMotor.setIdleMode(IdleMode.kBrake);
-//        leftBackMotor.setIdleMode(IdleMode.kBrake);
-//        rightBackMotor.setIdleMode(IdleMode.kBrake);
-
-
-//        leftFrontMotor.getEncoder().setPositionConversionFactor();
-//        rightFrontMotor.getEncoder().setPositionConversionFactor(Constants.WHEEL_ROTATIONS_TO_METERS);
-//        leftBackMotor.getEncoder().setPositionConversionFactor(Constants.WHEEL_ROTATIONS_TO_METERS);
-//        rightBackMotor.getEncoder().setPositionConversionFactor(Constants.WHEEL_ROTATIONS_TO_METERS);
-//
-//        leftFrontMotor.getEncoder().setVelocityConversionFactor(Constants.WHEEL_RPM_TO_METERS_PER_SECOND);
-//        rightFrontMotor.getEncoder().setVelocityConversionFactor(Constants.WHEEL_RPM_TO_METERS_PER_SECOND);
-//        leftBackMotor.getEncoder().setVelocityConversionFactor(Constants.WHEEL_RPM_TO_METERS_PER_SECOND);
-//        rightBackMotor.getEncoder().setVelocityConversionFactor(Constants.WHEEL_RPM_TO_METERS_PER_SECOND);
     }
 }

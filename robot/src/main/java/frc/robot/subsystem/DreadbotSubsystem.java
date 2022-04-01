@@ -1,5 +1,6 @@
 package frc.robot.subsystem;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.util.safety.MotorSafeSystem;
@@ -28,7 +29,7 @@ public abstract class DreadbotSubsystem extends SubsystemBase implements AutoClo
      */
     public void disable() {
         if(enabled) {
-            Robot.LOGGER.warning(getName() + " is disabled!");
+            DriverStation.reportWarning(getName() + " is disabled!", false);
         }
 
         this.enabled = false;

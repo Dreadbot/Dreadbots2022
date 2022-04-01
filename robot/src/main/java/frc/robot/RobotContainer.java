@@ -27,6 +27,7 @@ import frc.robot.subsystem.Intake;
 import frc.robot.subsystem.shooter.*;
 import frc.robot.util.controls.DreadbotController;
 import frc.robot.util.controls.VisionInterface;
+import frc.robot.util.DreadbotMotor;
 
 public class RobotContainer {
     private final DreadbotController primaryController;
@@ -58,29 +59,30 @@ public class RobotContainer {
         setTeamColor();
 
         if (Constants.DRIVE_ENABLED) {
-            CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-            CANSparkMax rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-            CANSparkMax leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-            CANSparkMax rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+            DreadbotMotor leftFrontDriveMotor = new DreadbotMotor(new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless), "Front Left Drive");
+            DreadbotMotor rightFrontDriveMotor = new DreadbotMotor(new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless), "Front Right Drive");
+            DreadbotMotor leftBackDriveMotor = new DreadbotMotor (new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless), "Back Left Drive");
+            DreadbotMotor rightBackDriveMotor = new DreadbotMotor (new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless), "Back Right Drive");
+
             AHRS gyroscope = new AHRS(Constants.GYROSCOPE_PORT);
 
             drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor, gyroscope);
         } else drive = new Drive();
 
         if (Constants.INTAKE_ENABLED) {
-            CANSparkMax intakeMotor = new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless);
+            DreadbotMotor intakeMotor = new DreadbotMotor (new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless), "Intake");
 
             intake = new Intake(intakeMotor);
         } else intake = new Intake();
 
         if (Constants.FEEDER_ENABLED) {
-            CANSparkMax feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless);
+            DreadbotMotor feederMotor = new DreadbotMotor(new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless), "Feeder");
 
             feeder = new Feeder(feederMotor);
         } else feeder = new Feeder();
 
         if (Constants.TURRET_ENABLED) {
-            CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
+            DreadbotMotor turretMotor = new DreadbotMotor(new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless), "Turret");
             DigitalInput lowerTurretLimitSwitch = new DigitalInput(Constants.LOWER_TURRET_LIMIT_SWITCH_ID);
             DigitalInput upperTurretLimitSwitch = new DigitalInput(Constants.UPPER_TURRET_LIMIT_SWITCH_ID);
 
@@ -185,10 +187,6 @@ public class RobotContainer {
             .andThen(new HoodCommands.TurnToAngle(hood, Constants.MAX_HOOD_ANGLE)));
 
         CommandScheduler.getInstance().schedule(false, new RetractArmCommand(climber));
-    }
-
-    public void preservePneumaticState() {
-        climber.preservePneumaticState();
     }
 
     /*
