@@ -215,7 +215,7 @@ def main():
                 table.putNumber("RelativeDistanceToBallX", t[0]) # t[0] = x
                 table.putNumber("RelativeDistanceToBallY", t[1]) # t[1] = y
                 any_valid_balls = True
-                return
+                break
         
         table.putBoolean("FoundBallInFrame", any_valid_balls)
 
