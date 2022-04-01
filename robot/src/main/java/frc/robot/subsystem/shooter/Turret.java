@@ -43,10 +43,10 @@ public class Turret extends DreadbotSubsystem {
         motor.setInverted(true);
 
         // PID coefficients
-        kP = 0.04;
-        kI = 0.0d;//3e-5;
-        kD = 0;
-        kIz = 0.0d;
+        kP = 0.08;
+        kI = 0.0001d;//3e-5;
+        kD = 0.00001;
+        kIz = 10.0d;
         kFF = 0.000015;
         kMaxOutput = 0.6;
         kMinOutput = -0.6;
@@ -60,13 +60,13 @@ public class Turret extends DreadbotSubsystem {
         pidController.setOutputRange(kMinOutput, kMaxOutput);
 
         // display PID coefficients on SmartDashboard
-        SmartDashboard.putNumber("P Gain", kP);
-        SmartDashboard.putNumber("I Gain", kI);
-        SmartDashboard.putNumber("D Gain", kD);
-        SmartDashboard.putNumber("I Zone", kIz);
-        SmartDashboard.putNumber("Feed Forward", kFF);
-        SmartDashboard.putNumber("Max Output", kMaxOutput);
-        SmartDashboard.putNumber("Min Output", kMinOutput);
+        SmartDashboard.putNumber("Turret P Gain", kP);
+        SmartDashboard.putNumber("Turret I Gain", kI);
+        SmartDashboard.putNumber("Turret D Gain", kD);
+        SmartDashboard.putNumber("Turret I Zone", kIz);
+        SmartDashboard.putNumber("Turret Feed Forward", kFF);
+        SmartDashboard.putNumber("Turret Max Output", kMaxOutput);
+        SmartDashboard.putNumber("Turret Min Output", kMinOutput);
     }
 
     @Override
@@ -93,16 +93,18 @@ public class Turret extends DreadbotSubsystem {
         SmartDashboard.putNumber("Turret Angle", getAngle());
         SmartDashboard.putNumber("Turret Position", getPosition());
 
+        SmartDashboard.putNumber("Turret Set Angle", setAngle);
+
         SmartDashboard.putNumber("Turret Range", upperMotorLimit - lowerMotorLimit);
 
         // read PID coefficients from SmartDashboard
-        double p = SmartDashboard.getNumber("P Gain", 0);
-        double i = SmartDashboard.getNumber("I Gain", 0);
-        double d = SmartDashboard.getNumber("D Gain", 0);
-        double iz = SmartDashboard.getNumber("I Zone", 0);
-        double ff = SmartDashboard.getNumber("Feed Forward", 0);
-        double max = SmartDashboard.getNumber("Max Output", 0);
-        double min = SmartDashboard.getNumber("Min Output", 0);
+        double p   = SmartDashboard.getNumber("Turret P Gain", 0);
+        double i   = SmartDashboard.getNumber("Turret I Gain", 0);
+        double d   = SmartDashboard.getNumber("Turret D Gain", 0);
+        double iz  = SmartDashboard.getNumber("Turret I Zone", 0);
+        double ff  = SmartDashboard.getNumber("Turret Feed Forward", 0);
+        double max = SmartDashboard.getNumber("Turret Max Output", 0);
+        double min = SmartDashboard.getNumber("Turret Min Output", 0);
 
         // if PID coefficients on SmartDashboard have changed, write new values to controller
         if((p != kP)) { pidController.setP(p); kP = p; }
