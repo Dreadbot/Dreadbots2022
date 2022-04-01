@@ -3,6 +3,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
@@ -80,13 +81,13 @@ public class DreadbotMotor{
     }
 
     public double getVelocity(){
-        if(isDisabled()) return -3656.0;
+        if(isDisabled()) return 0;
         try{
             return motorEncoder.getVelocity();
         } catch (RuntimeException ignored) {
             disable();
             printError("getVelocity");
-            return -3656.0;
+            return 0;
         }
     }
 
@@ -295,6 +296,61 @@ public class DreadbotMotor{
             disable();
             printError("getFF");
             return 0;
+        }
+    }
+
+    public REVLibError setOutputRange(double min, double max){
+        if(isDisabled()) return REVLibError.kError;
+        try{
+            return motorPIDController.setOutputRange(min,max);
+        } catch (RuntimeException ignored) {
+            disable();
+            printError("setOutputRange");
+            return REVLibError.kError;
+        }
+    }
+
+    public double getOutputMax(){
+        if(isDisabled()) return 0.0;
+        try{
+            return motorPIDController.getOutputMax();
+        } catch (RuntimeException ignored) {
+            disable();
+            printError("getOutputMax");
+            return 0.0;
+        }
+    }
+
+    public double getOutputMin(){
+        if(isDisabled()) return 0.0;
+        try{
+            return motorPIDController.getOutputMin();
+        } catch (RuntimeException ignored) {
+            disable();
+            printError("getOutputMin");
+            return 0.0;
+        }
+    }
+
+    public REVLibError setReference(double value, ControlType ctrl){
+        if(isDisabled()) return REVLibError.kError;
+        try{
+            return motorPIDController.setReference(value, ctrl);
+        } catch (RuntimeException ignored){
+            disable();
+            printError("setReference");
+            return REVLibError.kError;
+        }
+    }
+
+    public double getPosition(){
+        if(isDisabled()) return 0.0;
+        try{
+            return motorEncoder.getPosition();
+        } catch (RuntimeException ignored) {
+            disable();
+            printError("getOutputMin");
+            return 0.0;
         }
     }
 

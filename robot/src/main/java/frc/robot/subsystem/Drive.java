@@ -233,9 +233,9 @@ public class Drive extends DreadbotSubsystem {
         rightBackVelocityPID.setSetpoint(wheelSpeeds.rearRightMetersPerSecond);
 
         leftFrontMotor.setVoltage(velocityToVoltage(leftFrontVelocityPID, leftFrontMotor.getVelocity()));
-        rightFrontMotor.setVoltage(velocityToVoltage(rightFrontVelocityPID, rightFrontMotor.getEncoder().getVelocity()));
-        leftBackMotor.setVoltage(velocityToVoltage(leftBackVelocityPID, leftBackMotor.getEncoder().getVelocity()));
-        rightBackMotor.setVoltage(velocityToVoltage(rightBackVelocityPID, rightBackMotor.getEncoder().getVelocity()));
+        rightFrontMotor.setVoltage(velocityToVoltage(rightFrontVelocityPID, rightFrontMotor.getVelocity()));
+        leftBackMotor.setVoltage(velocityToVoltage(leftBackVelocityPID, leftBackMotor.getVelocity()));
+        rightBackMotor.setVoltage(velocityToVoltage(rightBackVelocityPID, rightBackMotor.getVelocity()));
 
         mecanumDrive.feed();
     }
@@ -342,8 +342,8 @@ public class Drive extends DreadbotSubsystem {
         Stream.of(leftFrontMotor, rightFrontMotor, leftBackMotor, rightBackMotor).forEach(motor -> {
             motor.restoreFactoryDefaults();
             motor.setIdleMode(IdleMode.kBrake);
-            motor.getEncoder().setPositionConversionFactor(Constants.WHEEL_ROTATIONS_TO_METERS);
-            motor.getEncoder().setVelocityConversionFactor(Constants.WHEEL_RPM_TO_METERS_PER_SECOND);
+            motor.setPositionConversionFactor(Constants.WHEEL_ROTATIONS_TO_METERS);
+            motor.setVelocityConversionFactor(Constants.WHEEL_RPM_TO_METERS_PER_SECOND);
         });
 
         leftFrontMotor.setInverted(true);
