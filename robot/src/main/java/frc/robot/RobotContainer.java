@@ -69,7 +69,7 @@ public class RobotContainer {
         } else drive = new Drive();
 
         if (Constants.INTAKE_ENABLED) {
-            DreadbotMotor intakeMotor = new DreadbotMotor(new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless), "Intake");
+            DreadbotMotor intakeMotor = new DreadbotMotor (new CANSparkMax(Constants.INTAKE_MOTOR_PORT, MotorType.kBrushless), "Intake");
 
             intake = new Intake(intakeMotor);
         } else intake = new Intake();
