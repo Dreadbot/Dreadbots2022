@@ -15,6 +15,9 @@ navx = [
     0,
     0,
 ] # Vector between the NavX and the top camera
+dng = 1 # Distance off the ground to the navigator
+br = 5 # 5", the radius of the ball
+ground_threshold = 10
 
 def distance_vec(a1, a2, hangle):
     #   a1
@@ -154,8 +157,15 @@ def main():
         # TODO : ensure that the ball is on the ground before we track it
         # This is really easy to do I just don't have the mental capacity rn
         
+        a = math.tan(t[2]/t[0]) # t[0] = x, t[2] = z
+        d = math.sqrt((t[0]**2) + (t[2]**2))
+
+        bg = (dng + (d*math.sin(a))) - br
+        is_on_ground = -ground_threshold < bg < ground_threshold
+        
         table.putNumber("RelativeDistanceToBallX", t[0]) # t[0] = x
         table.putNumber("RelativeDistanceToBallY", t[1]) # t[1] = y
+        table.putBoolean("BallIsOnGround", is_on_ground)
 
     for camera in cameras:
         camera.unload()
