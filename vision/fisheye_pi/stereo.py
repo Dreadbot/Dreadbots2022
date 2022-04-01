@@ -1,5 +1,6 @@
 from cscore import CameraServer
 from networktables import NetworkTables
+import numpy as np
 import threading
 import dreadbot_fisheye as df
 import ballfinding
@@ -9,9 +10,13 @@ import math
 
 cam_distance = 1 # Inches
 # TODO : calculate NavX vector
-navx = [0, 0] # Vector between the NavX and the top camera
+navx = [
+    0,
+    0,
+    0,
+] # Vector between the NavX and the top camera
 
-def distance(a1, a2):
+def distance_vec(a1, a2, hangle):
     #   a1
     #    |\
     #    | \ s2
@@ -20,13 +25,33 @@ def distance(a1, a2):
     #    | / s1
     #    |/
     #   a2
-    # https://www.desmos.com/calculator/fk8ynfncfe
+    # https://www.desmos.com/calculator/lwjxsbalmm
     a3 = 180 - a1 - a2
     s3 = cam_distance
     s2 = s3 * ( math.sin(a2) / math.sin(a3) )
     ar = a1 - 90
-    b = [s2*math.cos(ar) + navx[1], s2*math.sin(ar) + navx[0]]
-    return math.sqrt(b[0]**2, b[1]**2)
+    vfy = (s2*math.sin(ar))
+    vfx = (s2*math.cos(ar))
+    d = math.sqrt((vfy**2) + (vfx**2))
+    b = [
+        d * math.cos(a1),
+        d * math.sin(a1),
+        (d * math.cos(a1)) * math.tan(hangle),
+    ]
+
+    # ⎛n ⎞   ⎛f ⎞      
+    # ⎜ x⎟   ⎜ x⎟      
+    # ⎜  ⎟   ⎜  ⎟   ⎛x⎞
+    # ⎜n ⎟   ⎜f ⎟   ⎜ ⎟
+    # ⎜ y⎟ + ⎜ y⎟ = ⎜y⎟
+    # ⎜  ⎟   ⎜  ⎟   ⎜ ⎟
+    # ⎜n ⎟   ⎜f ⎟   ⎝z⎠
+    # ⎝ z⎠   ⎝ z⎠      
+    # Where n is the vector from the navx to the fisheye
+    # and f is the vector from the fisheye to the ball
+
+    return np.add(navx, b)
+    
 
 def main():
     data = os.path.join(os.getcwd(), "Data")
@@ -123,14 +148,14 @@ def main():
         if abs(ball1.x - ball2.x) > stereoXError:
             continue
 
-        d = distance(ball1.pitch, ball2.pitch)
         a = (ball1.yaw + ball2.yaw) / 2 # Average the yaws
+        t = distance_vec(ball1.pitch, ball2.pitch, a)
 
         # TODO : ensure that the ball is on the ground before we track it
         # This is really easy to do I just don't have the mental capacity rn
         
-        table.putNumber("RelativeDistanceToBall", d)
-        table.putNumber("RelativeAngleToBall", a)
+        table.putNumber("RelativeDistanceToBallX", t[0]) # t[0] = x
+        table.putNumber("RelativeDistanceToBallY", t[1]) # t[1] = y
 
     for camera in cameras:
         camera.unload()
