@@ -4,7 +4,7 @@ import circularity
 import hough
 
 
-def find_ball_in_frame(frame, lower, upper, erode, dilate, blur, minCirc, minArea, radiusError, xyError):
+def find_balls_in_frame(frame, lower, upper, erode, dilate, blur, minCirc, minArea, radiusError, xyError):
     mask = util.getMask(frame, lower, upper, erode, dilate, blur)
 
     circle = circularity.getBall(mask, minCirc, minArea)
@@ -36,12 +36,16 @@ def find_ball_in_frame(frame, lower, upper, erode, dilate, blur, minCirc, minAre
 
             filteredCircles.append(c)
 
-    if len(filteredCircles) > 0:
-        bestCircle = filteredCircles[0]
-        for betterC in filteredCircles:
-            if betterC[2] > bestCircle[2]:
-                bestCircle = betterC
+    return filteredCircles
 
-        return bestCircle
-    else:
-        return None
+    ## Old code for finding the largest (and closest) ball
+
+    # if len(filteredCircles) > 0:
+    #     bestCircle = filteredCircles[0]
+    #     for betterC in filteredCircles:
+    #         if betterC[2] > bestCircle[2]:
+    #             bestCircle = betterC
+    # 
+    #     return bestCircle
+    # else:
+    #     return None
