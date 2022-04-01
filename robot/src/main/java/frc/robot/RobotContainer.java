@@ -27,6 +27,7 @@ import frc.robot.subsystem.Intake;
 import frc.robot.subsystem.shooter.*;
 import frc.robot.util.controls.DreadbotController;
 import frc.robot.util.controls.VisionInterface;
+import frc.robot.util.DreadbotMotor;
 
 public class RobotContainer {
     private final DreadbotController primaryController;
@@ -58,10 +59,11 @@ public class RobotContainer {
         setTeamColor();
 
         if (Constants.DRIVE_ENABLED) {
-            CANSparkMax leftFrontDriveMotor = new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-            CANSparkMax rightFrontDriveMotor = new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-            CANSparkMax leftBackDriveMotor = new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
-            CANSparkMax rightBackDriveMotor = new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless);
+            DreadbotMotor leftFrontDriveMotor = new DreadbotMotor(new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless), "Front Left Drive");
+            DreadbotMotor rightFrontDriveMotor = new DreadbotMotor(new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, MotorType.kBrushless), "Front Right Drive");
+            DreadbotMotor leftBackDriveMotor = new DreadbotMotor (new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless), "Back Left Drive");
+            DreadbotMotor rightBackDriveMotor = new DreadbotMotor (new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, MotorType.kBrushless), "Back Right Drive");
+
             AHRS gyroscope = new AHRS(Constants.GYROSCOPE_PORT);
 
             drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor, gyroscope);

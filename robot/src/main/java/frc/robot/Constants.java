@@ -78,7 +78,7 @@ public abstract class Constants {
 
     // These are the individual wheel feedforward gains
     public static final double WHEEL_FEED_STATIC_FRICTION_GAIN = 0.09185d;
-    public static final double WHEEL_FEED_VELOCITY_GAIN             = 3.1899d;
+    public static final double WHEEL_FEED_VELOCITY_GAIN        = 3.1899d;
     public static final double WHEEL_FEED_ACCELERATION_GAIN    = 0.17172d;
     //endregion
 
@@ -94,9 +94,9 @@ public abstract class Constants {
     // =================================================================================================================
 
     // Turret Constants
-    public static final double MAX_TURRET_ANGLE = 300.0d;
-    public static final double MIN_TURRET_ANGLE = 0.0d;
-    public static final double TURRET_RANGE = 33.61d;//OLD VALUE 56.452d
+    public static final double MAX_TURRET_ANGLE         = 300.0d;
+    public static final double MIN_TURRET_ANGLE         = 0.0d;
+    public static final double TURRET_RANGE             = 33.61d;//OLD VALUE 56.452d
     public static final double TURRET_CALIBRATION_SPEED = 0.2d;
     //endregion
 
@@ -104,24 +104,24 @@ public abstract class Constants {
     // =================================================================================================================
 
     // Flywheel Constants
-    public static final double FLYWHEEL_P_GAIN = 2e-4d; // 1e-4
-    public static final double FLYWHEEL_I_GAIN = 1.75e-6d; //1.75e-6d
-    public static final double FLYWHEEL_D_GAIN = 0.0d;
-    public static final double FLYWHEEL_I_ZONE = 2.0d;
-    public static final double FLYWHEEL_FF_GAIN = 2.5e-4d; //2.5-4d
+    public static final double FLYWHEEL_P_GAIN     = 2e-4d; // 1e-4
+    public static final double FLYWHEEL_I_GAIN     = 1.75e-6d; //1.75e-6d
+    public static final double FLYWHEEL_D_GAIN     = 0.0d;
+    public static final double FLYWHEEL_I_ZONE     = 2.0d;
+    public static final double FLYWHEEL_FF_GAIN    = 2.5e-4d; //2.5-4d
     public static final double FLYWHEEL_MAX_OUTPUT = 1.0d;
     public static final double FLYWHEEL_MIN_OUTPUT = -1.0d;
-    public static final double FLYWHEEL_MAX_RPM = 5700.0d;
+    public static final double FLYWHEEL_MAX_RPM    = 5700.0d;
     //endregion
 
     //region * SECTION - HOOD CONSTANTS
     // =================================================================================================================
 
     // Hood Constants
-    public static final double MAX_HOOD_ANGLE = 75.2d;
-    public static final double UPPER_HOOD_ANGLE = 70.0d;
-    public static final double MIN_HOOD_ANGLE = 57.0d;
-    public static final double HOOD_RANGE = 77.07d;
+    public static final double MAX_HOOD_ANGLE         = 75.2d;
+    public static final double UPPER_HOOD_ANGLE       = 70.0d;
+    public static final double MIN_HOOD_ANGLE         = 57.0d;
+    public static final double HOOD_RANGE             = 77.07d;
     public static final double HOOD_CALIBRATION_SPEED = 0.2d;
     //endregion
 
@@ -129,16 +129,16 @@ public abstract class Constants {
     // =================================================================================================================
 
     // Color Sensor Constants
-    public static final Color COLOR_BLUE =  new Color(.17, .42, .41); // May need to be tweaked later
-    public static final Color COLOR_RED = new Color(.58, .33, .09);
+    public static final Color COLOR_BLUE = new Color(.17, .42, .41); // May need to be tweaked later
+    public static final Color COLOR_RED  = new Color(.58, .33, .09);
     //endregion
 
     //region * SECTION - CLIMBER CONSTANTS
     // =================================================================================================================
 
     // Climber Constants
-    public static final double MAX_ARM_DISTANCE = 50; //Later change this to phyisical distance
-    public static final double CLIMBER_RANGE = 225.0d; // 60.5 in
+    public static final double MAX_ARM_DISTANCE     = 50; //Later change this to phyisical distance
+    public static final double CLIMBER_RANGE        = 225.0d; // 60.5 in
     public static final double MEDIUM_CLIMBER_RANGE = 135.0d; // 60.5 in
     //endregion
 
@@ -146,8 +146,8 @@ public abstract class Constants {
     // =================================================================================================================
 
     // Robot Constants
-    public static final double GRAVITY = -9.81d;
-    public static final double GOAL_HEIGHT = 2.64f;
+    public static final double GRAVITY             = -9.81d;
+    public static final double GOAL_HEIGHT         = 2.64f;
     public static final double INITIAL_BALL_HEIGHT = 0.2d;
     //endregion
 
