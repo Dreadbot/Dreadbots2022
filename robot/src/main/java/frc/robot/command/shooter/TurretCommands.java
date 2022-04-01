@@ -47,7 +47,7 @@ public class TurretCommands {
                 direction = Math.signum(lastRelativeAngleToHub);
             }
 
-            turret.setSpeed(direction * 0.3d);
+            turret.setSpeed(direction * 0.2d);
 
             if(direction < 0 && turret.getLowerLimitSwitch()) {
                 direction = 1;
