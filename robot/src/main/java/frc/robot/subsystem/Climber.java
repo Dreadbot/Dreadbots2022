@@ -69,7 +69,7 @@ public class Climber extends DreadbotSubsystem {
         if(isDisabled()) return;
 
         try {
-            climbingHookActuator.set(true);
+            climbingHookActuator.set(false);
         } catch (IllegalStateException ignored) { disable(); }
     }
 
@@ -77,7 +77,7 @@ public class Climber extends DreadbotSubsystem {
         if(isDisabled()) return;
 
         try {
-            climbingHookActuator.set(false);
+            climbingHookActuator.set(true);
         } catch (IllegalStateException ignored) { disable(); }
     }
 

@@ -50,8 +50,8 @@ public abstract class Constants {
     public static final int CLIMBER_LIMIT_SWITCH_ID      = 4;
 
     // Solenoid Ports
-    public static final int NEUTRAL_HOOK_SOLENOID_ID = 0;
-    public static final int POWER_HOOK_SOLENOID_ID   = 1;
+    public static final int NEUTRAL_HOOK_SOLENOID_ID = 1;
+    public static final int POWER_HOOK_SOLENOID_ID   = 0;
 
     // Other Sensor Ports
     public static final I2C.Port        I2C_PORT       = I2C.Port.kOnboard;

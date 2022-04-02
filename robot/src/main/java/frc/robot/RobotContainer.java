@@ -147,10 +147,10 @@ public class RobotContainer {
 
         // Climber Commands
         climber.setDefaultCommand(new RunCommand(climber::idle, climber));
-        primaryController.getBButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
-        primaryController.getAButton().whenPressed(new RotateNeutralHookDownCommand(climber));
-        primaryController.getXButton().whenPressed(new RotateClimbingArmVerticalCommand(climber));
-        primaryController.getYButton().whenPressed(new RotateClimbingArmDownCommand(climber));
+        primaryController.getYButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
+        primaryController.getXButton().whenPressed(new RotateNeutralHookDownCommand(climber));
+        primaryController.getBButton().whenPressed(new RotateClimbingArmVerticalCommand(climber));
+        primaryController.getAButton().whenPressed(new RotateClimbingArmDownCommand(climber));
         primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber));
         primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
         primaryController.getStartButton().whenPressed(new MediumClimb(climber, turret));
