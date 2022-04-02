@@ -180,13 +180,23 @@ public class RobotContainer {
     }
 
     public void calibrate() {
+        CommandScheduler.getInstance().schedule(
+            false, 
+            new SequentialCommandGroup(
+                new RotateNeutralHookDownCommand(climber),
+                new RotateClimbingArmDownCommand(climber),
+                new RetractArmCommand(climber)
+            )
+        );
+        // CommandScheduler.getInstance().schedule(false, new RetractArmCommand(climber));
+        // CommandScheduler.getInstance().schedule(false, new RotateNeutralHookDownCommand(climber));
+        // CommandScheduler.getInstance().schedule(false, new RotateClimbingArmDownCommand(climber));
+
         CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, false)
             .andThen(new TurretCommands.TurnToAngle(turret, 149.0d)));
 
         CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, false)
             .andThen(new HoodCommands.TurnToAngle(hood, Constants.MAX_HOOD_ANGLE)));
-
-        CommandScheduler.getInstance().schedule(false, new RetractArmCommand(climber));
     }
 
     /*
