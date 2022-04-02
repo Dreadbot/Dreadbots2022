@@ -18,25 +18,25 @@ public class AutonomousClimberCommand extends SequentialCommandGroup{
         //Assumes we are below bar but with power hooks on the medium bar
          for(int i = 0; i < 1; i++){
              addCommands(
-               new RetractArmCommand(climber),
-               new WaitCommand(.2),
-               new RotateNeutralHookVerticalCommand(climber),
-               new WaitCommand(.5),
                new SlightArmExtend(climber), // helps with getting arm off of bar
                new RotateClimbingArmDownCommand(climber),
                new ExtendArmCommand(climber),// retract arm back to grab hook
-               new SlightArmRetract(climber),
-               new WaitCommand(.5),
                new RotateClimbingArmVerticalCommand(climber),
-               new WaitCommand(.5),
-               new RotateNeutralHookDownCommand(climber)
+               new SlightArmRetract(climber),
+               //new WaitCommand(.2),
+               new WaitCommand(.2),
+               new RotateNeutralHookDownCommand(climber),
+               new RetractArmCommand(climber),
+               new WaitCommand(.2),
+               new RotateNeutralHookVerticalCommand(climber),
+               new WaitCommand(.5)
              );
          }
-         addCommands(
-             new RetractArmCommand(climber),
-             new WaitCommand(.2),
-             new RotateNeutralHookVerticalCommand(climber)
-         );
+        //  addCommands(
+        //      new RetractArmCommand(climber),
+        //      new WaitCommand(.2),
+        //      new RotateNeutralHookVerticalCommand(climber)
+        //  );
     }
 }
 
