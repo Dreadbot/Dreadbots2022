@@ -1,16 +1,16 @@
 package frc.robot.subsystem.shooter;
 
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.REVLibError;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystem.DreadbotSubsystem;
+import frc.robot.util.DreadbotMotor;
 
 /**
  * The feeder is the mechanism that delivers the cargo from the intake mechanism to the shooter mechanism.
  */
 public class Feeder extends DreadbotSubsystem {
-    private CANSparkMax motor;
+    private DreadbotMotor motor;
 
     /**
      * Disabled Constructor
@@ -19,7 +19,7 @@ public class Feeder extends DreadbotSubsystem {
         disable();
     }
 
-    public Feeder(CANSparkMax motor) {
+    public Feeder(DreadbotMotor motor) {
         this.motor = motor;
 
         motor.restoreFactoryDefaults();
@@ -29,7 +29,7 @@ public class Feeder extends DreadbotSubsystem {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("feederPosition", motor.getEncoder().getPosition());
+        SmartDashboard.putNumber("feederPosition", motor.getPosition());
     }
 
     /**
@@ -59,7 +59,7 @@ public class Feeder extends DreadbotSubsystem {
     public double getFeederPosition() {
         if(isDisabled()) return 0.0d;
 
-        return motor.getEncoder().getPosition();
+        return motor.getPosition();
     }
 
     /**

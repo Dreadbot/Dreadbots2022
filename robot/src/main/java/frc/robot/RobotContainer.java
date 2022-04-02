@@ -75,7 +75,7 @@ public class RobotContainer {
         } else intake = new Intake();
 
         if (Constants.FEEDER_ENABLED) {
-            CANSparkMax feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless);
+            DreadbotMotor feederMotor = new DreadbotMotor(new CANSparkMax(Constants.FEEDER_MOTOR_PORT, MotorType.kBrushless), "Feeder" );
 
             feeder = new Feeder(feederMotor);
         } else feeder = new Feeder();

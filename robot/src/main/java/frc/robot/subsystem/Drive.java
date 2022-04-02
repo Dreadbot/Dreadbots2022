@@ -262,10 +262,10 @@ public class Drive extends DreadbotSubsystem {
         leftBackVelocityPID.setSetpoint(wheelSpeeds.rearLeftMetersPerSecond);
         rightBackVelocityPID.setSetpoint(wheelSpeeds.rearRightMetersPerSecond);
 
-        leftFrontMotor.setVoltage(leftFrontVelocityPID, leftFrontMotor.getVelocity());
-        rightFrontMotor.setVoltage(rightFrontVelocityPID, rightFrontMotor.getEncoder().getVelocity());
-        leftBackMotor.setVoltage(leftBackVelocityPID, leftBackMotor.getEncoder().getVelocity());
-        rightBackMotor.setVoltage(velocityToVoltage(rightBackVelocityPID, rightBackMotor.getEncoder().getVelocity()));
+        leftFrontMotor.setVoltage(velocityToVoltage(leftFrontVelocityPID, leftFrontMotor.getVelocity()));
+        rightFrontMotor.setVoltage(velocityToVoltage(rightFrontVelocityPID, rightFrontMotor.getVelocity()));
+        leftBackMotor.setVoltage(velocityToVoltage(leftBackVelocityPID, leftBackMotor.getVelocity()));
+        rightBackMotor.setVoltage(velocityToVoltage(rightBackVelocityPID, rightBackMotor.getVelocity()));
 
         mecanumDrive.feed();
     }
