@@ -62,9 +62,9 @@ def rotation_matrix(yaw, pitch, roll):
     ])
 
     x_rotation_matrix = np.array([ # Calculate the X-Axis rotation matrix - PITCH
-        [1, 0,               0              ],
-        [0, math.cos(pitch), math.sin(pitch)],
-        [0, math.sin(pitch), math.cos(pitch)]
+        [1, 0,                0              ],
+        [0, math.cos(pitch), -math.sin(pitch)],
+        [0, math.sin(pitch),  math.cos(pitch)]
     ])
 
     y_rotation_matrix = np.array([ # Calculate Y-Axis rotation matrix - ROLL
@@ -80,11 +80,17 @@ def rotation_matrix(yaw, pitch, roll):
            will not be correct
     """
 
-    # Multiply Z & X Axis rotation matrices
-    zx_multiplied          = np.matmul(z_rotation_matrix, x_rotation_matrix)
+    # # Multiply Z & X Axis rotation matrices
+    # zx_multiplied          = np.matmul(z_rotation_matrix, x_rotation_matrix)
+    
+    # # Multiply the ZX Axis rotation matrix into the Y rotation matrix
+    # output_rotation_matrix = np.matmul(zx_multiplied, y_rotation_matrix)
+
+     # Multiply Z & X Axis rotation matrices
+    xz_multiplied          = np.matmul(x_rotation_matrix, z_rotation_matrix)
     
     # Multiply the ZX Axis rotation matrix into the Y rotation matrix
-    output_rotation_matrix = np.matmul(zx_multiplied, y_rotation_matrix)
+    output_rotation_matrix = np.matmul(y_rotation_matrix, xz_multiplied)
 
     return output_rotation_matrix
 

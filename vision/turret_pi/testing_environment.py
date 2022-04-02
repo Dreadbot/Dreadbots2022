@@ -7,7 +7,6 @@ from math import sin, cos, degrees, radians
 
 
 imgpts = [(396, -67), (398, -29), (397, -1), (398, 24), (392, 59), (402, 93), (391, 142)] # USED TO CALCULATE "X"
-
 real = [152,176,200,224,248,272,296]
 
 learning_rate = 0.001
@@ -43,15 +42,6 @@ def update_angles():
         u,v = imgpts[i]
         _, xi, _ = projection_math.similar_triangles_calculation(u, v, R=projection_math.rotation_matrix(0, 0, 0))
         yi = real[i]
-
-        """
-        Note:
-
-        Hey future cole here's your notes leaving off. I think I need to step back and reapproach this because I've got like 16 different methods and approaches going at once. Why
-        am I re-rotating the unrotated vector? I should need to rotate from the projection right?? I shouldn't be able to do that without the yeah idk im tired
-
-        check derivatives, rewrite logic, this is dope just finish it
-        """
 
         # print(f"--xi[{xi}] yi[{yi}]--")
 
