@@ -138,8 +138,8 @@ public abstract class Constants {
 
     // Climber Constants
     public static final double MAX_ARM_DISTANCE     = 50; //Later change this to phyisical distance
-    public static final double CLIMBER_RANGE        = 225.0d; // 60.5 in
-    public static final double MEDIUM_CLIMBER_RANGE = 135.0d; // 60.5 in
+    public static final double CLIMBER_RANGE        = 175.0d; // 60.5 in
+    public static final double MEDIUM_CLIMBER_RANGE        = 165.0d; // 60.5 in
     //endregion
 
     //region * SECTION - ROBOT CONSTANTS

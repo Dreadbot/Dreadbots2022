@@ -23,6 +23,6 @@ public class RetractArmCommand extends CommandBase{
     public void end(boolean interupted) {
         climber.stopMotors();
 
-        climber.updateRetractedPosition();
+//        climber.updateRetractedPosition();
     }
 }

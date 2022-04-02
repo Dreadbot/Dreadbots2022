@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.util.ClimbLevel;
 import frc.robot.util.DreadbotMotor;
 
 public class Climber extends DreadbotSubsystem {
@@ -172,8 +173,8 @@ public class Climber extends DreadbotSubsystem {
         } catch (IllegalStateException ignored) { disable(); }
     }
 
-    public boolean isPowerArmExtended() {
-        return Math.abs(winchMotor.getPosition() - retractedPosition) >= Constants.CLIMBER_RANGE;
+    public boolean isPowerArmExtended(ClimbLevel climbLevel) {
+        return Math.abs(winchMotor.getPosition() - retractedPosition) >= climbLevel.getClimbTarget();
     }
 
     public double getWinchPosition() {

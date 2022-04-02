@@ -183,7 +183,7 @@ public class TurretCommands {
 
         public TurnToClimb(Turret turret) {
             this.turret = turret;
-            this.angle = 245;
+            this.angle = 155;
 
             addRequirements(turret);
         }

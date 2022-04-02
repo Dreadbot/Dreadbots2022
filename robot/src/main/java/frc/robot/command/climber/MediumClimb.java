@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.command.shooter.TurretCommands;
 import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.shooter.Turret;
+import frc.robot.util.ClimbLevel;
 
 public class MediumClimb extends SequentialCommandGroup {
     public MediumClimb(Climber climber,Turret turret){
@@ -14,7 +15,7 @@ public class MediumClimb extends SequentialCommandGroup {
 
         addCommands(
             new ScheduleCommand(new TurretCommands.TurnToClimb(turret)),
-            new ExtendArmCommand(climber),
+            new ExtendArmCommand(climber, ClimbLevel.MEDIUM),
             new RotateClimbingArmVerticalCommand(climber),
             new WaitCommand(.4),
             new RetractArmCommand(climber),

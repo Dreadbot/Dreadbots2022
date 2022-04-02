@@ -25,6 +25,7 @@ import frc.robot.subsystem.Climber;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Intake;
 import frc.robot.subsystem.shooter.*;
+import frc.robot.util.ClimbLevel;
 import frc.robot.util.controls.DreadbotController;
 import frc.robot.util.controls.VisionInterface;
 import frc.robot.util.DreadbotMotor;
@@ -151,10 +152,11 @@ public class RobotContainer {
         primaryController.getXButton().whenPressed(new RotateNeutralHookDownCommand(climber));
         primaryController.getBButton().whenPressed(new RotateClimbingArmVerticalCommand(climber));
         primaryController.getAButton().whenPressed(new RotateClimbingArmDownCommand(climber));
-        primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber));
+        primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber, ClimbLevel.MEDIUM));
         primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
 
-        primaryController.getBackButton().whenPressed(new MediumClimb(climber, turret));
+        primaryController.getLeftBumper().whenPressed(new MediumClimb(climber, turret));
+        primaryController.getBackButton().whenPressed(new HighClimb(climber, turret));
         primaryController.getStartButton().whenPressed(new TraverseClimb(climber, turret));
     }
 
@@ -187,7 +189,8 @@ public class RobotContainer {
             new SequentialCommandGroup(
                 new RotateNeutralHookDownCommand(climber),
                 new RotateClimbingArmDownCommand(climber),
-                new RetractArmCommand(climber)
+                new RetractArmCommand(climber),
+                new InstantCommand(climber::updateRetractedPosition)
             )
         );
 
