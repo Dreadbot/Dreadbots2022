@@ -1,6 +1,5 @@
 package frc.robot.subsystem.shooter;
 
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.REVLibError;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,7 +29,7 @@ public class Feeder extends DreadbotSubsystem {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("feederPosition", motor.getEncoder().getPosition());
+        SmartDashboard.putNumber("feederPosition", motor.getPosition());
     }
 
     /**
@@ -60,7 +59,7 @@ public class Feeder extends DreadbotSubsystem {
     public double getFeederPosition() {
         if(isDisabled()) return 0.0d;
 
-        return motor.getEncoder().getPosition();
+        return motor.getPosition();
     }
 
     /**
