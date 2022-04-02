@@ -96,7 +96,7 @@ R     = rotation_matrix(yaw, pitch, roll)
 inv_R = np.linalg.inv(R)
 
 
-def similar_triangles_calculation(u,v): # Uses the forward-projection model
+def similar_triangles_calculation(u,v,R=R): # Uses the forward-projection model
     y = 1 # The projection is scaled on the Y value, starting at one
 
     # Calculate the scaled Z and X values based off the similar triangles
