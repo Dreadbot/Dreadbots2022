@@ -153,7 +153,9 @@ public class RobotContainer {
         primaryController.getAButton().whenPressed(new RotateClimbingArmDownCommand(climber));
         primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber));
         primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
-        primaryController.getStartButton().whenPressed(new MediumClimb(climber, turret));
+
+        primaryController.getBackButton().whenPressed(new MediumClimb(climber, turret));
+        primaryController.getStartButton().whenPressed(new TraverseClimb(climber, turret));
     }
 
     public Command getAutonomousCommand(){
@@ -188,9 +190,6 @@ public class RobotContainer {
                 new RetractArmCommand(climber)
             )
         );
-        // CommandScheduler.getInstance().schedule(false, new RetractArmCommand(climber));
-        // CommandScheduler.getInstance().schedule(false, new RotateNeutralHookDownCommand(climber));
-        // CommandScheduler.getInstance().schedule(false, new RotateClimbingArmDownCommand(climber));
 
         CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, false)
             .andThen(new TurretCommands.TurnToAngle(turret, 149.0d)));
