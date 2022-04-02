@@ -6,7 +6,7 @@ import os
 # Define sign swaps for projection
 negate_x =  1
 negate_y =  1
-negate_z = -1
+negate_z =  -1
 
 # Current bot in use
 bot = 'competition' # 'crackle'   'practice'   'competition'
