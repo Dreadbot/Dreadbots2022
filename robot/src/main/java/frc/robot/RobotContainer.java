@@ -90,13 +90,13 @@ public class RobotContainer {
         } else turret = new Turret();
 
         if (Constants.FLYWHEEL_ENABLED) {
-            CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
+            DreadbotMotor flywheelMotor = new DreadbotMotor(new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless), "Flywheel");
 
             flywheel = new Flywheel(flywheelMotor);
         } else flywheel = new Flywheel();
 
         if (Constants.HOOD_ENABLED) {
-            CANSparkMax hoodMotor = new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless);
+            DreadbotMotor hoodMotor = new DreadbotMotor(new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless), "Hood");
             DigitalInput lowerHoodLimitSwitch = new DigitalInput(Constants.LOWER_HOOD_LIMIT_SWITCH_ID);
             DigitalInput upperHoodLimitSwitch = new DigitalInput(Constants.UPPER_HOOD_LIMIT_SWITCH_ID);
 
@@ -116,7 +116,7 @@ public class RobotContainer {
             PneumaticHub pneumaticHub = new PneumaticHub(21);
             Solenoid neutralHookActuator = pneumaticHub.makeSolenoid(Constants.NEUTRAL_HOOK_SOLENOID_ID);
             Solenoid climbingHookActuator = pneumaticHub.makeSolenoid(Constants.POWER_HOOK_SOLENOID_ID);
-            CANSparkMax winchMotor = new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless);
+            DreadbotMotor winchMotor = new DreadbotMotor(new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless), "Winch");
             DigitalInput bottomLimitSwitch = new DigitalInput(Constants.CLIMBER_LIMIT_SWITCH_ID);
 
             climber = new Climber(neutralHookActuator, climbingHookActuator, winchMotor, bottomLimitSwitch);

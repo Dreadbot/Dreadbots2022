@@ -165,30 +165,28 @@ public class DreadbotMotor{
         }
     }
 
-    public RelativeEncoder getEncoder(){
-        return motorEncoder;
+    public REVLibError setReference(double value, ControlType ctrl){
+        if(isDisabled()) return REVLibError.kError;
+        try{
+            return motorPIDController.setReference(value, ctrl);
+        } catch (RuntimeException ignored){
+            disable();
+            printError("setReference");
+            return REVLibError.kError;
+        }
     }
 
-    public CANSparkMax getSparkMax(){
-        return motor;
+    public double getPosition(){
+        if(isDisabled()) return 0.0;
+        try{
+            return motorEncoder.getPosition();
+        } catch (RuntimeException ignored) {
+            disable();
+            printError("getOutputMin");
+            return 0.0;
+        }
     }
 
-    public SparkMaxPIDController getPIDController(){
-        return motorPIDController;
-    }
-
-    public void disable(){
-        isDisabled = true;
-    }
-
-    public boolean isDisabled(){
-        return isDisabled;
-    }
-
-    private void printError(String errorTrace){
-        Robot.LOGGER.warning(name + "was disabled by " + errorTrace + "()");
-    }
-    
     public REVLibError setP(double gain){
         if(isDisabled()) return REVLibError.kError;
         try{
@@ -332,28 +330,6 @@ public class DreadbotMotor{
         }
     }
 
-    public REVLibError setReference(double value, ControlType ctrl){
-        if(isDisabled()) return REVLibError.kError;
-        try{
-            return motorPIDController.setReference(value, ctrl);
-        } catch (RuntimeException ignored){
-            disable();
-            printError("setReference");
-            return REVLibError.kError;
-        }
-    }
-
-    public double getPosition(){
-        if(isDisabled()) return 0.0;
-        try{
-            return motorEncoder.getPosition();
-        } catch (RuntimeException ignored) {
-            disable();
-            printError("getOutputMin");
-            return 0.0;
-        }
-    }
-
     public void PIDTuner(){
         setP(SmartDashboard.getNumber(name + "P value", getP()));
         setI(SmartDashboard.getNumber(name + "I value", getI()));
@@ -361,4 +337,28 @@ public class DreadbotMotor{
         setIZone(SmartDashboard.getNumber(name + "I Zone value", getIZone()));
         setFF(SmartDashboard.getNumber(name + "FF value", getFF()));
     }
+
+    public RelativeEncoder getEncoder(){
+        return motorEncoder;
+    }
+
+    public CANSparkMax getSparkMax(){
+        return motor;
+    }
+
+    public SparkMaxPIDController getPIDController(){
+        return motorPIDController;
+    }
+
+    public void disable(){
+        isDisabled = true;
+    }
+
+    public boolean isDisabled(){
+        return isDisabled;
+    }
+
+    private void printError(String errorTrace){
+        Robot.LOGGER.warning(name + "was disabled by " + errorTrace + "()");
+    }   
 }
