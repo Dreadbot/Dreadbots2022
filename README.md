@@ -8,3 +8,4 @@ The 3656 Dreadbots 2022 Season repository for FIRST Robotics Competition: RAPID 
 - FIRST Innovation in Control Award
 - 1189 Gearheads Best Pin Design 2022 Award
 - 6344 Jiggawattz Best Support Award
+- 2834 Bionic Black Hawks Helpful Award
