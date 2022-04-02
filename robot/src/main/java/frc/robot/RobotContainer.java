@@ -115,7 +115,7 @@ public class RobotContainer {
             PneumaticHub pneumaticHub = new PneumaticHub(21);
             Solenoid neutralHookActuator = pneumaticHub.makeSolenoid(Constants.NEUTRAL_HOOK_ACTUATOR_ID);
             Solenoid climbingHookActuator = pneumaticHub.makeSolenoid(Constants.CLIMBING_HOOK_ACTUATOR_ID);
-            CANSparkMax winchMotor = new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless);
+            DreadbotMotor winchMotor = new DreadbotMotor(new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless), "Winch");
             DigitalInput bottomLimitSwitch = new DigitalInput(Constants.BOTTOM_CLIMBER_LIMIT_SWITCH_ID);
             DigitalInput topLimitSwitch = new DigitalInput(Constants.TOP_CLIMBER_LIMIT_SWITCH_ID);
 

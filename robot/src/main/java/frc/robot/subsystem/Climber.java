@@ -11,15 +11,14 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.util.DreadbotMotor;
 
 public class Climber extends DreadbotSubsystem {
     private Solenoid leftNeutralHookActuator;
     private Solenoid climbingHookActuator;
     private DigitalInput bottomLimitSwitch;
     private DigitalInput topLimitSwitch;
-    private CANSparkMax winchMotor;
-    private RelativeEncoder winchEncoder;
-    private SparkMaxPIDController winchPid;
+    private DreadbotMotor winchMotor;
 
     private double retractedPosition;
 
@@ -30,29 +29,26 @@ public class Climber extends DreadbotSubsystem {
         disable();
     }
 
-    public Climber(Solenoid neutralHookActuator, Solenoid climbingHookActuator, CANSparkMax winchMotor, DigitalInput bottomLimitSwitch, DigitalInput topLimitSwitch) {
+    public Climber(Solenoid neutralHookActuator, Solenoid climbingHookActuator, DreadbotMotor winchMotor, DigitalInput bottomLimitSwitch, DigitalInput topLimitSwitch) {
         this.leftNeutralHookActuator = neutralHookActuator;
         this.climbingHookActuator = climbingHookActuator;
         this.winchMotor = winchMotor;
         this.bottomLimitSwitch = bottomLimitSwitch;
         this.topLimitSwitch = topLimitSwitch;
 
-        this.winchPid = winchMotor.getPIDController();
-        this.winchEncoder = winchMotor.getEncoder();
-
         winchMotor.restoreFactoryDefaults();
         winchMotor.setIdleMode(IdleMode.kBrake);
         winchMotor.setInverted(true);
         neutralHookActuator.set(false);
 
-        winchPid.setP(0.1);
-        winchPid.setI(0);
-        winchPid.setD(0);
-        winchPid.setIZone(0);
-        winchPid.setFF(0.000015);
-        winchPid.setOutputRange(-0.1, 0.1);
+        winchMotor.setP(0.1);
+        winchMotor.setI(0);
+        winchMotor.setD(0);
+        winchMotor.setIZone(0);
+        winchMotor.setFF(0.000015);
+        winchMotor.setOutputRange(-0.1, 0.1);
 
-        this.retractedPosition = winchEncoder.getPosition();
+        this.retractedPosition = winchMotor.getPosition();
         
         SmartDashboard.putNumber("WinchPosition", 0);
     }
@@ -62,12 +58,12 @@ public class Climber extends DreadbotSubsystem {
         if(isDisabled()) return;
         SmartDashboard.putBoolean("Lower Limit", getBottomLimitSwitch());
         SmartDashboard.putBoolean("Upper Limit", getTopLimitSwitch());
-        SmartDashboard.putNumber("WinchPosition", winchEncoder.getPosition());
+        SmartDashboard.putNumber("WinchPosition", winchMotor.getPosition());
     }
     public void zeroEncoderPosition() {
         if(isDisabled()) return;
         try {
-            winchEncoder.setPosition(0);
+            winchMotor.setPosition(0);
         } catch (IllegalStateException ignored) { disable(); }
     }
     public void rotateClimbingHookDown() {
@@ -130,7 +126,7 @@ public class Climber extends DreadbotSubsystem {
         if(isDisabled()) return;
 
         try {
-            winchPid.setReference((Constants.MAX_ARM_DISTANCE - retractedPosition) * 0.5, ControlType.kPosition);
+            winchMotor.setReference((Constants.MAX_ARM_DISTANCE - retractedPosition) * 0.5, ControlType.kPosition);
         } catch (IllegalStateException ignored) { disable(); }
     }
     
