@@ -81,7 +81,7 @@ public class RobotContainer {
         } else feeder = new Feeder();
 
         if (Constants.TURRET_ENABLED) {
-            CANSparkMax turretMotor = new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless);
+            DreadbotMotor turretMotor = new DreadbotMotor(new CANSparkMax(Constants.TURRET_MOTOR_PORT, MotorType.kBrushless), "Turret");
             DigitalInput lowerTurretLimitSwitch = new DigitalInput(Constants.LOWER_TURRET_LIMIT_SWITCH_ID);
             DigitalInput upperTurretLimitSwitch = new DigitalInput(Constants.UPPER_TURRET_LIMIT_SWITCH_ID);
 
