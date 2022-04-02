@@ -9,17 +9,13 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import frc.robot.Constants;
 import frc.robot.subsystem.DreadbotSubsystem;
+import frc.robot.util.DreadbotMotor;
 
 /**
  * The flywheel is the mechanism that shoots the ball out of the robot.
  */
 public class Flywheel extends DreadbotSubsystem {
-    private CANSparkMax motor;
-
-    @SuppressWarnings("FieldMayBeFinal")
-    private RelativeEncoder encoder;
-    @SuppressWarnings("FieldMayBeFinal")
-    private SparkMaxPIDController pidController;
+    private DreadbotMotor motor;
 
     private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.36518, 0.24261, 0.099094); // * 2.5
     private PIDController controller = new PIDController(0.16677, 0.4, 0);
@@ -33,21 +29,18 @@ public class Flywheel extends DreadbotSubsystem {
         disable();
     }
 
-    public Flywheel(CANSparkMax motor) {
+    public Flywheel(DreadbotMotor motor) {
         this.motor = motor;
-
-        this.encoder = motor.getEncoder();
-        this.pidController = motor.getPIDController();
 
         motor.restoreFactoryDefaults();
         motor.setIdleMode(CANSparkMax.IdleMode.kCoast);
 
-        pidController.setP(Constants.FLYWHEEL_P_GAIN);
-        pidController.setI(Constants.FLYWHEEL_I_GAIN);
-        pidController.setD(Constants.FLYWHEEL_D_GAIN);
-        pidController.setIZone(Constants.FLYWHEEL_I_ZONE);
-        pidController.setFF(Constants.FLYWHEEL_FF_GAIN);
-        pidController.setOutputRange(Constants.FLYWHEEL_MIN_OUTPUT, Constants.FLYWHEEL_MAX_OUTPUT);
+        motor.setP(Constants.FLYWHEEL_P_GAIN);
+        motor.setI(Constants.FLYWHEEL_I_GAIN);
+        motor.setD(Constants.FLYWHEEL_D_GAIN);
+        motor.setIZone(Constants.FLYWHEEL_I_ZONE);
+        motor.setFF(Constants.FLYWHEEL_FF_GAIN);
+        motor.setOutputRange(Constants.FLYWHEEL_MIN_OUTPUT, Constants.FLYWHEEL_MAX_OUTPUT);
 
         controller.enableContinuousInput(0.0, 1.0);
     }
@@ -125,7 +118,7 @@ public class Flywheel extends DreadbotSubsystem {
 
         double rpm = 0.0d;
         try {
-            rpm = encoder.getVelocity();
+            rpm = motor.getVelocity();
         } catch(IllegalStateException ignored) { disable(); }
 
         return rpm;

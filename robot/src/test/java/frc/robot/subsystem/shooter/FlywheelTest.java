@@ -5,6 +5,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.hal.HAL;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.util.DreadbotMotor;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +19,7 @@ public class FlywheelTest {
     public static final double DELTA = 1e-2;
 
     private Flywheel flywheel;
-    private CANSparkMax flywheelMotor;
+    private DreadbotMotor flywheelMotor;
 
     @Before
     public void setup() {
@@ -27,7 +29,7 @@ public class FlywheelTest {
         // The DreadbotSubsystem class will throw a warning while the log level is here.
         Robot.LOGGER.setLevel(Level.INFO);
 
-        flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
+        flywheelMotor = new DreadbotMotor(new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless), "Flywheel");
 
         flywheel = new Flywheel(flywheelMotor);
 

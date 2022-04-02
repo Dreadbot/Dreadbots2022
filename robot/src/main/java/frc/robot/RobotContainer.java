@@ -89,7 +89,7 @@ public class RobotContainer {
         } else turret = new Turret();
 
         if (Constants.FLYWHEEL_ENABLED) {
-            CANSparkMax flywheelMotor = new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless);
+            DreadbotMotor flywheelMotor = new DreadbotMotor(new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, MotorType.kBrushless), "Flywheel");
 
             flywheel = new Flywheel(flywheelMotor);
         } else flywheel = new Flywheel();
