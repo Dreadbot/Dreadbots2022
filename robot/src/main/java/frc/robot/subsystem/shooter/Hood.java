@@ -10,13 +10,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.subsystem.DreadbotSubsystem;
 import frc.robot.util.DreadbotMath;
+import frc.robot.util.DreadbotMotor;
 
 public class Hood extends DreadbotSubsystem {
     private DigitalInput lowerSwitch;
     private DigitalInput upperSwitch;
-    private CANSparkMax motor;
-    private RelativeEncoder encoder;
-    private SparkMaxPIDController pidController;
+    private DreadbotMotor motor;
 
     private double lowerMotorLimit;
     private double upperMotorLimit;
@@ -30,23 +29,20 @@ public class Hood extends DreadbotSubsystem {
         disable();
     }
 
-    public Hood (CANSparkMax motor, DigitalInput lowerSwitch, DigitalInput upperSwitch) {
+    public Hood (DreadbotMotor motor, DigitalInput lowerSwitch, DigitalInput upperSwitch) {
         this.motor = motor;
         this.lowerSwitch = lowerSwitch;
         this.upperSwitch = upperSwitch;
 
         motor.setIdleMode(IdleMode.kCoast);
-        encoder = motor.getEncoder();
-        pidController = motor.getPIDController();
-
         motor.setInverted(false);
          
-        pidController.setP(0.1); // Change numbers maybe
-        pidController.setI(0); 
-        pidController.setD(0);
-        pidController.setIZone(0);
-        pidController.setFF(0.000015);
-        pidController.setOutputRange(-.5, .5);
+        motor.setP(0.1); // Change numbers maybe
+        motor.setI(0); 
+        motor.setD(0);
+        motor.setIZone(0);
+        motor.setFF(0.000015);
+        motor.setOutputRange(-.5, .5);
 
         SmartDashboard.putNumber("Requested Hood Angle", 0.0d);
     }
@@ -80,7 +76,7 @@ public class Hood extends DreadbotSubsystem {
         double rotations = convertDegreesToRotations(angle);
 
         try {
-            pidController.setReference(rotations, CANSparkMax.ControlType.kPosition);
+            motor.setReference(rotations, CANSparkMax.ControlType.kPosition);
         } catch (IllegalStateException ignored) { disable(); }
     }
 
@@ -96,7 +92,7 @@ public class Hood extends DreadbotSubsystem {
         rotations = DreadbotMath.clampValue(rotations, lowerMotorLimit, upperMotorLimit);
 
         try {
-            pidController.setReference(rotations, CANSparkMax.ControlType.kPosition);
+            motor.setReference(rotations, CANSparkMax.ControlType.kPosition);
         } catch (IllegalStateException ignored) { disable(); }
     }
 
@@ -137,7 +133,7 @@ public class Hood extends DreadbotSubsystem {
 
         double rotations = 0.0d;
         try {
-            rotations = encoder.getPosition();
+            rotations = motor.getPosition();
         } catch (IllegalStateException ignored) { disable(); }
 
         return convertRotationsToDegrees(rotations);
@@ -148,7 +144,7 @@ public class Hood extends DreadbotSubsystem {
 
         double rotations = 0.0d;
         try {
-            rotations = encoder.getPosition();
+            rotations = motor.getPosition();
         } catch (IllegalStateException ignored) { disable(); }
 
         return rotations;
