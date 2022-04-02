@@ -14,8 +14,6 @@ import frc.robot.util.math.DreadbotMath;
 
 public class Turret extends DreadbotSubsystem {
     private DreadbotMotor motor;
-    //private RelativeEncoder encoder;
-    //private SparkMaxPIDController pidController;
 
     private DigitalInput lowerSwitch;
     private DigitalInput upperSwitch;
@@ -37,8 +35,6 @@ public class Turret extends DreadbotSubsystem {
         this.lowerSwitch = lowerSwitch;
         this.upperSwitch = upperSwitch;
         this.motor = motor;
-        // this.encoder = motor.getEncoder();
-        // this.pidController = motor.getPIDController();
 
         motor.setIdleMode(IdleMode.kBrake);
         motor.setInverted(true);

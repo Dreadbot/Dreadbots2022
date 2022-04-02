@@ -11,11 +11,13 @@ import org.junit.Test;
 
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.DigitalInput;
+import frc.robot.Constants;
+import frc.robot.util.DreadbotMotor;
 
 public class HoodTest {
     public static final double DELTA = 1e-2;
 
-    private CANSparkMax hoodMotor = new CANSparkMax(0, MotorType.kBrushless);
+    private DreadbotMotor hoodMotor = new DreadbotMotor(new CANSparkMax(Constants.HOOD_MOTOR_PORT, MotorType.kBrushless), "Hood");
     private DigitalInput upperLimitSwitch = new DigitalInput(0);
     private DigitalInput lowerLimitSwitch = new DigitalInput(1);
     private Hood hood = new Hood(hoodMotor, lowerLimitSwitch, upperLimitSwitch);
