@@ -50,8 +50,8 @@ public abstract class Constants {
     public static final int CLIMBER_LIMIT_SWITCH_ID      = 4;
 
     // Solenoid Ports
-    public static final int NEUTRAL_HOOK_SOLENOID_ID = 0;
-    public static final int POWER_HOOK_SOLENOID_ID   = 1;
+    public static final int NEUTRAL_HOOK_SOLENOID_ID = 1;
+    public static final int POWER_HOOK_SOLENOID_ID   = 0;
 
     // Other Sensor Ports
     public static final I2C.Port        I2C_PORT       = I2C.Port.kOnboard;
@@ -96,7 +96,7 @@ public abstract class Constants {
     // Turret Constants
     public static final double MAX_TURRET_ANGLE  = 300.0d;
     public static final double MIN_TURRET_ANGLE  = 0.0d;
-    public static final double TURRET_RANGE      = 33.61d;//OLD VALUE 56.452d
+    public static final double TURRET_RANGE      = 76.24d;//OLD VALUE 56.452d
     public static final double TURRET_SPIN_SPEED = 0.25d; //0.2d
     //endregion
 

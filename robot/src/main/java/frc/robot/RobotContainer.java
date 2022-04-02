@@ -147,13 +147,13 @@ public class RobotContainer {
 
         // Climber Commands
         climber.setDefaultCommand(new RunCommand(climber::idle, climber));
-        primaryController.getBButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
-        primaryController.getAButton().whenPressed(new RotateNeutralHookDownCommand(climber));
-        primaryController.getXButton().whenPressed(new RotateClimbingArmVerticalCommand(climber));
-        primaryController.getYButton().whenPressed(new RotateClimbingArmDownCommand(climber));
+        primaryController.getYButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
+        primaryController.getXButton().whenPressed(new RotateNeutralHookDownCommand(climber));
+        primaryController.getBButton().whenPressed(new RotateClimbingArmVerticalCommand(climber));
+        primaryController.getAButton().whenPressed(new RotateClimbingArmDownCommand(climber));
         primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber));
         primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
-        primaryController.getStartButton().whileHeld(new AutonomousClimberCommand(climber));
+        primaryController.getStartButton().whenPressed(new MediumClimb(climber, turret));
     }
 
     public Command getAutonomousCommand(){
@@ -180,13 +180,23 @@ public class RobotContainer {
     }
 
     public void calibrate() {
+        CommandScheduler.getInstance().schedule(
+            false, 
+            new SequentialCommandGroup(
+                new RotateNeutralHookDownCommand(climber),
+                new RotateClimbingArmDownCommand(climber),
+                new RetractArmCommand(climber)
+            )
+        );
+        // CommandScheduler.getInstance().schedule(false, new RetractArmCommand(climber));
+        // CommandScheduler.getInstance().schedule(false, new RotateNeutralHookDownCommand(climber));
+        // CommandScheduler.getInstance().schedule(false, new RotateClimbingArmDownCommand(climber));
+
         CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, false)
             .andThen(new TurretCommands.TurnToAngle(turret, 149.0d)));
 
         CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, false)
             .andThen(new HoodCommands.TurnToAngle(hood, Constants.MAX_HOOD_ANGLE)));
-
-        CommandScheduler.getInstance().schedule(false, new RetractArmCommand(climber));
     }
 
     /*

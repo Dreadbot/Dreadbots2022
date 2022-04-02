@@ -177,6 +177,28 @@ public class TurretCommands {
         }
     }
 
+    public static class TurnToClimb extends CommandBase {
+        private final Turret turret;
+        private final double angle;
+
+        public TurnToClimb(Turret turret) {
+            this.turret = turret;
+            this.angle = 245;
+
+            addRequirements(turret);
+        }
+
+        @Override
+        public void execute() {
+            if(Math.abs(turret.getAngle() - turret.getSetAngle()) >= 20.0d) {
+                turret.setSpeed(Constants.TURRET_SPIN_SPEED * Math.signum(turret.getSetAngle() - turret.getAngle()));
+                return;
+            }
+
+            turret.setAngle(angle);
+        }
+    }
+
     public static class EjectTrack extends CommandBase {
         private final Turret turret;
 
