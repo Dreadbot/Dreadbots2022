@@ -19,6 +19,8 @@ public class FlywheelCommands {
             this.flywheel = flywheel;
             this.cargoKinematics = flywheel.getCargoKinematics();
 
+            SmartDashboard.putNumber("TUNING FLYWHEEL SPEED", 3.0d);
+
             addRequirements(flywheel);
         }
 
@@ -29,11 +31,10 @@ public class FlywheelCommands {
             if(!VisionInterface.canTrackHub()) return;
 
 //            double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
-            double distanceToHub = VisionInterface.getRelativeDistanceToHub();
+//            double distanceToHub = VisionInterface.getRelativeDistanceToHub();
 //            double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
 
-            commandedVelocity = 14.0d;
-            SmartDashboard.putNumber("OUT VIP TEMP", commandedVelocity);
+            commandedVelocity = SmartDashboard.getNumber("TUNING FLYWHEEL SPEED", 3.0d);
             flywheel.setVelocity(commandedVelocity);
         }
 

@@ -66,6 +66,8 @@ public class HoodCommands {
             this.cargoKinematics = new CargoKinematics(s -> 0.306*s + 2, 0.5715, 2.6416);
 //            this.cargoKinematics = new CargoKinematics(s -> 2.7, 0.5715, 2.6416);
 
+            SmartDashboard.putNumber("TUNING HOOD ANGLE", 70.0d);
+
             addRequirements(hood);
         }
 
@@ -73,12 +75,15 @@ public class HoodCommands {
         public void execute() {
             if(!VisionInterface.canTrackHub()) return;
 
-            double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
-            double hoodAngle = cargoKinematics.getBallDirectionAngle(distanceToHub);
-            lastAngle = hoodAngle;
+//            double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
+//            double hoodAngle = cargoKinematics.getBallDirectionAngle(distanceToHub);
+//            lastAngle = hoodAngle;
+            double hoodAngle = SmartDashboard.getNumber("TUNING HOOD ANGLE", 70.0d);
 
-            if(distanceToHub != lastDistanceToHub) hoodControlAngle(hoodAngle);
-            lastDistanceToHub = distanceToHub;
+            hood.setAngle(hoodAngle);
+
+//            if(distanceToHub != lastDistanceToHub) hoodControlAngle(hoodAngle);
+//            lastDistanceToHub = distanceToHub;
         }
 
         @Override
