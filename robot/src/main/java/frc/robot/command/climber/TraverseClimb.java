@@ -10,9 +10,7 @@ public class TraverseClimb  extends SequentialCommandGroup {
     public TraverseClimb(Climber climber, Turret turret) {
         addCommands(
             new SlightArmExtend(climber),
-            new WaitCommand(1),
             new RotateClimbingArmDownCommand(climber),
-            new WaitCommand(1),
             new ExtendArmCommand(climber, ClimbLevel.HIGH),
             new WaitCommand(1),
             new RotateClimbingArmVerticalCommand(climber),
