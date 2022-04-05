@@ -40,7 +40,9 @@ public class Flywheel extends DreadbotSubsystem {
     public Flywheel(DreadbotMotor motor) {
         this.motor = motor;
 
-        this.cargoKinematics = new CargoKinematics(s -> 0.8 * s + 1.21, 0.5715, 2.6416);
+//        this.cargoKinematics = new CargoKinematics(s -> 0.8 * s + 1.21, 0.5715, 2.6416);
+//        this.cargoKinematics = new CargoKinematics(s -> 0.306 * s + 2, 0.5715, 2.6416);
+        this.cargoKinematics = new CargoKinematics(s -> 2.7, 0.5715, 2.6416);
 
         motor.restoreFactoryDefaults();
         motor.setIdleMode(CANSparkMax.IdleMode.kCoast);

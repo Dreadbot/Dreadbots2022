@@ -23,9 +23,9 @@ public class ShooterCommands {
                 new ParallelCommandGroup(
                     new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
                     new TurretCommands.ActiveTrack(shooter.getTurret()),
-                    new HoodCommands.ActiveTrack(shooter.getHood())
+                    new HoodCommands.ActiveTrack(shooter.getHood()),
+                    new FlywheelCommands.PrepareVisionShot(shooter.getFlywheel())
                 ),
-                new FlywheelCommands.PrepareVisionShot(shooter.getFlywheel()),
                 new FeedBallCommand(shooter),
                 new WaitCommand(0.5)
             );
@@ -199,7 +199,7 @@ public class ShooterCommands {
                 ),
                 new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kBrake)),
                 new ConditionalCommand(
-                    new PresetShoot(shooter, 155.0, 67.710d, 7.539d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
+                    new PresetShoot(shooter, 155.0, 67.710d, 2 * 7.539d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
                     new PresetShoot(shooter, 65.0, 76.087d, 3.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
                     shooter.getColorSensor()::isCorrectColor
                 )

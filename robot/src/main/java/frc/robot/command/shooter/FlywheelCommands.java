@@ -24,51 +24,24 @@ public class FlywheelCommands {
 
         @Override
         public void execute() {
-            double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
-            double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
+            // In case the vision isn't seeing the ball, don't continue to feed flywheel
+            // This is SUPER IMPORTANT.
+            if(!VisionInterface.canTrackHub()) return;
 
-            commandedVelocity = velocity;
+//            double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
+            double distanceToHub = VisionInterface.getRelativeDistanceToHub();
+//            double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
+
+            commandedVelocity = 14.0d;
             SmartDashboard.putNumber("OUT VIP TEMP", commandedVelocity);
             flywheel.setVelocity(commandedVelocity);
         }
 
         @Override
         public boolean isFinished() {
-            return flywheel.getTangentialVelocity() >= commandedVelocity;
+            return flywheel.isAtSetVelocity();
 
 //            return Math.abs(flywheel.getTangentialVelocity() - commandedVelocity) <= 0.15d;
-        }
-    }
-
-    public static class EjectShootPreset extends CommandBase {
-        private Shooter shooter;
-        private double speedOnScore;
-        private double speedOnEject;
-
-        public EjectShootPreset(Shooter shooter, double speedOnScore, double speedOnEject) {
-            this.shooter = shooter;
-
-            this.speedOnScore = speedOnScore;
-            this.speedOnEject = speedOnEject;
-
-            addRequirements(shooter.getFlywheel());
-        }
-
-        @Override
-        public void execute() {
-            shooter.getFlywheel().setVelocity(getVelocity());
-        }
-
-        @Override
-        public boolean isFinished() {
-            return shooter.getFlywheel().isAtSetVelocity();
-        }
-
-        private double getVelocity() {
-            if(!shooter.getColorSensor().isCorrectColor() &&
-                shooter.getColorSensor().getBallColor() != null) return speedOnEject;
-
-            return speedOnScore;
         }
     }
 
