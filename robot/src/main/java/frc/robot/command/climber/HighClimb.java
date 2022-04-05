@@ -13,7 +13,6 @@ public class HighClimb extends SequentialCommandGroup {
             new SlightArmExtend(climber),
             new RotateClimbingArmDownCommand(climber),
             new ExtendArmCommand(climber, ClimbLevel.HIGH),
-            new WaitCommand(1),
             new RotateClimbingArmVerticalCommand(climber),
             new WaitCommand(1),
             new SlightArmRetract(climber),
