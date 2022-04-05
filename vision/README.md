@@ -29,7 +29,7 @@ From there all of that work was put under one wrapper, ```dreadbot_fisheye.py```
 
 
 ### Cargo-Tracking
-
+We use two different methods for finding balls in a camera: Hough Circle detection and circularity detection. Before either of these two methods can be used, however, the image is filtered for the specific colour range our alliance's balls fit into, and then eroded and dilated to remove excess noise from the environment. The resulting image should contain all the desired balls, as well as alliance members' bumpers. These bumpers are filtered out using the two methods mentioned above. Through hough circle detection, the image is transformed in a way that will reveal the centers of circles. -- Something about circularity --. This process is run for two cameras, placed a known distance apart from each other, allowing us to use stereographic vision. Given the angle horizontally and vertically from each camera (which we get from the above methods), we can use the law of sines to calculate the distance to each ball on the x, y, and z axes. We can then transform this vector by adding the vector from the NavX to the camera to it, giving us the vector to the ball from the NavX.
 
 ### PI Infrastructure
 
