@@ -31,10 +31,13 @@ public class FlywheelCommands {
             if(!VisionInterface.canTrackHub()) return;
 
 //            double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
-//            double distanceToHub = VisionInterface.getRelativeDistanceToHub();
+            double d = VisionInterface.getRelativeDistanceToHub();
 //            double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
 
-            commandedVelocity = SmartDashboard.getNumber("TUNING FLYWHEEL SPEED", 3.0d);
+            // Quadratic Regression
+            double commandedVelocity = 0.000514d * d * d + -0.108872d * d + 17.9667d;
+
+//            commandedVelocity = SmartDashboard.getNumber("TUNING FLYWHEEL SPEED", 3.0d);
             flywheel.setVelocity(commandedVelocity);
         }
 

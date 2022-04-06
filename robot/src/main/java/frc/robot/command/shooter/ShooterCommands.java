@@ -19,7 +19,6 @@ public class ShooterCommands {
             this.shooter = shooter;
 
             addCommands(
-                new InstantCommand(() -> System.out.println("TARGET SHOOT")),
                 new ParallelCommandGroup(
                     new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
                     new TurretCommands.ActiveTrack(shooter.getTurret()),
