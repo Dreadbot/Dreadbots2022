@@ -160,8 +160,38 @@ public class RobotContainer {
         primaryController.getStartButton().whenPressed(new TraverseClimb(climber, turret));
     }
 
-    public Command getAutonomousCommand(){
-        PathPlannerTrajectory examplePath = PathPlanner.loadPath("scarce_first_leg", 5.0, 3.00);
+    public Command getAutonomousCommand() {
+        PathPlannerTrajectory rich_first_leg = PathPlanner.loadPath("rich_first_leg", 5.0, 3.0);
+        PathPlannerTrajectory three_ball_second_leg = PathPlanner.loadPath("3ball_second_leg", 5.0, 3.0);
+
+        return new SequentialCommandGroup(
+            new ParallelCommandGroup(
+                new TurretCommands.Calibrate(turret, false)
+                    .andThen(new TurretCommands.TurnToAngle(turret, 155.0d)),
+                new HoodCommands.Calibrate(hood, false)
+                    .andThen(new HoodCommands.TurnToAngle(hood, Constants.MAX_HOOD_ANGLE)),
+                new TrajectoryAuton(
+                    drive,
+                    rich_first_leg,
+                    8.0
+                ),
+                new InstantCommand(intake::intake, intake)
+            ),
+            new TrajectoryAuton(
+                drive,
+                three_ball_second_leg,
+                8.0,
+                true
+            ),
+//            new WaitCommand(1.0),
+            new ShooterCommands.HighShoot(shooter, intake),
+            new ShooterCommands.HighShoot(shooter, intake),
+            new InstantCommand(intake::idle, intake)
+        );
+    }
+
+    public Command get2BallAuton() {
+        PathPlannerTrajectory examplePath = PathPlanner.loadPath("scarce_first_leg", 5.0, 3.0);
 
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
