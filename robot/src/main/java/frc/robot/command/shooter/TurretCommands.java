@@ -132,6 +132,7 @@ public class TurretCommands {
             if(!VisionInterface.canTrackHub()) return;
 
             double relativeAngleToHub = VisionInterface.getRelativeAngleToHub();
+            relativeAngleToHub += 5;
 
             if(relativeAngleToHub != lastRelativeAngleToHub) turretControlAngle(relativeAngleToHub);
             lastRelativeAngleToHub = relativeAngleToHub;
