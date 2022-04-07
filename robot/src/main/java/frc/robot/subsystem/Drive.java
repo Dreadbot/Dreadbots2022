@@ -21,6 +21,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.util.DreadbotMotor;
 import frc.robot.util.math.DreadbotMath;
@@ -120,6 +121,8 @@ public class Drive extends DreadbotSubsystem {
         if(isDisabled()) return;
 
         odometry.update(gyroscope.getRotation2d(), getWheelSpeeds());
+
+        SmartDashboard.putNumber("GYRO PITCH", gyroscope.getPitch());
     }
 
     @Override
@@ -350,5 +353,9 @@ public class Drive extends DreadbotSubsystem {
         leftBackMotor.setInverted(true);
         rightFrontMotor.setInverted(false);
         rightBackMotor.setInverted(false);
+    }
+
+    public AHRS getGyroscope() {
+        return gyroscope;
     }
 }

@@ -19,7 +19,7 @@ public abstract class Constants {
     public static final boolean FEEDER_ENABLED       = true;
     public static final boolean FLYWHEEL_ENABLED     = true;
     public static final boolean HOOD_ENABLED         = true;
-    public static final boolean TURRET_ENABLED       = true;
+    public static final boolean TURRET_ENABLED       = false;
     public static final boolean COLOR_SENSOR_ENABLED = true;
     //endregion
 
@@ -140,6 +140,7 @@ public abstract class Constants {
     public static final double MAX_ARM_DISTANCE     = 50; //Later change this to phyisical distance
     public static final double CLIMBER_RANGE        = 185.0d; // 60.5 in
     public static final double MEDIUM_CLIMBER_RANGE        = 165.0d; // 60.5 in
+    public static final double NEUTRAL_CLIMBER_ROLL = 3.00d; // degrees
     //endregion
 
     //region * SECTION - ROBOT CONSTANTS

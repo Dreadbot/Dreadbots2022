@@ -152,12 +152,12 @@ public class RobotContainer {
         primaryController.getXButton().whenPressed(new RotateNeutralHookDownCommand(climber));
         primaryController.getBButton().whenPressed(new RotateClimbingArmVerticalCommand(climber));
         primaryController.getAButton().whenPressed(new RotateClimbingArmDownCommand(climber));
-        primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber, ClimbLevel.MEDIUM));
+        primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber, drive, ClimbLevel.MEDIUM));
         primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
 
-        primaryController.getLeftBumper().whenPressed(new MediumClimb(climber, turret));
-        primaryController.getBackButton().whenPressed(new HighClimb(climber, turret));
-        primaryController.getStartButton().whenPressed(new TraverseClimb(climber, turret));
+        primaryController.getLeftBumper().whenPressed(new MediumClimb(climber, drive, turret));
+        primaryController.getBackButton().whenPressed(new HighClimb(climber, drive, turret));
+        primaryController.getStartButton().whenPressed(new TraverseClimb(climber, drive, turret));
     }
 
     public Command getAutonomousCommand() {
