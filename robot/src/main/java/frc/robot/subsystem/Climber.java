@@ -118,7 +118,7 @@ public class Climber extends DreadbotSubsystem {
         if(isDisabled()) return;
 
         try {
-            winchMotor.set(0.8);
+            winchMotor.set(1.0d);
         } catch (IllegalStateException ignored) { disable(); }
     }
 
