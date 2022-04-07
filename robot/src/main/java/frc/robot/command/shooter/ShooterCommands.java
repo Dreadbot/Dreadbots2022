@@ -98,6 +98,9 @@ public class ShooterCommands {
         private Color colorFeeding;
         private double initialPosition;
 
+        private boolean isBallSensed;
+        private double targetDistance;
+
         public FeedBallCommand(Shooter shooter) {
             this.shooter = shooter;
             this.feeder = shooter.getFeeder();
@@ -112,11 +115,25 @@ public class ShooterCommands {
 
             colorFeeding = colorSensor.getBallColor();
             initialPosition = feeder.getFeederPosition();
+
+            targetDistance = 100.0d;
         }
 
         @Override
         public void execute() {
             feeder.feed();
+
+            if(!isBallSensed && colorSensor.isBallDetected()) {
+                isBallSensed = true;
+
+                if(colorSensor.getBallColor() == colorFeeding) {
+                    targetDistance += 100.0d;
+                }
+            }
+
+            if(isBallSensed && !colorSensor.isBallDetected()) {
+                isBallSensed = false;
+            }
         }
 
         @Override
@@ -135,14 +152,17 @@ public class ShooterCommands {
 //
 //            return shooter.getFlywheel().isBallImpulseDetected();
 
-            if(Math.abs(feeder.getFeederPosition() - initialPosition) >= 100.0) return true;
+            if(colorSensor.isBallDetected() && colorSensor.getBallColor() != colorFeeding) return true;
+            if(Math.abs(feeder.getFeederPosition() - initialPosition) <= targetDistance) return false;
 
-            return !colorSensor.isBallDetected() || colorSensor.getBallColor() != colorFeeding;
+//            return !colorSensor.isBallDetected() || colorSensor.getBallColor() != colorFeeding;
+            return false;
         }
 
         @Override
         public void end(boolean interrupted) {
             feeder.idle();
+            targetDistance = 100.0d;
         }
     }
 
