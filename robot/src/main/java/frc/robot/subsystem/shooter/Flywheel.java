@@ -41,8 +41,9 @@ public class Flywheel extends DreadbotSubsystem {
         this.motor = motor;
 
 //        this.cargoKinematics = new CargoKinematics(s -> 0.8 * s + 1.21, 0.5715, 2.6416);
-        this.cargoKinematics = new CargoKinematics(s -> 0.2 * s + 2.6, 0.5715, 2.6416);
-//        this.cargoKinematics = new CargoKinematics(s -> 2.7, 0.5715, 2.6416);
+//        this.cargoKinematics = new CargoKinematics(s -> 0.2 * s + 2.6, 0.5715, 2.6416);
+//        this.cargoKinematics = new CargoKinematics(s -> 13.5, 0.5715, 2.6416);
+        this.cargoKinematics = new CargoKinematics(s -> 0.7607 * s + 5.5229, 0.5715, 2.6416);
 //        this.cargoKinematics = new CargoKinematics(s -> 0.8 * s + 1, 0.5715, 2.6416);
 
         motor.restoreFactoryDefaults();

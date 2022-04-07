@@ -44,7 +44,7 @@ public class FlywheelCommands {
             double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
             double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
 
-            commandedVelocity = velocity * 1.65d;
+            commandedVelocity = velocity;
             flywheel.setVelocity(commandedVelocity);
         }
 
