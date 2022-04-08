@@ -40,12 +40,9 @@ public class Flywheel extends DreadbotSubsystem {
     public Flywheel(DreadbotMotor motor) {
         this.motor = motor;
 
-//        this.cargoKinematics = new CargoKinematics(s -> 0.8 * s + 1.21, 0.5715, 2.6416);
-//        this.cargoKinematics = new CargoKinematics(s -> 0.2 * s + 2.6, 0.5715, 2.6416);
-//        this.cargoKinematics = new CargoKinematics(s -> 13.5, 0.5715, 2.6416);
-//        this.cargoKinematics = new CargoKinematics(s -> 0.7607 * s + 5.5229, 0.5715, 2.6416);
         SmartDashboard.putNumber("ARCTUNE", 8.0);
-        this.cargoKinematics = new CargoKinematics(s -> 5.0792 * s -8.796 + (-2.84996d * s + 9.5394), 0.5715, 2.6416);
+//        this.cargoKinematics = new CargoKinematics(s -> 5.0792 * s -8.796 + (-2.84996d * s + 9.5394), 0.5715, 2.6416);
+        this.cargoKinematics = new CargoKinematics(s -> 2.22924 * s - 0.7434 + 2.0, 0.5715, 2.6416);
 //        this.cargoKinematics = new CargoKinematics(s -> 0.8 * s + 1, 0.5715, 2.6416);
 
         motor.restoreFactoryDefaults();
@@ -125,7 +122,7 @@ public class Flywheel extends DreadbotSubsystem {
 
         // Commands the motor to coast down to stop.
         try {
-            setVelocity(1.0);
+            setVelocity(3.0);
         } catch (IllegalStateException ignored) { disable(); }
     }
 

@@ -19,7 +19,7 @@ public class FlywheelCommands {
             this.flywheel = flywheel;
             this.cargoKinematics = flywheel.getCargoKinematics();
 
-            SmartDashboard.putNumber("TUNING FLYWHEEL SPEED", 3.0d);
+            SmartDashboard.putNumber("TUNING FLYWHEEL MULT", 1.0d);
 
             addRequirements(flywheel);
         }
@@ -44,7 +44,7 @@ public class FlywheelCommands {
             double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
             double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
 
-            commandedVelocity = velocity;
+            commandedVelocity = velocity * SmartDashboard.getNumber("TUNING FLYWHEEL MULT", 1.0d);
             flywheel.setVelocity(commandedVelocity);
         }
 

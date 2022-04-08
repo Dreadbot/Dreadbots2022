@@ -14,7 +14,7 @@ public class HighClimb extends SequentialCommandGroup {
             new SlightArmExtend(climber, drive),
             new RotateClimbingArmDownCommand(climber),
             new ExtendArmCommand(climber, drive, ClimbLevel.HIGH),
-            new RotateClimbingArmVerticalCommand(climber),
+            new RotateClimbingArmVerticalCommand(climber, drive),
             new SlightArmRetract(climber),
             new RotateNeutralHookDownCommand(climber),
             new RetractArmCommand(climber),

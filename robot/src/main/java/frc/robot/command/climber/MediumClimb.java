@@ -17,7 +17,7 @@ public class MediumClimb extends SequentialCommandGroup {
         addCommands(
             new ScheduleCommand(new TurretCommands.TurnToClimb(turret)),
             new ExtendArmCommand(climber, drive, ClimbLevel.MEDIUM),
-            new RotateClimbingArmVerticalCommand(climber),
+            new RotateClimbingArmVerticalCommand(climber, drive),
             new WaitCommand(.4),
             new RetractArmCommand(climber),
             new WaitCommand(.2), 
