@@ -161,6 +161,10 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
+        return get2BallAuton();
+    }
+
+    public Command get3BallAuton() {
         PathPlannerTrajectory rich_first_leg = PathPlanner.loadPath("rich_first_leg", 5.0, 3.0);
         PathPlannerTrajectory three_ball_second_leg = PathPlanner.loadPath("3ball_second_leg", 5.0, 3.0);
 

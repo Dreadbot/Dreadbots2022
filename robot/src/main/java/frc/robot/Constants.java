@@ -104,6 +104,7 @@ public abstract class Constants {
     // =================================================================================================================
 
     // Flywheel Constants
+//    public static final double FLYWHEEL_P_GAIN     = 2e-4d; // 1e-4
     public static final double FLYWHEEL_P_GAIN     = 2e-4d; // 1e-4
     public static final double FLYWHEEL_I_GAIN     = 1.75e-6d; //1.75e-6d
     public static final double FLYWHEEL_D_GAIN     = 0.0d;

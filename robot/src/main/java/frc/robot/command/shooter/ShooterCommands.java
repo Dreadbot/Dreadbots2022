@@ -121,7 +121,7 @@ public class ShooterCommands {
 
         @Override
         public void execute() {
-            feeder.feed();
+            feeder.feed(0.6d);
 
             if(!isBallSensed && colorSensor.isBallDetected()) {
                 isBallSensed = true;
@@ -218,7 +218,7 @@ public class ShooterCommands {
                 ),
                 new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kBrake)),
                 new ConditionalCommand(
-                    new PresetShoot(shooter, 155.0, 67.710d, 2 * 7.539d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
+                    new PresetShoot(shooter, 155.0, 67.710d,  7.539d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
                     new PresetShoot(shooter, 65.0, 76.087d, 3.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
                     shooter.getColorSensor()::isCorrectColor
                 )
@@ -243,7 +243,7 @@ public class ShooterCommands {
                 ),
                 new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kBrake)),
                 new ConditionalCommand(
-                    new PresetShoot(shooter, 155.0, 59.0609d, 38.03d / 2, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
+                    new PresetShoot(shooter, 155.0, 59.0609d, 7, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
                     new PresetShoot(shooter, 65.0, 76.087d, 12.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
                     shooter.getColorSensor()::isCorrectColor
                 )
@@ -269,16 +269,16 @@ public class ShooterCommands {
                     // SHOOT
                     new ConditionalCommand(
                         new TargetShoot(shooter),
-                        new PresetShoot(shooter, 155.0, 76.087d, 22.0d, 155.0d),
+                        new PresetShoot(shooter, 155.0, 76.087d, 7.0d, 155.0d),
                         VisionInterface::canTrackHub
-                    ),
+                    ).alongWith(new IntakeCommand(intake)),
                     // EJECT
                     new ConditionalCommand(
 //                        new EjectShoot(shooter),
                         new TargetShoot(shooter),
-                        new PresetShoot(shooter, 110, 71.862, 17.0d, 155.0d),
+                        new PresetShoot(shooter, 110, 71.862, 7.0d, 155.0d),
                         VisionInterface::canTrackHub
-                    ),
+                    ).alongWith(new IntakeCommand(intake)),
                     shooter.getColorSensor()::isCorrectColor
                 )
             );
