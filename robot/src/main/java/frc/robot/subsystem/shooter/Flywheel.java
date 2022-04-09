@@ -183,4 +183,13 @@ public class Flywheel extends DreadbotSubsystem {
     public CargoKinematics getCargoKinematics() {
         return cargoKinematics;
     }
+
+    public void outtake() {
+        if(isDisabled()) return;
+
+        // Commands the motor to coast down to stop.
+        try {
+            motor.set(-0.5);
+        } catch (IllegalStateException ignored) { disable(); }
+    }
 }

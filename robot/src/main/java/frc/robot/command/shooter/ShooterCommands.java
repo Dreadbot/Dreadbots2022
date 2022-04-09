@@ -127,7 +127,7 @@ public class ShooterCommands {
                 isBallSensed = true;
 
                 if(colorSensor.getBallColor() == colorFeeding) {
-                    targetDistance += 100.0d;
+                    targetDistance += 120.0d;
                 }
             }
 

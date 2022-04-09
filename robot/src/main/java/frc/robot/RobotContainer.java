@@ -142,7 +142,7 @@ public class RobotContainer {
             primaryController::getZAxis));
 
         // Intake Commands
-        secondaryController.getAButton().whileHeld(new OuttakeCommand(intake, feeder));
+        secondaryController.getAButton().whileHeld(new OuttakeCommand(intake, feeder, flywheel));
         secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
 
         // Shooter Commands
