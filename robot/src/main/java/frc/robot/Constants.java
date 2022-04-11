@@ -105,7 +105,7 @@ public abstract class Constants {
 
     // Flywheel Constants
 //    public static final double FLYWHEEL_P_GAIN     = 2e-4d; // 1e-4
-    public static final double FLYWHEEL_P_GAIN     = 2e-4d; // 1e-4
+    public static final double FLYWHEEL_P_GAIN     = 3e-4d; // 1e-4
     public static final double FLYWHEEL_I_GAIN     = 1.75e-6d; //1.75e-6d
     public static final double FLYWHEEL_D_GAIN     = 0.0d;
     public static final double FLYWHEEL_I_ZONE     = 2.0d;
@@ -141,7 +141,7 @@ public abstract class Constants {
     public static final double MAX_ARM_DISTANCE     = 50; //Later change this to phyisical distance
     public static final double CLIMBER_RANGE        = 205.0d; // 60.5 in
     public static final double MEDIUM_CLIMBER_RANGE        = 165.0d; // 60.5 in
-    public static final double NEUTRAL_CLIMBER_ROLL = 3.00d; // degrees
+    public static final double NEUTRAL_CLIMBER_ROLL = 10.00d; // degrees
     //endregion
 
     //region * SECTION - ROBOT CONSTANTS

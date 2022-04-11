@@ -179,9 +179,8 @@ public class RobotContainer {
     }
 
     public Command get3BallAuton() {
-        PathPlannerTrajectory rich_first_leg = PathPlanner.loadPath("rich_first_leg", 5.0, 3.0);
+        PathPlannerTrajectory rich_first_leg = PathPlanner.loadPath("rich_first_leg", 3.0, 1.0);
         PathPlannerTrajectory three_ball_second_leg = PathPlanner.loadPath("3ball_second_leg", 5.0, 3.0, true);
-        PathPlannerTrajectory three_ball_third_leg = PathPlanner.loadPath("3ball_third_leg", 5.0, 3.0);
 
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
@@ -196,15 +195,14 @@ public class RobotContainer {
                 ),
                 new InstantCommand(intake::intake, intake)
             ),
-            new ShooterCommands.HighShoot(shooter, intake),
-            new ShooterCommands.HighShoot(shooter, intake),
+            new ShooterCommands.HighShoot(shooter, intake).raceWith(new WaitCommand(3.0)),
             new PrintCommand("SECOND PATH"),
             new TrajectoryAuton(
                 drive,
                 three_ball_second_leg,
                 8.0
             ),
-            new ShooterCommands.HighShoot(shooter, intake),
+            new ShooterCommands.HighShoot(shooter, intake).raceWith(new WaitCommand(3.0)),
             new InstantCommand(intake::idle, intake)
         );
     }
@@ -228,28 +226,27 @@ public class RobotContainer {
                 ),
                 new InstantCommand(intake::intake, intake)
             ),
-            new ShooterCommands.HighShoot(shooter, intake),
-            new ShooterCommands.HighShoot(shooter, intake),
+            new ShooterCommands.HighShoot(shooter, intake).raceWith(new WaitCommand(3.0)),
             new PrintCommand("SECOND PATH"),
             new TrajectoryAuton(
                 drive,
                 three_ball_second_leg,
                 8.0
             ),
-            new ShooterCommands.HighShoot(shooter, intake),
+            new ShooterCommands.HighShoot(shooter, intake).raceWith(new WaitCommand(1.5)),
             new PrintCommand("THIRD PATH"),
             new TrajectoryAuton(
                 drive,
                 three_ball_third_leg,
                 8.0
             ),
-            new WaitCommand(2.0),
+            new WaitCommand(1.0),
             new TrajectoryAuton(
                 drive,
                 three_ball_fourth_leg,
                 8.0
             ),
-            new ShooterCommands.HighShoot(shooter, intake),
+            new ShooterCommands.HighShoot(shooter, intake).raceWith(new WaitCommand(3.0)),
             new InstantCommand(intake::idle, intake)
         );
     }
@@ -270,8 +267,8 @@ public class RobotContainer {
                 ),
                 new InstantCommand(intake::intake, intake)
             ),
-            new ShooterCommands.HighShoot(shooter, intake),
-            new ShooterCommands.HighShoot(shooter, intake),
+            new WaitCommand(1.0),
+            new ShooterCommands.HighShoot(shooter, intake).raceWith(new WaitCommand(3.0)),
             new InstantCommand(intake::idle, intake)
         );
     }
