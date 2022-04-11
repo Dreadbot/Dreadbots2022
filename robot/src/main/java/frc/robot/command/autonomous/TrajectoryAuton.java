@@ -25,6 +25,8 @@ public class TrajectoryAuton extends CommandBase {
     private final Consumer<MecanumDriveWheelSpeeds> m_outputWheelSpeeds;
     private final Drive drive;
 
+    private boolean reversed;
+
     public TrajectoryAuton(Drive drive, PathPlannerTrajectory trajectory, double maxWheelVelocityMetersPerSecond) {
         this.drive = drive;
         this.m_trajectory = trajectory;
@@ -36,6 +38,25 @@ public class TrajectoryAuton extends CommandBase {
         this.m_outputWheelSpeeds = drive::setWheelSpeeds;
 
         SmartDashboard.putNumber("CurrentTrajectoryTime", 0);
+
+        this.reversed = false;
+
+        addRequirements(drive);
+    }
+
+    public TrajectoryAuton(Drive drive, PathPlannerTrajectory trajectory, double maxWheelVelocityMetersPerSecond, boolean reversed) {
+        this.drive = drive;
+        this.m_trajectory = trajectory;
+        this.m_maxWheelVelocityMetersPerSecond = maxWheelVelocityMetersPerSecond;
+
+        this.m_pose = drive::getPose;
+        this.m_kinematics = drive.getKinematics();
+        this.m_controller = drive.getDriveController();
+        this.m_outputWheelSpeeds = drive::setWheelSpeeds;
+
+        SmartDashboard.putNumber("CurrentTrajectoryTime", 0);
+
+        this.reversed = reversed;
 
         addRequirements(drive);
     }
@@ -60,6 +81,13 @@ public class TrajectoryAuton extends CommandBase {
         targetChassisSpeeds.omegaRadiansPerSecond *= .55;
         targetChassisSpeeds.vyMetersPerSecond *= .55;
         targetChassisSpeeds.vxMetersPerSecond *= .55;
+
+        if(reversed) {
+            targetChassisSpeeds.vxMetersPerSecond *= -1;
+            targetChassisSpeeds.vyMetersPerSecond *= -1;
+            targetChassisSpeeds.omegaRadiansPerSecond *= -1;
+        }
+
         var targetWheelSpeeds = m_kinematics.toWheelSpeeds(targetChassisSpeeds);
 
         targetWheelSpeeds.desaturate(m_maxWheelVelocityMetersPerSecond);

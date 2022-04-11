@@ -61,6 +61,13 @@ public class HoodCommands {
         public ActiveTrack(Hood hood) {
             this.hood = hood;
             this.cargoKinematics = new CargoKinematics(s -> 0.19685 * s + 2.5, 0.5715, 2.6416);
+//            this.cargoKinematics = new CargoKinematics(s -> 0.1 * s + 3, 0.5715, 2.6416);
+//            this.cargoKinematics = new CargoKinematics(s -> 2, 0.5715, 2.6416);
+//            this.cargoKinematics = new CargoKinematics(s -> 0.306*s + 2.6, 0.5715, 2.6416);
+//            this.cargoKinematics = new CargoKinematics(s -> 0.306*s + 2, 0.5715, 2.6416);
+//            this.cargoKinematics = new CargoKinematics(s -> 2.7, 0.5715, 2.6416);
+
+            SmartDashboard.putNumber("TUNING HOOD ANGLE", 70.0d);
 
             addRequirements(hood);
         }
@@ -75,6 +82,21 @@ public class HoodCommands {
 
             if(distanceToHub != lastDistanceToHub) hoodControlAngle(hoodAngle);
             lastDistanceToHub = distanceToHub;
+
+//            double h = VisionInterface.getRelativeDistanceToHub();
+////            double h = cargoKinematics.getBallDirectionAngle(distanceToHub);
+////            double h = SmartDashboard.getNumber("TUNING HOOD ANGLE", 70.0d);
+//
+//            // Quartic Regression
+////            h = -3.4434d * h * h * h * h + 0.000193 * h * h * h + -0.0376 * h * h + 2.8699d * h - 4.21268;
+//            h = 0.001856 * h * h + -0.6085 * h + 107.153;
+//
+//            hood.setAngle(h);
+//
+//            lastAngle = h;
+
+//            if(distanceToHub != lastDistanceToHub) hoodControlAngle(hoodAngle);
+//            lastDistanceToHub = distanceToHub;
         }
 
         @Override

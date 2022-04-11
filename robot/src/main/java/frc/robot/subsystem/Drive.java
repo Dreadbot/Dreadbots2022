@@ -21,6 +21,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.util.DreadbotMotor;
 import frc.robot.util.math.DreadbotMath;
@@ -85,6 +87,8 @@ public class Drive extends DreadbotSubsystem {
         new ProfiledPIDController(1, 0, 0, rotationProfile)
     );
 
+    private Field2d field2d;
+
     /**
      * Disabled Constructor
      */
@@ -103,6 +107,8 @@ public class Drive extends DreadbotSubsystem {
 
         this.targetChassisSpeeds = new ChassisSpeeds();
 
+        this.field2d = new Field2d();
+
         // Fully-configure motors before passing them to MecanumDrive.
         configureMotors();
         resetEncoders();
@@ -113,6 +119,8 @@ public class Drive extends DreadbotSubsystem {
             rightFrontMotor.getSparkMax(), rightBackMotor.getSparkMax());
 
         mecanumDrive.setSafetyEnabled(false);
+
+        SmartDashboard.putData("Field", field2d);
     }
 
     @Override
@@ -120,6 +128,9 @@ public class Drive extends DreadbotSubsystem {
         if(isDisabled()) return;
 
         odometry.update(gyroscope.getRotation2d(), getWheelSpeeds());
+        field2d.setRobotPose(getPose());
+
+        SmartDashboard.putNumber("GYRO PITCH", gyroscope.getPitch());
     }
 
     @Override
@@ -350,5 +361,9 @@ public class Drive extends DreadbotSubsystem {
         leftBackMotor.setInverted(true);
         rightFrontMotor.setInverted(false);
         rightBackMotor.setInverted(false);
+    }
+
+    public AHRS getGyroscope() {
+        return gyroscope;
     }
 }

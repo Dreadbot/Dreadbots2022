@@ -40,7 +40,10 @@ public class Flywheel extends DreadbotSubsystem {
     public Flywheel(DreadbotMotor motor) {
         this.motor = motor;
 
-        this.cargoKinematics = new CargoKinematics(s -> 0.8 * s + 1.21, 0.5715, 2.6416);
+        SmartDashboard.putNumber("ARCTUNE", 8.0);
+//        this.cargoKinematics = new CargoKinematics(s -> 5.0792 * s -8.796 + (-2.84996d * s + 9.5394), 0.5715, 2.6416);
+        this.cargoKinematics = new CargoKinematics(s -> 2.22924 * s - 0.7434 + 2.0, 0.5715, 2.6416);
+//        this.cargoKinematics = new CargoKinematics(s -> 0.8 * s + 1, 0.5715, 2.6416);
 
         motor.restoreFactoryDefaults();
         motor.setIdleMode(CANSparkMax.IdleMode.kCoast);
@@ -68,6 +71,8 @@ public class Flywheel extends DreadbotSubsystem {
         SmartDashboard.putNumber("Flywheel Acceleration", acceleration);
 
         lastVelocity = getTangentialVelocity();
+
+//        this.cargoKinematics = new CargoKinematics(s -> SmartDashboard.getNumber("ARCTUNE", 8.0), 0.5715, 2.6416);
     }
 
     @Override
@@ -117,7 +122,7 @@ public class Flywheel extends DreadbotSubsystem {
 
         // Commands the motor to coast down to stop.
         try {
-            setVelocity(1.0);
+            setVelocity(3.0);
         } catch (IllegalStateException ignored) { disable(); }
     }
 
@@ -177,5 +182,14 @@ public class Flywheel extends DreadbotSubsystem {
 
     public CargoKinematics getCargoKinematics() {
         return cargoKinematics;
+    }
+
+    public void outtake() {
+        if(isDisabled()) return;
+
+        // Commands the motor to coast down to stop.
+        try {
+            motor.set(-0.5);
+        } catch (IllegalStateException ignored) { disable(); }
     }
 }

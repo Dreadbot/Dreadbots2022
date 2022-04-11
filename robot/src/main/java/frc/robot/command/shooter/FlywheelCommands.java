@@ -19,56 +19,40 @@ public class FlywheelCommands {
             this.flywheel = flywheel;
             this.cargoKinematics = flywheel.getCargoKinematics();
 
+            SmartDashboard.putNumber("TUNING FLYWHEEL MULT", 1.0d);
+
             addRequirements(flywheel);
         }
 
         @Override
         public void execute() {
+            // In case the vision isn't seeing the ball, don't continue to feed flywheel
+            // This is SUPER IMPORTANT.
+            if(!VisionInterface.canTrackHub()) return;
+
+////            double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
+//            double d = VisionInterface.getRelativeDistanceToHub();
+////            double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
+//
+//            // Quadratic Regression
+//            double commandedVelocity = 0.000514d * d * d + -0.108872d * d + 18.9667d;
+////            double commandedVelocity = 0.000514d * d * d + -0.108872d * d + 17.9667d;
+//
+////            commandedVelocity = SmartDashboard.getNumber("TUNING FLYWHEEL SPEED", 3.0d);
+//            flywheel.setVelocity(commandedVelocity);
+
             double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
             double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
 
-            commandedVelocity = velocity;
-            SmartDashboard.putNumber("OUT VIP TEMP", commandedVelocity);
+            commandedVelocity = velocity * SmartDashboard.getNumber("TUNING FLYWHEEL MULT", 1.0d);
             flywheel.setVelocity(commandedVelocity);
         }
 
         @Override
         public boolean isFinished() {
-            return flywheel.getTangentialVelocity() >= commandedVelocity;
+            return flywheel.isAtSetVelocity();
 
 //            return Math.abs(flywheel.getTangentialVelocity() - commandedVelocity) <= 0.15d;
-        }
-    }
-
-    public static class EjectShootPreset extends CommandBase {
-        private Shooter shooter;
-        private double speedOnScore;
-        private double speedOnEject;
-
-        public EjectShootPreset(Shooter shooter, double speedOnScore, double speedOnEject) {
-            this.shooter = shooter;
-
-            this.speedOnScore = speedOnScore;
-            this.speedOnEject = speedOnEject;
-
-            addRequirements(shooter.getFlywheel());
-        }
-
-        @Override
-        public void execute() {
-            shooter.getFlywheel().setVelocity(getVelocity());
-        }
-
-        @Override
-        public boolean isFinished() {
-            return shooter.getFlywheel().isAtSetVelocity();
-        }
-
-        private double getVelocity() {
-            if(!shooter.getColorSensor().isCorrectColor() &&
-                shooter.getColorSensor().getBallColor() != null) return speedOnEject;
-
-            return speedOnScore;
         }
     }
 

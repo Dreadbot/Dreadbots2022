@@ -19,13 +19,12 @@ public class ShooterCommands {
             this.shooter = shooter;
 
             addCommands(
-                new InstantCommand(() -> System.out.println("TARGET SHOOT")),
                 new ParallelCommandGroup(
                     new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
                     new TurretCommands.ActiveTrack(shooter.getTurret()),
-                    new HoodCommands.ActiveTrack(shooter.getHood())
+                    new HoodCommands.ActiveTrack(shooter.getHood()),
+                    new FlywheelCommands.PrepareVisionShot(shooter.getFlywheel())
                 ),
-                new FlywheelCommands.PrepareVisionShot(shooter.getFlywheel()),
                 new FeedBallCommand(shooter),
                 new WaitCommand(0.5)
             );
@@ -99,6 +98,9 @@ public class ShooterCommands {
         private Color colorFeeding;
         private double initialPosition;
 
+        private boolean isBallSensed;
+        private double targetDistance;
+
         public FeedBallCommand(Shooter shooter) {
             this.shooter = shooter;
             this.feeder = shooter.getFeeder();
@@ -113,11 +115,25 @@ public class ShooterCommands {
 
             colorFeeding = colorSensor.getBallColor();
             initialPosition = feeder.getFeederPosition();
+
+            targetDistance = 100.0d;
         }
 
         @Override
         public void execute() {
-            feeder.feed();
+            feeder.feed(0.6d);
+
+            if(!isBallSensed && colorSensor.isBallDetected()) {
+                isBallSensed = true;
+
+                if(colorSensor.getBallColor() == colorFeeding) {
+                    targetDistance += 120.0d;
+                }
+            }
+
+            if(isBallSensed && !colorSensor.isBallDetected()) {
+                isBallSensed = false;
+            }
         }
 
         @Override
@@ -136,14 +152,17 @@ public class ShooterCommands {
 //
 //            return shooter.getFlywheel().isBallImpulseDetected();
 
-            if(Math.abs(feeder.getFeederPosition() - initialPosition) >= 100.0) return true;
+            if(colorSensor.isBallDetected() && colorSensor.getBallColor() != colorFeeding) return true;
+            if(Math.abs(feeder.getFeederPosition() - initialPosition) <= targetDistance) return false;
 
-            return !colorSensor.isBallDetected() || colorSensor.getBallColor() != colorFeeding;
+//            return !colorSensor.isBallDetected() || colorSensor.getBallColor() != colorFeeding;
+            return false;
         }
 
         @Override
         public void end(boolean interrupted) {
             feeder.idle();
+            targetDistance = 100.0d;
         }
     }
 
@@ -199,7 +218,7 @@ public class ShooterCommands {
                 ),
                 new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kBrake)),
                 new ConditionalCommand(
-                    new PresetShoot(shooter, 155.0, 67.710d, 7.539d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
+                    new PresetShoot(shooter, 155.0, 67.710d,  7.539d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
                     new PresetShoot(shooter, 65.0, 76.087d, 3.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
                     shooter.getColorSensor()::isCorrectColor
                 )
@@ -224,7 +243,7 @@ public class ShooterCommands {
                 ),
                 new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kBrake)),
                 new ConditionalCommand(
-                    new PresetShoot(shooter, 155.0, 59.0609d, 38.03d / 2, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
+                    new PresetShoot(shooter, 155.0, 59.0609d, 7, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
                     new PresetShoot(shooter, 65.0, 76.087d, 12.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
                     shooter.getColorSensor()::isCorrectColor
                 )
@@ -250,16 +269,16 @@ public class ShooterCommands {
                     // SHOOT
                     new ConditionalCommand(
                         new TargetShoot(shooter),
-                        new PresetShoot(shooter, 155.0, 76.087d, 22.0d, 155.0d),
+                        new PresetShoot(shooter, 155.0, 76.087d, 7.0d, 155.0d),
                         VisionInterface::canTrackHub
-                    ),
+                    ).alongWith(new IntakeCommand(intake)),
                     // EJECT
                     new ConditionalCommand(
 //                        new EjectShoot(shooter),
                         new TargetShoot(shooter),
-                        new PresetShoot(shooter, 110, 71.862, 17.0d, 155.0d),
+                        new PresetShoot(shooter, 110, 71.862, 7.0d, 155.0d),
                         VisionInterface::canTrackHub
-                    ),
+                    ).alongWith(new IntakeCommand(intake)),
                     shooter.getColorSensor()::isCorrectColor
                 )
             );

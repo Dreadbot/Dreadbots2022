@@ -35,13 +35,20 @@ public class Feeder extends DreadbotSubsystem {
     /**
      * Spins the motor to deliver the cargo to the shooter mechanism.
      */
-    public void feed() {
+    public void feed(double speed) {
         if(isDisabled()) return;
 
         // Set the motor to a high positive speed.
         try {
-            motor.set(1.0d);
+            motor.set(speed);
         } catch (IllegalStateException ignored) { disable(); }
+    }
+
+    /**
+     * Spins the motor to deliver the cargo to the shooter mechanism.
+     */
+    public void feed() {
+        this.feed(1.0d);
     }
 
     /**

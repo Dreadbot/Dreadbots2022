@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystem.Climber;
+import frc.robot.subsystem.Drive;
 import frc.robot.util.ClimbLevel;
 
 public class AutonomousClimberCommand extends SequentialCommandGroup{
@@ -17,22 +18,22 @@ public class AutonomousClimberCommand extends SequentialCommandGroup{
 //        );
         //Old climber code 
         //Assumes we are below bar but with power hooks on the medium bar
-         for(int i = 0; i < 1; i++){
-             addCommands(
-                 new SlightArmExtend(climber), // helps with getting arm off of bar
-                 new RotateClimbingArmDownCommand(climber),
-                 new ExtendArmCommand(climber, ClimbLevel.HIGH),// retract arm back to grab hook
-                 new RotateClimbingArmVerticalCommand(climber),
-                 new SlightArmRetract(climber),
-                 //new WaitCommand(.2),
-                 new WaitCommand(.2),
-                 new RotateNeutralHookDownCommand(climber),
-                 new RetractArmCommand(climber),
-                 new WaitCommand(.2),
-                 new RotateNeutralHookVerticalCommand(climber),
-                 new WaitCommand(.5)
-             );
-         }
+//         for(int i = 0; i < 1; i++){
+//             addCommands(
+//                 new SlightArmExtend(climber), // helps with getting arm off of bar
+//                 new RotateClimbingArmDownCommand(climber),
+//                 new ExtendArmCommand(climber, ClimbLevel.HIGH),// retract arm back to grab hook
+//                 new RotateClimbingArmVerticalCommand(climber),
+//                 new SlightArmRetract(climber),
+//                 //new WaitCommand(.2),
+//                 new WaitCommand(.2),
+//                 new RotateNeutralHookDownCommand(climber),
+//                 new RetractArmCommand(climber),
+//                 new WaitCommand(.2),
+//                 new RotateNeutralHookVerticalCommand(climber),
+//                 new WaitCommand(.5)
+//             );
+//         }
         //  addCommands(
         //      new RetractArmCommand(climber),
         //      new WaitCommand(.2),
@@ -42,9 +43,9 @@ public class AutonomousClimberCommand extends SequentialCommandGroup{
 }
 
 class SlightArmExtend extends ParallelRaceGroup{
-    public SlightArmExtend(Climber climber){
+    public SlightArmExtend(Climber climber, Drive drive){
         addCommands(
-            new ExtendArmCommand(climber, ClimbLevel.HIGH),
+            new ExtendArmCommand(climber, drive, ClimbLevel.HIGH),
             new WaitCommand(.5)
         );
     }

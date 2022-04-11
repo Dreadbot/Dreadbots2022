@@ -1013,7 +1013,7 @@
                 {
                   "_type": "Boolean Box",
                   "_source0": "network_table:///LiveWindow/Ungrouped/DigitalInput[5]/Value",
-                  "_title": "/LiveWindow/Ungrouped/DigitalInput[5]/Value",
+                  "_title": "DigitalInput[5]/Value",
                   "Colors/Color when true": "#7CFC00FF",
                   "Colors/Color when false": "#8B0000FF"
                 }
@@ -1523,25 +1523,6 @@
         "vgap": 16.0,
         "titleType": 1,
         "tiles": {
-          "4,0": {
-            "size": [
-              5,
-              5
-            ],
-            "content": {
-              "_type": "Camera Stream",
-              "_source0": "camera_server://Turret Camera",
-              "_title": "Turret Camera",
-              "Crosshair/Show crosshair": true,
-              "Crosshair/Crosshair color": "#FFFFFFFF",
-              "Controls/Show controls": true,
-              "Controls/Rotation": "NONE",
-              "compression": -1.0,
-              "fps": -1,
-              "imageWidth": -1,
-              "imageHeight": -1
-            }
-          },
           "9,3": {
             "size": [
               4,
@@ -1747,603 +1728,59 @@
               "_source0": "network_table:///SmartDashboard/IsTargetFoundInFrame",
               "_title": "/SmartDashboard/IsTargetFoundInFrame"
             }
-          }
-        }
-      }
-    },
-    {
-      "title": "PND",
-      "autoPopulate": false,
-      "autoPopulatePrefix": "",
-      "widgetPane": {
-        "gridSize": 128.0,
-        "showGrid": true,
-        "hgap": 16.0,
-        "vgap": 16.0,
-        "titleType": 0,
-        "tiles": {}
-      }
-    },
-    {
-      "title": "ECAM-DRIVE-TUNING",
-      "autoPopulate": false,
-      "autoPopulatePrefix": "",
-      "widgetPane": {
-        "gridSize": 128.0,
-        "showGrid": true,
-        "hgap": 16.0,
-        "vgap": 16.0,
-        "titleType": 0,
-        "tiles": {}
-      }
-    },
-    {
-      "title": "ECAM-DRIVE-PARAM",
-      "autoPopulate": false,
-      "autoPopulatePrefix": "",
-      "widgetPane": {
-        "gridSize": 128.0,
-        "showGrid": true,
-        "hgap": 16.0,
-        "vgap": 16.0,
-        "titleType": 1,
-        "tiles": {
-          "4,4": {
-            "size": [
-              5,
-              1
-            ],
-            "content": {
-              "_type": "Grid Layout",
-              "_title": "ACTUAL SPEEDS",
-              "Layout/Number of columns": 3,
-              "Layout/Number of rows": 3,
-              "Layout/Label position": "BOTTOM",
-              "_children": {
-                "0,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/actualChassisSpeedsX",
-                  "_title": "/LiveWindow/Drive/actualChassisSpeedsX"
-                },
-                "1,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/actualChassisSpeedsY",
-                  "_title": "/LiveWindow/Drive/actualChassisSpeedsY"
-                },
-                "2,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/actualChassisSpeedsOmega",
-                  "_title": "/LiveWindow/Drive/actualChassisSpeedsOmega"
-                }
-              }
-            }
           },
-          "2,0": {
-            "size": [
-              5,
-              1
-            ],
-            "content": {
-              "_type": "Grid Layout",
-              "_title": "TARGET SPEEDS",
-              "Layout/Number of columns": 3,
-              "Layout/Number of rows": 3,
-              "Layout/Label position": "BOTTOM",
-              "_children": {
-                "0,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/targetChassisSpeedsX",
-                  "_title": "/LiveWindow/Drive/targetChassisSpeedsX"
-                },
-                "1,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/targetChassisSpeedsY",
-                  "_title": "/LiveWindow/Drive/targetChassisSpeedsY"
-                },
-                "2,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/targetChassisSpeedsOmega",
-                  "_title": "/LiveWindow/Drive/targetChassisSpeedsOmega"
-                }
-              }
-            }
-          },
-          "7,1": {
+          "12,1": {
             "size": [
               1,
               1
             ],
             "content": {
               "_type": "Boolean Box",
-              "_source0": "network_table:///LiveWindow/Drive/disabled",
-              "_title": "/LiveWindow/Drive/disabled",
-              "Colors/Color when true": "#FF0000FF",
-              "Colors/Color when false": "#000000FF"
-            }
-          },
-          "5,1": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///LiveWindow/Drive/fault",
-              "_title": "/LiveWindow/Drive/fault",
-              "Colors/Color when true": "#FF0000FF",
-              "Colors/Color when false": "#000000FF"
-            }
-          },
-          "0,1": {
-            "size": [
-              4,
-              2
-            ],
-            "content": {
-              "_type": "Grid Layout",
-              "_title": "LEFT FRONT WHEEL",
-              "Layout/Number of columns": 3,
-              "Layout/Number of rows": 2,
-              "Layout/Label position": "BOTTOM",
-              "_children": {
-                "0,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/leftFrontPosition",
-                  "_title": "/LiveWindow/Drive/leftFrontPosition"
-                },
-                "2,1": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/leftFrontMotorTemperature",
-                  "_title": "/LiveWindow/Drive/leftFrontMotorTemperature"
-                },
-                "0,1": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/leftFrontVelocity",
-                  "_title": "/LiveWindow/Drive/leftFrontVelocity"
-                },
-                "1,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/leftFrontAppliedOutput",
-                  "_title": "/LiveWindow/Drive/leftFrontAppliedOutput"
-                },
-                "1,1": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/leftFrontBusVoltage",
-                  "_title": "/LiveWindow/Drive/leftFrontBusVoltage"
-                },
-                "2,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/leftFrontFaults",
-                  "_title": "/LiveWindow/Drive/leftFrontFaults"
-                }
-              }
-            }
-          },
-          "0,3": {
-            "size": [
-              4,
-              2
-            ],
-            "content": {
-              "_type": "Grid Layout",
-              "_title": "LEFT BACK WHEEL",
-              "Layout/Number of columns": 3,
-              "Layout/Number of rows": 2,
-              "Layout/Label position": "BOTTOM",
-              "_children": {
-                "0,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/leftBackPosition",
-                  "_title": "/LiveWindow/Drive/leftBackPosition"
-                },
-                "1,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/leftBackAppliedOutput",
-                  "_title": "/LiveWindow/Drive/leftBackAppliedOutput"
-                },
-                "2,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/leftBackFaults",
-                  "_title": "/LiveWindow/Drive/leftBackFaults"
-                },
-                "1,1": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/leftBackBusVoltage",
-                  "_title": "/LiveWindow/Drive/leftBackBusVoltage"
-                },
-                "0,1": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/leftBackVelocity",
-                  "_title": "/LiveWindow/Drive/leftBackVelocity"
-                },
-                "2,1": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/leftBackMotorTemperature",
-                  "_title": "/LiveWindow/Drive/leftBackMotorTemperature"
-                }
-              }
-            }
-          },
-          "9,1": {
-            "size": [
-              4,
-              2
-            ],
-            "content": {
-              "_type": "Grid Layout",
-              "_title": "RIGHT FRONT WHEEL",
-              "Layout/Number of columns": 3,
-              "Layout/Number of rows": 2,
-              "Layout/Label position": "BOTTOM",
-              "_children": {
-                "0,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/Front Right Motor Speed",
-                  "_title": "/LiveWindow/Drive/Front Right Motor Speed"
-                },
-                "1,1": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/rightFrontBusVoltage",
-                  "_title": "/LiveWindow/Drive/rightFrontBusVoltage"
-                },
-                "2,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/rightFrontFaults",
-                  "_title": "/LiveWindow/Drive/rightFrontFaults"
-                },
-                "2,1": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/rightFrontMotorTemperature",
-                  "_title": "/LiveWindow/Drive/rightFrontMotorTemperature"
-                },
-                "1,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/rightFrontAppliedOutput",
-                  "_title": "/LiveWindow/Drive/rightFrontAppliedOutput"
-                },
-                "0,1": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/rightFrontVelocity",
-                  "_title": "/LiveWindow/Drive/rightFrontVelocity"
-                }
-              }
-            }
-          },
-          "9,3": {
-            "size": [
-              4,
-              2
-            ],
-            "content": {
-              "_type": "Grid Layout",
-              "_title": "RIGHT BACK WHEEL",
-              "Layout/Number of columns": 3,
-              "Layout/Number of rows": 2,
-              "Layout/Label position": "BOTTOM",
-              "_children": {
-                "0,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/Rear Right Motor Speed",
-                  "_title": "/LiveWindow/Drive/Rear Right Motor Speed"
-                },
-                "1,1": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/rightBackBusVoltage",
-                  "_title": "/LiveWindow/Drive/rightBackBusVoltage"
-                },
-                "2,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/rightBackFaults",
-                  "_title": "/LiveWindow/Drive/rightBackFaults"
-                },
-                "2,1": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/rightBackMotorTemperature",
-                  "_title": "/LiveWindow/Drive/rightBackMotorTemperature"
-                },
-                "0,1": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/rightBackVelocity",
-                  "_title": "/LiveWindow/Drive/rightBackVelocity"
-                },
-                "1,0": {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Drive/rightBackAppliedOutput",
-                  "_title": "/LiveWindow/Drive/rightBackAppliedOutput"
-                }
-              }
-            }
-          },
-          "4,2": {
-            "size": [
-              5,
-              2
-            ],
-            "content": {
-              "_type": "Mecanum Drivebase",
-              "_title": "Mecanum Drivebase",
-              "Visuals/Show velocity vectors": true
-            }
-          },
-          "8,0": {
-            "size": [
-              3,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///LiveWindow/Drive/gyroYawRate",
-              "_title": "/LiveWindow/Drive/gyroYawRate"
-            }
-          }
-        }
-      }
-    },
-    {
-      "title": "ECAM-MANIPULATOR",
-      "autoPopulate": false,
-      "autoPopulatePrefix": "",
-      "widgetPane": {
-        "gridSize": 128.0,
-        "showGrid": true,
-        "hgap": 16.0,
-        "vgap": 16.0,
-        "titleType": 0,
-        "tiles": {}
-      }
-    },
-    {
-      "title": "ECAM-SHOOTER",
-      "autoPopulate": false,
-      "autoPopulatePrefix": "",
-      "widgetPane": {
-        "gridSize": 128.0,
-        "showGrid": true,
-        "hgap": 16.0,
-        "vgap": 16.0,
-        "titleType": 0,
-        "tiles": {
-          "4,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/TurretCommandLock",
-              "_title": "/SmartDashboard/TurretCommandLock"
-            }
-          },
-          "5,0": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///LiveWindow/Turret/IsAtAngle",
-              "_title": "/LiveWindow/Turret/IsAtAngle",
+              "_source0": "network_table:///SmartDashboard/Climber Lower Limit",
+              "_title": "SmartDashboard/Climber Lower Limit",
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "0,3": {
+          "11,2": {
             "size": [
-              4,
-              2
+              2,
+              1
             ],
             "content": {
-              "_type": "Mecanum Drivebase",
-              "_source0": "network_table:///SmartDashboard/DriveVisual",
-              "_title": "/SmartDashboard/DriveVisual",
-              "Visuals/Show velocity vectors": true
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/SendableChooser[1]",
+              "_title": "SmartDashboard/SendableChooser[1]"
             }
           },
-          "4,2": {
+          "4,0": {
+            "size": [
+              5,
+              5
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://Mixed Stream",
+              "_title": "Mixed Stream",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          },
+          "8,5": {
             "size": [
               1,
               1
             ],
             "content": {
               "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/tuner/P",
-              "_title": "/SmartDashboard/tuner/P"
-            }
-          },
-          "5,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/tuner/I",
-              "_title": "/SmartDashboard/tuner/I"
-            }
-          },
-          "6,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/tuner/D",
-              "_title": "SmartDashboard/tuner/D"
-            }
-          },
-          "7,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/tuner/FF",
-              "_title": "/SmartDashboard/tuner/FF"
-            }
-          },
-          "4,3": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/tuner/SetPoint",
-              "_title": "/SmartDashboard/tuner/SetPoint"
-            }
-          },
-          "0,0": {
-            "size": [
-              4,
-              3
-            ],
-            "content": {
-              "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/Flywheel Velocity",
-              "_title": "SmartDashboard/Flywheel Velocity",
-              "Graph/Visible time": 30.0,
-              "Graph/X-axis auto scrolling": true,
-              "Y-axis/Automatic bounds": true,
-              "Y-axis/Upper bound": 1.0,
-              "Y-axis/Lower bound": -1.0,
-              "Y-axis/Unit": "ul"
-            }
-          },
-          "8,0": {
-            "size": [
-              2,
-              4
-            ],
-            "content": {
-              "_type": "Subsystem Layout",
-              "_source0": "network_table:///LiveWindow/Turret",
-              "_title": "LiveWindow/Turret",
-              "Layout/Label position": "BOTTOM",
-              "_children": [
-                {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Turret/Current Command",
-                  "_title": "Current Command"
-                },
-                {
-                  "_type": "Boolean Box",
-                  "_source0": "network_table:///LiveWindow/Turret/IsAtAngle",
-                  "_title": "IsAtAngle",
-                  "Colors/Color when true": "#7CFC00FF",
-                  "Colors/Color when false": "#8B0000FF"
-                }
-              ]
-            }
-          },
-          "10,0": {
-            "size": [
-              2,
-              4
-            ],
-            "content": {
-              "_type": "Subsystem Layout",
-              "_source0": "network_table:///LiveWindow/Hood",
-              "_title": "LiveWindow/Hood",
-              "Layout/Label position": "BOTTOM",
-              "_children": [
-                {
-                  "_type": "Text View",
-                  "_source0": "network_table:///LiveWindow/Hood/Current Command",
-                  "_title": "Current Command"
-                },
-                {
-                  "_type": "Boolean Box",
-                  "_source0": "network_table:///LiveWindow/Hood/IsAtAngle",
-                  "_title": "IsAtAngle",
-                  "Colors/Color when true": "#7CFC00FF",
-                  "Colors/Color when false": "#8B0000FF"
-                }
-              ]
-            }
-          }
-        }
-      }
-    },
-    {
-      "title": "Tab 9",
-      "autoPopulate": false,
-      "autoPopulatePrefix": "",
-      "widgetPane": {
-        "gridSize": 128.0,
-        "showGrid": true,
-        "hgap": 16.0,
-        "vgap": 16.0,
-        "titleType": 0,
-        "tiles": {
-          "5,1": {
-            "size": [
-              2,
-              2
-            ],
-            "content": {
-              "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/Flywheel Acceleration",
-              "_title": "SmartDashboard/Flywheel Acceleration",
-              "Graph/Visible time": 30.0,
-              "Graph/X-axis auto scrolling": true,
-              "Y-axis/Automatic bounds": true,
-              "Y-axis/Upper bound": 1.0,
-              "Y-axis/Lower bound": -1.0,
-              "Y-axis/Unit": "ul",
-              "Visible data/SmartDashboard/Flywheel Acceleration": true
-            }
-          },
-          "3,1": {
-            "size": [
-              2,
-              2
-            ],
-            "content": {
-              "_type": "Graph",
-              "_source0": "network_table:///LiveWindow/Flywheel/Velocity (tan)",
-              "_title": "LiveWindow/Flywheel/Velocity (tan)",
-              "Graph/Visible time": 30.0,
-              "Graph/X-axis auto scrolling": true,
-              "Y-axis/Automatic bounds": true,
-              "Y-axis/Upper bound": 1.0,
-              "Y-axis/Lower bound": -1.0,
-              "Y-axis/Unit": "ul",
-              "Visible data/LiveWindow/Flywheel/Velocity (tan)": true
-            }
-          },
-          "8,1": {
-            "size": [
-              2,
-              2
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/CurrentLowShootCommand",
-              "_title": "/SmartDashboard/CurrentLowShootCommand"
-            }
-          },
-          "10,1": {
-            "size": [
-              2,
-              2
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Color:",
-              "_title": "SmartDashboard/Color:"
-            }
-          },
-          "8,3": {
-            "size": [
-              2,
-              2
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/STATUS",
-              "_title": "/SmartDashboard/STATUS"
+              "_source0": "network_table:///SmartDashboard/TUNING FLYWHEEL MULT",
+              "_title": "/SmartDashboard/TUNING FLYWHEEL MULT"
             }
           }
         }
@@ -2351,9 +1788,9 @@
     }
   ],
   "windowGeometry": {
-    "x": -7.0,
-    "y": 3.0,
-    "width": 1934.0,
-    "height": 843.0
+    "x": 1912.0,
+    "y": -8.0,
+    "width": 1936.0,
+    "height": 1056.0
   }
 }

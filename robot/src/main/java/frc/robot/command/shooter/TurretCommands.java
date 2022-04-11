@@ -16,7 +16,7 @@ public class TurretCommands {
         private double lastRelativeAngleToHub;
         private double lastRobotAngle = 0.0d;
 
-        private boolean searching = false;
+        private boolean searching = true;
         private double direction;
 
         public PassiveTrack(Turret turret, Drive drive) {
@@ -132,6 +132,7 @@ public class TurretCommands {
             if(!VisionInterface.canTrackHub()) return;
 
             double relativeAngleToHub = VisionInterface.getRelativeAngleToHub();
+//            relativeAngleToHub += 3;
 
             if(relativeAngleToHub != lastRelativeAngleToHub) turretControlAngle(relativeAngleToHub);
             lastRelativeAngleToHub = relativeAngleToHub;

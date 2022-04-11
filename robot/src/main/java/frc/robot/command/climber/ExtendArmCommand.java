@@ -1,25 +1,33 @@
 package frc.robot.command.climber;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystem.Climber;
+import frc.robot.subsystem.Drive;
 import frc.robot.util.ClimbLevel;
 
 public class ExtendArmCommand extends CommandBase {
     private Climber climber;
+    private Drive drive;
 
     private ClimbLevel climbLevel;
 
-    public ExtendArmCommand(Climber climber, ClimbLevel climbLevel) {
+    public ExtendArmCommand(Climber climber, Drive drive, ClimbLevel climbLevel) {
         this.climber = climber;
+        this.drive = drive;
         this.climbLevel = climbLevel;
 
         addRequirements(climber);
     }
 
     @Override
-    public void initialize() {
-        if(!climber.isPowerArmExtended(climbLevel))
+    public void execute() {
+        if(drive.getGyroscope().getPitch() < Constants.NEUTRAL_CLIMBER_ROLL) {
             climber.extendArm();
+            return;
+        }
+
+        climber.idle();
     }
 
     @Override
