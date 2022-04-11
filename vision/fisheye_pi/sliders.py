@@ -1,14 +1,40 @@
+from cscore import CameraServer
+import numpy as np
+import argparse
 import curses
+import json
 import math
+import util
+import cv2
+import os
+
+argparser = argparse.ArgumentParser(description="Runs a slider program to determine masks")
+argparser.add_argument('-n', '--number', default=0, help="Image number", type=int, dest='imgnum')
+argparser.add_argument('-m', '--mask-output', default='mask.png', help="Destination file for the mask", dest='maskf')
+args = argparser.parse_args()
+
+# Get the image
+img = cv2.imread(os.path.join("testing", "image%d.png" % args.imgnum))
+
+# Open the mask_json.json file
+mask_json = open("mask_json.json", 'r+')
 
 def main(stdscr):
+    # Read initial values from the json file
+    mask_json.seek(0)
+    init_data = json.load(mask_json)
+    if init_data.get('lower') is None:
+        init_data['lower'] = {'h': 0, 's': 0, 'v': 0}
+    if init_data.get('upper') is None:
+        init_data['upper'] = {'h': 255, 's': 255, 'v': 255}
+
     # Hide the cursor
     curses.curs_set(0)
     # Start colour mode in the terminal
     curses.start_color()
     
     # Initialise slider arrays`
-    sliders = [[0, 255, 0, 255, "H"], [0, 255, 0, 255, "S"], [0, 255, 0, 255, "V"]]
+    sliders = [[init_data['lower']['h'], init_data['upper']['h'], 0, 255, "H"], [init_data['lower']['s'], init_data['upper']['s'], 0, 255, "S"], [init_data['lower']['v'], init_data['upper']['v'], 0, 255, "V"]]
     # Initialise status variables
     cur_slider = 0
     left = True
@@ -16,23 +42,20 @@ def main(stdscr):
     # Constant that is the length (in chars) of the slider bar
     slider_length = 50
 
-    # Initialise curses color pairs for the program
-    curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
-    curses.init_pair(2, 163, curses.COLOR_BLACK)
-    curses.init_pair(3, 105, curses.COLOR_BLACK)
-
-    # 10-12 is the slider ranges
-    curses.init_pair(10, 48, curses.COLOR_BLACK)
-    curses.init_pair(11, 105, curses.COLOR_BLACK)
-    curses.init_pair(12, 135, curses.COLOR_BLACK)
-    
-
     while True:
         # Clear the screen every frame
         stdscr.clear()
 
         # Number of sliders
         length = len(sliders)
+        
+        # Set the lower and upper bounds of the mask
+        lb = np.array([sliders[0][0], sliders[1][0], sliders[2][0]])
+        ub = np.array([sliders[0][1], sliders[1][1], sliders[2][1]])
+
+        mask = util.getMask(img, lb, ub, 4, 4, 1)
+        img_overlay = cv2.bitwise_and(img, img, mask=mask)
+        cv2.imwrite(args.maskf, img_overlay)
 
         # Draw all of the sliders
         for i in range(0, length):
@@ -71,7 +94,7 @@ def main(stdscr):
         # Wait for a keypress
         key = stdscr.getch(cur_slider, slider_length + 8)
         if key == ord('q'):
-            break # Exit the program
+            break # Exit the program loop
         elif key == ord('s'):
             left = not left # Switch directions
         elif key == curses.KEY_RIGHT and left:
@@ -89,10 +112,54 @@ def main(stdscr):
         elif key == curses.KEY_DOWN:
             # Select the next slider down, but don't go over
             cur_slider = min(cur_slider + 1, len(sliders)-1)
+            continue
         elif key == curses.KEY_UP:
             # Select the next slider up, but don't go over
             cur_slider = max(cur_slider - 1, 0)
+            continue
+        else:
+            continue
+        
+        # Write to the json file
+        mask_json.truncate(0)
+        mask_json.seek(0)
+        json.dump({
+            "lower": {
+                "h": sliders[0][0],
+                "s": sliders[1][0],
+                "v": sliders[2][0],
+            },
+            "upper": {
+                "h": sliders[0][1],
+                "s": sliders[1][1],
+                "v": sliders[2][1],
+            }
+        }, mask_json)
 
-# Start the program running
-curses.wrapper(main)
+
+stdscr = curses.initscr()
+curses.noecho()
+curses.cbreak()
+stdscr.keypad(True)
+curses.start_color()
+
+# Initialise curses color pairs for the program
+curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
+curses.init_pair(2, 163, curses.COLOR_BLACK)
+curses.init_pair(3, 105, curses.COLOR_BLACK)
+
+# 10-12 is the slider ranges
+curses.init_pair(10, 48, curses.COLOR_BLACK)
+curses.init_pair(11, 105, curses.COLOR_BLACK)
+curses.init_pair(12, 135, curses.COLOR_BLACK)
+
+# Run the program
+main(stdscr)
+
+curses.nocbreak()
+stdscr.keypad(False)
+curses.echo()
+curses.endwin()
+
+mask_json.close()
 
