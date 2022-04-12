@@ -30,8 +30,6 @@ def object_to_range(d: dict) -> Range:
 def store_range_object(range: Range):
     outfile = open(os.path.join(data, "Ranges", f"{range.id}.json"), "w")
     json.dump(range_to_object(range), outfile)
-    # with open(os.path.join("Data", "Ranges", f"{range.id}.json"), "w") as outfile:
-    #     outfile.write(range_to_object(range))
 
 
 def get_range(id: str) -> Range:

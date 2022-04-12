@@ -1,0 +1,42 @@
+{
+    "L1": {
+        "default": 0,
+        "lower": 0,
+        "upper": 255
+    },
+    "L2": {
+        "default": 0,
+        "lower": 0,
+        "upper": 255
+    },
+    "L3": {
+        "default": 0,
+        "lower": 0,
+        "upper": 255
+    },
+    "U1": {
+        "default": 0,
+        "lower": 0,
+        "upper": 255
+    },
+    "U2": {
+        "default": 0,
+        "lower": 0,
+        "upper": 255
+    },
+    "U3": {
+        "default": 0,
+        "lower": 0,
+        "upper": 255
+    },
+    "Erode": {
+        "default": 0,
+        "lower": 0,
+        "upper": 20
+    },
+    "Dilate": {
+        "default": 0,
+        "lower": 0,
+        "upper": 20
+    }
+}
