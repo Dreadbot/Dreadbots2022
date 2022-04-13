@@ -1,1 +1,47 @@
-{"L1": {"value": 0, "lower": 0, "upper": 255}, "L2": {"value": 0, "lower": 0, "upper": 255}, "L3": {"value": 0, "lower": 0, "upper": 255}, "U1": {"value": 0, "lower": 0, "upper": 255}, "U2": {"value": 0, "lower": 0, "upper": 255}, "U3": {"value": 0, "lower": 0, "upper": 255}, "Erode": {"value": 0, "lower": 0, "upper": 20}, "Dilate": {"value": 0, "lower": 0, "upper": 20}}
+{
+    "L1": {
+        "value": 0,
+        "lower": 0,
+        "upper": 255
+    },
+    "L2": {
+        "value": 0,
+        "lower": 0,
+        "upper": 255
+    },
+    "L3": {
+        "value": 1,
+        "lower": 0,
+        "upper": 255
+    },
+    "U1": {
+        "value": 0,
+        "lower": 0,
+        "upper": 255
+    },
+    "U2": {
+        "value": 0,
+        "lower": 0,
+        "upper": 255
+    },
+    "U3": {
+        "value": 33,
+        "lower": 0,
+        "upper": 255
+    },
+    "Erode": {
+        "value": 0,
+        "lower": 0,
+        "upper": 20
+    },
+    "Dilate": {
+        "value": 0,
+        "lower": 0,
+        "upper": 20
+    },
+    "CumMeter": {
+        "value": -69,
+        "lower": -69,
+        "upper": 420
+    }
+}

@@ -7,6 +7,7 @@ import ballfinding
 import json
 import os
 import math
+from simple_sliders import get_data_file
 
 # https://www.geeksforgeeks.org/python-program-for-quicksort/
 # I did not feel like writing this out myself, so I just modified it
@@ -127,17 +128,23 @@ def main():
 
     table = NetworkTables.getTable('SmartDashboard')
 
-    hL = table.getNumber("HLowerValue", 0)
-    hU = table.getNumber("HUpperValue", 255)
+    # hL = table.getNumber("HLowerValue", 0)
+    # hU = table.getNumber("HUpperValue", 255)
 
-    sL = table.getNumber("SLowerValue", 0)
-    sU = table.getNumber("SUpperValue", 255)
+    # sL = table.getNumber("SLowerValue", 0)
+    # sU = table.getNumber("SUpperValue", 255)
 
-    vL = table.getNumber("VLowerValue", 0)
-    vU = table.getNumber("VUpperValue", 255)
+    # vL = table.getNumber("VLowerValue", 0)
+    # vU = table.getNumber("VUpperValue", 255)
 
-    lower = (hL, sL, vL)
-    upper = (hU, sU, vU)
+    sliderM = json.load(get_data_file())
+
+    lower = (sliderM["L1"]["value"],
+        sliderM["L2"]["value"],
+        sliderM["L3"]["value"])
+    upper = (sliderM["U1"]["value"],
+        sliderM["U2"]["value"],
+        sliderM["U3"]["value"])
 
     manip = json.load(open(os.path.join(data, "manipulation.json")))
     erode = manip["erode"]

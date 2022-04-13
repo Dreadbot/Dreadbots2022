@@ -77,12 +77,14 @@ def main():
             selectionI -= 1
         elif key == keyboard.Key.right and currentM["value"] < currentM["upper"]:
             currentM["value"] += 1
-            json.dump(monitors, get_data_file("w"))
+            json.dump(monitors, get_data_file("w"), indent=4)
         elif key == keyboard.Key.left and currentM["value"] > currentM["lower"]:
             currentM["value"] -= 1
-            json.dump(monitors, get_data_file("w"))
+            json.dump(monitors, get_data_file("w"), indent=4)
         elif key == keyboard.Key.esc:
             safe_exit()
+        else:
+            return
 
         send_info()
             

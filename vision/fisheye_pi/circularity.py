@@ -1,6 +1,6 @@
 import numpy as np
 import cv2
-import imutils
+# import imutils
 import math
 import util
 
@@ -39,7 +39,7 @@ def main():
 
         cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
                                 cv2.CHAIN_APPROX_SIMPLE)
-        cnts = imutils.grab_contours(cnts)
+        # cnts = imutils.grab_contours(cnts)
 
         cntsFrame = frame.copy()
         circlesFrame = frame.copy()
@@ -134,7 +134,7 @@ def main():
 def getBall(src, minCirc, minArea):
     cnts = cv2.findContours(src, cv2.RETR_EXTERNAL,
                             cv2.CHAIN_APPROX_SIMPLE)
-    cnts = imutils.grab_contours(cnts)
+    # cnts = imutils.grab_contours(cnts)
 
     if len(cnts) > 0:
         circles = []

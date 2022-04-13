@@ -3,7 +3,7 @@ import argparse
 import os
 import json
 from cv2 import dilate
-import imutils
+# import imutils
 from networktables import NetworkTables
 import threading
 import projection_math
@@ -147,7 +147,7 @@ def main():
 
         # Find contours (areas of low values to high values) in the binary image
         contours = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        contours = imutils.grab_contours(contours)
+        # contours = imutils.grab_contours(contours)
 
 
         # Initialize image point array
