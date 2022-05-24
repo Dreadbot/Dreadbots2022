@@ -11,7 +11,7 @@ import frc.robot.util.controls.VisionInterface;
 public class FlywheelCommands {
     public static class PrepareVisionShot extends CommandBase {
         private final Flywheel flywheel;
-        private final CargoKinematics cargoKinematics;
+        private CargoKinematics cargoKinematics;
 
         private double commandedVelocity;
 
@@ -19,7 +19,7 @@ public class FlywheelCommands {
             this.flywheel = flywheel;
             this.cargoKinematics = flywheel.getCargoKinematics();
 
-            SmartDashboard.putNumber("TUNING FLYWHEEL MULT", 1.0d);
+            SmartDashboard.putNumber("TUNING ARC HEIGHT", 1.0d);
 
             addRequirements(flywheel);
         }
@@ -41,10 +41,11 @@ public class FlywheelCommands {
 ////            commandedVelocity = SmartDashboard.getNumber("TUNING FLYWHEEL SPEED", 3.0d);
 //            flywheel.setVelocity(commandedVelocity);
 
+            //cargoKinematics = new CargoKinematics(s-> SmartDashboard.getNumber("TUNING ARC HEIGHT", 1.0d), 0.5715, 2.6416);
             double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
             double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
 
-            commandedVelocity = velocity * SmartDashboard.getNumber("TUNING FLYWHEEL MULT", 1.0d);
+            commandedVelocity = velocity; //* SmartDashboard.getNumber("TUNING ARC HEIGHT", 1.0d);
             flywheel.setVelocity(commandedVelocity);
         }
 
