@@ -41,7 +41,7 @@ public class VisionInterface {
      * @return The state of the vision tracking.
      */
     public static boolean canTrackHub() {
-        return SmartDashboard.getNumber("IsTargetFoundInFrame", 0.0d) == 1.0d;
+        return false; // For ""parade"" purposes
     }
 
     private VisionInterface() throws IllegalStateException {
