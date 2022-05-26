@@ -25,6 +25,7 @@ public class DriveCommand extends CommandBase {
     private SensitivityController rotationalSensitivityFilter;
 
     private SlewRateLimiter slewRateLimiter;
+    private double speedLimiter = 0.6d;
 
     public DriveCommand(Drive drive, DoubleSupplier joystickForwardAxis, DoubleSupplier joystickLateralAxis, DoubleSupplier joystickRotationalAxis) {
         this.drive = drive;
@@ -61,9 +62,9 @@ public class DriveCommand extends CommandBase {
         rotationalAxis = MathUtil.applyDeadband(rotationalAxis, 0.03d);
 //        rotationalAxis = rotationalSensitivityFilter.calculate(rotationalAxis);
 
-        commandedChassisSpeeds.vxMetersPerSecond = forwardAxis * 3.5 * .55;
-        commandedChassisSpeeds.vyMetersPerSecond = lateralAxis * 5 * .55;
-        commandedChassisSpeeds.omegaRadiansPerSecond = rotationalAxis * .55 * Math.PI;
+        commandedChassisSpeeds.vxMetersPerSecond = forwardAxis * 3.5 * .55 * speedLimiter;
+        commandedChassisSpeeds.vyMetersPerSecond = lateralAxis * 5 * .55 * speedLimiter;
+        commandedChassisSpeeds.omegaRadiansPerSecond = rotationalAxis * .55 * Math.PI * speedLimiter;
 
         // Input the drive code
 //        drive.driveCartesian(forwardAxis, lateralAxis, rotationalAxis);
