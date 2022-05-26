@@ -1,5 +1,8 @@
 package frc.robot.command.shooter;
 
+import java.util.function.DoubleSupplier;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -325,6 +328,37 @@ public class TurretCommands {
         @Override
         public boolean isFinished() {
             return upperCalibrated;
+        }
+    }
+
+    public static class ManualTurretControl extends CommandBase{
+        Turret turret;
+        Drive drive;
+        DoubleSupplier joystickLateralAxis;
+        public ManualTurretControl(Turret turret, DoubleSupplier joystickLateralAxis){
+            this.turret = turret;
+            this.joystickLateralAxis = joystickLateralAxis;
+
+            addRequirements(turret);
+        }
+
+        @Override
+        public void initialize(){
+            
+        }
+
+        @Override
+        public void execute(){
+            double lateralAxis = -joystickLateralAxis.getAsDouble();
+            lateralAxis = MathUtil.applyDeadband(lateralAxis, 0.03d);
+
+            if(lateralAxis == 0)
+                turret.setSpeed(0);
+            else if(!turret.getLowerLimitSwitch() && lateralAxis > 0)
+                turret.setSpeed(lateralAxis *.2);
+            else if(!turret.getUpperLimitSwitch() && lateralAxis < 0)
+                turret.setSpeed(lateralAxis *.2);
+
         }
     }
 
