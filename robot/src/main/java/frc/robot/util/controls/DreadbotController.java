@@ -6,6 +6,7 @@ package frc.robot.util.controls;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * A custom Facade pattern for the default WPI Joystick class
@@ -202,10 +203,24 @@ public final class DreadbotController {
     }
 
     /**
+     * @return The reference of the Dpad being pressed up
+     */
+    public JoystickDpad getDpadUp(){
+        return new JoystickDpad(joystick, 0);
+    }
+
+    /**
      * @return The state of the Dpad being pressed right
      */
     public boolean isDpadRightPressed() {
         return joystick.getPOV() == 90;
+    }
+
+    /**
+     * @return The reference of the Dpad being pressed right
+     */
+    public JoystickDpad getDpadRight(){
+        return new JoystickDpad(joystick, 90);
     }
 
     /**
@@ -216,10 +231,24 @@ public final class DreadbotController {
     }
 
     /**
+     * @return The reference of the Dpad being pressed right
+     */
+    public JoystickDpad getDpadDown(){
+        return new JoystickDpad(joystick, 180);
+    }
+
+    /**
      * @return The state of the Dpad being pressed left
      */
     public boolean isDpadLeftPressed() {
         return joystick.getPOV() == 270;
+    }
+
+    /**
+     * @return The reference of the Dpad being pressed right
+     */
+    public JoystickDpad getDpadLeft(){
+        return new JoystickDpad(joystick, 270);
     }
 
     /**

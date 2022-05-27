@@ -135,37 +135,60 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        // Drive Commands
-        drive.setDefaultCommand(new DriveCommand(drive,
-            primaryController::getYAxis,
-            primaryController::getXAxis,
-            primaryController::getZAxis));
+        boolean oneControllerMode = false;
 
-        // Intake Commands
-        secondaryController.getAButton().whileHeld(new OuttakeCommand(intake, feeder, flywheel));
-        secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
+        if(oneControllerMode){
+            // Drive Commands
+            drive.setDefaultCommand(new DriveCommand(drive,
+                primaryController::getYAxis,
+                primaryController::getXAxis,
+                primaryController::getZAxis));
 
-        // Shooter Commands
-        //hood.setDefaultCommand(new HoodCommands.PassiveTrack(hood));
-        turret.setDefaultCommand(new TurretCommands.ManualTurretControl(turret, secondaryController::getYAxis));
-        flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
-        secondaryController.getBButton().whileHeld(new ShooterCommands.LowShoot(shooter, intake));
-        secondaryController.getYButton().whileHeld(new ShooterCommands.HighShoot(shooter, intake));
-        secondaryController.getStartButton().whileHeld(new ShooterCommands.TarmacPresetShoot(shooter, intake));
-        secondaryController.getBackButton().whileHeld(new ShooterCommands.LongPresetShoot(shooter, intake));
+            // Intake Commands
+            primaryController.getDpadRight().whileHeld(new OuttakeCommand(intake, feeder, flywheel));
+            secondaryController.getDpadLeft().whileHeld(new IntakeCommand(intake));
 
-        // Climber Commands
-        climber.setDefaultCommand(new RunCommand(climber::idle, climber));
-        primaryController.getYButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
-        primaryController.getXButton().whenPressed(new RotateNeutralHookDownCommand(climber));
-        primaryController.getBButton().whenPressed(new RotateClimbingArmVerticalCommand(climber, drive));
-        primaryController.getAButton().whenPressed(new RotateClimbingArmDownCommand(climber));
-        primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber, drive, ClimbLevel.MEDIUM));
-        primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
+            // Shooter Commands
+            turret.setDefaultCommand(new TurretCommands.ManualTurretControl(turret, secondaryController::isRightBumperPressed, secondaryController::isLeftBumperPressed));
+            flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
+            primaryController.getDpadDown().whileHeld(new ShooterCommands.LowShoot(shooter, intake));
+            primaryController.getDpadUp().whileHeld(new ShooterCommands.HighShoot(shooter, intake));
 
-        primaryController.getLeftBumper().whenPressed(new MediumClimb(climber, drive, turret));
-        primaryController.getBackButton().whenPressed(new HighClimb(climber, drive, turret));
-        primaryController.getStartButton().whenPressed(new TraverseClimb(climber, drive, turret));
+            // Climber Commands
+            climber.setDefaultCommand(new RunCommand(climber::idle, climber));
+            primaryController.getYButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
+            primaryController.getXButton().whenPressed(new RotateNeutralHookDownCommand(climber));
+            primaryController.getBButton().whenPressed(new RotateClimbingArmVerticalCommand(climber, drive));
+            primaryController.getAButton().whenPressed(new RotateClimbingArmDownCommand(climber));
+            primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber, drive, ClimbLevel.MEDIUM));
+            primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
+        }
+        else {
+            // Drive Commands
+            drive.setDefaultCommand(new DriveCommand(drive,
+                primaryController::getYAxis,
+                primaryController::getXAxis,
+                primaryController::getZAxis));
+
+            // Intake Commands
+            secondaryController.getAButton().whileHeld(new OuttakeCommand(intake, feeder, flywheel));
+            secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
+
+            // Shooter Commands
+            turret.setDefaultCommand(new TurretCommands.ManualTurretControl(turret, secondaryController::isRightBumperPressed, secondaryController::isLeftBumperPressed));
+            flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
+            secondaryController.getBButton().whileHeld(new ShooterCommands.LowShoot(shooter, intake));
+            secondaryController.getYButton().whileHeld(new ShooterCommands.HighShoot(shooter, intake));
+
+            // Climber Commands
+            climber.setDefaultCommand(new RunCommand(climber::idle, climber));
+            primaryController.getYButton().whenPressed(new RotateNeutralHookVerticalCommand(climber));
+            primaryController.getXButton().whenPressed(new RotateNeutralHookDownCommand(climber));
+            primaryController.getBButton().whenPressed(new RotateClimbingArmVerticalCommand(climber, drive));
+            primaryController.getAButton().whenPressed(new RotateClimbingArmDownCommand(climber));
+            primaryController.getRightTrigger().whenPressed(new ExtendArmCommand(climber, drive, ClimbLevel.MEDIUM));
+            primaryController.getLeftTrigger().whenPressed(new RetractArmCommand(climber));
+        }
     }
 
     public Command getAutonomousCommand() {

@@ -1,5 +1,6 @@
 package frc.robot.command.shooter;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
@@ -333,10 +334,12 @@ public class TurretCommands {
 
     public static class ManualTurretControl extends CommandBase{
         Turret turret;
-        DoubleSupplier joystickLateralAxis;
-        public ManualTurretControl(Turret turret, DoubleSupplier joystickLateralAxis){
+        BooleanSupplier isRightBumperPressed;
+        BooleanSupplier isLeftBumperPressed;
+        public ManualTurretControl(Turret turret, BooleanSupplier isRightBumperPressed, BooleanSupplier isLeftBumperPressed){
             this.turret = turret;
-            this.joystickLateralAxis = joystickLateralAxis;
+            this.isRightBumperPressed = isRightBumperPressed;
+            this.isLeftBumperPressed = isLeftBumperPressed;
 
             addRequirements(turret);
         }
@@ -348,16 +351,12 @@ public class TurretCommands {
 
         @Override
         public void execute(){
-            double lateralAxis = -joystickLateralAxis.getAsDouble();
-            lateralAxis = MathUtil.applyDeadband(lateralAxis, 0.03d);
-            
-            if(lateralAxis == 0)
+            if(!turret.getLowerLimitSwitch() && isRightBumperPressed.getAsBoolean())
+                turret.setSpeed(-.2);
+            else if (!turret.getUpperLimitSwitch() && isLeftBumperPressed.getAsBoolean())
+                turret.setSpeed(.2);
+            else 
                 turret.setSpeed(0);
-            else if(!turret.getLowerLimitSwitch() && lateralAxis > 0)
-                turret.setSpeed(lateralAxis *.2);
-            else if(!turret.getUpperLimitSwitch() && lateralAxis < 0)
-                turret.setSpeed(lateralAxis *.2);
-
         }
     }
 
