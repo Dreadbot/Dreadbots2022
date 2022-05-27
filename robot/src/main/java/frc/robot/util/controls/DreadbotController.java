@@ -195,6 +195,34 @@ public final class DreadbotController {
     }
 
     /**
+     * @return The state of the Dpad being pressed up
+     */
+    public boolean isDpadUpPressed() {
+        return joystick.getPOV() == 0;
+    }
+
+    /**
+     * @return The state of the Dpad being pressed right
+     */
+    public boolean isDpadRightPressed() {
+        return joystick.getPOV() == 90;
+    }
+
+    /**
+     * @return The state of the Dpad being pressed down
+     */
+    public boolean isDpadDownPressed() {
+        return joystick.getPOV() == 180;
+    }
+
+    /**
+     * @return The state of the Dpad being pressed left
+     */
+    public boolean isDpadLeftPressed() {
+        return joystick.getPOV() == 270;
+    }
+
+    /**
      * Returns the lower level edu.wpi.first.wpilibj.Joystick class used by this
      * facade pattern.
      *
@@ -231,6 +259,15 @@ public final class DreadbotController {
      */
     public boolean isConnected() {
         return joystick.isConnected();
+    }
+
+    /**
+     * Delegate method to the getPOV() method of the Joystick class
+     * 
+     * @return The POV of the Dpad
+     */
+    public int getPOV() {
+        return joystick.getPOV();
     }
 
     /**

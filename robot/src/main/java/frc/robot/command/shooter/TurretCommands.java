@@ -333,7 +333,6 @@ public class TurretCommands {
 
     public static class ManualTurretControl extends CommandBase{
         Turret turret;
-        Drive drive;
         DoubleSupplier joystickLateralAxis;
         public ManualTurretControl(Turret turret, DoubleSupplier joystickLateralAxis){
             this.turret = turret;
@@ -351,7 +350,7 @@ public class TurretCommands {
         public void execute(){
             double lateralAxis = -joystickLateralAxis.getAsDouble();
             lateralAxis = MathUtil.applyDeadband(lateralAxis, 0.03d);
-
+            
             if(lateralAxis == 0)
                 turret.setSpeed(0);
             else if(!turret.getLowerLimitSwitch() && lateralAxis > 0)
