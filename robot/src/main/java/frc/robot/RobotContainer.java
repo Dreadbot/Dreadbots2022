@@ -135,7 +135,7 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        boolean oneControllerMode = false;
+        boolean oneControllerMode = true;
 
         if(oneControllerMode){
             // Drive Commands
@@ -146,10 +146,10 @@ public class RobotContainer {
 
             // Intake Commands
             primaryController.getDpadRight().whileHeld(new OuttakeCommand(intake, feeder, flywheel));
-            secondaryController.getDpadLeft().whileHeld(new IntakeCommand(intake));
+            primaryController.getDpadLeft().whileHeld(new IntakeCommand(intake));
 
             // Shooter Commands
-            turret.setDefaultCommand(new TurretCommands.ManualTurretControl(turret, secondaryController::isRightBumperPressed, secondaryController::isLeftBumperPressed));
+            turret.setDefaultCommand(new TurretCommands.ManualTurretControl(turret, primaryController::isRightBumperPressed, primaryController::isLeftBumperPressed));
             flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
             primaryController.getDpadDown().whileHeld(new ShooterCommands.LowShoot(shooter, intake));
             primaryController.getDpadUp().whileHeld(new ShooterCommands.HighShoot(shooter, intake));
