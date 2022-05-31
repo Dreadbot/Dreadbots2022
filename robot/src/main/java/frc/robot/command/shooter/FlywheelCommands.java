@@ -71,12 +71,13 @@ public class FlywheelCommands {
         @Override
         public void execute() {
             flywheel.setVelocity(velocity);
+            System.out.println("Working");
         }
 
         @Override
         public boolean isFinished() {
 //            return Math.abs(flywheel.getTangentialVelocity() - velocity) <= 1.0d;
-
+            System.out.println("DONE");
             return flywheel.isAtSetVelocity();
         }
     }
