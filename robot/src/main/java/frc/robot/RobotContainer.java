@@ -151,6 +151,7 @@ public class RobotContainer {
             // Shooter Commands
             turret.setDefaultCommand(new TurretCommands.ManualTurretControl(turret, primaryController::isRightBumperPressed, primaryController::isLeftBumperPressed));
             flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
+            primaryController.getStartButton().whileHeld(new TurretCommands.ActiveTrack(turret));
             primaryController.getDpadDown().whileHeld(new ShooterCommands.LowShoot(shooter, intake));
             primaryController.getDpadUp().whileHeld(new ShooterCommands.HighShoot(shooter, intake));
 
@@ -177,6 +178,7 @@ public class RobotContainer {
             // Shooter Commands
             turret.setDefaultCommand(new TurretCommands.ManualTurretControl(turret, secondaryController::isRightBumperPressed, secondaryController::isLeftBumperPressed));
             flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
+            primaryController.getStartButton().whileHeld(new TurretCommands.ActiveTrack(turret));
             secondaryController.getBButton().whileHeld(new ShooterCommands.LowShoot(shooter, intake));
             secondaryController.getYButton().whileHeld(new ShooterCommands.HighShoot(shooter, intake));
 

@@ -64,18 +64,15 @@ public class ShooterCommands {
     public static class PresetShoot extends SequentialCommandGroup {
         private Shooter shooter;
 
-        private double afterAngle;
-
-        public PresetShoot(Shooter shooter, double turretAngle, double hoodAngle, double flywheelSpeed, double afterAngle) {
+        public PresetShoot(Shooter shooter, double turretAngle, double hoodAngle, double flywheelSpeed) {
             this.shooter = shooter;
-            this.afterAngle = afterAngle;
 
             addCommands(
                 new InstantCommand(() -> System.out.println("PRESET SHOOT")),
                 new ParallelCommandGroup(
                     new WaitUntilCommand(shooter.getColorSensor()::isBallDetected),
                     new TurretCommands.TurnToAngle(shooter.getTurret(), turretAngle),
-                    new HoodCommands.TurnToAngle(shooter.getHood(), hoodAngle),
+                    //new HoodCommands.TurnToAngle(shooter.getHood(), hoodAngle),
                     new FlywheelCommands.PreparePresetShot(shooter.getFlywheel(), flywheelSpeed)
                 ),
                 new FeedBallCommand(shooter),
@@ -182,8 +179,8 @@ public class ShooterCommands {
                 ),
                 new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kBrake)),
                 new ConditionalCommand(
-                    new PresetShoot(shooter, 149.0, 60.0d, 5d, 149.0d).raceWith(new IntakeCommand(intake, 1.0)),
-                    new PresetShoot(shooter, 65.0, 60.0d, 5d, 149.0d).raceWith(new IntakeCommand(intake, 1.0)),
+                    new PresetShoot(shooter, 149.0, 60.0d, 5d).raceWith(new IntakeCommand(intake, 1.0)),
+                    new PresetShoot(shooter, 65.0, 60.0d, 5d).raceWith(new IntakeCommand(intake, 1.0)),
                     shooter.getColorSensor()::isCorrectColor
                 )
             );
@@ -218,8 +215,8 @@ public class ShooterCommands {
                 ),
                 new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kBrake)),
                 new ConditionalCommand(
-                    new PresetShoot(shooter, 155.0, 67.710d,  7.539d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
-                    new PresetShoot(shooter, 65.0, 76.087d, 3.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
+                    new PresetShoot(shooter, 155.0, 67.710d,  7.539d).raceWith(new IntakeCommand(intake, 0.5)),
+                    new PresetShoot(shooter, 65.0, 76.087d, 3.0d).raceWith(new IntakeCommand(intake, 0.5)),
                     shooter.getColorSensor()::isCorrectColor
                 )
             );
@@ -243,8 +240,8 @@ public class ShooterCommands {
                 ),
                 new InstantCommand(() -> shooter.getFeeder().setIdleMode(CANSparkMax.IdleMode.kBrake)),
                 new ConditionalCommand(
-                    new PresetShoot(shooter, 155.0, 59.0609d, 7, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
-                    new PresetShoot(shooter, 65.0, 76.087d, 12.0d, 155.0d).raceWith(new IntakeCommand(intake, 0.5)),
+                    new PresetShoot(shooter, 155.0, 59.0609d, 7).raceWith(new IntakeCommand(intake, 0.5)),
+                    new PresetShoot(shooter, 65.0, 76.087d, 12.0d).raceWith(new IntakeCommand(intake, 0.5)),
                     shooter.getColorSensor()::isCorrectColor
                 )
             );
@@ -269,14 +266,14 @@ public class ShooterCommands {
                     // SHOOT
                     new ConditionalCommand(
                         new TargetShoot(shooter),
-                        new PresetShoot(shooter, 155.0, 76.087d, 7.0d, 155.0d),
+                        new PresetShoot(shooter, 155.0, 76.087d, 7.0d),
                         VisionInterface::canTrackHub
                     ).alongWith(new IntakeCommand(intake)),
                     // EJECT
                     new ConditionalCommand(
 //                        new EjectShoot(shooter),
                         new TargetShoot(shooter),
-                        new PresetShoot(shooter, 110, 71.862, 7.0d, 155.0d),
+                        new PresetShoot(shooter, 110, 71.862, 7.0d),
                         VisionInterface::canTrackHub
                     ).alongWith(new IntakeCommand(intake)),
                     shooter.getColorSensor()::isCorrectColor
