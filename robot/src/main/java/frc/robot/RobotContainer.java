@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.util.function.BooleanSupplier;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
@@ -13,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.command.autonomous.TrajectoryAuton;
 import frc.robot.command.climber.*;
 import frc.robot.command.drive.DriveCommand;
@@ -148,10 +151,13 @@ public class RobotContainer {
             primaryController.getDpadRight().whileHeld(new OuttakeCommand(intake, feeder, flywheel));
             primaryController.getDpadLeft().whileHeld(new IntakeCommand(intake));
 
+            //Hood
+            primaryController.getStartButton().whileHeld(new HoodCommands.ActiveTrack(hood), false);
+
             // Shooter Commands
             turret.setDefaultCommand(new TurretCommands.ManualTurretControl(turret, primaryController::isRightBumperPressed, primaryController::isLeftBumperPressed));
             flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
-            primaryController.getStartButton().whileHeld(new TurretCommands.ActiveTrack(turret));
+            primaryController.getStartButton().whileHeld(new TurretCommands.ActiveTrack(turret), false);
             primaryController.getDpadDown().whileHeld(new ShooterCommands.LowShoot(shooter, intake));
             primaryController.getDpadUp().whileHeld(new ShooterCommands.HighShoot(shooter, intake));
 
