@@ -42,10 +42,12 @@ public class FlywheelCommands {
 //            flywheel.setVelocity(commandedVelocity);
 
             double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
-            double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
+            //double velocity = cargoKinematics.getBallVelocityNorm(distanceToHub);
+            double velocity = (.0775168 * (distanceToHub * distanceToHub)) - (0.391372 * distanceToHub) + 8.7908;
 
-            commandedVelocity = velocity * SmartDashboard.getNumber("TUNING FLYWHEEL MULT", 1.0d);
-            flywheel.setVelocity(commandedVelocity);
+            //commandedVelocity = velocity * SmartDashboard.getNumber("TUNING FLYWHEEL MULT", 1.0d);
+            //flywheel.setVelocity(commandedVelocity);
+            flywheel.setVelocity(velocity);
         }
 
         @Override
@@ -70,6 +72,7 @@ public class FlywheelCommands {
         @Override
         public void execute() {
             flywheel.setVelocity(velocity);
+            //flywheel.setVelocity(SmartDashboard.getNumber("Flywheel velocity &", 0));
         }
 
         @Override

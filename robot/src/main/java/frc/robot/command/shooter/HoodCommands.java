@@ -60,7 +60,8 @@ public class HoodCommands {
 
         public ActiveTrack(Hood hood) {
             this.hood = hood;
-            this.cargoKinematics = new CargoKinematics(s -> 0.19685 * s + 2.5, 0.5715, 2.6416);
+            this.cargoKinematics = new CargoKinematics(s -> (0.171773 * (s * s)) - (5.35002 * s) + 86.4985, 0.5715, 2.6416);
+            
 //            this.cargoKinematics = new CargoKinematics(s -> 0.1 * s + 3, 0.5715, 2.6416);
 //            this.cargoKinematics = new CargoKinematics(s -> 2, 0.5715, 2.6416);
 //            this.cargoKinematics = new CargoKinematics(s -> 0.306*s + 2.6, 0.5715, 2.6416);
@@ -77,7 +78,8 @@ public class HoodCommands {
             if(!VisionInterface.canTrackHub()) return;
 
             double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
-            double hoodAngle = cargoKinematics.getBallDirectionAngle(distanceToHub);
+            // double hoodAngle = cargoKinematics.getBallDirectionAngle(distanceToHub);
+            double hoodAngle = (0.171773 * (distanceToHub * distanceToHub)) - (5.35002 * distanceToHub) + 86.4985;
             lastAngle = hoodAngle;
 
             if(distanceToHub != lastDistanceToHub) hoodControlAngle(hoodAngle);
@@ -227,6 +229,7 @@ public class HoodCommands {
         @Override
         public void execute() {
             hood.setAngle(angle);
+            //hood.setAngle(SmartDashboard.getNumber("Flywheel hood angle", 60.0d));
         }
 
         @Override
