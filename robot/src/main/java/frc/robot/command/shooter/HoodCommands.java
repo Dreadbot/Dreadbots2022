@@ -79,7 +79,7 @@ public class HoodCommands {
 
             double distanceToHub = Units.inchesToMeters(VisionInterface.getRelativeDistanceToHub());
             // double hoodAngle = cargoKinematics.getBallDirectionAngle(distanceToHub);
-            double hoodAngle = (0.171773 * (distanceToHub * distanceToHub)) - (5.35002 * distanceToHub) + 86.4985;
+            double hoodAngle = (4.69586 * (distanceToHub * distanceToHub)) - (41.2611 * distanceToHub) + 159.604;
             lastAngle = hoodAngle;
 
             if(distanceToHub != lastDistanceToHub) hoodControlAngle(hoodAngle);

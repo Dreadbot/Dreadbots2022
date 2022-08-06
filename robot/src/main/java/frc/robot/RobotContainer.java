@@ -52,8 +52,8 @@ public class RobotContainer {
     public RobotContainer() {
         VisionInterface.selectCamera(2);
 
-        // SmartDashboard.putNumber("Flywheel velocity &", 10d);
-        // SmartDashboard.putNumber("Flywheel hood angle", 60.0d);
+         SmartDashboard.putNumber("Flywheel velocity &", 10d);
+         SmartDashboard.putNumber("Flywheel hood angle", 60.0d);
 
         primaryController = new DreadbotController(Constants.PRIMARY_JOYSTICK_PORT);
         secondaryController = new DreadbotController(Constants.SECONDARY_JOYSTICK_PORT);

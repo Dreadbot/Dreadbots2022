@@ -1,5 +1,6 @@
 package frc.robot.command.shooter;
 
+import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
