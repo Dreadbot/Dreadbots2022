@@ -205,6 +205,7 @@ robot/.nfs*
 robot/.DS_Store
 robot/.AppleDouble
 robot/.LSOverride
+**/.DS_Store
 
 # Icon must end with two \r
 robot/Icon
