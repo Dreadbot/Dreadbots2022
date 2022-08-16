@@ -13,7 +13,6 @@ import frc.robot.util.controls.SensitivityController;
 
 public class DriveCommand extends CommandBase {
     private final Drive drive;
-
     private final DoubleSupplier joystickForwardAxis;
     private final DoubleSupplier joystickLateralAxis;
     private final DoubleSupplier joystickRotationalAxis;
@@ -23,12 +22,12 @@ public class DriveCommand extends CommandBase {
     private SensitivityController forwardSensitivityFilter;
     private SensitivityController lateralSensitivityFilter;
     private SensitivityController rotationalSensitivityFilter;
-
+    private double speedModifier;
     private SlewRateLimiter slewRateLimiter;
 
     public DriveCommand(Drive drive, DoubleSupplier joystickForwardAxis, DoubleSupplier joystickLateralAxis, DoubleSupplier joystickRotationalAxis) {
         this.drive = drive;
-
+        this.speedModifier = 1f;
         this.joystickForwardAxis = joystickForwardAxis;
         this.joystickLateralAxis = joystickLateralAxis;
         this.joystickRotationalAxis = joystickRotationalAxis;
@@ -61,9 +60,9 @@ public class DriveCommand extends CommandBase {
         rotationalAxis = MathUtil.applyDeadband(rotationalAxis, 0.03d);
 //        rotationalAxis = rotationalSensitivityFilter.calculate(rotationalAxis);
 
-        commandedChassisSpeeds.vxMetersPerSecond = forwardAxis * 3.5 * .55;
-        commandedChassisSpeeds.vyMetersPerSecond = lateralAxis * 5 * .55;
-        commandedChassisSpeeds.omegaRadiansPerSecond = rotationalAxis * .55 * Math.PI;
+        commandedChassisSpeeds.vxMetersPerSecond = forwardAxis * 2 * .55 * speedModifier;
+        commandedChassisSpeeds.vyMetersPerSecond = lateralAxis * 2 * .55 * speedModifier;
+        commandedChassisSpeeds.omegaRadiansPerSecond = rotationalAxis * .55 * Math.PI * speedModifier;
 
         // Input the drive code
 //        drive.driveCartesian(forwardAxis, lateralAxis, rotationalAxis);
@@ -88,5 +87,11 @@ public class DriveCommand extends CommandBase {
         SmartDashboard.putData("forwardSensFilter", forwardSensitivityFilter);
         SmartDashboard.putData("lateralSensFilter", lateralSensitivityFilter);
         SmartDashboard.putData("rotateSensFilter", rotationalSensitivityFilter);
+    }
+    public void enableTurbo() {
+        speedModifier = 1.5f;
+    }
+    public void disableTurbo() {
+        speedModifier = 1f;
     }
 }

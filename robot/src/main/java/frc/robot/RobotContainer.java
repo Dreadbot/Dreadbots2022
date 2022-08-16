@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.command.autonomous.TrajectoryAuton;
 import frc.robot.command.climber.*;
 import frc.robot.command.drive.DriveCommand;
+import frc.robot.command.drive.TurboCommand;
 import frc.robot.command.intake.IntakeCommand;
 import frc.robot.command.intake.OuttakeCommand;
 import frc.robot.command.shooter.HoodCommands;
@@ -135,17 +136,20 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
+        DriveCommand driveCommand = new DriveCommand(drive,
+        primaryController::getYAxis,
+        primaryController::getXAxis,
+        primaryController::getZAxis
+        );
         // Drive Commands
-        drive.setDefaultCommand(new DriveCommand(drive,
-            primaryController::getYAxis,
-            primaryController::getXAxis,
-            primaryController::getZAxis));
+        drive.setDefaultCommand(driveCommand);
 
         // Intake Commands
         secondaryController.getAButton().whileHeld(new OuttakeCommand(intake, feeder, flywheel));
         secondaryController.getXButton().whileHeld(new IntakeCommand(intake));
 
         // Shooter Commands
+        primaryController.getRightBumper().whenHeld(new TurboCommand(driveCommand));
         hood.setDefaultCommand(new HoodCommands.PassiveTrack(hood));
         turret.setDefaultCommand(new TurretCommands.PassiveTrack(turret, drive));
         flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
