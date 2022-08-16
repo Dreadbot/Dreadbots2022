@@ -11,6 +11,7 @@ from cscore import CameraServer
 import time, sys, logging
 import numpy as np
 import rw_visualizer
+import logger
 
 import time
 
@@ -101,6 +102,8 @@ def init_camera():
 
 # main block
 def main():
+    loggerObj = logger.getLogger()
+
     # Establish connection to networktables and publish related info to terminal
     logging.basicConfig(level=logging.DEBUG)
 
@@ -109,6 +112,7 @@ def main():
     NetworkTables.initialize(server=ip)
 
     def connection_listener(connected, info):
+        loggerObj.info('; connected=%s' % connected)
         print(info, "; connected=%s" % connected)
 
     NetworkTables.addConnectionListener(connection_listener, immediateNotify=True)
@@ -150,6 +154,7 @@ def main():
     white_img = np.zeros([frame_h//2, frame_w//2, frame_d], dtype=np.uint8)
 
     prev_time = 0
+    frame_count = 0
 
     fps = 18
 
@@ -277,7 +282,7 @@ def main():
                 if successes < max([len(imgpoints)-2, 1]):
                     imgpoints.pop(i)
         except IndexError:
-            pass
+            loggerObj.warn('IndexError in imgpoints loop')
 
 
         # Unwrap each point to draw on real-world visualizer
@@ -324,19 +329,22 @@ def main():
         # then push a new frame and reset the time of the last image push
         if time_elapsed >= 1/fps:
             prev_time = time.time()
+            frame_count += 1
         
+            cameraSelection = table.getNumber("CameraSelection", 0)
+
             # Set the output of the camera server to the selected camera
             # 0 - "clean" image
             # 1 - binary mask w/ "clean" underlay
             # 2 - Real-world visualizer
-            if table.getNumber("CameraSelection", 0) == 0:
+            if cameraSelection == 0:
                 # Center image lines
                 cv2.line(draw_frame, (320//2, 0), (320//2,480//2), (255,255,255), thickness=2)
                 cv2.line(draw_frame, (0,240), (640//2, 240//2), (255,255,255), thickness=2)
 
                 outputStream.putFrame(draw_frame)
 
-            elif table.getNumber("CameraSelection", 0) == 1:
+            elif cameraSelection == 1:
                 # Convert the mixed light & turret mask to BGR
                 full_mask = cv2.cvtColor(full_mask, cv2.COLOR_GRAY2BGR)
                 
@@ -351,9 +359,13 @@ def main():
 
                 outputStream.putFrame(push_frame)
 
-            elif table.getNumber("CameraSelection", 0) == 2:
+            elif cameraSelection == 2:
                 frame = rw_vis.retrieve_img()
                 outputStream.putFrame(frame)
+
+            if frame_count == fps * 3:
+                frame_count = 0
+                loggerObj.info('Distance %d : Angle %d' % distance % angle)
 
 
     # Release capture object
