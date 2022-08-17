@@ -21,6 +21,7 @@ public abstract class Constants {
     public static final boolean HOOD_ENABLED         = true;
     public static final boolean TURRET_ENABLED       = true;
     public static final boolean COLOR_SENSOR_ENABLED = true;
+    public static final boolean VOLTAGE_REPORTING    = true;
     //endregion
 
     //region * SECTION - ROBOT PORTS

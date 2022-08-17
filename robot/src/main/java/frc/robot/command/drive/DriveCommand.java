@@ -52,7 +52,7 @@ public class DriveCommand extends CommandBase {
 
         // Calculate the side-to-side axis gain
         double lateralAxis = -joystickLateralAxis.getAsDouble();
-        lateralAxis = MathUtil.applyDeadband(lateralAxis, 0.03d);
+        lateralAxis = 0;//MathUtil.applyDeadband(lateralAxis, 0.03d);
 //        lateralAxis = lateralSensitivityFilter.calculate(lateralAxis);
 
         // Calculate the rotational gain

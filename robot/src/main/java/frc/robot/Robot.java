@@ -5,11 +5,21 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.StringLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.logging.Logger;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -20,15 +30,28 @@ import java.util.logging.Logger;
 public class Robot extends TimedRobot {
     public static final Logger LOGGER = Logger.getLogger(Robot.class.getName());
 
+    private DataLog log;
+
+   private StringLogEntry stringLog;
+
+   FileWriter fileWriter;
+
     private RobotContainer robotContainer;
 
     private Command autonomousCommand;
+
+    private PowerDistribution powerDistro = new PowerDistribution(22, ModuleType.kRev);
 
     @Override
     public void robotInit() {
         CameraServer.startAutomaticCapture(0);
         robotContainer = new RobotContainer();
         robotContainer.setTeamColor();
+        DataLogManager.start();
+
+        log = DataLogManager.getLog();
+        stringLog = new StringLogEntry(log, "/home/lvuser/powerlog");
+        stringLog.append("Top");
     }
 
     @Override
@@ -52,10 +75,24 @@ public class Robot extends TimedRobot {
         }
         robotContainer.setTeamColor();
         robotContainer.calibrate();
+
+        if(Constants.VOLTAGE_REPORTING){
+            try {
+                fileWriter = new FileWriter("/tmp/PowerLog.txt");
+                fileWriter.write("--PDP Power log--\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("BROKEN");
+            }
+        }
     }
 
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+        if(powerDistro.getTotalCurrent() >= 40.0d && Constants. VOLTAGE_REPORTING){
+            reportCurrents();   
+        }
+    }
 
     @Override
     public void testInit() {}
@@ -69,8 +106,30 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+        try {
+            if (fileWriter != null) {
+                fileWriter.flush();
+                fileWriter.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void disabledPeriodic() {}
+
+    private void reportCurrents(){
+        String powerOutput = "Power output:";
+        for(int i = 0; i < 16; i++){
+            powerOutput += powerDistro.getCurrent(i) + " ";
+        }  
+
+        try {
+            fileWriter.write(new Timestamp(new Date().getTime()) + " " + powerOutput + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
