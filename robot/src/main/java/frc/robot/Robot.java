@@ -32,9 +32,9 @@ public class Robot extends TimedRobot {
 
     private DataLog log;
 
-   private StringLogEntry stringLog;
+    private StringLogEntry stringLog;
 
-   FileWriter fileWriter;
+    FileWriter fileWriter;
 
     private RobotContainer robotContainer;
 
