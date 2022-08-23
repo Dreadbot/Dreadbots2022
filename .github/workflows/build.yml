@@ -5,9 +5,6 @@ on:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
-  defaults:
-  run:
-    working-directory: robot
 
 jobs:
   build:
@@ -37,4 +34,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          INPUT_WORKING-DIRECTORY: robot
         run: ./gradlew build sonarqube --info
+        working-directory: robot
