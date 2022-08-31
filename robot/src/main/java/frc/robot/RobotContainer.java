@@ -30,7 +30,6 @@ import frc.robot.util.ClimbLevel;
 import frc.robot.util.controls.DreadbotController;
 import frc.robot.util.controls.VisionInterface;
 import frc.robot.util.DreadbotMotor;
-import frc.robot.util.controls.VisionInterface;
 
 public class RobotContainer {
     private final DreadbotController primaryController;

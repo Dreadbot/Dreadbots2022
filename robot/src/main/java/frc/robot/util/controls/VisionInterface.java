@@ -1,9 +1,5 @@
 package frc.robot.util.controls;
 
-import java.util.function.BooleanSupplier;
-
-import com.fasterxml.jackson.databind.ser.std.BooleanSerializer;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
