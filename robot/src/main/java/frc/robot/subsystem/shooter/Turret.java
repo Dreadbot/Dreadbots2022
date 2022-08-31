@@ -45,8 +45,8 @@ public class Turret extends DreadbotSubsystem {
         kD = 0.0d;
         kIz = 10.0d;
         kFF = 0.000015;
-        kMaxOutput = 0.6;
-        kMinOutput = -0.6;
+        kMaxOutput = 0.8;
+        kMinOutput = -0.8;
 
         // set PID coefficients
         motor.setP(kP);

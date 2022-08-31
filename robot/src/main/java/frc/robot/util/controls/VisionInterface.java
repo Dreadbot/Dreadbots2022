@@ -1,5 +1,9 @@
 package frc.robot.util.controls;
 
+import java.util.function.BooleanSupplier;
+
+import com.fasterxml.jackson.databind.ser.std.BooleanSerializer;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -43,7 +47,6 @@ public class VisionInterface {
     public static boolean canTrackHub() {
         return SmartDashboard.getNumber("IsTargetFoundInFrame", 0.0d) == 1.0d;
     }
-
     private VisionInterface() throws IllegalStateException {
         throw new IllegalStateException("VisionInterface is a utility class. It should not be instantiated.");
     }

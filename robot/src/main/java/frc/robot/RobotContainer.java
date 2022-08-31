@@ -30,6 +30,7 @@ import frc.robot.util.ClimbLevel;
 import frc.robot.util.controls.DreadbotController;
 import frc.robot.util.controls.VisionInterface;
 import frc.robot.util.DreadbotMotor;
+import frc.robot.util.controls.VisionInterface;
 
 public class RobotContainer {
     private final DreadbotController primaryController;
@@ -154,7 +155,7 @@ public class RobotContainer {
         // Shooter Commands
         primaryController.getRightBumper().whenHeld(new TurboCommand(driveCommand));
         hood.setDefaultCommand(new HoodCommands.PassiveTrack(hood));
-        //turret.setDefaultCommand(new TurretCommands.PassiveTrack(turret, drive));
+        turret.setDefaultCommand(new TurretCommands.PassiveTrack(turret, drive));
         //Speed up turret later?
         //flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
         secondaryController.getBButton().whileHeld(new ShooterCommands.LowShoot(shooter, intake));

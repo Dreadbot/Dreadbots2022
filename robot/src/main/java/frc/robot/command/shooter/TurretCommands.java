@@ -2,6 +2,7 @@ package frc.robot.command.shooter;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.Constants;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.shooter.Shooter;
@@ -42,18 +43,19 @@ public class TurretCommands {
         }
 
         private void search() {
-            if(!searching) {
-                searching = true;
-                direction = Math.signum(lastRelativeAngleToHub);
-            }
+            // if(!searching) {
+            //     searching = true;
+            //     direction = Math.signum(lastRelativeAngleToHub);
+            // }
 
-            turret.setSpeed(direction * 0.2d);
+            // turret.setSpeed(direction * 0.2d);
 
-            if(direction < 0 && turret.getLowerLimitSwitch()) {
-                direction = 1;
-            } else if(direction > 0 && turret.getUpperLimitSwitch()) {
-                direction = -1;
-            }
+            // if(direction < 0 && turret.getLowerLimitSwitch()) {
+            //     direction = 1;
+            // } else if(direction > 0 && turret.getUpperLimitSwitch()) {
+            //     direction = -1;
+            // }
+            turret.setAngle(160);
         }
 
         private void visionTracking() {
@@ -76,7 +78,6 @@ public class TurretCommands {
             turret.setAngle(requestedAngle);
         }
     }
-
     public static class EjectShootPreset extends CommandBase {
         private Shooter shooter;
         private double angleOnScore;
