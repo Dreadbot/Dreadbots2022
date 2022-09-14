@@ -156,7 +156,7 @@ public class RobotContainer {
         hood.setDefaultCommand(new HoodCommands.PassiveTrack(hood));
         turret.setDefaultCommand(new TurretCommands.PassiveTrack(turret, drive));
         //Speed up turret later?
-        //flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
+        flywheel.setDefaultCommand(new RunCommand(flywheel::idle, flywheel));
         secondaryController.getBButton().whileHeld(new ShooterCommands.LowShoot(shooter, intake));
         secondaryController.getYButton().whileHeld(new ShooterCommands.HighShoot(shooter, intake));
         secondaryController.getStartButton().whileHeld(new ShooterCommands.TarmacPresetShoot(shooter, intake));
