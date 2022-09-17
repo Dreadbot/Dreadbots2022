@@ -72,6 +72,12 @@ public class Robot extends TimedRobot {
             try {
                 fileWriter = new FileWriter("/tmp/PowerLog:" + new Date() + new Date().getTime() + ".txt");
                 fileWriter.write("--PDP Power log--\n");
+                fileWriter.write("Port Number:,");
+                for(int i = 0; i < 24; i++){
+                    fileWriter.write(i + ",");
+                }
+                    
+
             } catch (IOException e) {
                 e.printStackTrace();
                 System.err.println("BROKEN");
@@ -113,8 +119,8 @@ public class Robot extends TimedRobot {
     public void disabledPeriodic() {}
 
     private void reportCurrents(){
-        String powerOutput = "Power output,";
-        for(int i = 0; i < 16; i++){
+        String powerOutput = "Power output:,";
+        for(int i = 0; i < 24; i++){
             powerOutput += powerDistro.getCurrent(i) + ",";
         }  
 
