@@ -70,7 +70,7 @@ public class Robot extends TimedRobot {
 
         if(Constants.VOLTAGE_REPORTING){
             try {
-                fileWriter = new FileWriter("/tmp/PowerLog:" + new Date() + new Date().getTime() + ".txt");
+                fileWriter = new FileWriter("/C/PowerLog:" + new Date() + new Date().getTime() + ".txt");
                 fileWriter.write("--PDP Power log--\n");
                 fileWriter.write("Port Number:,");
                 for(int i = 0; i < 24; i++){
