@@ -76,8 +76,8 @@ public class Robot extends TimedRobot {
                 for(int i = 0; i < 24; i++){
                     fileWriter.write(i + ",");
                 }
-                    
-
+                   
+                fileWriter.write("\n");
             } catch (IOException e) {
                 e.printStackTrace();
                 System.err.println("BROKEN");
