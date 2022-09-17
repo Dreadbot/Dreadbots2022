@@ -89,7 +89,7 @@ public class DriveCommand extends CommandBase {
         SmartDashboard.putData("rotateSensFilter", rotationalSensitivityFilter);
     }
     public void enableTurbo() {
-        speedModifier = 1.5f;
+        speedModifier = 2.0f;
     }
     public void disableTurbo() {
         speedModifier = 1f;

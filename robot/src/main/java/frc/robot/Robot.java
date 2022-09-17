@@ -30,9 +30,6 @@ import java.util.logging.Logger;
 public class Robot extends TimedRobot {
     public static final Logger LOGGER = Logger.getLogger(Robot.class.getName());
 
-    private DataLog log;
-
-    private StringLogEntry stringLog;
 
     FileWriter fileWriter;
 
@@ -47,11 +44,6 @@ public class Robot extends TimedRobot {
         CameraServer.startAutomaticCapture(0);
         robotContainer = new RobotContainer();
         robotContainer.setTeamColor();
-        DataLogManager.start();
-
-        log = DataLogManager.getLog();
-        stringLog = new StringLogEntry(log, "/home/lvuser/powerlog");
-        stringLog.append("Top");
     }
 
     @Override
@@ -78,7 +70,7 @@ public class Robot extends TimedRobot {
 
         if(Constants.VOLTAGE_REPORTING){
             try {
-                fileWriter = new FileWriter("/tmp/PowerLog.txt");
+                fileWriter = new FileWriter("/tmp/PowerLog:" + new Date() + new Date().getTime() + ".txt");
                 fileWriter.write("--PDP Power log--\n");
             } catch (IOException e) {
                 e.printStackTrace();
@@ -121,9 +113,9 @@ public class Robot extends TimedRobot {
     public void disabledPeriodic() {}
 
     private void reportCurrents(){
-        String powerOutput = "Power output:";
+        String powerOutput = "Power output,";
         for(int i = 0; i < 16; i++){
-            powerOutput += powerDistro.getCurrent(i) + " ";
+            powerOutput += powerDistro.getCurrent(i) + ",";
         }  
 
         try {
