@@ -1,9 +1,12 @@
 package frc.robot.subsystem;
 
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -11,10 +14,10 @@ import frc.robot.util.ClimbLevel;
 import frc.robot.util.DreadbotMotor;
 
 public class Climber extends DreadbotSubsystem {
-    private Solenoid leftNeutralHookActuator;
-    private Solenoid climbingHookActuator;
-    private DigitalInput bottomLimitSwitch;
-    private DreadbotMotor winchMotor;
+    private final Solenoid leftNeutralHookActuator;
+    private final Solenoid climbingHookActuator;
+    private final DigitalInput bottomLimitSwitch;
+    private final DreadbotMotor winchMotor;
 
     private double retractedPosition;
 
@@ -22,19 +25,36 @@ public class Climber extends DreadbotSubsystem {
      * Disabled Constructor
      */
     public Climber() {
-        disable();
+        PneumaticHub pneumaticHub = new PneumaticHub(21);
+        this.leftNeutralHookActuator = pneumaticHub.makeSolenoid(Constants.NEUTRAL_HOOK_SOLENOID_ID);
+        this.climbingHookActuator = pneumaticHub.makeSolenoid(Constants.POWER_HOOK_SOLENOID_ID);
+        this.winchMotor = new DreadbotMotor(new CANSparkMax(Constants.WINCH_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless), "Winch");
+        this.bottomLimitSwitch = new DigitalInput(Constants.CLIMBER_LIMIT_SWITCH_ID);
+
+        init();
     }
 
+    /**
+     * Parameterized constructor for unit tests to inject mocks
+     */
     public Climber(Solenoid neutralHookActuator, Solenoid climbingHookActuator, DreadbotMotor winchMotor, DigitalInput bottomLimitSwitch) {
+        if (!Constants.CLIMB_ENABLED) {
+            disable();
+            return;
+        }
         this.leftNeutralHookActuator = neutralHookActuator;
         this.climbingHookActuator = climbingHookActuator;
         this.winchMotor = winchMotor;
         this.bottomLimitSwitch = bottomLimitSwitch;
 
+        init();
+    }
+
+    public void init() {
         winchMotor.restoreFactoryDefaults();
         winchMotor.setIdleMode(IdleMode.kBrake);
         winchMotor.setInverted(true);
-        neutralHookActuator.set(false);
+        leftNeutralHookActuator.set(false);
 
         winchMotor.setP(0.1);
         winchMotor.setI(0);
@@ -45,7 +65,7 @@ public class Climber extends DreadbotSubsystem {
 
         winchMotor.setPosition(0.0d);
         this.retractedPosition = winchMotor.getPosition();
-        
+
         SmartDashboard.putNumber("WinchPosition", retractedPosition);
     }
 

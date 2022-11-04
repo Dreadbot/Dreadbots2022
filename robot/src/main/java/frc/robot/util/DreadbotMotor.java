@@ -137,7 +137,7 @@ public class DreadbotMotor{
         if(isDisabled()) return 0;
         try{
             return motor.get();   
-        } catch (RuntimeException ignored) {
+        } catch (RuntimeException exception) {
             disable();
             printError("get");
             return 0;

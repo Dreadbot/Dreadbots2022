@@ -2,8 +2,7 @@ package frc.robot.subsystem.shooter;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,9 +12,9 @@ import frc.robot.util.DreadbotMotor;
 import frc.robot.util.math.DreadbotMath;
 
 public class Hood extends DreadbotSubsystem {
-    private DigitalInput lowerSwitch;
-    private DigitalInput upperSwitch;
-    private DreadbotMotor motor;
+    private final DigitalInput lowerSwitch;
+    private final DigitalInput upperSwitch;
+    private final DreadbotMotor motor;
 
     private double lowerMotorLimit;
     private double upperMotorLimit;
@@ -26,10 +25,20 @@ public class Hood extends DreadbotSubsystem {
      * Disabled constructor
      */
     public Hood() {
-        disable();
+        this(
+            new DreadbotMotor(new CANSparkMax(Constants.HOOD_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless), "Hood"),
+            new DigitalInput(Constants.LOWER_HOOD_LIMIT_SWITCH_ID),
+            new DigitalInput(Constants.UPPER_HOOD_LIMIT_SWITCH_ID));
     }
 
+    /**
+     * This constructor should only be called by unit tests to inject mock objects
+     */
     public Hood (DreadbotMotor motor, DigitalInput lowerSwitch, DigitalInput upperSwitch) {
+        if (!Constants.HOOD_ENABLED) {
+            disable();
+            return;
+        }
         this.motor = motor;
         this.lowerSwitch = lowerSwitch;
         this.upperSwitch = upperSwitch;

@@ -1,18 +1,18 @@
 package frc.robot.subsystem.shooter;
 
-public class Shooter {
-    private Feeder feeder;
-    private Flywheel flywheel;
-    private Hood hood;
-    private Turret turret;
-    private ColorSensor colorSensor;
+import frc.robot.Constants;
 
-    /**
-     * Disabled constructor
-     */
-    public Shooter() {}
+public class Shooter {
+    private final Feeder feeder;
+    private final Flywheel flywheel;
+    private final Hood hood;
+    private final Turret turret;
+    private final ColorSensor colorSensor;
 
     public Shooter(Feeder feeder, Flywheel flywheel, Hood hood, Turret turret, ColorSensor colorSensor) {
+        if (!Constants.SHOOTER_ENABLED) {
+            return;
+        }
         this.feeder = feeder;
         this.flywheel = flywheel;
         this.hood = hood;

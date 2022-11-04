@@ -5,14 +5,13 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystem.Drive;
+import frc.robot.subsystem.DreadbotMecanumDrive;
 import frc.robot.util.controls.SensitivityController;
 
 public class DriveCommand extends CommandBase {
-    private final Drive drive;
+    private final DreadbotMecanumDrive drive;
     private final DoubleSupplier joystickForwardAxis;
     private final DoubleSupplier joystickLateralAxis;
     private final DoubleSupplier joystickRotationalAxis;
@@ -25,7 +24,7 @@ public class DriveCommand extends CommandBase {
     private double speedModifier;
     private SlewRateLimiter slewRateLimiter;
 
-    public DriveCommand(Drive drive, DoubleSupplier joystickForwardAxis, DoubleSupplier joystickLateralAxis, DoubleSupplier joystickRotationalAxis) {
+    public DriveCommand(DreadbotMecanumDrive drive, DoubleSupplier joystickForwardAxis, DoubleSupplier joystickLateralAxis, DoubleSupplier joystickRotationalAxis) {
         this.drive = drive;
         this.speedModifier = 1f;
         this.joystickForwardAxis = joystickForwardAxis;

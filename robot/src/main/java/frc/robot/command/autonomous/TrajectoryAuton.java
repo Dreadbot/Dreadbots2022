@@ -2,15 +2,13 @@ package frc.robot.command.autonomous;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.math.controller.HolonomicDriveController;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystem.Drive;
+import frc.robot.subsystem.DreadbotMecanumDrive;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -23,11 +21,11 @@ public class TrajectoryAuton extends CommandBase {
     private final HolonomicDriveController m_controller;
     private final double m_maxWheelVelocityMetersPerSecond;
     private final Consumer<MecanumDriveWheelSpeeds> m_outputWheelSpeeds;
-    private final Drive drive;
+    private final DreadbotMecanumDrive drive;
 
     private boolean reversed;
 
-    public TrajectoryAuton(Drive drive, PathPlannerTrajectory trajectory, double maxWheelVelocityMetersPerSecond) {
+    public TrajectoryAuton(DreadbotMecanumDrive drive, PathPlannerTrajectory trajectory, double maxWheelVelocityMetersPerSecond) {
         this.drive = drive;
         this.m_trajectory = trajectory;
         this.m_maxWheelVelocityMetersPerSecond = maxWheelVelocityMetersPerSecond;
@@ -44,7 +42,7 @@ public class TrajectoryAuton extends CommandBase {
         addRequirements(drive);
     }
 
-    public TrajectoryAuton(Drive drive, PathPlannerTrajectory trajectory, double maxWheelVelocityMetersPerSecond, boolean reversed) {
+    public TrajectoryAuton(DreadbotMecanumDrive drive, PathPlannerTrajectory trajectory, double maxWheelVelocityMetersPerSecond, boolean reversed) {
         this.drive = drive;
         this.m_trajectory = trajectory;
         this.m_maxWheelVelocityMetersPerSecond = maxWheelVelocityMetersPerSecond;

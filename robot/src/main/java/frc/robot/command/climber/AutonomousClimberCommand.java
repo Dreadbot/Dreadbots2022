@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystem.Climber;
-import frc.robot.subsystem.Drive;
+import frc.robot.subsystem.DreadbotMecanumDrive;
 import frc.robot.util.ClimbLevel;
 
 public class AutonomousClimberCommand extends SequentialCommandGroup{
@@ -43,7 +43,7 @@ public class AutonomousClimberCommand extends SequentialCommandGroup{
 }
 
 class SlightArmExtend extends ParallelRaceGroup{
-    public SlightArmExtend(Climber climber, Drive drive){
+    public SlightArmExtend(Climber climber, DreadbotMecanumDrive drive){
         addCommands(
             new ExtendArmCommand(climber, drive, ClimbLevel.HIGH),
             new WaitCommand(.5)

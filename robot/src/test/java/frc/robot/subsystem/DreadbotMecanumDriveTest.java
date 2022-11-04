@@ -18,10 +18,10 @@ import frc.robot.Constants;
 
 import java.util.logging.Level;
 
-public class DriveTest {
+public class DreadbotMecanumDriveTest {
     public static final double DELTA = 1e-2;
     
-    private Drive drive;
+    private DreadbotMecanumDrive drive;
     private DreadbotMotor leftFrontDriveMotor;
     private DreadbotMotor rightFrontDriveMotor;
     private DreadbotMotor leftBackDriveMotor;
@@ -46,7 +46,7 @@ public class DriveTest {
 
         gyroscope = new AHRS(Constants.GYROSCOPE_PORT);
 
-        drive = new Drive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor, gyroscope);
+        drive = new DreadbotMecanumDrive(leftFrontDriveMotor, rightFrontDriveMotor, leftBackDriveMotor, rightBackDriveMotor, gyroscope);
 
         angle = 0.0d;
 

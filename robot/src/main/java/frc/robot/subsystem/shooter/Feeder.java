@@ -1,8 +1,11 @@
 package frc.robot.subsystem.shooter;
 
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.REVLibError;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.subsystem.DreadbotSubsystem;
 import frc.robot.util.DreadbotMotor;
 
@@ -10,16 +13,21 @@ import frc.robot.util.DreadbotMotor;
  * The feeder is the mechanism that delivers the cargo from the intake mechanism to the shooter mechanism.
  */
 public class Feeder extends DreadbotSubsystem {
-    private DreadbotMotor motor;
+    private final DreadbotMotor motor;
 
-    /**
-     * Disabled Constructor
-     */
     public Feeder() {
-        disable();
+        this(new DreadbotMotor(new CANSparkMax(Constants.FEEDER_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless), "Feeder"));
     }
 
-    public Feeder(DreadbotMotor motor) {
+    /**
+     * This should only be called by unit tests to inject a mock motor object
+     */
+    protected Feeder(DreadbotMotor motor) {
+        if (!Constants.FEEDER_ENABLED) {
+            disable();
+            return;
+        }
+
         this.motor = motor;
 
         motor.restoreFactoryDefaults();

@@ -1,12 +1,12 @@
 package frc.robot.command.autonomous;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystem.Drive;
+import frc.robot.subsystem.DreadbotMecanumDrive;
 
 public class VoltageFeedControlTest extends CommandBase {
-    private final Drive drive;
+    private final DreadbotMecanumDrive drive;
 
-    public VoltageFeedControlTest(Drive drive) {
+    public VoltageFeedControlTest(DreadbotMecanumDrive drive) {
         this.drive = drive;
 
         addRequirements(drive);

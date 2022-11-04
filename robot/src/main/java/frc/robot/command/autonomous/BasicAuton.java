@@ -1,18 +1,15 @@
 package frc.robot.command.autonomous;
 
-import com.revrobotics.RelativeEncoder;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.command.drive.DriveCommand;
-import frc.robot.subsystem.Drive;
+import frc.robot.subsystem.DreadbotMecanumDrive;
 
 
 public class BasicAuton extends SequentialCommandGroup {
-    private Drive drive;
+    private DreadbotMecanumDrive drive;
 
-    public BasicAuton(Drive drive){
+    public BasicAuton(DreadbotMecanumDrive drive){
         this.drive = drive;
         addCommands(new AutonDrive(drive));
         addRequirements(drive);
@@ -21,11 +18,11 @@ public class BasicAuton extends SequentialCommandGroup {
 }
 
 class AutonDrive extends CommandBase {
-    private Drive drive;
+    private DreadbotMecanumDrive drive;
     private double orginalEncoderValue;
     private double driveDistance = 200.0; 
 
-    public AutonDrive(Drive drive){
+    public AutonDrive(DreadbotMecanumDrive drive){
         this.drive = drive;
         addRequirements(drive);
     }

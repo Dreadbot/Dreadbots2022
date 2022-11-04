@@ -10,8 +10,8 @@ import frc.robot.Constants;
 import frc.robot.subsystem.DreadbotSubsystem;
 
 public class ColorSensor extends DreadbotSubsystem {
-    private ColorSensorV3 sensor;
-    private ColorMatch colorMatch;
+    private final ColorSensorV3 sensor;
+    private final ColorMatch colorMatch;
 
     private Color initialBallColor;
     private DriverStation.Alliance alliance;
@@ -21,10 +21,15 @@ public class ColorSensor extends DreadbotSubsystem {
     private double currentConfidence;
 
     public ColorSensor() {
-        disable();
+        this(new ColorSensorV3(Constants.I2C_PORT));
     }
 
     public ColorSensor(ColorSensorV3 sensor) {
+        if (!Constants.COLOR_SENSOR_ENABLED) {
+            disable();
+            return;
+        }
+
         this.sensor = sensor;
         colorMatch = new ColorMatch();
         colorMatch.addColorMatch(Constants.COLOR_RED);

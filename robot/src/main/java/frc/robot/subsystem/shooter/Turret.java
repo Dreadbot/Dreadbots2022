@@ -2,8 +2,7 @@ package frc.robot.subsystem.shooter;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,25 +12,37 @@ import frc.robot.util.DreadbotMotor;
 import frc.robot.util.math.DreadbotMath;
 
 public class Turret extends DreadbotSubsystem {
-    private DreadbotMotor motor;
-
-    private DigitalInput lowerSwitch;
-    private DigitalInput upperSwitch;
+    private final DreadbotMotor motor;
+    private final DigitalInput lowerSwitch;
+    private final DigitalInput upperSwitch;
     private double lowerMotorLimit;
     private double upperMotorLimit;
-
     private double setAngle;
 
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
 
     /**
-     * Disabled Constructor
+     * Default constructor
      */
     public Turret() {
-        disable();
+        this(createMotor(),
+                new DigitalInput(Constants.LOWER_TURRET_LIMIT_SWITCH_ID),
+                new DigitalInput(Constants.UPPER_TURRET_LIMIT_SWITCH_ID));
     }
 
+    private static DreadbotMotor createMotor() {
+        return new DreadbotMotor(new CANSparkMax(Constants.TURRET_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless), "Turret");
+    }
+
+    /**
+     * This constructor should only be called by unit tests to inject mock motor and switches
+     */
     public Turret(DreadbotMotor motor, DigitalInput lowerSwitch, DigitalInput upperSwitch) {
+        if (!Constants.TURRET_ENABLED) {
+            disable();
+            return;
+        }
+
         this.lowerSwitch = lowerSwitch;
         this.upperSwitch = upperSwitch;
         this.motor = motor;

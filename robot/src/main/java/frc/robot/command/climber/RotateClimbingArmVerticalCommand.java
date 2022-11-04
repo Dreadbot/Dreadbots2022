@@ -3,13 +3,13 @@ package frc.robot.command.climber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystem.Climber;
-import frc.robot.subsystem.Drive;
+import frc.robot.subsystem.DreadbotMecanumDrive;
 
 public class RotateClimbingArmVerticalCommand extends CommandBase {
     private Climber climber;
-    private Drive drive;
+    private DreadbotMecanumDrive drive;
     private boolean rotated;
-    public RotateClimbingArmVerticalCommand(Climber climber, Drive drive) {
+    public RotateClimbingArmVerticalCommand(Climber climber, DreadbotMecanumDrive drive) {
         this.climber = climber;
         this.drive = drive;
         addRequirements(climber);

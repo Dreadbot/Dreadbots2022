@@ -3,16 +3,16 @@ package frc.robot.command.climber;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystem.Climber;
-import frc.robot.subsystem.Drive;
+import frc.robot.subsystem.DreadbotMecanumDrive;
 import frc.robot.util.ClimbLevel;
 
 public class ExtendArmCommand extends CommandBase {
     private Climber climber;
-    private Drive drive;
+    private DreadbotMecanumDrive drive;
 
     private ClimbLevel climbLevel;
 
-    public ExtendArmCommand(Climber climber, Drive drive, ClimbLevel climbLevel) {
+    public ExtendArmCommand(Climber climber, DreadbotMecanumDrive drive, ClimbLevel climbLevel) {
         this.climber = climber;
         this.drive = drive;
         this.climbLevel = climbLevel;

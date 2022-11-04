@@ -5,7 +5,9 @@
 package frc.robot.subsystem;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
@@ -24,6 +26,7 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.subsystem.drive.DreadbotDrive;
 import frc.robot.util.DreadbotMotor;
 import frc.robot.util.math.DreadbotMath;
 
@@ -32,7 +35,7 @@ import java.util.stream.Stream;
 /**
  * The drive is the mechanism that moves the robot across the field. We are using a mecanum drive.
  */
-public class Drive extends DreadbotSubsystem {
+public class DreadbotMecanumDrive extends DreadbotSubsystem implements DreadbotDrive {
     // Motor Objects
     private DreadbotMotor leftFrontMotor;
     private DreadbotMotor rightFrontMotor;
@@ -92,12 +95,37 @@ public class Drive extends DreadbotSubsystem {
     /**
      * Disabled Constructor
      */
-    public Drive() {
-        disable();
+    public DreadbotMecanumDrive() {
+        if (!Constants.DRIVE_ENABLED) {
+            disable();
+        }
+        this.leftFrontMotor = new DreadbotMotor(new CANSparkMax(Constants.LEFT_FRONT_DRIVE_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless), "Front Left Drive");
+        this.rightFrontMotor = new DreadbotMotor(new CANSparkMax(Constants.RIGHT_FRONT_DRIVE_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless), "Front Right Drive");
+        this.leftBackMotor = new DreadbotMotor(new CANSparkMax(Constants.LEFT_BACK_DRIVE_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless), "Back Left Drive");
+        this.rightBackMotor = new DreadbotMotor(new CANSparkMax(Constants.RIGHT_BACK_DRIVE_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless), "Back Right Drive");
+
+        this.gyroscope = new AHRS(Constants.GYROSCOPE_PORT);
+
+        this.targetChassisSpeeds = new ChassisSpeeds();
+
+        this.field2d = new Field2d();
+
+        // Fully-configure motors before passing them to MecanumDrive.
+        configureMotors();
+        resetEncoders();
+
+        odometry = new MecanumDriveOdometry(kinematics, gyroscope.getRotation2d());
+
+        this.mecanumDrive = new MecanumDrive(leftFrontMotor.getSparkMax(), leftBackMotor.getSparkMax(),
+                rightFrontMotor.getSparkMax(), rightBackMotor.getSparkMax());
+
+        mecanumDrive.setSafetyEnabled(false);
+
+        SmartDashboard.putData("Field", field2d);
     }
 
-    public Drive(DreadbotMotor leftFrontMotor, DreadbotMotor rightFrontMotor, DreadbotMotor leftBackMotor,
-            DreadbotMotor rightBackMotor, AHRS gyroscope) {
+    public DreadbotMecanumDrive(DreadbotMotor leftFrontMotor, DreadbotMotor rightFrontMotor, DreadbotMotor leftBackMotor,
+                                DreadbotMotor rightBackMotor, AHRS gyroscope) {
         this.leftFrontMotor = leftFrontMotor;
         this.rightFrontMotor = rightFrontMotor;
         this.leftBackMotor = leftBackMotor;
@@ -163,6 +191,7 @@ public class Drive extends DreadbotSubsystem {
      * @param zRotation The robot's rotation rate around the Z axis [-1.0..1.0]. Clockwise is
      *     positive.
      */
+    @Override
     public void driveCartesian(double joystickForwardAxis, double joystickLateralAxis, double zRotation) {
         if(isDisabled()) return;
 
@@ -177,6 +206,7 @@ public class Drive extends DreadbotSubsystem {
      *
      * @return current ChassisSpeeds
      */
+    @Override
     public ChassisSpeeds getChassisSpeeds() {
         if(isDisabled()) return new ChassisSpeeds();
 
@@ -188,6 +218,7 @@ public class Drive extends DreadbotSubsystem {
      *
      * @param chassisSpeeds The desired robot speeds
      */
+    @Override
     public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
         if(isDisabled()) return;
 
@@ -201,6 +232,7 @@ public class Drive extends DreadbotSubsystem {
      *
      * @return the MecanumDriveWheelSpeeds object (all 0 if disabled).
      */
+    @Override
     public MecanumDriveWheelSpeeds getWheelSpeeds() {
         if(isDisabled()) return new MecanumDriveWheelSpeeds();
 
@@ -220,6 +252,7 @@ public class Drive extends DreadbotSubsystem {
      * @param leftBackVoltage Voltage feedforward for the left back motor.
      * @param rightBackVoltage Voltage feedforward for the right back motor.
      */
+    @Override
     public void setWheelVoltages(double leftFrontVoltage, double rightFrontVoltage,
                                  double leftBackVoltage, double rightBackVoltage) {
         if(isDisabled()) return;
@@ -235,6 +268,7 @@ public class Drive extends DreadbotSubsystem {
      *
      * @param wheelSpeeds The requested wheel velocities
      */
+    @Override
     public void setWheelSpeeds(MecanumDriveWheelSpeeds wheelSpeeds) {
         if(isDisabled()) return;
 
@@ -263,6 +297,7 @@ public class Drive extends DreadbotSubsystem {
      *
      * @return Average position of the front two encoders.
      */
+    @Override
     public double getFrontEncoderAvg() {
         if(isDisabled()) return 0.0d;
 
@@ -345,6 +380,7 @@ public class Drive extends DreadbotSubsystem {
      *
      * @return The gyroscope yaw
      */
+    @Override
     public double getYaw() {
         return gyroscope.getYaw();
     }
@@ -363,6 +399,7 @@ public class Drive extends DreadbotSubsystem {
         rightBackMotor.setInverted(false);
     }
 
+    @Override
     public AHRS getGyroscope() {
         return gyroscope;
     }

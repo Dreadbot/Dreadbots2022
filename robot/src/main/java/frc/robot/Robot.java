@@ -1,23 +1,14 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.StringLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.logging.PowerLogger;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.logging.Logger;
 
 
@@ -28,106 +19,69 @@ import java.util.logging.Logger;
  * project.
  */
 public class Robot extends TimedRobot {
-    public static final Logger LOGGER = Logger.getLogger(Robot.class.getName());
-
-
-    FileWriter fileWriter;
-
     private RobotContainer robotContainer;
-
+    public static final Logger LOGGER = Logger.getLogger(Robot.class.getName());
+    private PowerLogger powerLogger;
     private Command autonomousCommand;
-
-    private PowerDistribution powerDistro = new PowerDistribution(22, ModuleType.kRev);
 
     @Override
     public void robotInit() {
         CameraServer.startAutomaticCapture(0);
         robotContainer = new RobotContainer();
-        robotContainer.setTeamColor();
+        // powerLogger initialization moved to teleopInit so it's reset each time it's re-enabled
+        // powerLogger = new PowerLogger();
     }
 
     @Override
     public void autonomousInit() {
-        robotContainer.setTeamColor();
         autonomousCommand = robotContainer.getAutonomousCommand();
 
-        // schedule the autonomous command (example)
+        // schedule the autonomous command
         if (autonomousCommand != null) {
-          autonomousCommand.schedule();
+            autonomousCommand.schedule();
         }
     }
 
     @Override
-    public void autonomousPeriodic() {}
+    public void autonomousPeriodic() {
+        // Command based robot, periodic handled by command scheduler
+    }
 
     @Override
     public void teleopInit() {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
-        robotContainer.setTeamColor();
         robotContainer.calibrate();
 
-        if(Constants.VOLTAGE_REPORTING){
-            try {
-                fileWriter = new FileWriter("/C/PowerLog:" + new Date() + new Date().getTime() + ".txt");
-                fileWriter.write("--PDP Power log--\n");
-                fileWriter.write("Port Number:,");
-                for(int i = 0; i < 24; i++){
-                    fileWriter.write(i + ",");
-                }
-                   
-                fileWriter.write("\n");
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.err.println("BROKEN");
-            }
-        }
+        powerLogger = new PowerLogger();
     }
 
     @Override
     public void teleopPeriodic() {
-        if(powerDistro.getTotalCurrent() >= 40.0d && Constants. VOLTAGE_REPORTING){
-            reportCurrents();   
-        }
+        powerLogger.logPower();
     }
 
     @Override
-    public void testInit() {}
+    public void testInit() {
+    }
 
     @Override
-    public void testPeriodic() {}
+    public void testPeriodic() {
+    }
 
     @Override
     public void robotPeriodic() {
+        // Command based robot, run the scheduler so it can execute the active Commands
         CommandScheduler.getInstance().run();
     }
 
     @Override
     public void disabledInit() {
-        try {
-            if (fileWriter != null) {
-                fileWriter.flush();
-                fileWriter.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        powerLogger.close();
     }
 
     @Override
-    public void disabledPeriodic() {}
-
-    private void reportCurrents(){
-        String powerOutput = "Power output:,";
-        for(int i = 0; i < 24; i++){
-            powerOutput += powerDistro.getCurrent(i) + ",";
-        }  
-
-        try {
-            fileWriter.write(new Timestamp(new Date().getTime()) + " " + powerOutput + "\n");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void disabledPeriodic() {
     }
 }

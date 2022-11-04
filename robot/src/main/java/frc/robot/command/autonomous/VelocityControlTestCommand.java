@@ -2,12 +2,12 @@ package frc.robot.command.autonomous;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystem.Drive;
+import frc.robot.subsystem.DreadbotMecanumDrive;
 
 public class VelocityControlTestCommand extends CommandBase {
-    private final Drive drive;
+    private final DreadbotMecanumDrive drive;
 
-    public VelocityControlTestCommand(Drive drive) {
+    public VelocityControlTestCommand(DreadbotMecanumDrive drive) {
         this.drive = drive;
 
         addRequirements(drive);

@@ -5,12 +5,12 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.command.shooter.TurretCommands;
 import frc.robot.subsystem.Climber;
-import frc.robot.subsystem.Drive;
+import frc.robot.subsystem.DreadbotMecanumDrive;
 import frc.robot.subsystem.shooter.Turret;
 import frc.robot.util.ClimbLevel;
 
 public class MediumClimb extends SequentialCommandGroup {
-    public MediumClimb(Climber climber, Drive drive, Turret turret){
+    public MediumClimb(Climber climber, DreadbotMecanumDrive drive, Turret turret){
         
         //Assumes we are below the bar with power hook retracted and down and neutral hooks down
 

@@ -2,18 +2,16 @@ package frc.robot.command.shooter;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.Constants;
-import frc.robot.subsystem.Drive;
+import frc.robot.subsystem.DreadbotMecanumDrive;
 import frc.robot.subsystem.shooter.Shooter;
 import frc.robot.subsystem.shooter.Turret;
 import frc.robot.util.controls.VisionInterface;
-import frc.robot.util.math.DreadbotMath;
 
 public class TurretCommands {
     public static class PassiveTrack extends CommandBase {
         private final Turret turret;
-        private final Drive drive;
+        private final DreadbotMecanumDrive drive;
 
         private double lastRelativeAngleToHub;
         private double lastRobotAngle = 0.0d;
@@ -21,7 +19,7 @@ public class TurretCommands {
         private boolean searching = true;
         private double direction;
 
-        public PassiveTrack(Turret turret, Drive drive) {
+        public PassiveTrack(Turret turret, DreadbotMecanumDrive drive) {
             this.turret = turret;
             this.drive = drive;
 

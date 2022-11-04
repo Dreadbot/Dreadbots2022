@@ -2,6 +2,7 @@ package frc.robot.subsystem.shooter;
 
 import com.revrobotics.CANSparkMax;
 
+import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -18,12 +19,9 @@ import frc.robot.util.DreadbotMotor;
 public class Flywheel extends DreadbotSubsystem {
     public static final double RPM_TO_TANGENTIAL_CONVERSION = 4.655E-03;
     public static final double TANGENTIAL_TO_RPM_CONVERSION = 2.148E02;
-
-    private CargoKinematics cargoKinematics;
-    private DreadbotMotor motor;
-
-    private PIDController controller = new PIDController(0.16677 * 2, 3, 0);
-
+    private final CargoKinematics cargoKinematics;
+    private final DreadbotMotor motor;
+    private final PIDController controller = new PIDController(0.16677 * 2, 3, 0);
     private double setVelocity = 0.0d;
 
     private double acceleration;
@@ -34,10 +32,18 @@ public class Flywheel extends DreadbotSubsystem {
      * Disabled constructor
      */
     public Flywheel() {
-        disable();
+        this(new DreadbotMotor(
+                new CANSparkMax(Constants.FLYWHEEL_MOTOR_PORT, CANSparkMaxLowLevel.MotorType.kBrushless),
+                "Flywheel"));
     }
 
+    // This constructor is for injecting mock motor object from unit tests
+    // and shouldn't be called directly except by the default constructor
     public Flywheel(DreadbotMotor motor) {
+        if (!Constants.FLYWHEEL_ENABLED) {
+            disable();
+            return;
+        }
         this.motor = motor;
 
         SmartDashboard.putNumber("ARCTUNE", 8.0);
