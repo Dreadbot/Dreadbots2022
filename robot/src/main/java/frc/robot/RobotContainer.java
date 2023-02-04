@@ -1,8 +1,6 @@
 package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ColorSensorV3;
@@ -13,7 +11,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.*;
-import frc.robot.command.autonomous.TrajectoryAuton;
 import frc.robot.command.climber.*;
 import frc.robot.command.drive.DriveCommand;
 import frc.robot.command.drive.TurboCommand;
@@ -127,6 +124,7 @@ public class RobotContainer {
 
         if (Constants.CLIMB_ENABLED) {
             PneumaticHub pneumaticHub = new PneumaticHub(21);
+            pneumaticHub.disableCompressor();
             Solenoid neutralHookActuator = pneumaticHub.makeSolenoid(Constants.NEUTRAL_HOOK_SOLENOID_ID);
             Solenoid climbingHookActuator = pneumaticHub.makeSolenoid(Constants.POWER_HOOK_SOLENOID_ID);
             DreadbotMotor winchMotor = new DreadbotMotor(new CANSparkMax(Constants.WINCH_MOTOR_PORT, MotorType.kBrushless), "Winch");
@@ -177,113 +175,10 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        if(autonChooser.getSelected() == 2)
-            return get2BallAuton();
-        if(autonChooser.getSelected() == 3)
-            return get3BallAuton();
-        if(autonChooser.getSelected() == 5)
-            return get5BallAuton();
         return new InstantCommand(intake::idle, intake);
     }
-
-    public Command get3BallAuton() {
-        PathPlannerTrajectory rich_first_leg = PathPlanner.loadPath("rich_first_leg", 3.0, 1.0);
-        PathPlannerTrajectory three_ball_second_leg = PathPlanner.loadPath("3ball_second_leg", 5.0, 3.0, true);
-
-        return new SequentialCommandGroup(
-            new ParallelCommandGroup(
-                new TurretCommands.Calibrate(turret, false)
-                    .andThen(new TurretCommands.TurnToAngle(turret, 155.0d)),
-                new HoodCommands.Calibrate(hood, false)
-                    .andThen(new HoodCommands.TurnToAngle(hood, Constants.MAX_HOOD_ANGLE)),
-                new TrajectoryAuton(
-                    drive,
-                    rich_first_leg,
-                    8.0
-                ),
-                new InstantCommand(intake::intake, intake)
-            ),
-            new ShooterCommands.HighShoot(shooter, intake).raceWith(new WaitCommand(3.0)),
-            new PrintCommand("SECOND PATH"),
-            new TrajectoryAuton(
-                drive,
-                three_ball_second_leg,
-                8.0
-            ),
-            new ShooterCommands.HighShoot(shooter, intake).raceWith(new WaitCommand(3.0)),
-            new InstantCommand(intake::idle, intake)
-        );
-    }
-
-    public Command get5BallAuton() {
-        PathPlannerTrajectory rich_first_leg = PathPlanner.loadPath("rich_first_leg", 5.0, 3.0);
-        PathPlannerTrajectory three_ball_second_leg = PathPlanner.loadPath("3ball_second_leg", 5.0, 3.0, true);
-        PathPlannerTrajectory three_ball_third_leg = PathPlanner.loadPath("3ball_third_leg", 5.0, 3.0);
-        PathPlannerTrajectory three_ball_fourth_leg = PathPlanner.loadPath("3ball_fourth_leg", 5.0, 3.0, true);
-
-        return new SequentialCommandGroup(
-            new ParallelCommandGroup(
-                new TurretCommands.Calibrate(turret, false)
-                    .andThen(new TurretCommands.TurnToAngle(turret, 155.0d)),
-                new HoodCommands.Calibrate(hood, false)
-                    .andThen(new HoodCommands.TurnToAngle(hood, Constants.MAX_HOOD_ANGLE)),
-                new TrajectoryAuton(
-                    drive,
-                    rich_first_leg,
-                    8.0
-                ),
-                new InstantCommand(intake::intake, intake)
-            ),
-            new ShooterCommands.HighShoot(shooter, intake).raceWith(new WaitCommand(3.0)),
-            new PrintCommand("SECOND PATH"),
-            new TrajectoryAuton(
-                drive,
-                three_ball_second_leg,
-                8.0
-            ),
-            new ShooterCommands.HighShoot(shooter, intake).raceWith(new WaitCommand(1.5)),
-            new PrintCommand("THIRD PATH"),
-            new TrajectoryAuton(
-                drive,
-                three_ball_third_leg,
-                8.0
-            ),
-            new WaitCommand(1.0),
-            new TrajectoryAuton(
-                drive,
-                three_ball_fourth_leg,
-                8.0
-            ),
-            new ShooterCommands.HighShoot(shooter, intake).raceWith(new WaitCommand(3.0)),
-            new InstantCommand(intake::idle, intake)
-        );
-    }
-
-    public Command get2BallAuton() {
-        PathPlannerTrajectory examplePath = PathPlanner.loadPath("scarce_first_leg", 5.0, 3.0);
-
-        return new SequentialCommandGroup(
-            new ParallelCommandGroup(
-                new TurretCommands.Calibrate(turret, false)
-                    .andThen(new TurretCommands.TurnToAngle(turret, 155.0d)),
-                new HoodCommands.Calibrate(hood, false)
-                    .andThen(new HoodCommands.TurnToAngle(hood, Constants.MAX_HOOD_ANGLE)),
-                new TrajectoryAuton(
-                    drive,
-                    examplePath,
-                    8.0
-                ),
-                new InstantCommand(intake::intake, intake)
-            ),
-            new WaitCommand(1.0),
-            new ShooterCommands.HighShoot(shooter, intake).raceWith(new WaitCommand(3.0)),
-            new InstantCommand(intake::idle, intake)
-        );
-    }
-
     public void calibrate() {
-        CommandScheduler.getInstance().schedule(
-            false, 
+        CommandScheduler.getInstance().schedule( 
             new SequentialCommandGroup(
                 new RotateNeutralHookDownCommand(climber),
                 new RotateClimbingArmDownCommand(climber),
@@ -292,10 +187,10 @@ public class RobotContainer {
             )
         );
 
-        CommandScheduler.getInstance().schedule(false, new TurretCommands.Calibrate(turret, false)
+        CommandScheduler.getInstance().schedule(new TurretCommands.Calibrate(turret, false)
             .andThen(new TurretCommands.TurnToAngle(turret, 149.0d)));
 
-        CommandScheduler.getInstance().schedule(false, new HoodCommands.Calibrate(hood, false)
+        CommandScheduler.getInstance().schedule(new HoodCommands.Calibrate(hood, false)
             .andThen(new HoodCommands.TurnToAngle(hood, Constants.MAX_HOOD_ANGLE)));
     }
 

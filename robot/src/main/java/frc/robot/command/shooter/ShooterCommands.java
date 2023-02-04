@@ -31,11 +31,11 @@ public class ShooterCommands {
             );
         }
 
-        @Override
-        public void end(boolean interrupted) {
-            shooter.getFeeder().idle();
-            shooter.getFlywheel().idle();
-        }
+        // @Override
+        // public void end(boolean interrupted) {
+        //     shooter.getFeeder().idle();
+        //     shooter.getFlywheel().idle();
+        // }
     }
 
     public static class EjectShoot extends SequentialCommandGroup {
@@ -55,11 +55,11 @@ public class ShooterCommands {
             );
         }
 
-        @Override
-        public void end(boolean interrupted) {
-            shooter.getFlywheel().idle();
-            shooter.getFeeder().idle();
-        }
+        // @Override
+        // public void end(boolean interrupted) {
+        //     shooter.getFlywheel().idle();
+        //     shooter.getFeeder().idle();
+        // }
     }
 
     public static class PresetShoot extends SequentialCommandGroup {
@@ -84,11 +84,11 @@ public class ShooterCommands {
             );
         }
 
-        @Override
-        public void end(boolean interrupted) {
-            shooter.getFeeder().idle();
-//            shooter.getFlywheel().idle();
-        }
+        // @Override
+//         public void end(boolean interrupted) {
+//             shooter.getFeeder().idle();
+// //            shooter.getFlywheel().idle();
+//         }
     }
 
     public static class FeedBallCommand extends CommandBase {

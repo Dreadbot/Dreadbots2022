@@ -15,13 +15,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
-import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.util.DreadbotMotor;
@@ -47,7 +45,6 @@ public class Drive extends DreadbotSubsystem {
 
     // MecanumDrive calculations classes
     private MecanumDrive mecanumDrive;
-    private MecanumDriveOdometry odometry;
 
     /**
      * To understand why we negate (-) each of the values, look at the "right-hand rule" in the attached link.
@@ -87,7 +84,6 @@ public class Drive extends DreadbotSubsystem {
         new ProfiledPIDController(1, 0, 0, rotationProfile)
     );
 
-    private Field2d field2d;
 
     /**
      * Disabled Constructor
@@ -107,29 +103,19 @@ public class Drive extends DreadbotSubsystem {
 
         this.targetChassisSpeeds = new ChassisSpeeds();
 
-        this.field2d = new Field2d();
-
         // Fully-configure motors before passing them to MecanumDrive.
         configureMotors();
         resetEncoders();
-
-        odometry = new MecanumDriveOdometry(kinematics, gyroscope.getRotation2d());
 
         this.mecanumDrive = new MecanumDrive(leftFrontMotor.getSparkMax(), leftBackMotor.getSparkMax(),
             rightFrontMotor.getSparkMax(), rightBackMotor.getSparkMax());
 
         mecanumDrive.setSafetyEnabled(false);
-
-        SmartDashboard.putData("Field", field2d);
     }
 
     @Override
     public void periodic() {
         if(isDisabled()) return;
-
-        odometry.update(gyroscope.getRotation2d(), getWheelSpeeds());
-        field2d.setRobotPose(getPose());
-
         SmartDashboard.putNumber("GYRO PITCH", gyroscope.getPitch());
     }
 
@@ -305,15 +291,6 @@ public class Drive extends DreadbotSubsystem {
     }
 
     /**
-     * Gets the current robot odometry pose.
-     *
-     * @return Robot pose
-     */
-    public Pose2d getPose() {
-        return odometry.getPoseMeters();
-    }
-
-    /**
      * Gets the drive kinematics object.
      *
      * @return Drive kinematics object
@@ -329,15 +306,6 @@ public class Drive extends DreadbotSubsystem {
      */
     public HolonomicDriveController getDriveController() {
         return driveController;
-    }
-
-    /**
-     * Resets the robot pose odometry.
-     *
-     * @param poseMeters The requested "zero" position of the odometry.
-     */
-    public void resetRobotPose(Pose2d poseMeters) {
-        odometry.resetPosition(poseMeters, gyroscope.getRotation2d());
     }
 
     /**

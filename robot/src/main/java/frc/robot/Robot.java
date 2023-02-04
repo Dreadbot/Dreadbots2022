@@ -5,9 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.util.datalog.StringLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
